@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontendreverseproxy
+spec:
+  selector:
+    matchLabels:
+      app: frontendreverseproxy
+  template:
+    metadata:
+      labels:
+        app: frontendreverseproxy
+    spec:
+      containers:
+      - name: frontendreverseproxy
+        image: gcr.io/dynatrace-demoability/easytrade/frontendreverseproxy:9ab0eb0
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 50m
+            memory: 50Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontendreverseproxy
+spec:
+  type: LoadBalancer
+  selector:
+    app: frontendreverseproxy
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80

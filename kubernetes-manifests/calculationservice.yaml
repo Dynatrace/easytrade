@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: calculationservice
+spec:
+  selector:
+    matchLabels:
+      app: calculationservice
+  template:
+    metadata:
+      labels:
+        app: calculationservice
+    spec:
+      containers:
+      - name: calculationservice
+        image: gcr.io/dynatrace-demoability/easytrade/calculationservice:9ab0eb0
+        resources:
+          requests:
+            cpu: 10m
+            memory: 10Mi

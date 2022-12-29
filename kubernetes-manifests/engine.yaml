@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: engine
+spec:
+  selector:
+    matchLabels:
+      app: engine
+  template:
+    metadata:
+      labels:
+        app: engine
+    spec:
+      containers:
+      - name: engine
+        image: gcr.io/dynatrace-demoability/easytrade/engine:9ab0eb0
+        ports:
+        - containerPort: 8080
+        env:
+        - name: BROKER_HOSTANDPORT
+          value: "brokerservice:80"
+        resources:
+          requests:
+            cpu: 150m
+            memory: 100Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: engine
+spec:
+  type: ClusterIP
+  selector:
+    app: engine
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080

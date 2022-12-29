@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manager
+spec:
+  selector:
+    matchLabels:
+      app: manager
+  template:
+    metadata:
+      labels:
+        app: manager
+    spec:
+      containers:
+      - name: manager
+        image: gcr.io/dynatrace-demoability/easytrade/manager:9ab0eb0
+        ports:
+        - containerPort: 80
+        env:
+        - name: MSSQL_CONNECTIONSTRING
+          value: "Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password"
+        resources:
+          requests:
+            cpu: 150m
+            memory: 350Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: manager
+spec:
+  type: ClusterIP
+  selector:
+    app: manager
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80

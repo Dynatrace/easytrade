@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contentcreator
+spec:
+  selector:
+    matchLabels:
+      app: contentcreator
+  template:
+    metadata:
+      labels:
+        app: contentcreator
+    spec:
+      containers:
+      - name: contentcreator
+        image: gcr.io/dynatrace-demoability/easytrade/contentcreator:9ab0eb0
+        env:
+        - name: MSSQL_CONNECTIONSTRING
+          value: "jdbc:sqlserver://db:1433;database=TradeManagement;user=sa;password=yourStrong(!)Password;encrypt=false;trustServerCertificate=false;loginTimeout=30;"
+        resources:
+          requests:
+            cpu: 150m
+            memory: 200Mi
