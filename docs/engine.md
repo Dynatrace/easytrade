@@ -1,79 +1,62 @@
 # easyTradeEngine
-Java service used to periodically run scheduled tasks.    
-Right now it only tries to finalize long running transactions each 60 seconds.   
 
-<br/><br/>
+Java service used to periodically run scheduled tasks.  
+Right now it only tries to finalize long running transactions each 60 seconds.
 
-## Techs
-Java   
-Docker   
+## Technologies used
 
-<br/><br/>
+- Docker
+- Java
 
-## Local build instructions
-```sh
-docker build -t easytradeengine .
-docker run -d --name engine easytradeengine
-```   
-If you want the service to work properly, you should try setting these ENV variables:   
-- BROKER_HOSTANDPORT: broker service host and port, for example "brokerservice:80"   
+## Endpoints
 
-<br/><br/>
+### Swagger
 
-## Endpoints or logic
-Swagger endpoint is available at:
-```sh
-//when deployed locally
-http://localhost:8080/api/swagger-ui/
+**/api/swagger-ui/**
 
-//when deployed with docker-compose
-http://localhost:8090/api/swagger-ui/
+> **NOTE:** `/` at the end is required
 
-//when deployed with k8s
-http://SOMEWHERE/engine/api/swagger-ui/
-```
-
-<br/><br/>
-
-`GET` <b>/api/trade/scheduler/start</b> `(Start long running transaction scheduler)`
+### `GET` **/api/trade/scheduler/start** `(Start long running transaction scheduler)`
 
 ##### Parameters
+
 > | name | type | data type | description |
-> |------|------|-----------|-------------|
+> | ---- | ---- | --------- | ----------- |
+>
 > None
 
 ##### Example cURL
+
 > ```bash
 >  curl -X GET "http://172.18.147.235:8090/api/trade/scheduler/start" -H "accept: */*"
 > ```
 
-<br/><br/>
-
-`GET` <b>/api/trade/scheduler/status</b> `(Check scheduler status)`
+### `GET` **/api/trade/scheduler/status** `(Check scheduler status)`
 
 ##### Parameters
+
 > | name | type | data type | description |
-> |------|------|-----------|-------------|
+> | ---- | ---- | --------- | ----------- |
+>
 > None
 
 ##### Example cURL
+
 > ```bash
 >  curl -X GET "http://172.18.147.235:8090/api/trade/scheduler/status" -H "accept: */*"
 > ```
 
-<br/><br/>
-
-`GET` <b>/api/trade/scheduler/stop</b> `(Stop long running transaction scheduler)`
+### `GET` **/api/trade/scheduler/stop** `(Stop long running transaction scheduler)`
 
 ##### Parameters
+
 > | name | type | data type | description |
-> |------|------|-----------|-------------|
+> | ---- | ---- | --------- | ----------- |
+>
 > None
 
 ##### Example cURL
+
 > ```bash
 >  curl -X GET "http://172.18.147.235:8090/api/trade/scheduler/stop" -H "accept: */*"
 > ```
-
-<br/><br/>
-

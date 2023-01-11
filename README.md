@@ -33,7 +33,7 @@ EasyTrade consists of the following services/components:
 | [Plugin service](./docs/pluginservice.md)                | `/pluginservice`  |
 | [Pricing service](./docs/pricingservice.md)              | `/pricing`        |
 
-If you want to learn more about these services, then go to their dedeciated markdown descriptions - just take note, that those readmes are more comprehensive and also contain the part about building which is currently not available for github sources :(
+> To learn more about endpoints / swagger for the services go to their respective readmes
 
 ## Docker compose
 
