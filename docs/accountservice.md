@@ -1,6 +1,6 @@
 # easyTradeAccountService
 
-A java rest service with swagger. It allows to get and update accout data.
+A java rest service with swagger. It allows to get and update account data.
 
 ## Technologies used
 
