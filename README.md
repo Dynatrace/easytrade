@@ -70,7 +70,7 @@ To deploy Easytrade in kubernetes you need to have:
 
 - `kubectl` tool installed
   - here's a [guide](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) on how to get it
-- `kubeconfig` to access the cluser you want to deploy it on
+- `kubeconfig` to access the cluster you want to deploy it on
   - more info on it [here](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/)
 
 ```bash
