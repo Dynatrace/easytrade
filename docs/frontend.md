@@ -6,4 +6,4 @@ A frontend for easyTrade written in react.
 
 - Docker
 - React.js
-- Javascript
+- JavaScript
