@@ -30,7 +30,7 @@ The environment variables can be placed in `.env` file in the root dir of `plugi
     - `offerservice` - **OFFER_SERVICE**
 > *Example:* OFFER_SERVICE__DOMAIN=offerservice
 ## About
-`PluginService` is designed as a single entrypoint for managing all plugins (problem patterns) accross all services in `EasyTrade`. Currently it doesn't hold the state for plugins, but serves as a proxy to all registered plugin providers.
+`PluginService` is designed as a single entrypoint for managing all plugins (problem patterns) across all services in `EasyTrade`. Currently it doesn't hold the state for plugins, but serves as a proxy to all registered plugin providers.
 
 Documentation for endpoints available at
 

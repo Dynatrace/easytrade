@@ -1,6 +1,6 @@
 # easyTradeManager
 
-This service performes the role of a data access layer to database. Almost all calls to database go through it.
+This service performs the role of a data access layer to database. Almost all calls to database go through it.
 
 ## Technologies used
 
