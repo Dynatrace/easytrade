@@ -14,20 +14,20 @@ spec:
         app: headlessloadgen
     spec:
       containers:
-      - name: headlessloadgen
-        image: gcr.io/dynatrace-demoability/headlessloadgen:latest
-        imagePullPolicy: Always
-        resources:
-          requests:
-            memory: "500Mi"
-            cpu: "500m"
-          limits:
-            memory: "900Mi"
-            cpu: "700m"
-        env:
-        - name: EASY_TRADE_ADDRESS
-          value: frontendreverseproxy
-        - name: EASY_TRADE_PORT
-          value: "80"
-        - name: NODE_LOG_LEVEL
-          value: "debug"
+        - name: headlessloadgen
+          image: gcr.io/dynatrace-demoability/headlessloadgen:latest
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "500Mi"
+              cpu: "500m"
+            limits:
+              memory: "900Mi"
+              cpu: "700m"
+          env:
+            - name: EASY_TRADE_DOMAIN
+              value: frontendreverseproxy
+            - name: EASY_TRADE_PORT
+              value: "80"
+            - name: NODE_LOG_LEVEL
+              value: "debug"
