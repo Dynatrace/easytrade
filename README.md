@@ -1,4 +1,4 @@
-# Easytrade
+# EasyTrade
 
 A project consisting of many small services that connect to each other.  
 It is made like a stock broking application - it allows it's users to buy&sell some stocks/instruments.  
