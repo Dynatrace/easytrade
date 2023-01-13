@@ -1,29 +1,11 @@
 # easyTradeFrontendReverseProxy
-An nginx reverse proxy. It is used for two things:   
-- routing traffic for React frontend on kuberneted   
-- expose services in kubernetes   
 
-<br/><br/>
+Nginx reverse proxy. It is used for two things:
 
-## Techs
-Nginx   
-Docker   
+- routing traffic for React frontend on kubernetes
+- expose services in kubernetes
 
-<br/><br/>
+## Technologies used
 
-## Local build instructions
-```sh
-docker build -t easytradefrontendreverseproxy .
-docker run -d --name frontendreverseproxy easytradefrontendreverseproxy
-```   
-
-<br/><br/>
-
-## Endpoints or logic
-Well ... this IS an nginx reverse proxy...
-
-<br/><br/>
-
-
-
-
+- Docker
+- Nginx

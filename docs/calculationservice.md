@@ -1,24 +1,13 @@
 # easyTradeCalculationService
-C++ service that reads some data from RabbitMQ and puts the result on the default output   
 
-<br/><br/>
+C++ service that reads some data from RabbitMQ and puts the result on the default output
 
-## Techs
-C++   
-RabbitMQ   
-Docker   
+## Technologies used
 
-<br/><br/>
+- Docker
+- C++
+- RabbitMQ
 
-## Local build instructions
-```sh
-docker build -t easytradecalculationservice .
-docker run -d --name calculationservice easytradecalculationservice
-```
+## Logic
 
-<br/><br/>
-
-## Endpoints or logic
-The service has no endpoints - it is running an endless loop that checks if there is some data to consume in the message queue each 15 seconds.
-
-
+Service runs an endless loop that that tries to consume data from the message queue each 15 seconds.
