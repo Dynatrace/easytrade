@@ -133,7 +133,7 @@ curl -X 'PUT' \
 }'
 ```
 
-Of course please set the value of "ENDPOINT" to the correct application IP and VALUE to false/true.
+Of course please set the value of "ENDPOINT" to the correct host IP and VALUE to false/true.
 
 ## EasyTrade on Dynatrace - how to configure
 
