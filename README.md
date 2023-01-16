@@ -96,3 +96,74 @@ After starting easyTrade application you can:
 - go to the frontend and try it out. Just go to the machines IP address, or "localhost" and you should see the login page. You can either create a new user, or use one of superusers (with easy passwords) like "demouser/demopass" or "specialuser/specialpass". Remember that in order to buy stocks you need money, so visit the deposit page first.
 - go to some services swagger endpoint - you will find proper instructions in the dedicated service readmes.
 - after some time go to dynatrace to configure your application and see what is going on in easyTrade - to have it work you will need an agent on the machine where you started easyTrade :P
+
+## EasyTrade users
+
+If you want to use easyTrade, then you will need a user. You can either:
+
+- use the existing user - he has some preinserted data and new data is being generated from time to time:
+
+  - login: james_norton
+  - pass: u4p(8n1EPZIOAaqqYsWha+rI&a*8pu(m52^viR4%H!kdn03We)
+
+- create a new user - click on "Sign up" on the login page and create a new user.
+
+> **NOTE:** After creating a new user there is no confirmation given, no email sent and you are not redirected... Just go back to login page and try to login. It should work :)
+
+## Problem patterns
+
+Currently there are only 2 problem patterns supported in easyTrade:
+
+1. DbNotRespondingPlugin - after turning it on no new trades can be created as the database will throw an error. This problem pattern is kind of proof on concept that problem patterns work. Running it for around 20 minutes should generate a problem in dynatrace.
+
+2. ErgoAggregatorSlowdownPlugin - after turning it on 2 of the aggregators will start receiving slower responses which will make them stop sending requests after some time. A potential run could take:
+    
+    - 15 min - then we will notice a small slowdown (for 150 seconds) followed by 40% lower traffic for 15 minutes on some requests
+    - 20 min - then we will notice a small slowdown (for 150 seconds) followed by 40% lower traffic for 30 minutes on some requests
+
+To turn a plugin on/off send a request similar to the following:
+
+```sh
+curl -X 'PUT' \
+  'http://ENDPOINT/pluginservice/api/plugins/ErgoAggregatorSlowdownPlugin' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "enabled": VALUE
+}'
+```
+
+Of course please set the value of "ENDPOINT" to the correct application IP and VALUE to false/true.
+
+## EasyTrade on Dynatrace - how to configure
+
+1. Go to your tenant.
+
+2. Create a new application. You can either make it based on the traffic detected in "My web application" or just manually. The application detection rule will most probably look like this:
+
+    - "frontendreverseproxy" - in the case of docker-compose based application
+    - "111.111.111.111" - in the case of kubernetes based application
+    ![Detection rules](./img/dt/1.png)
+
+3. Go to you new application. Click on "Edit".
+![Edit application 1](./img/dt/2.png)
+![Edit application 2](./img/dt/3.png)
+
+4. Go to "Capturing" → "Async web requests and SPAs".
+![Async web requests and SPAs](./img/dt/4.png)
+
+5. Turn on the capturing of "XmlHttpRequest (XHR)" and "fetch() requests".
+
+6. Click on the save button.
+![Save button](./img/dt/5.png)
+
+7. Go to "Capturing" → "User tag". 
+![User tag detection](./img/dt/6.png)
+
+8. Click on the "Add user tag rule".
+
+9. Select the "Source type" as "CSS selector" and fill in the value of "CSS selector" as "label.labelPositioning".
+
+10. Turn on the cleanup rule and set the "Regex" as "Hi,.(.*+)".
+
+11. Click on the save button.
