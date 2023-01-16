@@ -137,33 +137,33 @@ Of course please set the value of "ENDPOINT" to the correct application IP and V
 
 ## EasyTrade on Dynatrace - how to configure
 
-1. Go to your tenant.
+1. Go to your tenant.  
 
-2. Create a new application. You can either make it based on the traffic detected in "My web application" or just manually. The application detection rule will most probably look like this:
+2. Create a new application. You can either make it based on the traffic detected in "My web application" or just manually. The application detection rule will most probably look like this:  
 
     - "frontendreverseproxy" - in the case of docker-compose based application
     - "111.111.111.111" - in the case of kubernetes based application
     ![Detection rules](./img/dt/1.png)
 
-3. Go to you new application. Click on "Edit".
+3. Go to you new application. Click on "Edit".  
 ![Edit application 1](./img/dt/2.png)
 ![Edit application 2](./img/dt/3.png)
 
-4. Go to "Capturing" → "Async web requests and SPAs".
+4. Go to "Capturing" → "Async web requests and SPAs".  
 ![Async web requests and SPAs](./img/dt/4.png)
 
-5. Turn on the capturing of "XmlHttpRequest (XHR)" and "fetch() requests".
+5. Turn on the capturing of "XmlHttpRequest (XHR)" and "fetch() requests".  
 
-6. Click on the save button.
+6. Click on the save button.  
 ![Save button](./img/dt/5.png)
 
-7. Go to "Capturing" → "User tag". 
+7. Go to "Capturing" → "User tag".  
 ![User tag detection](./img/dt/6.png)
 
-8. Click on the "Add user tag rule".
+8. Click on the "Add user tag rule".  
 
-9. Select the "Source type" as "CSS selector" and fill in the value of "CSS selector" as "label.labelPositioning".
+9. Select the "Source type" as "CSS selector" and fill in the value of "CSS selector" as "label.labelPositioning".  
 
-10. Turn on the cleanup rule and set the "Regex" as "Hi,.(.*+)".
+10. Turn on the cleanup rule and set the "Regex" as "Hi,.(.*+)".  
 
-11. Click on the save button.
+11. Click on the save button.  
