@@ -30,4 +30,4 @@ spec:
             - name: EASY_TRADE_PORT
               value: "80"
             - name: NODE_LOG_LEVEL
-              value: "debug"
+              value: "info"
