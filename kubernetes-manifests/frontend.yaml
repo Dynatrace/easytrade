@@ -12,14 +12,14 @@ spec:
         app: frontend
     spec:
       containers:
-      - name: frontend
-        image: gcr.io/dynatrace-demoability/easytrade/frontend:9ab0eb0
-        ports:
-        - containerPort: 3000
-        resources:
-          requests:
-            cpu: 300m
-            memory: 100Mi
+        - name: frontend
+          image: gcr.io/dynatrace-demoability/easytrade/frontend:44e1877
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: 300m
+              memory: 100Mi
 ---
 apiVersion: v1
 kind: Service
@@ -30,6 +30,6 @@ spec:
   selector:
     app: frontend
   ports:
-  - name: http
-    port: 3000
-    targetPort: 3000
+    - name: http
+      port: 3000
+      targetPort: 3000

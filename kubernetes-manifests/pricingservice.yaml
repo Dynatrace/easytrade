@@ -12,23 +12,23 @@ spec:
         app: pricingservice
     spec:
       containers:
-      - name: pricingservice
-        image: gcr.io/dynatrace-demoability/easytrade/pricingservice:9ab0eb0
-        ports:
-        - containerPort: 80
-        env:
-        - name: MANAGER_HOSTANDPORT
-          value: "manager:80"
-        - name: RABBITMQ_HOST
-          value: "rabbitmq"
-        - name: RABBITMQ_USER
-          value: "userxxx"
-        - name: RABBITMQ_PASSWORD
-          value: "passxxx"
-        resources:
-          requests:
-            cpu: 100m
-            memory: 350Mi
+        - name: pricingservice
+          image: gcr.io/dynatrace-demoability/easytrade/pricingservice:44e1877
+          ports:
+            - containerPort: 80
+          env:
+            - name: MANAGER_HOSTANDPORT
+              value: "manager:80"
+            - name: RABBITMQ_HOST
+              value: "rabbitmq"
+            - name: RABBITMQ_USER
+              value: "userxxx"
+            - name: RABBITMQ_PASSWORD
+              value: "passxxx"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 350Mi
 ---
 apiVersion: v1
 kind: Service
@@ -39,6 +39,6 @@ spec:
   selector:
     app: pricingservice
   ports:
-  - name: http
-    port: 80
-    targetPort: 80
+    - name: http
+      port: 80
+      targetPort: 80

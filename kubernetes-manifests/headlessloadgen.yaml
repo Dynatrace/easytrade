@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: headlessloadgen
-          image: gcr.io/dynatrace-demoability/headlessloadgen:latest
+          image: gcr.io/dynatrace-demoability/headlessloadgen:0deedcc
           imagePullPolicy: Always
           resources:
             requests:
