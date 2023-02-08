@@ -109,7 +109,7 @@ services:
 
   headlessloadgen:
     <<: *default-service
-    image: gcr.io/dynatrace-demoability/headlessloadgen:latest
+    image: gcr.io/dynatrace-demoability/headlessloadgen:${LOADGEN_TAG}
     depends_on:
       - frontendreverseproxy
     environment:

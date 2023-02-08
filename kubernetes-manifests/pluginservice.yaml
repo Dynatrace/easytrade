@@ -12,23 +12,23 @@ spec:
         app: pluginservice
     spec:
       containers:
-      - name: pluginservice
-        image: gcr.io/dynatrace-demoability/easytrade/pluginservice:9ab0eb0
-        ports:
-        - containerPort: 8080
-        env:
-        - name: OFFER_SERVICE__PORT
-          value: '8080'
-        - name: OFFER_SERVICE__DOMAIN
-          value: offerservice
-        - name: MANAGER__DOMAIN
-          value: manager
-        - name: MANAGER__PORT
-          value: '80'
-        resources:
-          requests:
-            cpu: 150m
-            memory: 100Mi
+        - name: pluginservice
+          image: gcr.io/dynatrace-demoability/easytrade/pluginservice:44e1877
+          ports:
+            - containerPort: 8080
+          env:
+            - name: OFFER_SERVICE__PORT
+              value: "8080"
+            - name: OFFER_SERVICE__DOMAIN
+              value: offerservice
+            - name: MANAGER__DOMAIN
+              value: manager
+            - name: MANAGER__PORT
+              value: "80"
+          resources:
+            requests:
+              cpu: 150m
+              memory: 100Mi
 ---
 apiVersion: v1
 kind: Service
@@ -39,6 +39,6 @@ spec:
   selector:
     app: pluginservice
   ports:
-  - name: http
-    port: 8080
-    targetPort: 8080
+    - name: http
+      port: 8080
+      targetPort: 8080

@@ -12,21 +12,21 @@ spec:
         app: brokerservice
     spec:
       containers:
-      - name: brokerservice
-        image: gcr.io/dynatrace-demoability/easytrade/brokerservice:9ab0eb0
-        ports:
-        - containerPort: 80
-        env:
-        - name: MANAGER_HOSTANDPORT
-          value: "manager:80"
-        - name: ACCOUNTSERVICE_HOSTANDPORT
-          value: "accountservice:8080"
-        - name: PRICINGSERVICE_HOSTANDPORT
-          value: "pricingservice:80"
-        resources:
-          requests:
-            cpu: 100m
-            memory: 300Mi
+        - name: brokerservice
+          image: gcr.io/dynatrace-demoability/easytrade/brokerservice:44e1877
+          ports:
+            - containerPort: 80
+          env:
+            - name: MANAGER_HOSTANDPORT
+              value: "manager:80"
+            - name: ACCOUNTSERVICE_HOSTANDPORT
+              value: "accountservice:8080"
+            - name: PRICINGSERVICE_HOSTANDPORT
+              value: "pricingservice:80"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 300Mi
 ---
 apiVersion: v1
 kind: Service
@@ -37,6 +37,6 @@ spec:
   selector:
     app: brokerservice
   ports:
-  - name: http
-    port: 80
-    targetPort: 80
+    - name: http
+      port: 80
+      targetPort: 80
