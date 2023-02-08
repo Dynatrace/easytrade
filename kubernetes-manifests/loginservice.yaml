@@ -18,7 +18,7 @@ spec:
             - containerPort: 80
           env:
             - name: MSSQL_CONNECTIONSTRING
-              value: "Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password"
+              value: "Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true"
           resources:
             requests:
               cpu: 100m
