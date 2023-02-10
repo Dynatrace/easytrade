@@ -5,7 +5,7 @@ A .Net service that provides information about instruments prices.
 ## Technologies used
 
 - Docker
-- .Net Core 5.0
+- .Net 6
 
 ## Endpoints
 

@@ -39,7 +39,7 @@ services:
     depends_on:
       - db
     environment:
-      MSSQL_CONNECTIONSTRING: Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password
+      MSSQL_CONNECTIONSTRING: Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
 
   pricingservice:
     <<: *default-service
@@ -88,7 +88,7 @@ services:
     <<: *default-service
     image: ${REGISTRY}/loginservice:${TAG}
     environment:
-      MSSQL_CONNECTIONSTRING: Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password
+      MSSQL_CONNECTIONSTRING: Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
     depends_on:
       - db
 
@@ -109,7 +109,7 @@ services:
 
   headlessloadgen:
     <<: *default-service
-    image: gcr.io/dynatrace-demoability/headlessloadgen:latest
+    image: gcr.io/dynatrace-demoability/headlessloadgen:${LOADGEN_TAG}
     depends_on:
       - frontendreverseproxy
     environment:

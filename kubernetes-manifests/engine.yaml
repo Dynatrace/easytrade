@@ -12,17 +12,17 @@ spec:
         app: engine
     spec:
       containers:
-      - name: engine
-        image: gcr.io/dynatrace-demoability/easytrade/engine:9ab0eb0
-        ports:
-        - containerPort: 8080
-        env:
-        - name: BROKER_HOSTANDPORT
-          value: "brokerservice:80"
-        resources:
-          requests:
-            cpu: 150m
-            memory: 100Mi
+        - name: engine
+          image: gcr.io/dynatrace-demoability/easytrade/engine:44e1877
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BROKER_HOSTANDPORT
+              value: "brokerservice:80"
+          resources:
+            requests:
+              cpu: 150m
+              memory: 100Mi
 ---
 apiVersion: v1
 kind: Service
@@ -33,6 +33,6 @@ spec:
   selector:
     app: engine
   ports:
-  - name: http
-    port: 8080
-    targetPort: 8080
+    - name: http
+      port: 8080
+      targetPort: 8080
