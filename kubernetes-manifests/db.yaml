@@ -12,17 +12,17 @@ spec:
         app: db
     spec:
       containers:
-      - name: db
-        image: gcr.io/dynatrace-demoability/easytrade/db:9ab0eb0
-        ports:
-        - containerPort: 1433
-        env:
-        - name: SA_PASSWORD
-          value: "yourStrong(!)Password"
-        resources:
-          requests:
-            cpu: 300m
-            memory: 1Gi
+        - name: db
+          image: gcr.io/dynatrace-demoability/easytrade/db:44e1877
+          ports:
+            - containerPort: 1433
+          env:
+            - name: SA_PASSWORD
+              value: "yourStrong(!)Password"
+          resources:
+            requests:
+              cpu: 300m
+              memory: 1Gi
 ---
 apiVersion: v1
 kind: Service
@@ -33,6 +33,6 @@ spec:
   selector:
     app: db
   ports:
-  - name: mssql
-    port: 1433
-    targetPort: 1433
+    - name: mssql
+      port: 1433
+      targetPort: 1433

@@ -12,14 +12,14 @@ spec:
         app: frontendreverseproxy
     spec:
       containers:
-      - name: frontendreverseproxy
-        image: gcr.io/dynatrace-demoability/easytrade/frontendreverseproxy:9ab0eb0
-        ports:
-        - containerPort: 80
-        resources:
-          requests:
-            cpu: 50m
-            memory: 50Mi
+        - name: frontendreverseproxy
+          image: gcr.io/dynatrace-demoability/easytrade/frontendreverseproxy:44e1877
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 50m
+              memory: 50Mi
 ---
 apiVersion: v1
 kind: Service

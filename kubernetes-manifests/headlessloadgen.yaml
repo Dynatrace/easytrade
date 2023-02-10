@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: headlessloadgen
-          image: gcr.io/dynatrace-demoability/headlessloadgen:latest
+          image: gcr.io/dynatrace-demoability/headlessloadgen:0deedcc
           imagePullPolicy: Always
           resources:
             requests:
@@ -30,4 +30,4 @@ spec:
             - name: EASY_TRADE_PORT
               value: "80"
             - name: NODE_LOG_LEVEL
-              value: "debug"
+              value: "info"

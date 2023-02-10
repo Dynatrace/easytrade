@@ -12,17 +12,17 @@ spec:
         app: loginservice
     spec:
       containers:
-      - name: loginservice
-        image: gcr.io/dynatrace-demoability/easytrade/loginservice:9ab0eb0
-        ports:
-        - containerPort: 80
-        env:
-        - name: MSSQL_CONNECTIONSTRING
-          value: "Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password"
-        resources:
-          requests:
-            cpu: 100m
-            memory: 350Mi
+        - name: loginservice
+          image: gcr.io/dynatrace-demoability/easytrade/loginservice:44e1877
+          ports:
+            - containerPort: 80
+          env:
+            - name: MSSQL_CONNECTIONSTRING
+              value: "Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 350Mi
 ---
 apiVersion: v1
 kind: Service
@@ -33,6 +33,6 @@ spec:
   selector:
     app: loginservice
   ports:
-  - name: http
-    port: 80
-    targetPort: 80
+    - name: http
+      port: 80
+      targetPort: 80

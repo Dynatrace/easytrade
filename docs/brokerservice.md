@@ -5,7 +5,7 @@ This service is mainly used to get stock market information from the database an
 ## Technologies used
 
 - Docker
-- .Net Core 5.0
+- .Net 6
 
 If you want the service to work properly, you should try setting these ENV variables:
 

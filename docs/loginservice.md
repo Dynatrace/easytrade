@@ -5,7 +5,7 @@ This .Net service is responsible for authenticating users.
 ## Technologies used
 
 - Docker
-- .Net Core 5.0
+- .Net 6
 
 ## Endpoints
 

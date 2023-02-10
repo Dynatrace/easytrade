@@ -12,15 +12,15 @@ spec:
         app: rabbitmq
     spec:
       containers:
-      - name: rabbitmq
-        image: gcr.io/dynatrace-demoability/easytrade/rabbitmq:9ab0eb0
-        ports:
-        - containerPort: 5672
-        - containerPort: 15672
-        resources:
-          requests:
-            cpu: 100m
-            memory: 150Mi
+        - name: rabbitmq
+          image: gcr.io/dynatrace-demoability/easytrade/rabbitmq:44e1877
+          ports:
+            - containerPort: 5672
+            - containerPort: 15672
+          resources:
+            requests:
+              cpu: 100m
+              memory: 150Mi
 ---
 apiVersion: v1
 kind: Service
@@ -31,9 +31,9 @@ spec:
   selector:
     app: rabbitmq
   ports:
-  - name: rabbitmq-listener
-    port: 5672
-    targetPort: 5672
-  - name: rabbitmq-ui
-    port: 15672
-    targetPort: 15672
+    - name: rabbitmq-listener
+      port: 5672
+      targetPort: 5672
+    - name: rabbitmq-ui
+      port: 15672
+      targetPort: 15672

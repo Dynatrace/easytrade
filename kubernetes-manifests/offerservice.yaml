@@ -12,23 +12,23 @@ spec:
         app: offerservice
     spec:
       containers:
-      - name: offerservice
-        image: gcr.io/dynatrace-demoability/easytrade/offerservice:9ab0eb0
-        ports:
-        - containerPort: 8080
-        env:
-        - name: LOGIN_SERVICE_PORT
-          value: '80'
-        - name: LOGIN_SERVICE_BASE_URL
-          value: loginservice
-        - name: MANAGER_BASE_URL
-          value: manager
-        - name: MANAGER_PORT
-          value: '80'
-        resources:
-          requests:
-            cpu: 300m
-            memory: 100Mi
+        - name: offerservice
+          image: gcr.io/dynatrace-demoability/easytrade/offerservice:44e1877
+          ports:
+            - containerPort: 8080
+          env:
+            - name: LOGIN_SERVICE_PORT
+              value: "80"
+            - name: LOGIN_SERVICE_BASE_URL
+              value: loginservice
+            - name: MANAGER_BASE_URL
+              value: manager
+            - name: MANAGER_PORT
+              value: "80"
+          resources:
+            requests:
+              cpu: 300m
+              memory: 100Mi
 ---
 apiVersion: v1
 kind: Service
@@ -39,6 +39,6 @@ spec:
   selector:
     app: offerservice
   ports:
-  - name: http
-    port: 8080
-    targetPort: 8080
+    - name: http
+      port: 8080
+      targetPort: 8080
