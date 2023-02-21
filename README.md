@@ -167,3 +167,17 @@ Of course please set the value of "ENDPOINT" to the correct host IP and VALUE to
 10. Turn on the cleanup rule and set the "Regex" as "Hi,.(.\*+)".
 
 11. Click on the save button.
+
+## Resolve **Span Default Service** showing instead of regular .NET services
+
+If instead of regular .NET services, like this:
+
+![Correct dotnet service names](./img/dt/correct_dotnet_services.png)
+
+You see **Span Default Service** for all of them, like this:
+
+![Spand default service names](./img/dt/wrong_dotnet_services.png)
+
+Go into `Settings -> Server-side service monitoring -> Span capturing`, and click `Add item` to add rule that ignores span with name `Microsoft.AspNetCore.Hosting.HttpRequestIn`, like so:
+
+![Ignore ASP.NET span](./img/dt/span_ignore_rule.png)
