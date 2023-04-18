@@ -54,17 +54,6 @@ configs:
       schema: builtin:bizevents.http.incoming
       schemaVersion: 1.0.1
       scope: environment
-- id: 47c27631-721a-3003-a2b0-552d029a13c7
-  config:
-    name: easytrade_pricing-getlatestprices
-    template: easytrade_pricing-getlatestprices.json
-    skip: false
-    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkZTFmMzVkZDctMWEzYi0zODQzLTg2YmItZjEwZGFiZjU5Mzc4vu9U3hXa3q0
-  type:
-    settings:
-      schema: builtin:bizevents.http.incoming
-      schemaVersion: 1.0.1
-      scope: environment
 - id: 2abb027c-e759-32a6-b36d-5da2f0d061ba
   config:
     name: easytravel_authentication-service
@@ -243,8 +232,8 @@ configs:
       scope: environment
 - id: df130abb-4ab0-31f3-a780-cbd1ede62c23
   config:
-    name: easytrade_pricing-getlatestprices2
-    template: easytrade_pricing-getlatestprices2.json
+    name: easytrade_pricing-getlatestprices
+    template: easytrade_pricing-getlatestprices.json
     skip: false
     originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkODNlMjZmOTItNGI0ZC0zMTZhLWEwOTEtZjYyYTQwZTQ3ZDY5vu9U3hXa3q0
   type:
