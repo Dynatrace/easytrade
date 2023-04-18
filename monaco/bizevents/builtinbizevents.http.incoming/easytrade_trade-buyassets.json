@@ -1,0 +1,71 @@
+{
+  "enabled": true,
+  "ruleName": "[.net] easyTrade - /api/trade/BuyAssets",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/api/trade/BuyAssets",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.buy-assets"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "rsbody",
+        "source": {
+          "sourceType": "response.body",
+          "path": "*"
+        }
+      },
+      {
+        "name": "instrumentId",
+        "source": {
+          "sourceType": "request.body",
+          "path": "instrumentId"
+        }
+      },
+      {
+        "name": "rqbody",
+        "source": {
+          "sourceType": "request.body",
+          "path": "*"
+        }
+      },
+      {
+        "name": "accountId",
+        "source": {
+          "sourceType": "request.body",
+          "path": "accountId"
+        }
+      },
+      {
+        "name": "price",
+        "source": {
+          "sourceType": "request.body",
+          "path": "price"
+        }
+      },
+      {
+        "name": "amount",
+        "source": {
+          "sourceType": "request.body",
+          "path": "amount"
+        }
+      }
+    ]
+  }
+}

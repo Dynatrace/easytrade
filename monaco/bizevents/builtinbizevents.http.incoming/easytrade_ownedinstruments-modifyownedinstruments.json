@@ -1,0 +1,57 @@
+{
+  "enabled": true,
+  "ruleName": "[.net] easyTrade - /api/Ownedinstruments/ModifyOwnedinstruments",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/api/Ownedinstruments/ModifyOwnedinstruments",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.modify-owned-instruments"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "instrumentId",
+        "source": {
+          "sourceType": "request.body",
+          "path": "instrumentId"
+        }
+      },
+      {
+        "name": "quantity",
+        "source": {
+          "sourceType": "request.body",
+          "path": "quantity"
+        }
+      },
+      {
+        "name": "lastModificationDate",
+        "source": {
+          "sourceType": "request.body",
+          "path": "lastModificationDate"
+        }
+      },
+      {
+        "name": "accountId",
+        "source": {
+          "sourceType": "request.body",
+          "path": "accountId"
+        }
+      }
+    ]
+  }
+}

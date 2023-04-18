@@ -1,0 +1,14 @@
+manifestVersion: 1.0
+projects:
+  - name: bizevents
+    path: bizevents
+
+environmentGroups:
+  - name: development
+    environments:
+      - name: dev
+        url:
+          value: "[fill dev environment url]"
+        auth:
+          token:
+            name: "devToken"

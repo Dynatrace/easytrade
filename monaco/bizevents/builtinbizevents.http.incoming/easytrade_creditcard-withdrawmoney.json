@@ -1,0 +1,78 @@
+{
+  "enabled": true,
+  "ruleName": "[.net] easyTrade - /api/creditcard/WithdrawMoney",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/api/creditcard/WithdrawMoney",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.withdraw-money"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "address",
+        "source": {
+          "sourceType": "request.body",
+          "path": "address"
+        }
+      },
+      {
+        "name": "name",
+        "source": {
+          "sourceType": "request.body",
+          "path": "name"
+        }
+      },
+      {
+        "name": "cardType",
+        "source": {
+          "sourceType": "request.body",
+          "path": "cardType"
+        }
+      },
+      {
+        "name": "accountId",
+        "source": {
+          "sourceType": "request.body",
+          "path": "accountId"
+        }
+      },
+      {
+        "name": "cardNumber",
+        "source": {
+          "sourceType": "request.body",
+          "path": "cardNumber"
+        }
+      },
+      {
+        "name": "amount",
+        "source": {
+          "sourceType": "request.body",
+          "path": "amount"
+        }
+      },
+      {
+        "name": "email",
+        "source": {
+          "sourceType": "request.body",
+          "path": "email"
+        }
+      }
+    ]
+  }
+}

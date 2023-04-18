@@ -1,0 +1,56 @@
+{
+  "enabled": false,
+  "ruleName": "[ws] easyTrade - /pricing/api/Pricing/GetLatestPrices (array)",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/pricing/api/Pricing/GetLatestPrices",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.get-latest-prices"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "response",
+        "source": {
+          "sourceType": "response.statusCode"
+        }
+      },
+      {
+        "name": "index0 resp",
+        "source": {
+          "sourceType": "response.body",
+          "path": "0"
+        }
+      },
+      {
+        "name": "rsbody",
+        "source": {
+          "sourceType": "response.body",
+          "path": "*"
+        }
+      },
+      {
+        "name": "rqbody",
+        "source": {
+          "sourceType": "request.body",
+          "path": "*"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "enabled": true,
+  "ruleName": "[.net] easyTrade - /api/Accounts/ModifyAccount",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/api/Accounts/ModifyAccount",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.modify-account"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "firstName",
+        "source": {
+          "sourceType": "request.body",
+          "path": "firstName"
+        }
+      },
+      {
+        "name": "id",
+        "source": {
+          "sourceType": "request.body",
+          "path": "id"
+        }
+      },
+      {
+        "name": "availableBalance",
+        "source": {
+          "sourceType": "request.body",
+          "path": "availableBalance"
+        }
+      },
+      {
+        "name": "username",
+        "source": {
+          "sourceType": "request.body",
+          "path": "username"
+        }
+      },
+      {
+        "name": "email",
+        "source": {
+          "sourceType": "request.body",
+          "path": "email"
+        }
+      },
+      {
+        "name": "lastName",
+        "source": {
+          "sourceType": "request.body",
+          "path": "lastName"
+        }
+      }
+    ]
+  }
+}

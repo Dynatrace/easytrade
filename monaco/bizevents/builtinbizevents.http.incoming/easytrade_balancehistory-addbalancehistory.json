@@ -1,0 +1,71 @@
+{
+  "enabled": true,
+  "ruleName": "[.net] easyTrade - /api/Balancehistory/AddBalancehistory",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/api/Balancehistory/AddBalancehistory",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.add-balance-history"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "accountId",
+        "source": {
+          "sourceType": "response.body",
+          "path": "accountId"
+        }
+      },
+      {
+        "name": "actionDate",
+        "source": {
+          "sourceType": "response.body",
+          "path": "actionDate"
+        }
+      },
+      {
+        "name": "valueChange",
+        "source": {
+          "sourceType": "response.body",
+          "path": "valueChange"
+        }
+      },
+      {
+        "name": "actionType",
+        "source": {
+          "sourceType": "response.body",
+          "path": "actionType"
+        }
+      },
+      {
+        "name": "oldValue",
+        "source": {
+          "sourceType": "response.body",
+          "path": "oldValue"
+        }
+      },
+      {
+        "name": "id",
+        "source": {
+          "sourceType": "response.body",
+          "path": "id"
+        }
+      }
+    ]
+  }
+}

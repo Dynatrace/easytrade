@@ -1,0 +1,51 @@
+{
+  "enabled": true,
+  "ruleName": "[ws] easyTrade - /broker/api/instruments (array)",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "CONTAINS",
+      "value": "broker/api/instruments",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.instruments"
+    },
+    "category": {
+      "sourceType": "constant.string",
+      "source": ""
+    },
+    "data": [
+      {
+        "name": "firstIndex",
+        "source": {
+          "sourceType": "response.body",
+          "path": "0"
+        }
+      },
+      {
+        "name": "rsbody",
+        "source": {
+          "sourceType": "response.body",
+          "path": "*"
+        }
+      },
+      {
+        "name": "firstIndexId",
+        "source": {
+          "sourceType": "response.body",
+          "path": "0.id"
+        }
+      }
+    ]
+  }
+}

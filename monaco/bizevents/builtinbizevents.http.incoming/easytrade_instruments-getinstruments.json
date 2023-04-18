@@ -1,0 +1,37 @@
+{
+  "enabled": true,
+  "ruleName": "[.net] easyTrade - /api/Instruments/GetInstruments (array)",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/api/Instruments/GetInstruments",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.get-instruments"
+    },
+    "category": {
+      "sourceType": "constant.string",
+      "source": ""
+    },
+    "data": [
+      {
+        "name": "rsbody",
+        "source": {
+          "sourceType": "response.body",
+          "path": "*"
+        }
+      }
+    ]
+  }
+}

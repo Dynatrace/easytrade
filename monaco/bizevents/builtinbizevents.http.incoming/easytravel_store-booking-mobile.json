@@ -1,0 +1,64 @@
+{
+  "enabled": true,
+  "ruleName": "[java] com.easytravel.store-booking-mobile - /easytravel/rest/bookings-mobile",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/easytravel/rest/bookings-mobile",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytravel.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytravel.store-booking-mobile"
+    },
+    "category": {
+      "sourceType": "response.statusCode"
+    },
+    "data": [
+      {
+        "name": "req content-type",
+        "source": {
+          "sourceType": "request.headers",
+          "path": "content-type"
+        }
+      },
+      {
+        "name": "rsbody",
+        "source": {
+          "sourceType": "response.body",
+          "path": "*"
+        }
+      },
+      {
+        "name": "technology",
+        "source": {
+          "sourceType": "constant.string",
+          "source": "java"
+        }
+      },
+      {
+        "name": "res content-type",
+        "source": {
+          "sourceType": "response.headers",
+          "path": "content-type"
+        }
+      },
+      {
+        "name": "rqbody",
+        "source": {
+          "sourceType": "request.body",
+          "path": "*"
+        }
+      }
+    ]
+  }
+}

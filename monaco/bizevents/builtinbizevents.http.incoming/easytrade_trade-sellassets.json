@@ -1,0 +1,71 @@
+{
+  "enabled": true,
+  "ruleName": "[ws] easyTrade - /broker/api/trade/SellAssets",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/broker/api/trade/SellAssets",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.sell-assets"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "rsbody",
+        "source": {
+          "sourceType": "response.body",
+          "path": "*"
+        }
+      },
+      {
+        "name": "instrumentId",
+        "source": {
+          "sourceType": "request.body",
+          "path": "instrumentId"
+        }
+      },
+      {
+        "name": "rqbody",
+        "source": {
+          "sourceType": "request.body",
+          "path": "*"
+        }
+      },
+      {
+        "name": "price",
+        "source": {
+          "sourceType": "request.body",
+          "path": "price"
+        }
+      },
+      {
+        "name": "accountId",
+        "source": {
+          "sourceType": "request.body",
+          "path": "accountId"
+        }
+      },
+      {
+        "name": "amount",
+        "source": {
+          "sourceType": "request.body",
+          "path": "amount"
+        }
+      }
+    ]
+  }
+}

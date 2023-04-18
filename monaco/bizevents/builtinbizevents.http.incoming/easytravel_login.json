@@ -1,0 +1,57 @@
+{
+  "enabled": true,
+  "ruleName": "[ws] easyTravel - /login",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "EQUALS",
+      "value": "/login",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytravel.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytravel.login"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "lastName",
+        "source": {
+          "sourceType": "response.body",
+          "path": "lastName"
+        }
+      },
+      {
+        "name": "firstName",
+        "source": {
+          "sourceType": "response.body",
+          "path": "user.firstName"
+        }
+      },
+      {
+        "name": "password",
+        "source": {
+          "sourceType": "request.body",
+          "path": "password"
+        }
+      },
+      {
+        "name": "email",
+        "source": {
+          "sourceType": "request.body",
+          "path": "email"
+        }
+      }
+    ]
+  }
+}

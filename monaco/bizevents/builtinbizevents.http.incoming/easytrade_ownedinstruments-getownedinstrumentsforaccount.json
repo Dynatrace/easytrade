@@ -1,0 +1,28 @@
+{
+  "enabled": true,
+  "ruleName": "[.net] easyTrade - /api/Ownedinstruments/GetOwnedinstrumentsForAccount/{accountId} (array)",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "CONTAINS",
+      "value": "/api/Ownedinstruments/GetOwnedinstrumentsForAccount",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.owned-instruments"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": []
+  }
+}
