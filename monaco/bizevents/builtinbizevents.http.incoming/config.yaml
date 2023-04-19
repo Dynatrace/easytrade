@@ -54,39 +54,6 @@ configs:
       schema: builtin:bizevents.http.incoming
       schemaVersion: 1.0.1
       scope: environment
-- id: 2abb027c-e759-32a6-b36d-5da2f0d061ba
-  config:
-    name: easytravel_authentication-service
-    template: easytravel_authentication-service.json
-    skip: false
-    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkY2U5MTFlZTktNDc5MS0zMDk1LTk0ZjgtZjYyMGMzY2MyMmZkvu9U3hXa3q0
-  type:
-    settings:
-      schema: builtin:bizevents.http.incoming
-      schemaVersion: 1.0.1
-      scope: environment
-- id: 1ab453b5-fa1e-32e7-bccb-143dd921e407
-  config:
-    name: easytravel_validate-creditcard
-    template: easytravel_validate-creditcard.json
-    skip: false
-    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkNzdiMTQzNjYtNjBkZS0zYzJjLWE4M2MtZGMzNDE3NDMwZWJmvu9U3hXa3q0
-  type:
-    settings:
-      schema: builtin:bizevents.http.incoming
-      schemaVersion: 1.0.1
-      scope: environment
-- id: 4051d9e6-e0c1-3f06-8e19-3ff3a39285d6
-  config:
-    name: easytravel_search-locations
-    template: easytravel_search-locations.json
-    skip: false
-    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkYWFhZmNkMTQtOTgzOC0zZmIxLTk5NTQtZTRiNjg5ZWU4YWExvu9U3hXa3q0
-  type:
-    settings:
-      schema: builtin:bizevents.http.incoming
-      schemaVersion: 1.0.1
-      scope: environment
 - id: 46fe60af-e9db-3305-8436-f01b39ef1c96
   config:
     name: easytrade_accounts-getaccountbyusername
@@ -104,28 +71,6 @@ configs:
     template: easytrade_accounts-modifyaccount.json
     skip: false
     originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkYWY5NjI2YWYtYWIyYi0zZmY1LWFkMjktYWFkZGE4YjFhZDQ3vu9U3hXa3q0
-  type:
-    settings:
-      schema: builtin:bizevents.http.incoming
-      schemaVersion: 1.0.1
-      scope: environment
-- id: 0d596233-572b-3e31-aa16-2b7c61ac04c4
-  config:
-    name: easytravel_login
-    template: easytravel_login.json
-    skip: false
-    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkYmRhNmY0MDEtYTIwYi0zNWM4LWFhZDUtOGUzNmRlMTlmMjI0vu9U3hXa3q0
-  type:
-    settings:
-      schema: builtin:bizevents.http.incoming
-      schemaVersion: 1.0.1
-      scope: environment
-- id: d703cf5c-f8ef-30f4-a5f6-cedba9bcb762
-  config:
-    name: easytravel_calculaterecommendations
-    template: easytravel_calculaterecommendations.json
-    skip: false
-    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkZDNjMjk2YzUtMWY0OS0zMDE5LTlhNWUtOTY4ZjVkNTU3ZGMwvu9U3hXa3q0
   type:
     settings:
       schema: builtin:bizevents.http.incoming
@@ -170,28 +115,6 @@ configs:
     template: easytrade_trade-buyassets.json
     skip: false
     originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkMGFiOTEzNzYtMmUwNS0zY2Q1LWEyNTAtNjRjMmY3ZGQ3MGMyvu9U3hXa3q0
-  type:
-    settings:
-      schema: builtin:bizevents.http.incoming
-      schemaVersion: 1.0.1
-      scope: environment
-- id: 572103eb-78ba-375f-ae2d-a5a4931c8bf9
-  config:
-    name: easytravel-search_journey
-    template: easytravel-search_journey.json
-    skip: false
-    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkMDU1NjA0YTItNjI1ZC0zZjk0LTkwNWUtODlhMjE1MjQ0ZmMzvu9U3hXa3q0
-  type:
-    settings:
-      schema: builtin:bizevents.http.incoming
-      schemaVersion: 1.0.1
-      scope: environment
-- id: 2c4c9704-a7ea-33d2-ba31-73465888f7f0
-  config:
-    name: easytravel_store-booking-mobile
-    template: easytravel_store-booking-mobile.json
-    skip: false
-    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkMDgzZjdkMjctMzhhZS0zZjExLTg4MGQtNjZhOTkxODhkMDcyvu9U3hXa3q0
   type:
     settings:
       schema: builtin:bizevents.http.incoming
