@@ -18,13 +18,28 @@ x-aggregator-service-env: &default-aggregator-service-env
   NODE_ENV: production
   OFFER_SERVICE: offerservice:8080
 
+x-flagsmith: &flagsmith-env
+  FLAGSMITH_PROJECT: easytrade
+  FLAGSMITH_PROTOCOL: http
+  FLAGSMITH_BASE_URL: flagsmith
+  FLAGSMITH_PORT: 8000
+  FLAGSMITH_PASS: adminpass123
+  FLAGSMITH_EMAIL: admin@mail.com
+  FLAGSMITH_ENV_KEY: ${FLAGSMITH_ENV_KEY}
+
 services:
   db:
     <<: *default-service
     image: ${REGISTRY}/db:${TAG}
     environment:
       SA_PASSWORD: yourStrong(!)Password
-
+  postgres:
+    hostname: postgres
+    container_name: postgres
+    image: ${REGISTRY}/postgres:${TAG}
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: flagsmith  
   contentcreator:
     <<: *default-service
     image: ${REGISTRY}/contentcreator:${TAG}
@@ -39,19 +54,23 @@ services:
     depends_on:
       - db
     environment:
+      <<: *flagsmith-env
       MSSQL_CONNECTIONSTRING: Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
+      PROXY_PREFIX: manager
 
-  pricingservice:
+  pricing-service:
     <<: *default-service
-    image: ${REGISTRY}/pricingservice:${TAG}
+    image: ${REGISTRY}/pricing-service:${TAG}
     depends_on:
-      - manager
+      - db
       - rabbitmq
     environment:
-      MANAGER_HOSTANDPORT: manager:80
+      MSSQL_CONNECTIONSTRING: sqlserver://sa:yourStrong(!)Password@db:1433?database=TradeManagement&connection+encrypt=false&connection+TrustServerCertificate=false&connection+loginTimeout=30
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_USER: userxxx
       RABBITMQ_PASSWORD: passxxx
+      RABBITMQ_QUEUE: Trade_Data_Raw
+      PROXY_PREFIX: pricing-service
 
   brokerservice:
     <<: *default-service
@@ -59,11 +78,12 @@ services:
     depends_on:
       - manager
       - accountservice
-      - pricingservice
+      - pricing-service
     environment:
       MANAGER_HOSTANDPORT: manager:80
       ACCOUNTSERVICE_HOSTANDPORT: accountservice:8080
-      PRICINGSERVICE_HOSTANDPORT: pricingservice:80
+      PRICINGSERVICE_HOSTANDPORT: pricing-service:80
+      PROXY_PREFIX: broker
 
   rabbitmq:
     <<: *default-service
@@ -81,16 +101,21 @@ services:
     depends_on:
       - brokerservice
       - loginservice
-      - pricingservice
+      - pricing-service
       - accountservice
+
+  newfrontend:
+    <<: *default-service
+    image: ${REGISTRY}/newfrontend:${TAG}
 
   loginservice:
     <<: *default-service
     image: ${REGISTRY}/loginservice:${TAG}
-    environment:
-      MSSQL_CONNECTIONSTRING: Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
     depends_on:
       - db
+    environment:
+      MSSQL_CONNECTIONSTRING: Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
+      PROXY_PREFIX: login
 
   frontendreverseproxy:
     <<: *default-service
@@ -98,14 +123,16 @@ services:
     depends_on:
       - brokerservice
       - frontend
+      - newfrontend
       - loginservice
-      - pricingservice
-      - pluginservice
+      - pricing-service
+      - flagsmith
       - offerservice
       - accountservice
       - engine
     ports:
       - 80:80
+      - 8000:8000
 
   headlessloadgen:
     <<: *default-service
@@ -123,22 +150,25 @@ services:
       - loginservice
       - manager
     environment:
+      <<: *flagsmith-env
       LOGIN_SERVICE_PORT: 80
       LOGIN_SERVICE_BASE_URL: loginservice
       MANAGER_BASE_URL: manager
       MANAGER_PORT: 80
 
-  pluginservice:
-    <<: *default-service
-    image: ${REGISTRY}/pluginservice:${TAG}
+  flagsmith:
+    hostname: flagsmith
+    container_name: flagsmith
+    image: ${REGISTRY}/flagsmith:${TAG}
     depends_on:
-      - offerservice
-      - manager
+      - postgres
     environment:
-      OFFER_SERVICE__PORT: 8080
-      OFFER_SERVICE__DOMAIN: offerservice
-      MANAGER__PORT: 80
-      MANAGER__DOMAIN: manager
+      <<: *flagsmith-env
+      DJANGO_ALLOWED_HOSTS: "*"
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/flagsmith
+      DISABLE_INFLUXDB_FEATURES: "true" # set to 'false' to enable InfluxDB
+      ENV: prod
+    restart: always
 
   accountservice:
     <<: *default-service
@@ -147,6 +177,7 @@ services:
       - manager
     environment:
       MANAGER_HOSTANDPORT: manager:80
+      PROXY_PREFIX: accountservice
 
   engine:
     <<: *default-service
@@ -155,6 +186,7 @@ services:
       - brokerservice
     environment:
       BROKER_HOSTANDPORT: brokerservice:80
+      PROXY_PREFIX: engine
 
   aggregatorservice_1:
     <<: *default-aggregator-service

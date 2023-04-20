@@ -28,7 +28,7 @@ Right now it only tries to finalize long running transactions each 60 seconds.
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8090/api/trade/scheduler/start" -H "accept: */*"
+>  curl -X GET "http://{IP_ADDRESS}:8090/api/trade/scheduler/start" -H "accept: */*"
 > ```
 
 ### `GET` **/api/trade/scheduler/status** `(Check scheduler status)`
@@ -43,7 +43,7 @@ Right now it only tries to finalize long running transactions each 60 seconds.
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8090/api/trade/scheduler/status" -H "accept: */*"
+>  curl -X GET "http://{IP_ADDRESS}:8090/api/trade/scheduler/status" -H "accept: */*"
 > ```
 
 ### `GET` **/api/trade/scheduler/stop** `(Stop long running transaction scheduler)`
@@ -58,5 +58,5 @@ Right now it only tries to finalize long running transactions each 60 seconds.
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8090/api/trade/scheduler/stop" -H "accept: */*"
+>  curl -X GET "http://{IP_ADDRESS}:8090/api/trade/scheduler/stop" -H "accept: */*"
 > ```

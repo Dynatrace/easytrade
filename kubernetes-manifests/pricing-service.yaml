@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pricing-service
+spec:
+  selector:
+    matchLabels:
+      app: pricing-service
+  template:
+    metadata:
+      labels:
+        app: pricing-service
+    spec:
+      containers:
+      - name: pricing-service
+        image: gcr.io/dynatrace-demoability/easytrade/pricing-service:f505fb9
+        ports:
+        - containerPort: 8080
+        env:
+        - name: MSSQL_CONNECTIONSTRING
+          value: "sqlserver://sa:yourStrong(!)Password@db:1433?database=TradeManagement&connection+encrypt=false&connection+TrustServerCertificate=false&connection+loginTimeout=30"
+        - name: RABBITMQ_HOST
+          value: "rabbitmq"
+        - name: RABBITMQ_USER
+          value: "userxxx"
+        - name: RABBITMQ_PASSWORD
+          value: "passxxx"
+        - name: RABBITMQ_QUEUE
+          value: "Trade_Data_Raw"
+        - name: PROXY_PREFIX
+          value: "pricing-service"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 350Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pricing-service
+spec:
+  type: ClusterIP
+  selector:
+    app: pricing-service
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080

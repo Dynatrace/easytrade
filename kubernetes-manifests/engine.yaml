@@ -13,12 +13,14 @@ spec:
     spec:
       containers:
         - name: engine
-          image: gcr.io/dynatrace-demoability/easytrade/engine:44e1877
+          image: gcr.io/dynatrace-demoability/easytrade/engine:f505fb9
           ports:
             - containerPort: 8080
           env:
             - name: BROKER_HOSTANDPORT
               value: "brokerservice:80"
+            - name: PROXY_PREFIX
+              value: "engine"
           resources:
             requests:
               cpu: 150m

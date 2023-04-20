@@ -23,7 +23,7 @@ A .Net service that provides information about instruments prices.
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8083/api/Pricing/GetLastPrice" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8083/api/Pricing/GetLastPrice" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Pricing/GetLatestPrices** `(Get latest price of each instrument)`
@@ -38,7 +38,7 @@ A .Net service that provides information about instruments prices.
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8083/api/Pricing/GetLatestPrices" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8083/api/Pricing/GetLatestPrices" -H  "accept: text/plain"
 > ```
 
 ### `GET` **​/api​/Pricing​/GetPricingDataForInstrument​/{instrumentId}​/{records}** `(Get pricing data for a given instruments)`
@@ -53,5 +53,5 @@ A .Net service that provides information about instruments prices.
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8083/api/Pricing/GetPricingDataForInstrument/1/100" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8083/api/Pricing/GetPricingDataForInstrument/1/100" -H  "accept: text/plain"
 > ```

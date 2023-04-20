@@ -24,7 +24,7 @@ This .Net service is responsible for authenticating users.
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8086/api/Accounts/GetAccountById/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8086/api/Accounts/GetAccountById/1" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Accounts/GetAccountByUsername/{username}** `(Get account by username)`
@@ -38,7 +38,7 @@ This .Net service is responsible for authenticating users.
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8086/api/Accounts/GetAccountByUsername/labuser" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8086/api/Accounts/GetAccountByUsername/labuser" -H  "accept: text/plain"
 > ```
 
 ### `POST` **/api/Accounts/CreateNewAccount** `(Create a new account)`
@@ -58,7 +58,7 @@ This .Net service is responsible for authenticating users.
 ##### Example cURL
 
 > ```bash
->  curl -X POST "http://172.18.147.235:8086/api/Accounts/CreateNewAccount" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"packageId\":2,\"firstName\":\"John\",\"lastName\":\"Doe\",\"username\":\"johndoe678\",\"email\":\"johndoe678\",\"hashedPassword\":\"811210924d294539f709c651ae477768110bdf39005c877bb32bf495b56ce6bd\",\"origin\":\"Via Swagger\"}"
+>  curl -X POST "http://{IP_ADDRESS}:8086/api/Accounts/CreateNewAccount" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"packageId\":2,\"firstName\":\"John\",\"lastName\":\"Doe\",\"username\":\"johndoe678\",\"email\":\"johndoe678\",\"hashedPassword\":\"811210924d294539f709c651ae477768110bdf39005c877bb32bf495b56ce6bd\",\"origin\":\"Via Swagger\"}"
 > ```
 
 ##### Example of JSON body

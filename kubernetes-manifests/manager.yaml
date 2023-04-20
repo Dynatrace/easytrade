@@ -1,3 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: manager-envs
+data:
+  MSSQL_CONNECTIONSTRING: "Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true"
+  PROXY_PREFIX: "manager"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,12 +21,14 @@ spec:
     spec:
       containers:
         - name: manager
-          image: gcr.io/dynatrace-demoability/easytrade/manager:44e1877
+          image: gcr.io/dynatrace-demoability/easytrade/manager:f505fb9
           ports:
             - containerPort: 80
-          env:
-            - name: MSSQL_CONNECTIONSTRING
-              value: "Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true"
+          envFrom:
+          - configMapRef:
+              name: manager-envs
+          - configMapRef:
+              name: flagsmith-setup
           resources:
             requests:
               cpu: 150m

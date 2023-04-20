@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: flagsmith-config
+data:
+  DJANGO_ALLOWED_HOSTS: "*"
+  DATABASE_URL: postgresql://postgres:password@postgres:5432/flagsmith
+  DISABLE_INFLUXDB_FEATURES: "true"
+  ENV: prod   
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flagsmith
+spec:
+  selector:
+    matchLabels:
+      app: flagsmith
+  template:
+    metadata:
+      labels:
+        app: flagsmith
+    spec:
+      containers:
+      - name: flagsmith
+        image: gcr.io/dynatrace-demoability/easytrade/flagsmith:f505fb9
+        ports:
+        - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: flagsmith-config
+        - configMapRef:
+            name: flagsmith-setup
+        resources:
+          requests:
+            cpu: 30m
+            memory: 350Mi
+          limits:
+            memory: 350Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: flagsmith
+spec:
+  type: ClusterIP
+  selector:
+    app: flagsmith
+  ports:
+  - name: flagsmith
+    port: 8000
+    targetPort: 8000

@@ -16,22 +16,25 @@ Of course it is all fake data and the price has a 24 hour cycle...
 
 EasyTrade consists of the following services/components:
 
-| Service                                                  | Proxy endpoint    |
-| -------------------------------------------------------- | ----------------- |
-| [Account service](./docs/accountservice.md)              | `/accountservice` |
-| [Aggregator service](./docs/aggregatorservice.md)        | `---`             |
-| [Broker service](./docs/brokerservice.md)                | `/broker`         |
-| [Calculation service](./docs/calculationservice.md)      | `---`             |
-| [Content creator](./docs/contentcreator.md)              | `---`             |
-| [Db](./docs/db.md)                                       | `---`             |
-| [Engine](./docs/engine.md)                               | `/engine`         |
-| [Frontend](./docs/frontend.md)                           | `/`               |
-| [Frontend reverse-proxy](./docs/frontendreverseproxy.md) | `---`             |
-| [Login service](./docs/loginservice.md)                  | `/login`          |
-| [Manager](./docs/manager.md)                             | `---`             |
-| [Offer service](./docs/offerservice.md)                  | `/offerservice`   |
-| [Plugin service](./docs/pluginservice.md)                | `/pluginservice`  |
-| [Pricing service](./docs/pricingservice.md)              | `/pricing`        |
+| Service                                                  | Proxy port | Proxy endpoint     |
+| -------------------------------------------------------- | ---------- | ------------------ |
+| [Account service](./docs/accountservice.md)              | 80         | `/accountservice`  |
+| [Aggregator service](./docs/aggregatorservice.md)        | 80         | `---`              |
+| [Broker service](./docs/brokerservice.md)                | 80         | `/broker`          |
+| [Calculation service](./docs/calculationservice.md)      | 80         | `---`              |
+| [Content creator](./docs/contentcreator.md)              | 80         | `---`              |
+| [Db](./docs/db.md)                                       | 80         | `---`              |
+| [Engine](./docs/engine.md)                               | 80         | `/engine`          |
+| [Flagsmith](./docs/flagsmith.md)                         | 8000       | `/`                |
+| [Frontend](./docs/frontend.md)                           | 80         | `/`                |
+| [Frontend reverse-proxy](./docs/frontendreverseproxy.md) | 80         | `---`              |
+| [Login service](./docs/loginservice.md)                  | 80         | `/login`           |
+| [Manager](./docs/manager.md)                             | 80         | `---`              |
+| [New Frontend](./docs/newfrontend.md)                    | 80         | `/new/`            |
+| [Offer service](./docs/offerservice.md)                  | 80         | `/offerservice`    |
+| [Plugin service](./docs/pluginservice.md)                | 80         | `/pluginservice`   |
+| [Pricing service](./docs/pricingservice.md)              | 80         | `/pricing-service` |
+
 
 > To learn more about endpoints / swagger for the services go to their respective readmes
 
@@ -59,6 +62,7 @@ docker compose up -d
 ```
 
 You should be able to access the app at `localhost:80` or simply `localhost`.
+To use the flagsmith access the app at `localhost:8000`.
 
 > **NOTE:** It make take a few minutes for the app to stabilize, you may expirience errors in the frontend or see missing data before that happens.
 
@@ -124,16 +128,14 @@ Currently there are only 2 problem patterns supported in easyTrade:
 To turn a plugin on/off send a request similar to the following:
 
 ```sh
-curl -X 'PUT' \
-  'http://ENDPOINT/pluginservice/api/plugins/ErgoAggregatorSlowdownPlugin' \
-  -H 'accept: application/json' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "enabled": VALUE
-}'
+curl -X PUT "http://{IP_ADDRESS}:8000/api/v1/environments/{API_KEY}/featurestates/{FEATURE_ID}/"
+            -H  "accept: application/json"
+            -H "Authorization: Token {TOKEN}"
+            -d "{\"enabled\": {VALUE}}"
 ```
 
-Of course please set the value of "ENDPOINT" to the correct host IP and VALUE to false/true.
+Of course please set the value of "IP_ADDRESS" to the correct host IP and VALUE to false/true. \
+> **NOTE:** More information on flagsmith's parameters available in [flagsmith's doc](./docs/flagsmith.md).
 
 ## EasyTrade on Dynatrace - how to configure
 

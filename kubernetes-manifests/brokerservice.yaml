@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: brokerservice
-          image: gcr.io/dynatrace-demoability/easytrade/brokerservice:44e1877
+          image: gcr.io/dynatrace-demoability/easytrade/brokerservice:f505fb9
           ports:
             - containerPort: 80
           env:
@@ -22,7 +22,9 @@ spec:
             - name: ACCOUNTSERVICE_HOSTANDPORT
               value: "accountservice:8080"
             - name: PRICINGSERVICE_HOSTANDPORT
-              value: "pricingservice:80"
+              value: "pricing-service:8080"
+            - name: PROXY_PREFIX
+              value: "broker"
           resources:
             requests:
               cpu: 100m

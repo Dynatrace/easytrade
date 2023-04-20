@@ -30,7 +30,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8084/api/account/1" -H  "accept: */*"
+>  curl -X GET "http://{IP_ADDRESS}:8084/api/account/1" -H  "accept: */*"
 > ```
 
 ### `PUT` **/api/account/PayPackageFee/{accountId}** `(Pay the package fee for an account with given id)`
@@ -44,7 +44,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X PUT "http://172.18.147.235:8084/api/account/PayPackageFee/2" -H  "accept: */*"
+>  curl -X PUT "http://{IP_ADDRESS}:8084/api/account/PayPackageFee/2" -H  "accept: */*"
 > ```
 
 ### `PUT` **/api/account/SelectPackage/{accountId}/{packageId}** `(Change package selected for an account)`
@@ -59,7 +59,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X PUT "http://172.18.147.235:8084/api/account/SelectPackage/1/3" -H  "accept: */*"
+>  curl -X PUT "http://{IP_ADDRESS}:8084/api/account/SelectPackage/1/3" -H  "accept: */*"
 > ```
 
 ### `GET` **/api/balancehistory/GetBalancehistoriesForAccount/{accountId}** `(Get balance history for given account id)`
@@ -73,7 +73,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8084/api/balancehistory/GetBalancehistoriesForAccount/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8084/api/balancehistory/GetBalancehistoriesForAccount/1" -H  "accept: text/plain"
 > ```
 
 ### `POST` **/api/creditcard/DepositMoney** `(Deposit money to account from the bank card)`
@@ -94,7 +94,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X POST "http://172.18.147.235:8084/api/creditcard/DepositMoney" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"accountId\":1,\"amount\":1,\"name\":\"string\",\"address\":\"string\",\"email\":\"string@ab.cd\",\"cardNumber\":\"9879098093738475843\",\"cardType\":\"Visa\",\"cvv\":\"782\"}"
+>  curl -X POST "http://{IP_ADDRESS}:8084/api/creditcard/DepositMoney" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"accountId\":1,\"amount\":1,\"name\":\"string\",\"address\":\"string\",\"email\":\"string@ab.cd\",\"cardNumber\":\"9879098093738475843\",\"cardType\":\"Visa\",\"cvv\":\"782\"}"
 > ```
 
 ##### Example of JSON body
@@ -129,7 +129,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X POST "http://172.18.147.235:8084/api/creditcard/WithdrawMoney" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{  \"accountId\": 1,  \"amount\": 1,  \"name\": \"string\",  \"address\": \"string\",  \"email\": \"string@ab.cd\",  \"cardNumber\": \"9879098093738475843\",  \"cardType\": \"Visa\",}"
+>  curl -X POST "http://{IP_ADDRESS}:8084/api/creditcard/WithdrawMoney" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{  \"accountId\": 1,  \"amount\": 1,  \"name\": \"string\",  \"address\": \"string\",  \"email\": \"string@ab.cd\",  \"cardNumber\": \"9879098093738475843\",  \"cardType\": \"Visa\",}"
 > ```
 
 ##### Example of JSON body
@@ -158,7 +158,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8084/api/instruments" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8084/api/instruments" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/ownedinstruments/{accountId}** `(Get instruments owned by an account)`
@@ -172,7 +172,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8084/api/ownedinstruments/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8084/api/ownedinstruments/1" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/package/{packageId}** `(Get package)`
@@ -186,7 +186,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8084/api/package/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8084/api/package/1" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/package/free** `(Get the free package)`
@@ -201,7 +201,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8084/api/package/free" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8084/api/package/free" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/package/all** `(Get all packages list)`
@@ -216,7 +216,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8084/api/package/all" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8084/api/package/all" -H  "accept: text/plain"
 > ```
 
 ### `POST` **/api/trade/BuyAssets** `(Buy assets - short/instant action)`
@@ -233,7 +233,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X POST "http://172.18.147.235:8084/api/trade/BuyAssets" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"accountId\":6,\"instrumentId\":1,\"amount\":1,\"price\":1}"
+>  curl -X POST "http://{IP_ADDRESS}:8084/api/trade/BuyAssets" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"accountId\":6,\"instrumentId\":1,\"amount\":1,\"price\":1}"
 > ```
 
 ##### Example of JSON body
@@ -261,7 +261,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X POST "http://172.18.147.235:8084/api/trade/SellAssets" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"accountId\":6,\"instrumentId\":1,\"amount\":1,\"price\":1}"
+>  curl -X POST "http://{IP_ADDRESS}:8084/api/trade/SellAssets" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"accountId\":6,\"instrumentId\":1,\"amount\":1,\"price\":1}"
 > ```
 
 ##### Example of JSON body
@@ -290,7 +290,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X POST "http://172.18.147.235:8084/api/trade/LongBuyAssets" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"accountId\":6,\"instrumentId\":1,\"amount\":1,\"price\":1,\"duration\":1}"
+>  curl -X POST "http://{IP_ADDRESS}:8084/api/trade/LongBuyAssets" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"accountId\":6,\"instrumentId\":1,\"amount\":1,\"price\":1,\"duration\":1}"
 > ```
 
 ##### Example of JSON body
@@ -320,7 +320,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X POST "http://172.18.147.235:8084/api/trade/LongSellAssets" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"accountId\":6,\"instrumentId\":1,\"amount\":1,\"price\":1,\"duration\":3}"
+>  curl -X POST "http://{IP_ADDRESS}:8084/api/trade/LongSellAssets" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"accountId\":6,\"instrumentId\":1,\"amount\":1,\"price\":1,\"duration\":3}"
 > ```
 
 ##### Example of JSON body
@@ -347,7 +347,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X POST "http://172.18.147.235:8084/api/trade/ProcessLongRunningTransactions" -H  "accept: */*" -d ""
+>  curl -X POST "http://{IP_ADDRESS}:8084/api/trade/ProcessLongRunningTransactions" -H  "accept: */*" -d ""
 > ```
 
 ### `GET` **/api/trade/GetTrades/{records}** `(Get trades)`
@@ -361,7 +361,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8084/api/trade/GetTrades/100" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8084/api/trade/GetTrades/100" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/trade/GetAllTradesForInstrument/{instrument}/{records}** `(Get trades for given instrument)`
@@ -376,7 +376,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8084/api/trade/GetAllTradesForInstrument/1/100" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8084/api/trade/GetAllTradesForInstrument/1/100" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/trade/GetAllTradesForAccount/{account}/{records}** `(Get trades for given account)`
@@ -391,7 +391,7 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8084/api/trade/GetAllTradesForAccount/1/100" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8084/api/trade/GetAllTradesForAccount/1/100" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/trade/GetLongRunningTransactionsForAccount/{account}/{records}** `(Get long trades for given account)`
@@ -406,5 +406,5 @@ If you want the service to work properly, you should try setting these ENV varia
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8084/api/trade/GetLongRunningTransactionsForAccount/1/100" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8084/api/trade/GetLongRunningTransactionsForAccount/1/100" -H  "accept: text/plain"
 > ```

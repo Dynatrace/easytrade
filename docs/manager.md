@@ -29,7 +29,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Accounts/GetAccountById/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Accounts/GetAccountById/1" -H  "accept: text/plain"
 > ```
 
 ### `PUT` **/api/Accounts/ModifyAccount** `(Update account info)`
@@ -54,7 +54,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X PUT "http://172.18.147.235:8081/api/Accounts/ModifyAccount" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"id\":7,\"packageId\":1,\"firstName\":\"Jessica\",\"lastName\":\"Smithin\",\"username\":\"jessica_smith\",\"email\":\"jessica.smith@gmail.com\",\"hashedPassword\":\"139990b95cf8e8fddcb6e3202ed92a216d656a5bbe8ebb2a28bfe9911e6c3c51\",\"availableBalance\":425542.73326551,\"origin\":\"PRESET\",\"creationDate\":\"2021-08-11T13:00:00\",\"packageActivationDate\":\"2021-08-11T13:00:00\",\"accountActive\":true}"
+>  curl -X PUT "http://{IP_ADDRESS}:8081/api/Accounts/ModifyAccount" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"id\":7,\"packageId\":1,\"firstName\":\"Jessica\",\"lastName\":\"Smithin\",\"username\":\"jessica_smith\",\"email\":\"jessica.smith@gmail.com\",\"hashedPassword\":\"139990b95cf8e8fddcb6e3202ed92a216d656a5bbe8ebb2a28bfe9911e6c3c51\",\"availableBalance\":425542.73326551,\"origin\":\"PRESET\",\"creationDate\":\"2021-08-11T13:00:00\",\"packageActivationDate\":\"2021-08-11T13:00:00\",\"accountActive\":true}"
 > ```
 
 ##### Example of JSON body
@@ -87,7 +87,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Balancehistory/GetBalancehistoryById/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Balancehistory/GetBalancehistoryById/1" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Balancehistory/GetBalancehistoriesForAccount/{accountid}/{records}** `(Get balance history records for an account)`
@@ -102,7 +102,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Balancehistory/GetBalancehistoriesForAccount/1/100" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Balancehistory/GetBalancehistoriesForAccount/1/100" -H  "accept: text/plain"
 > ```
 
 ### `POST` **/api/Balancehistory/AddBalancehistory** `(Create new history balance record)`
@@ -120,7 +120,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X POST "http://172.18.147.235:8081/api/Balancehistory/AddBalancehistory" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"accountId\":7,\"oldValue\":1,\"valueChange\":1,\"actionType\":\"buy\",\"actionDate\":\"2022-12-22T17:42:18.395Z\"}"
+>  curl -X POST "http://{IP_ADDRESS}:8081/api/Balancehistory/AddBalancehistory" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"accountId\":7,\"oldValue\":1,\"valueChange\":1,\"actionType\":\"buy\",\"actionDate\":\"2022-12-22T17:42:18.395Z\"}"
 > ```
 
 ##### Example of JSON body
@@ -147,7 +147,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Instruments/GetInstruments" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Instruments/GetInstruments" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Instruments/GetInstrumentById/{id}** `(Get instrument with given id)`
@@ -161,7 +161,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Instruments/GetInstrumentById/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Instruments/GetInstrumentById/1" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Ownedinstruments/GetOwnedinstrumentsById/{id}** `(Get owned instrument record by id)`
@@ -175,7 +175,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Ownedinstruments/GetOwnedinstrumentsById/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Ownedinstruments/GetOwnedinstrumentsById/1" -H  "accept: text/plain"
 > ```
 
 ### `GET/PUT/POST/DELETE` **/api/Ownedinstruments/GetOwnedinstrumentsForAccount/{accountid}** `(Get owned instruments by account id)`
@@ -189,7 +189,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Ownedinstruments/GetOwnedinstrumentsForAccount/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Ownedinstruments/GetOwnedinstrumentsForAccount/1" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Ownedinstruments/GetOwnedinstrumentsByAccountIdAndInstrumentId/{accountId}/{instrumentId}** `(Get owned instruments by account id and instrument id)`
@@ -204,7 +204,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Ownedinstruments/GetOwnedinstrumentsByAccountIdAndInstrumentId/1/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Ownedinstruments/GetOwnedinstrumentsByAccountIdAndInstrumentId/1/1" -H  "accept: text/plain"
 > ```
 
 ### `POST` **/api/Ownedinstruments/AddOwnedinstruments** `(Create owned instruments record)`
@@ -221,7 +221,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X POST "http://172.18.147.235:8081/api/Ownedinstruments/AddOwnedinstruments" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"accountId\":1,\"instrumentId\":15,\"quantity\":1,\"lastModificationDate\":\"2022-12-22T17:53:44.168Z\"}"
+>  curl -X POST "http://{IP_ADDRESS}:8081/api/Ownedinstruments/AddOwnedinstruments" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"accountId\":1,\"instrumentId\":15,\"quantity\":1,\"lastModificationDate\":\"2022-12-22T17:53:44.168Z\"}"
 > ```
 
 ##### Example of JSON body
@@ -246,7 +246,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X DELETE "http://172.18.147.235:8081/api/Ownedinstruments/DeleteOwnedinstrumentsById/1578" -H  "accept: */*"
+>  curl -X DELETE "http://{IP_ADDRESS}:8081/api/Ownedinstruments/DeleteOwnedinstrumentsById/1578" -H  "accept: */*"
 > ```
 
 ### `PUT` **/api/Ownedinstruments/ModifyOwnedinstruments** `(Update owned instruments)`
@@ -264,7 +264,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X PUT "http://172.18.147.235:8081/api/Ownedinstruments/ModifyOwnedinstruments" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"id\":1577,\"accountId\":1,\"instrumentId\":15,\"quantity\":2,\"lastModificationDate\":\"2022-12-22T17:53:44.168Z\"}"
+>  curl -X PUT "http://{IP_ADDRESS}:8081/api/Ownedinstruments/ModifyOwnedinstruments" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"id\":1577,\"accountId\":1,\"instrumentId\":15,\"quantity\":2,\"lastModificationDate\":\"2022-12-22T17:53:44.168Z\"}"
 > ```
 
 ##### Example of JSON body
@@ -290,7 +290,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Packages/GetPackageById/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Packages/GetPackageById/1" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Packages/GetPackages** `(Get package list)`
@@ -305,7 +305,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Packages/GetPackages" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Packages/GetPackages" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/plugins** `(Get all plugins status)`
@@ -320,7 +320,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/plugins" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/plugins" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/plugins/{pluginName}** `(Get plugin by name)`
@@ -334,7 +334,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/plugins/DbNotRespondingPlugin" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/plugins/DbNotRespondingPlugin" -H  "accept: text/plain"
 > ```
 
 ### `PUT` **/api/plugins/{pluginName}** `(Change value of enabled for a plugin with given name)`
@@ -349,7 +349,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X PUT "http://172.18.147.235:8081/api/plugins/DbNotRespondingPlugin" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"enabled\":false}"
+>  curl -X PUT "http://{IP_ADDRESS}:8081/api/plugins/DbNotRespondingPlugin" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"enabled\":false}"
 > ```
 
 ##### Example of JSON body
@@ -372,7 +372,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Pricing/GetLastPrice" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Pricing/GetLastPrice" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Pricing/GetLastPriceForInstrument/{instrument}** `(Get last price for an instrument)`
@@ -386,7 +386,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Pricing/GetLastPriceForInstrument/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Pricing/GetLastPriceForInstrument/1" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Pricing/GetLatestPrices** `(Get latest price list)`
@@ -401,7 +401,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Pricing/GetLatestPrices" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Pricing/GetLatestPrices" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Pricing/GetPricingDataForInstrument/{instrument}/{records}** `(Get pricing data for an instrument)`
@@ -416,7 +416,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Pricing/GetPricingDataForInstrument/1/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Pricing/GetPricingDataForInstrument/1/1" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Products/GetProductById/{id}** `(Get product record by id)`
@@ -430,7 +430,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Products/GetProductById/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Products/GetProductById/1" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Products/GetProducts** `(Get product list)`
@@ -445,7 +445,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Products/GetProducts" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Products/GetProducts" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Trades/GetTrade/{id}** `(Get trade record by id)`
@@ -459,7 +459,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Trades/GetTrade/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Trades/GetTrade/1" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Trades/GetAllTrades/{records}** `(Get all trade records)`
@@ -473,7 +473,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Trades/GetAllTrades/100" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Trades/GetAllTrades/100" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Trades/GetAllTradesForAccount/{account}/{records}** `(Get all trade records for account)`
@@ -488,7 +488,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Trades/GetAllTradesForAccount/1/100" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Trades/GetAllTradesForAccount/1/100" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Trades/GetLongRunningTransactionsForAccount/{account}/{records}** `(Get long running transaction trade records for account)`
@@ -503,7 +503,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Trades/GetLongRunningTransactionsForAccount/1/100" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Trades/GetLongRunningTransactionsForAccount/1/100" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Trades/GetOpenTradesForAccount/{account}** `(Get open trade records for account)`
@@ -517,7 +517,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Trades/GetOpenTradesForAccount/1" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Trades/GetOpenTradesForAccount/1" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Trades/GetOpenTrades** `(Get open trade records)`
@@ -532,7 +532,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Trades/GetOpenTrades" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Trades/GetOpenTrades" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/Trades/GetAllTradesForInstrument/{instrument}/{records}** `(Get all trade for instrument)`
@@ -547,7 +547,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8081/api/Trades/GetAllTradesForInstrument/1/100" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8081/api/Trades/GetAllTradesForInstrument/1/100" -H  "accept: text/plain"
 > ```
 
 ### `PUT` **/api/Trades/ModifyTradeById/{id}** `(Update a trade record)`
@@ -571,7 +571,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X PUT "http://172.18.147.235:8081/api/Trades/ModifyTradeById/1" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"id\":1,\"accountId\":6,\"instrumentId\":1,\"direction\":\"buy\",\"quantity\":147,\"entryPrice\":159.625,\"timestampOpen\":\"2022-08-09T03:51:00\",\"timestampClose\":\"2022-08-09T04:51:00\",\"tradeClosed\":true,\"transactionHappened\":false,\"status\":\"Transaction did not succeed\"}"
+>  curl -X PUT "http://{IP_ADDRESS}:8081/api/Trades/ModifyTradeById/1" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"id\":1,\"accountId\":6,\"instrumentId\":1,\"direction\":\"buy\",\"quantity\":147,\"entryPrice\":159.625,\"timestampOpen\":\"2022-08-09T03:51:00\",\"timestampClose\":\"2022-08-09T04:51:00\",\"tradeClosed\":true,\"transactionHappened\":false,\"status\":\"Transaction did not succeed\"}"
 > ```
 
 ##### Example of JSON body
@@ -612,7 +612,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X POST "http://172.18.147.235:8081/api/Trades/CreateTrade" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"accountId\":6,\"instrumentId\":1,\"direction\":\"buy\",\"quantity\":147,\"entryPrice\":159.625,\"timestampOpen\":\"2022-08-09T03:51:00\",\"timestampClose\":\"2022-08-09T04:51:00\",\"tradeClosed\":true,\"transactionHappened\":false,\"status\":\"Transaction did not succeed\"}"
+>  curl -X POST "http://{IP_ADDRESS}:8081/api/Trades/CreateTrade" -H  "accept: text/plain" -H  "Content-Type: application/json" -d "{\"accountId\":6,\"instrumentId\":1,\"direction\":\"buy\",\"quantity\":147,\"entryPrice\":159.625,\"timestampOpen\":\"2022-08-09T03:51:00\",\"timestampClose\":\"2022-08-09T04:51:00\",\"tradeClosed\":true,\"transactionHappened\":false,\"status\":\"Transaction did not succeed\"}"
 > ```
 
 ##### Example of JSON body
@@ -644,5 +644,5 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X POST "http://172.18.147.235:8081/api/Trades/CloseOverdueTrades" -H  "accept: */*" -d ""
+>  curl -X POST "http://{IP_ADDRESS}:8081/api/Trades/CloseOverdueTrades" -H  "accept: */*" -d ""
 > ```
