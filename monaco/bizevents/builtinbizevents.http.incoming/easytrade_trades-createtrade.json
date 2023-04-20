@@ -1,0 +1,99 @@
+{
+  "enabled": true,
+  "ruleName": "[.net] easyTrade - /api/Trades/CreateTrade",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/api/Trades/CreateTrade",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.create-trade"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "accountId",
+        "source": {
+          "sourceType": "response.body",
+          "path": "accountId"
+        }
+      },
+      {
+        "name": "tradeClosed",
+        "source": {
+          "sourceType": "response.body",
+          "path": "tradeClosed"
+        }
+      },
+      {
+        "name": "timestampOpen",
+        "source": {
+          "sourceType": "response.body",
+          "path": "timestampOpen"
+        }
+      },
+      {
+        "name": "timestampClose",
+        "source": {
+          "sourceType": "response.body",
+          "path": "timestampClose"
+        }
+      },
+      {
+        "name": "id",
+        "source": {
+          "sourceType": "response.body",
+          "path": "id"
+        }
+      },
+      {
+        "name": "transactionHappened",
+        "source": {
+          "sourceType": "response.body",
+          "path": "transactionHappened"
+        }
+      },
+      {
+        "name": "entryPrice",
+        "source": {
+          "sourceType": "response.body",
+          "path": "entryPrice"
+        }
+      },
+      {
+        "name": "direction",
+        "source": {
+          "sourceType": "response.body",
+          "path": "direction"
+        }
+      },
+      {
+        "name": "instrumentId",
+        "source": {
+          "sourceType": "response.body",
+          "path": "instrumentId"
+        }
+      },
+      {
+        "name": "quantity",
+        "source": {
+          "sourceType": "response.body",
+          "path": "quantity"
+        }
+      }
+    ]
+  }
+}

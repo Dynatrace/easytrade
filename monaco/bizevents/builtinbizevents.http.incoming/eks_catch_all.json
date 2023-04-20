@@ -1,0 +1,26 @@
+{
+  "enabled": false,
+  "ruleName": "[eks] catch all",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "EXISTS"
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "test"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "test"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": []
+  }
+}

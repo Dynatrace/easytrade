@@ -1,0 +1,177 @@
+configs:
+- id: e20ddb34-840c-3561-b2b3-a158f60c3315
+  config:
+    name: easytrade_trades-createtrade
+    template: easytrade_trades-createtrade.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkMmU5NDE3NTAtMGZjNy0zNmZhLTg4ZDQtZTUxMmQ4MzM2OTIzvu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: d921730f-21a6-3094-8687-8c7a4fa6f8b4
+  config:
+    name: easytrade_instruments-getinstruments
+    template: easytrade_instruments-getinstruments.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkZTg4Zjk5OTAtMzNjMC0zMGMyLWI0MjItNDdjZGM5MTY5NDU3vu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: 04263a50-d87a-3b47-a231-df3dd286bf18
+  config:
+    name: easytrade_balancehistory-addbalancehistory
+    template: easytrade_balancehistory-addbalancehistory.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkNmYwMTc4YTYtYzU2Ny0zOTMwLWI3MjEtZjcyYzY2MzEzNzRlvu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: 8e418b1e-71cf-31b0-be4d-facf5f647039
+  config:
+    name: easytrade_accounts_getaccountbyid
+    template: easytrade_accounts-getaccountbyid.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkYjUzOWI3NWUtODI3NC0zOThhLTk4MTItYTAxNWZiYmQxMTAxvu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: 7eb4de5f-3da1-3f96-8abc-dc962ff6d246
+  config:
+    name: easytrade_ownedinstruments-getownedinstrumentsforaccount
+    template: easytrade_ownedinstruments-getownedinstrumentsforaccount.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkNWNlNDk0NjItOWFjZS0zYTNiLTkxNjUtNGZkOTUzNzVlNjg5vu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: 46fe60af-e9db-3305-8436-f01b39ef1c96
+  config:
+    name: easytrade_accounts-getaccountbyusername
+    template: easytrade_accounts-getaccountbyusername.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkMzdkMzFiNDgtNTZiYy0zMDY3LTg0MTAtOThlZjllNjAyODk3vu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: 09491521-6201-39d2-a536-293473a4ac89
+  config:
+    name: easytrade_accounts-modifyaccount
+    template: easytrade_accounts-modifyaccount.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkYWY5NjI2YWYtYWIyYi0zZmY1LWFkMjktYWFkZGE4YjFhZDQ3vu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: e5f2dbf9-0ed6-37f4-b6fa-bcfc2bf6eae4
+  config:
+    name: easytrade_ownedinstruments-addownedinstruments
+    template: easytrade_ownedinstruments-addownedinstruments.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkYTE2NThiZWQtNTM2MS0zMzkxLWE2MmQtYTI5N2U4ZmM4OWQyvu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: a1203af3-5867-3da3-afd9-ce6c45dadbd6
+  config:
+    name: easytrade_creditcard-withdrawmoney
+    template: easytrade_creditcard-withdrawmoney.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkY2VkNDFhOTctMjE5MC0zMGVjLWJhYjAtYjZjMWJhMTkzZjc4vu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: 15623e4c-195a-30c4-9d13-0c240fd783f4
+  config:
+    name: easytrade_creditcard-depositmoney
+    template: easytrade_creditcard-depositmoney.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkZDIwZjA4MDctNWRlOC0zNWZiLTg3ZGEtOWI2OTYyNmMzYzc1vu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: 611d9894-bbfa-3994-b2d2-5eb49c52b271
+  config:
+    name: easytrade_trade-buyassets
+    template: easytrade_trade-buyassets.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkMGFiOTEzNzYtMmUwNS0zY2Q1LWEyNTAtNjRjMmY3ZGQ3MGMyvu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: 97657e11-f7dc-3406-8b96-9b8896b64004
+  config:
+    name: eks_catch_all
+    template: eks_catch_all.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAApIT1NUX0dST1VQABBCQTQ1MkYxQUMyNjEyNUUyACRmMTczOTJmNS0zZWZiLTMxNTgtODg1ZC00N2IzYjI4Yjg2Mji-71TeFdrerQ
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: HOST_GROUP-BA452F1AC26125E2
+- id: 4900780a-f944-33ff-b74b-a5ae56f847fb
+  config:
+    name: easytrade_broker-instruments
+    template: easytrade_broker-instruments.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkOTU4ZjA5ZTctMjdjOS0zMWU3LThkMmEtMjhhMjcyNjA4YmRlvu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: caf3844c-e595-3423-a035-f4768245446b
+  config:
+    name: easytrade_ownedinstruments_modifyownedinstruments
+    template: easytrade_ownedinstruments-modifyownedinstruments.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkNDg2ZWM5MzYtYTM5NS0zMDk2LTg4ZjQtMmJhN2E1NWQ5M2Nkvu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: df130abb-4ab0-31f3-a780-cbd1ede62c23
+  config:
+    name: easytrade_pricing-getlatestprices
+    template: easytrade_pricing-getlatestprices.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkODNlMjZmOTItNGI0ZC0zMTZhLWEwOTEtZjYyYTQwZTQ3ZDY5vu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment
+- id: 5d832f9c-e869-3406-b0a5-80b03d23e8eb
+  config:
+    name: easytrade_trade-sellassets
+    template: easytrade_trade-sellassets.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB9idWlsdGluOmJpemV2ZW50cy5odHRwLmluY29taW5nAAZ0ZW5hbnQABnRlbmFudAAkMTE3YWUyMTMtNDAyYy0zY2M0LTk1MzYtN2FhMWM0MzI4ODRkvu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:bizevents.http.incoming
+      schemaVersion: 1.0.1
+      scope: environment

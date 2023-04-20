@@ -1,0 +1,78 @@
+{
+  "enabled": true,
+  "ruleName": ".net] easyTrade - /api/Accounts/GetAccountById/{accountId}",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/api/Accounts/GetAccountById",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.get-account-by-id"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "lastName",
+        "source": {
+          "sourceType": "response.body",
+          "path": "lastName"
+        }
+      },
+      {
+        "name": "email",
+        "source": {
+          "sourceType": "response.body",
+          "path": "email"
+        }
+      },
+      {
+        "name": "hashedPassword",
+        "source": {
+          "sourceType": "response.body",
+          "path": "hashedPassword"
+        }
+      },
+      {
+        "name": "username",
+        "source": {
+          "sourceType": "response.body",
+          "path": "username"
+        }
+      },
+      {
+        "name": "id",
+        "source": {
+          "sourceType": "response.body",
+          "path": "id"
+        }
+      },
+      {
+        "name": "firstName",
+        "source": {
+          "sourceType": "response.body",
+          "path": "firstName"
+        }
+      },
+      {
+        "name": "availableBalance",
+        "source": {
+          "sourceType": "response.body",
+          "path": "availableBalance"
+        }
+      }
+    ]
+  }
+}
