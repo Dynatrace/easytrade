@@ -25,7 +25,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8087/api/offers/CryptoTrading.com?productFilter=\[\"ETF\",\"Crypto\"\]&&maxYearlyFeeFilter=35.0" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8087/api/offers/CryptoTrading.com?productFilter=\[\"ETF\",\"Crypto\"\]&&maxYearlyFeeFilter=35.0" -H  "accept: text/plain"
 > ```
 
 ### `PUT` **/api/signup** `(Create new user of easyTrade)`
@@ -45,7 +45,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X PUT "http://172.18.147.235:8087/api/signup" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"packageId\":1,\"firstName\":\"Jessica\",\"lastName\":\"Smithin\",\"username\":\"jessica_smith\",\"email\":\"jessica.smith@gmail.com\",\"hashedPassword\":\"139990b95cf8e8fddcb6e3202ed92a216d656a5bbe8ebb2a28bfe9911e6c3c51\",\"origin\":\"PRESET\"}"
+>  curl -X PUT "http://{IP_ADDRESS}:8087/api/signup" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"packageId\":1,\"firstName\":\"Jessica\",\"lastName\":\"Smithin\",\"username\":\"jessica_smith\",\"email\":\"jessica.smith@gmail.com\",\"hashedPassword\":\"139990b95cf8e8fddcb6e3202ed92a216d656a5bbe8ebb2a28bfe9911e6c3c51\",\"origin\":\"PRESET\"}"
 > ```
 
 ##### Example of JSON body
@@ -74,7 +74,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8087/api/plugins" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8087/api/plugins" -H  "accept: text/plain"
 > ```
 
 ### `GET` **/api/plugins/{pluginName}** `(Get plugin info for given plugin name)`
@@ -88,7 +88,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8087/api/plugins/ErgoAggregatorSlowdownPlugin" -H  "accept: text/plain"
+>  curl -X GET "http://{IP_ADDRESS}:8087/api/plugins/ErgoAggregatorSlowdownPlugin" -H  "accept: text/plain"
 > ```
 
 ### `PUT` **/api/plugins/{pluginName}** `(Update plugin information for given plugin name)`
@@ -103,7 +103,7 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 ##### Example cURL
 
 > ```bash
->  curl -X PUT "http://172.18.147.235:8087/api/plugins/ErgoAggregatorSlowdownPlugin" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"enabled\":true}"
+>  curl -X PUT "http://{IP_ADDRESS}:8087/api/plugins/ErgoAggregatorSlowdownPlugin" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"enabled\":true}"
 > ```
 
 ##### Example of JSON body

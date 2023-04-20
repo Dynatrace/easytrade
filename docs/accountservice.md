@@ -26,7 +26,7 @@ A java rest service with swagger. It allows to get and update account data.
 ##### Example cURL
 
 > ```bash
->  curl -X GET "http://172.18.147.235:8089/api/account/1" -H "accept: */*"
+>  curl -X GET "http://{IP_ADDRESS}:8089/api/account/1" -H "accept: */*"
 > ```
 
 ### `PUT` **/api/account/update** `(update account)`
@@ -51,7 +51,7 @@ A java rest service with swagger. It allows to get and update account data.
 ##### Example cURL
 
 > ```bash
->  curl -X PUT "http://172.18.147.235:8089/api/account/update" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"id\": 2, \"packageId\": 1, \"firstName\": \"Lab\", \"lastName\": \"User\", \"username\": \"labuser\", \"email\": \"lab.user@dynatrace.com\", \"hashedPassword\": \"f7d048204bb7d898447148643429481bb3bfc70eefb126ad37fe577c4ffd1381\", \"availableBalance\": 17, \"origin\": \"PRESET\", \"creationDate\": \"2021-08-11T13:00:00.000+00:00\", \"packageActivationDate\": \"2021-08-11T13:00:00.000+00:00\", \"accountActive\": true}"
+>  curl -X PUT "http://{IP_ADDRESS}:8089/api/account/update" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"id\": 2, \"packageId\": 1, \"firstName\": \"Lab\", \"lastName\": \"User\", \"username\": \"labuser\", \"email\": \"lab.user@dynatrace.com\", \"hashedPassword\": \"f7d048204bb7d898447148643429481bb3bfc70eefb126ad37fe577c4ffd1381\", \"availableBalance\": 17, \"origin\": \"PRESET\", \"creationDate\": \"2021-08-11T13:00:00.000+00:00\", \"packageActivationDate\": \"2021-08-11T13:00:00.000+00:00\", \"accountActive\": true}"
 > ```
 
 ##### Example of JSON body

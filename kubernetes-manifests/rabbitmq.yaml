@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: rabbitmq
-          image: gcr.io/dynatrace-demoability/easytrade/rabbitmq:44e1877
+          image: gcr.io/dynatrace-demoability/easytrade/rabbitmq:f505fb9
           ports:
             - containerPort: 5672
             - containerPort: 15672

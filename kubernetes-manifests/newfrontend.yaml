@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: newfrontend
 spec:
   selector:
     matchLabels:
-      app: frontend
+      app: newfrontend
   template:
     metadata:
       labels:
-        app: frontend
+        app: newfrontend
     spec:
       containers:
-        - name: frontend
-          image: gcr.io/dynatrace-demoability/easytrade/frontend:f505fb9
+        - name: newfrontend
+          image: gcr.io/dynatrace-demoability/easytrade/newfrontend:f505fb9
           ports:
             - containerPort: 3000
           resources:
@@ -24,11 +24,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend
+  name: newfrontend
 spec:
   type: ClusterIP
   selector:
-    app: frontend
+    app: newfrontend
   ports:
     - name: http
       port: 3000

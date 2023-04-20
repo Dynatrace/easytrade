@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: contentcreator
-          image: gcr.io/dynatrace-demoability/easytrade/contentcreator:44e1877
+          image: gcr.io/dynatrace-demoability/easytrade/contentcreator:f505fb9
           env:
             - name: MSSQL_CONNECTIONSTRING
               value: "jdbc:sqlserver://db:1433;database=TradeManagement;user=sa;password=yourStrong(!)Password;encrypt=false;trustServerCertificate=false;loginTimeout=30;"
