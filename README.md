@@ -176,9 +176,9 @@ EasyTrade application has been developed in order to showcase business events. U
 - directly - using one of Dynatrace SDKs in the code - so for example in Javascript or Java
 - inderectly - configure catch rules for request that are monitored by Dynatrace
 
-If you want to learn more about business events then we suggest looking at the information on our website: ![Business event capture](https://www.dynatrace.com/support/help/platform-modules/business-analytics/ba-events-capturing). There you will find information on how to create events directly (with OpenKit, Javascript, Android and more) and inderectly with capture rules in Dynatrace.
+If you want to learn more about business events then we suggest looking at the information on our website: [Business event capture](https://www.dynatrace.com/support/help/platform-modules/business-analytics/ba-events-capturing). There you will find information on how to create events directly (with OpenKit, Javascript, Android and more) and inderectly with capture rules in Dynatrace.
 
-For those interested in creating capturing rules for easyTrade we suggest to have a look at the configuration exported with Monaco in this repository. Have a look at the ![README](./monaco/README.md)  
+For those interested in creating capturing rules for easyTrade we suggest to have a look at the configuration exported with Monaco in this repository. Have a look at the [README](./monaco/README.md)  
 
 ## Resolve **Span Default Service** showing instead of regular .NET services
 
