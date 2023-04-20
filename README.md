@@ -32,8 +32,7 @@ EasyTrade consists of the following services/components:
 | [Manager](./docs/manager.md)                             | 80         | `---`              |
 | [New Frontend](./docs/newfrontend.md)                    | 80         | `/new/`            |
 | [Offer service](./docs/offerservice.md)                  | 80         | `/offerservice`    |
-| [Plugin service](./docs/pluginservice.md)                | 80         | `/pluginservice`   |
-| [Pricing service](./docs/pricingservice.md)              | 80         | `/pricing-service` |
+| [Pricing service](./docs/pricing-service.md)             | 80         | `/pricing-service` |
 
 
 > To learn more about endpoints / swagger for the services go to their respective readmes
