@@ -12,11 +12,29 @@ Dynatrace currently fully supports golang up to 1.19.5. As we have created the n
 
 ## Endpoints or logic
 
+### Swagger
+
+---
+
 Swagger endpoint is available at:
+
 ```bash
 # when deployed with k8s
 http://SOMEWHERE/pricing-service/swagger/index.html
 ```
+
+### Endpoints
+
+---
+
+#### `GET` **/v1/prices/last** `(Returns the newest price record)`
+
+##### Parameters
+
+> | name | type | data type | description |
+> | ---- | ---- | --------- | ----------- |
+>
+> None
 
 ##### Example cURL
 
@@ -24,7 +42,9 @@ http://SOMEWHERE/pricing-service/swagger/index.html
 >  curl -X GET "http://{IP_ADDRESS}:8083/v1/prices/last" -H  "accept: text/plain"
 > ```
 
-`GET` **/v1/prices/last** `(Returns the newest price record)`
+---
+
+#### `GET` **/v1/prices/latest** `(Get latest price of each instrument)`
 
 ##### Parameters
 
@@ -39,22 +59,9 @@ http://SOMEWHERE/pricing-service/swagger/index.html
 >  curl -X GET "http://{IP_ADDRESS}:8083/v1/prices/latest" -H  "accept: text/plain"
 > ```
 
-`GET` **/v1/prices/latest** `(Get latest price of each instrument)`
+---
 
-##### Parameters
-
-> | name | type | data type | description |
-> | ---- | ---- | --------- | ----------- |
->
-> None
-
-##### Example cURL
-
-> ```bash
->  curl -X GET "http://{IP_ADDRESS}:8083/v1/prices/instrument/{instrumentId}" -H  "accept: text/plain"
-> ```
-
-`GET` **/v1/prices/instrument/{instrumentId}?{records}** `(Get pricing data for a given instruments)`
+#### `GET` **/v1/prices/instrument/{instrumentId}?{records}** `(Get pricing data for a given instrument)`
 
 ##### Parameters
 
@@ -68,22 +75,3 @@ http://SOMEWHERE/pricing-service/swagger/index.html
 > ```bash
 >  curl -X GET "http://{IP_ADDRESS}:8083/v1/prices/instrument/1?records=5" -H  "accept: text/plain"
 > ```
-
-## Swagger
-
-Generate/regenerate swag files
-```
-swag init
-```
-
-## Test/Run go
-
-If you want to test, the run  
-```
-go test ./...
-```
-
-If you want to run, use  
-```
-go run .
-```

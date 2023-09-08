@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: db
-          image: gcr.io/dynatrace-demoability/easytrade/db:f505fb9
+          image: gcr.io/dynatrace-demoability/easytrade/db:a9edfaf
           ports:
             - containerPort: 1433
           env:

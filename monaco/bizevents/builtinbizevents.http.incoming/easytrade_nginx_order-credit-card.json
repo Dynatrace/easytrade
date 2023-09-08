@@ -1,0 +1,79 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [nginx] - POST /credit-card-order-service/v1/orders",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "POST",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "EQUALS",
+      "value": "/credit-card-order-service/v1/orders",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.nginx.order-credit-card"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "Order ID",
+        "source": {
+          "sourceType": "response.body",
+          "path": "resuts.creditCardOrderId"
+        }
+      },
+      {
+        "name": "Card Level",
+        "source": {
+          "sourceType": "request.body",
+          "path": "cardLevel"
+        }
+      },
+      {
+        "name": "Shipping Address",
+        "source": {
+          "sourceType": "request.body",
+          "path": "shippingAddress"
+        }
+      },
+      {
+        "name": "Name",
+        "source": {
+          "sourceType": "request.body",
+          "path": "name"
+        }
+      },
+      {
+        "name": "Email",
+        "source": {
+          "sourceType": "request.body",
+          "path": "email"
+        }
+      },
+      {
+        "name": "Account ID",
+        "source": {
+          "sourceType": "request.body",
+          "path": "accountId"
+        }
+      }
+    ]
+  }
+}

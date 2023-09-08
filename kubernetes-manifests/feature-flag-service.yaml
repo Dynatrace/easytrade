@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feature-flag-service
+spec:
+  selector:
+    matchLabels:
+      app: feature-flag-service
+  template:
+    metadata:
+      labels:
+        app: feature-flag-service
+    spec:
+      containers:
+        - name: feature-flag-service
+          image: gcr.io/dynatrace-demoability/easytrade/feature-flag-service:a9edfaf
+          ports:
+            - containerPort: 8080
+          resources:
+            requests:
+              cpu: 150m
+              memory: 100Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: feature-flag-service
+spec:
+  type: ClusterIP
+  selector:
+    app: feature-flag-service
+  ports:
+    - name: feature-flag-service
+      port: 8080
+      targetPort: 8080

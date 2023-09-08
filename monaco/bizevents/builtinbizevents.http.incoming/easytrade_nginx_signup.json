@@ -1,0 +1,93 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [nginx] - POST /loginservice/api/Signup",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "POST",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "EQUALS",
+      "value": "/loginservice/api/Signup",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.nginx.signup"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "Account ID",
+        "source": {
+          "sourceType": "response.body",
+          "path": "id"
+        }
+      },
+      {
+        "name": "Address",
+        "source": {
+          "sourceType": "request.body",
+          "path": "address"
+        }
+      },
+      {
+        "name": "Origin",
+        "source": {
+          "sourceType": "request.body",
+          "path": "origin"
+        }
+      },
+      {
+        "name": "Email",
+        "source": {
+          "sourceType": "request.body",
+          "path": "email"
+        }
+      },
+      {
+        "name": "User Name",
+        "source": {
+          "sourceType": "request.body",
+          "path": "username"
+        }
+      },
+      {
+        "name": "Last Name",
+        "source": {
+          "sourceType": "request.body",
+          "path": "lastName"
+        }
+      },
+      {
+        "name": "First Name",
+        "source": {
+          "sourceType": "request.body",
+          "path": "firstName"
+        }
+      },
+      {
+        "name": "Package ID",
+        "source": {
+          "sourceType": "request.body",
+          "path": "packageId"
+        }
+      }
+    ]
+  }
+}

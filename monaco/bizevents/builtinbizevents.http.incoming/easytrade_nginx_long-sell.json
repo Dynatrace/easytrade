@@ -1,0 +1,72 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [nginx] - POST /broker-service/v1/trade/long/sell",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "POST",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/broker-service/v1/trade/long/sell",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.nginx.long-sell"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "Price",
+        "source": {
+          "sourceType": "request.body",
+          "path": "price"
+        }
+      },
+      {
+        "name": "Duration",
+        "source": {
+          "sourceType": "request.body",
+          "path": "duration"
+        }
+      },
+      {
+        "name": "Amount",
+        "source": {
+          "sourceType": "request.body",
+          "path": "amount"
+        }
+      },
+      {
+        "name": "Instrument ID",
+        "source": {
+          "sourceType": "request.body",
+          "path": "instrumentId"
+        }
+      },
+      {
+        "name": "Account ID",
+        "source": {
+          "sourceType": "request.body",
+          "path": "accountId"
+        }
+      }
+    ]
+  }
+}

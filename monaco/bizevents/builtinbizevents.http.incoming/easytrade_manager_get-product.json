@@ -1,0 +1,65 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [manager | .NET] - GET /api/Products/GetProductById/{id}",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "GET",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/api/Products/GetProductById",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.manager.product"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "Currency",
+        "source": {
+          "sourceType": "response.body",
+          "path": "currency"
+        }
+      },
+      {
+        "name": "PPT",
+        "source": {
+          "sourceType": "response.body",
+          "path": "ppt"
+        }
+      },
+      {
+        "name": "Name",
+        "source": {
+          "sourceType": "response.body",
+          "path": "name"
+        }
+      },
+      {
+        "name": "Product ID",
+        "source": {
+          "sourceType": "response.body",
+          "path": "id"
+        }
+      }
+    ]
+  }
+}

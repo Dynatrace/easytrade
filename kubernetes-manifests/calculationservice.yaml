@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: calculationservice
-          image: gcr.io/dynatrace-demoability/easytrade/calculationservice:f505fb9
+          image: gcr.io/dynatrace-demoability/easytrade/calculationservice:63ab3b0
           resources:
             requests:
               cpu: 10m

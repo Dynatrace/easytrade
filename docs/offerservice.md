@@ -10,9 +10,20 @@ A node.js service that return information of product/package and also allows to 
 Offer service has support for one problem pattern - ErgoAggregatorSlowdownPlugin. When this problem pattern is enabled, two of the aggregator services connected to offer service will start to get slower responses from offer service.  
 Problem pattern can be enabled manually with an endpoint, or via the PluginService
 
-## Endpoints
+## Endpoints or logic
 
-### `GET` **/api/offers/{platform}** `(Get offer information of easyTrade - product and package information)`
+### Problem pattern
+
+---
+
+Offer service has support for one problem pattern - `ergo_aggregator_slowdown`. When this problem pattern is enabled, two of the aggregator services connected to offer service will start to get slower responses from offer service.  
+Problem pattern can be enabled using the api provided with the feature flag service. More information on using the feature flag service is available in the [feature flag service readme](./feature-flag-service.md).
+
+### Endpoints
+
+---
+
+#### `GET` **/api/offers/{platform}** `(Get offer information of easyTrade - product and package information)`
 
 ##### Parameters
 
@@ -28,7 +39,9 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 >  curl -X GET "http://{IP_ADDRESS}:8087/api/offers/CryptoTrading.com?productFilter=\[\"ETF\",\"Crypto\"\]&&maxYearlyFeeFilter=35.0" -H  "accept: text/plain"
 > ```
 
-### `PUT` **/api/signup** `(Create new user of easyTrade)`
+---
+
+#### `PUT` **/api/signup** `(Create new user of easyTrade)`
 
 ##### Parameters
 
@@ -59,57 +72,5 @@ Problem pattern can be enabled manually with an endpoint, or via the PluginServi
 >   "Email": "jack@sparrow.uk",
 >   "HashedPassword": "30d7c7e19d829abb28abfc3878b2297794f0f538c393e6e071557b0a986754d1",
 >   "Origin": "dynatestsieger.at"
-> }
-> ```
-
-### `GET` **/api/plugins** `(Get plugin information)`
-
-##### Parameters
-
-> | name | type | data type | description |
-> | ---- | ---- | --------- | ----------- |
->
-> | None
-
-##### Example cURL
-
-> ```bash
->  curl -X GET "http://{IP_ADDRESS}:8087/api/plugins" -H  "accept: text/plain"
-> ```
-
-### `GET` **/api/plugins/{pluginName}** `(Get plugin info for given plugin name)`
-
-##### Parameters
-
-> | name         | type     | data type | description |
-> | ------------ | -------- | --------- | ----------- |
-> | `pluginName` | required | string    | Plugin name |
-
-##### Example cURL
-
-> ```bash
->  curl -X GET "http://{IP_ADDRESS}:8087/api/plugins/ErgoAggregatorSlowdownPlugin" -H  "accept: text/plain"
-> ```
-
-### `PUT` **/api/plugins/{pluginName}** `(Update plugin information for given plugin name)`
-
-##### Parameters
-
-> | name         | type     | data type | description                  |
-> | ------------ | -------- | --------- | ---------------------------- |
-> | `pluginName` | required | string    | Plugin name                  |
-> | `enabled`    | required | boolean   | Is the plugin enabled or not |
-
-##### Example cURL
-
-> ```bash
->  curl -X PUT "http://{IP_ADDRESS}:8087/api/plugins/ErgoAggregatorSlowdownPlugin" -H  "accept: */*" -H  "Content-Type: application/json" -d "{\"enabled\":true}"
-> ```
-
-##### Example of JSON body
-
-> ```json
-> {
->   "enabled": true
 > }
 > ```

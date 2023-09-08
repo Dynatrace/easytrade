@@ -13,13 +13,13 @@ spec:
     spec:
       containers:
         - name: accountservice
-          image: gcr.io/dynatrace-demoability/easytrade/accountservice:f505fb9
+          image: gcr.io/dynatrace-demoability/easytrade/accountservice:a9edfaf
           ports:
             - containerPort: 8080
           env:
             - name: MANAGER_HOSTANDPORT
               value: "manager:80"
-            - name: PROXY_PREFIX 
+            - name: PROXY_PREFIX
               value: "accountservice"
           resources:
             requests:
