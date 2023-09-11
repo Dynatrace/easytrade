@@ -16,24 +16,24 @@ Of course it is all fake data and the price has a 24 hour cycle...
 
 EasyTrade consists of the following services/components:
 
-| Service                                                  | Proxy port | Proxy endpoint     |
-| -------------------------------------------------------- | ---------- | ------------------ |
-| [Account service](./docs/accountservice.md)              | 80         | `/accountservice`  |
-| [Aggregator service](./docs/aggregatorservice.md)        | 80         | `---`              |
-| [Broker service](./docs/brokerservice.md)                | 80         | `/broker`          |
-| [Calculation service](./docs/calculationservice.md)      | 80         | `---`              |
-| [Content creator](./docs/contentcreator.md)              | 80         | `---`              |
-| [Db](./docs/db.md)                                       | 80         | `---`              |
-| [Engine](./docs/engine.md)                               | 80         | `/engine`          |
-| [Flagsmith](./docs/flagsmith.md)                         | 8000       | `/`                |
-| [Frontend](./docs/frontend.md)                           | 80         | `/`                |
-| [Frontend reverse-proxy](./docs/frontendreverseproxy.md) | 80         | `---`              |
-| [Login service](./docs/loginservice.md)                  | 80         | `/login`           |
-| [Manager](./docs/manager.md)                             | 80         | `---`              |
-| [New Frontend](./docs/newfrontend.md)                    | 80         | `/new/`            |
-| [Offer service](./docs/offerservice.md)                  | 80         | `/offerservice`    |
-| [Pricing service](./docs/pricing-service.md)             | 80         | `/pricing-service` |
-
+| Service                                                          | Proxy port | Proxy endpoint               |
+| ---------------------------------------------------------------- | ---------- | ---------------------------- |
+| [Account service](./docs/accountservice.md)                      | 80         | `/accountservice`            |
+| [Aggregator service](./docs/aggregatorservice.md)                | 80         | `---`                        |
+| [Broker service](./docs/broker-service.md)                       | 80         | `/broker-service`            |
+| [Calculation service](./docs/calculationservice.md)              | 80         | `---`                        |
+| [Credit card order service](./docs/credit-card-order-service.md) | 80         | `/credit-card-order-service` |
+| [Content creator](./docs/contentcreator.md)                      | 80         | `---`                        |
+| [Db](./docs/db.md)                                               | 80         | `---`                        |
+| [Engine](./docs/engine.md)                                       | 80         | `/engine`                    |
+| [Feature flag service](./docs/feature-flag-service.md)           | 80         | `/feature-flag-service`      |
+| [Frontend](./docs/frontend.md)                                   | 80         | `/`                          |
+| [Frontend reverse-proxy](./docs/frontendreverseproxy.md)         | 80         | `---`                        |
+| [Login service](./docs/loginservice.md)                          | 80         | `/loginservice`              |
+| [Manager](./docs/manager.md)                                     | 80         | `/manager`                   |
+| [Offer service](./docs/offerservice.md)                          | 80         | `/offerservice`              |
+| [Pricing service](./docs/pricing-service.md)                     | 80         | `/pricing-service`           |
+| [Third party service](./docs/third-party-service.md)             | 80         | `/third-party-service`       |
 
 > To learn more about endpoints / swagger for the services go to their respective readmes
 
@@ -61,7 +61,6 @@ docker compose up -d
 ```
 
 You should be able to access the app at `localhost:80` or simply `localhost`.
-To use the flagsmith access the app at `localhost:8000`.
 
 > **NOTE:** It make take a few minutes for the app to stabilize, you may expirience errors in the frontend or see missing data before that happens.
 
@@ -127,14 +126,14 @@ Currently there are only 2 problem patterns supported in easyTrade:
 To turn a plugin on/off send a request similar to the following:
 
 ```sh
-curl -X PUT "http://{IP_ADDRESS}:8000/api/v1/environments/{API_KEY}/featurestates/{FEATURE_ID}/"
+curl -X PUT "http://{IP_ADDRESS}/feature-flag-service/v1/flags/{FEATURE_ID}/"
             -H  "accept: application/json"
-            -H "Authorization: Token {TOKEN}"
             -d "{\"enabled\": {VALUE}}"
 ```
 
 Of course please set the value of "IP_ADDRESS" to the correct host IP and VALUE to false/true. \
-> **NOTE:** More information on flagsmith's parameters available in [flagsmith's doc](./docs/flagsmith.md).
+
+> **NOTE:** More information on the feature flag service's parameters available in [feature flag service's doc](./docs/featureflagservice.md).
 
 ## EasyTrade on Dynatrace - how to configure
 
@@ -178,7 +177,21 @@ EasyTrade application has been developed in order to showcase business events. U
 
 If you want to learn more about business events then we suggest looking at the information on our website: [Business event capture](https://www.dynatrace.com/support/help/platform-modules/business-analytics/ba-events-capturing). There you will find information on how to create events directly (with OpenKit, Javascript, Android and more) and inderectly with capture rules in Dynatrace.
 
-For those interested in creating capturing rules for easyTrade we suggest to have a look at the configuration exported with Monaco in this repository. Have a look at the [README](./monaco/README.md)  
+For those interested in creating capturing rules for easyTrade we suggest to have a look at the configuration exported with Monaco in this repository. Have a look at the [README](./monaco/README.md)
+
+## Body types
+
+EasyTrade network trafic is handled by REST requests using mostly JSON payloads. However, some of the services
+can also handle XML requests. Data types are negotiated based on `Accept` and `Content-Type` headers.
+
+#### XML compatible services
+
+| Service                                                       | Accepted XML MIME types                            |
+| ------------------------------------------------------------- | -------------------------------------------------- |
+| [LoginService](./docs/loginservice.md)                        | `application/xml`; `text/xml`; `application/*+xml` |
+| [CreditCardOrderService](./docs/credit-card-order-service.md) | `application/xml`                                  |
+| [OfferService](./docs/offerservice.md)                        | `application/xml`; `text/xml`                      |
+| [PricingService](./docs/pricing-service.md)                   | `application/xml`                                  |
 
 ## Resolve **Span Default Service** showing instead of regular .NET services
 

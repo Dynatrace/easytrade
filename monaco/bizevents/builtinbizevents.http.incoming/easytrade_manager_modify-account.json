@@ -1,0 +1,114 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [manager | .NET] - PUT /api/Accounts/ModifyAccount",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "PUT",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "EQUALS",
+      "value": "/api/Accounts/ModifyAccount",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.manager.modify-account"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "Address",
+        "source": {
+          "sourceType": "request.body",
+          "path": "address"
+        }
+      },
+      {
+        "name": "Account Active",
+        "source": {
+          "sourceType": "request.body",
+          "path": "accountActive"
+        }
+      },
+      {
+        "name": "Package Activation Date",
+        "source": {
+          "sourceType": "request.body",
+          "path": "packageActivationDate"
+        }
+      },
+      {
+        "name": "Creation date",
+        "source": {
+          "sourceType": "request.body",
+          "path": "creationDate"
+        }
+      },
+      {
+        "name": "Origin",
+        "source": {
+          "sourceType": "request.body",
+          "path": "origin"
+        }
+      },
+      {
+        "name": "Email",
+        "source": {
+          "sourceType": "request.body",
+          "path": "email"
+        }
+      },
+      {
+        "name": "Username",
+        "source": {
+          "sourceType": "request.body",
+          "path": "username"
+        }
+      },
+      {
+        "name": "Last Name",
+        "source": {
+          "sourceType": "request.body",
+          "path": "lastName"
+        }
+      },
+      {
+        "name": "First Name",
+        "source": {
+          "sourceType": "request.body",
+          "path": "firstName"
+        }
+      },
+      {
+        "name": "Package ID",
+        "source": {
+          "sourceType": "request.body",
+          "path": "packageId"
+        }
+      },
+      {
+        "name": "Account ID",
+        "source": {
+          "sourceType": "request.body",
+          "path": "id"
+        }
+      }
+    ]
+  }
+}

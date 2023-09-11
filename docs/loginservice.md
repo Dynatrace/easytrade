@@ -11,9 +11,20 @@ This .Net service is responsible for authenticating users.
 
 ### Swagger
 
-**/swagger**
+---
 
-### `GET` **/api/Accounts/GetAccountById/{id}** `(Get account by id)`
+Swagger endpoint is available at:
+
+```bash
+# when deployed with k8s
+http://SOMEWHERE/loginservice/swagger
+```
+
+### Endpoints
+
+---
+
+#### `GET` **/api/Accounts/GetAccountById/{id}** `(Get account by id)`
 
 ##### Parameters
 
@@ -27,7 +38,9 @@ This .Net service is responsible for authenticating users.
 >  curl -X GET "http://{IP_ADDRESS}:8086/api/Accounts/GetAccountById/1" -H  "accept: text/plain"
 > ```
 
-### `GET` **/api/Accounts/GetAccountByUsername/{username}** `(Get account by username)`
+---
+
+#### `GET` **/api/Accounts/GetAccountByUsername/{username}** `(Get account by username)`
 
 ##### Parameters
 
@@ -41,7 +54,9 @@ This .Net service is responsible for authenticating users.
 >  curl -X GET "http://{IP_ADDRESS}:8086/api/Accounts/GetAccountByUsername/labuser" -H  "accept: text/plain"
 > ```
 
-### `POST` **/api/Accounts/CreateNewAccount** `(Create a new account)`
+---
+
+#### `POST` **/api/Accounts/CreateNewAccount** `(Create a new account)`
 
 ##### Parameters
 

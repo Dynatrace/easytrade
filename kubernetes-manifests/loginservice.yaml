@@ -13,14 +13,17 @@ spec:
     spec:
       containers:
         - name: loginservice
-          image: gcr.io/dynatrace-demoability/easytrade/loginservice:f505fb9
+          image: gcr.io/dynatrace-demoability/easytrade/loginservice:a9edfaf
           ports:
             - containerPort: 80
           env:
-            - name: MSSQL_CONNECTIONSTRING
-              value: "Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true"
             - name: PROXY_PREFIX
-              value: "login"
+              value: "loginservice"
+            - name: MSSQL_CONNECTIONSTRING
+              valueFrom:
+                configMapKeyRef:
+                  name: connection-strings
+                  key: DOTNET_CONNECTION_STRING
           resources:
             requests:
               cpu: 100m

@@ -15,14 +15,14 @@ spec:
     spec:
       containers:
         - name: headlessloadgen
-          image: gcr.io/dynatrace-demoability/headlessloadgen:0deedcc
+          image: gcr.io/dynatrace-demoability/headlessloadgen:b554e03
           imagePullPolicy: Always
           resources:
             requests:
               memory: "500Mi"
               cpu: "500m"
             limits:
-              memory: "900Mi"
+              memory: "2Gi"
               cpu: "700m"
           env:
             - name: EASY_TRADE_DOMAIN

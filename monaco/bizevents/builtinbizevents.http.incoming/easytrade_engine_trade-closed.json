@@ -1,0 +1,79 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [engine | Java] - POST /api/trade/scheduler/notification",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "EQUALS",
+      "value": "/api/trade/scheduler/notification",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "POST",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.trade-closed"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "Happened",
+        "source": {
+          "sourceType": "request.body",
+          "path": "transactionHappened"
+        }
+      },
+      {
+        "name": "Price",
+        "source": {
+          "sourceType": "request.body",
+          "path": "entryPrice"
+        }
+      },
+      {
+        "name": "Account ID",
+        "source": {
+          "sourceType": "request.body",
+          "path": "accountId"
+        }
+      },
+      {
+        "name": "Instrument ID",
+        "source": {
+          "sourceType": "request.body",
+          "path": "instrumentId"
+        }
+      },
+      {
+        "name": "Amount",
+        "source": {
+          "sourceType": "request.body",
+          "path": "quantity"
+        }
+      },
+      {
+        "name": "Direction",
+        "source": {
+          "sourceType": "request.body",
+          "path": "direction"
+        }
+      }
+    ]
+  }
+}

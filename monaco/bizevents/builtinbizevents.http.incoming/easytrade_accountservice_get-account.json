@@ -1,0 +1,136 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [accountservice | Java] - GET /api/accounts/{accountId}",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "GET",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "N_CONTAINS",
+      "value": "presets",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/api/accounts",
+      "caseSensitive": true
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.account"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "Username",
+        "source": {
+          "sourceType": "response.body",
+          "path": "username"
+        }
+      },
+      {
+        "name": "Preset",
+        "source": {
+          "sourceType": "response.body",
+          "path": "preset"
+        }
+      },
+      {
+        "name": "Package ID",
+        "source": {
+          "sourceType": "response.body",
+          "path": "packageId"
+        }
+      },
+      {
+        "name": "Package Activation Date",
+        "source": {
+          "sourceType": "response.body",
+          "path": "packageActivationDate"
+        }
+      },
+      {
+        "name": "Origin",
+        "source": {
+          "sourceType": "response.body",
+          "path": "origin"
+        }
+      },
+      {
+        "name": "Last Name",
+        "source": {
+          "sourceType": "response.body",
+          "path": "lastName"
+        }
+      },
+      {
+        "name": "Account ID",
+        "source": {
+          "sourceType": "response.body",
+          "path": "id"
+        }
+      },
+      {
+        "name": "Hashed Password",
+        "source": {
+          "sourceType": "response.body",
+          "path": "hashedPassword"
+        }
+      },
+      {
+        "name": "First Name",
+        "source": {
+          "sourceType": "response.body",
+          "path": "firstName"
+        }
+      },
+      {
+        "name": "Email",
+        "source": {
+          "sourceType": "response.body",
+          "path": "email"
+        }
+      },
+      {
+        "name": "Creation Date",
+        "source": {
+          "sourceType": "response.body",
+          "path": "creationDate"
+        }
+      },
+      {
+        "name": "Address",
+        "source": {
+          "sourceType": "response.body",
+          "path": "address"
+        }
+      },
+      {
+        "name": "Account Active",
+        "source": {
+          "sourceType": "response.body",
+          "path": "accountActive"
+        }
+      }
+    ]
+  }
+}

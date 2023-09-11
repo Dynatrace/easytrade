@@ -1,0 +1,73 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [credit-card-order-service | Java] - POST /v1/orders/{id}/status",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "POST",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "ENDS_WITH",
+      "value": "/status",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/v1/orders",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.update-credit-card-status"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "Details",
+        "source": {
+          "sourceType": "request.body",
+          "path": "details"
+        }
+      },
+      {
+        "name": "Timestamp",
+        "source": {
+          "sourceType": "request.body",
+          "path": "timestamp"
+        }
+      },
+      {
+        "name": "Type",
+        "source": {
+          "sourceType": "request.body",
+          "path": "type"
+        }
+      },
+      {
+        "name": "Order ID",
+        "source": {
+          "sourceType": "request.body",
+          "path": "orderId"
+        }
+      }
+    ]
+  }
+}

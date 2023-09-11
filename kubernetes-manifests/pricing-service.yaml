@@ -12,27 +12,30 @@ spec:
         app: pricing-service
     spec:
       containers:
-      - name: pricing-service
-        image: gcr.io/dynatrace-demoability/easytrade/pricing-service:f505fb9
-        ports:
-        - containerPort: 8080
-        env:
-        - name: MSSQL_CONNECTIONSTRING
-          value: "sqlserver://sa:yourStrong(!)Password@db:1433?database=TradeManagement&connection+encrypt=false&connection+TrustServerCertificate=false&connection+loginTimeout=30"
-        - name: RABBITMQ_HOST
-          value: "rabbitmq"
-        - name: RABBITMQ_USER
-          value: "userxxx"
-        - name: RABBITMQ_PASSWORD
-          value: "passxxx"
-        - name: RABBITMQ_QUEUE
-          value: "Trade_Data_Raw"
-        - name: PROXY_PREFIX
-          value: "pricing-service"
-        resources:
-          requests:
-            cpu: 100m
-            memory: 350Mi
+        - name: pricing-service
+          image: gcr.io/dynatrace-demoability/easytrade/pricing-service:a9edfaf
+          ports:
+            - containerPort: 8080
+          env:
+            - name: RABBITMQ_HOST
+              value: "rabbitmq"
+            - name: RABBITMQ_USER
+              value: "userxxx"
+            - name: RABBITMQ_PASSWORD
+              value: "passxxx"
+            - name: RABBITMQ_QUEUE
+              value: "Trade_Data_Raw"
+            - name: PROXY_PREFIX
+              value: "pricing-service"
+            - name: MSSQL_CONNECTIONSTRING
+              valueFrom:
+                configMapKeyRef:
+                  name: connection-strings
+                  key: GO_CONNECTION_STRING
+          resources:
+            requests:
+              cpu: 100m
+              memory: 350Mi
 ---
 apiVersion: v1
 kind: Service
@@ -43,6 +46,6 @@ spec:
   selector:
     app: pricing-service
   ports:
-  - name: http
-    port: 8080
-    targetPort: 8080
+    - name: http
+      port: 8080
+      targetPort: 8080

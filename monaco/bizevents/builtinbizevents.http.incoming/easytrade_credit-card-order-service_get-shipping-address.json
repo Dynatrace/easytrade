@@ -1,0 +1,66 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [credit-card-order-service | Java] - GET /v1/orders/{id}/shipping-address",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "GET",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "ENDS_WITH",
+      "value": "/shipping-address",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/v1/orders",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.credit-card-shipping-address"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "Email",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.email"
+        }
+      },
+      {
+        "name": "Name",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.name"
+        }
+      },
+      {
+        "name": "Shipping Address",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.shippingAddress"
+        }
+      }
+    ]
+  }
+}

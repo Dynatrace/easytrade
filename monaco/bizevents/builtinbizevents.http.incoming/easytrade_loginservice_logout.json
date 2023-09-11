@@ -1,0 +1,44 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [loginservice | .NET] - POST /api/Logout",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "EQUALS",
+      "value": "/api/Logout",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "POST",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.logout"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "Account ID",
+        "source": {
+          "sourceType": "request.body",
+          "path": "accountId"
+        }
+      }
+    ]
+  }
+}

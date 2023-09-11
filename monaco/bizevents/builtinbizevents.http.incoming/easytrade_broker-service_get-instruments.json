@@ -1,0 +1,44 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [broker-service | .NET] - GET /v1/instrument",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "GET",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/v1/instrument",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.instruments"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "Account ID",
+        "source": {
+          "sourceType": "request.parameters",
+          "path": "accountId"
+        }
+      }
+    ]
+  }
+}
