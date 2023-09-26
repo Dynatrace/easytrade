@@ -13,4 +13,4 @@ environmentGroups:
         auth:
           token:
             type: environment
-            value: TENANT_TOKEN
+            name: TENANT_TOKEN
