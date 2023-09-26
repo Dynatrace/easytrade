@@ -1,14 +1,16 @@
 manifestVersion: 1.0
 projects:
-  - name: bizevents
-    path: bizevents
-
+  - name: easytrade
+    path: easytrade
+    type: grouping
 environmentGroups:
   - name: development
     environments:
       - name: dev
         url:
-          value: "[fill dev environment url]"
+          type: environment
+          value: TENANT_URL
         auth:
           token:
-            name: "devToken"
+            type: environment
+            value: TENANT_TOKEN
