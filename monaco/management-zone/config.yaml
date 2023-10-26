@@ -1,0 +1,9 @@
+configs:
+  - id: app_easytrade
+    config:
+      template: app_easytrade.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:management-zones
+        scope: environment

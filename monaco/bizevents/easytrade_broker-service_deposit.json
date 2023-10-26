@@ -1,0 +1,108 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [broker-service | .NET] - POST /v1/balance/{accountId}/deposit",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "POST",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "ENDS_WITH",
+      "value": "/deposit",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/v1/balance",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.deposit"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "balance",
+        "source": {
+          "sourceType": "response.body",
+          "path": "value"
+        }
+      },
+      {
+        "name": "cvv",
+        "source": {
+          "sourceType": "request.body",
+          "path": "cvv"
+        }
+      },
+      {
+        "name": "cardType",
+        "source": {
+          "sourceType": "request.body",
+          "path": "cardType"
+        }
+      },
+      {
+        "name": "cardNumber",
+        "source": {
+          "sourceType": "request.body",
+          "path": "cardNumber"
+        }
+      },
+      {
+        "name": "email",
+        "source": {
+          "sourceType": "request.body",
+          "path": "email"
+        }
+      },
+      {
+        "name": "address",
+        "source": {
+          "sourceType": "request.body",
+          "path": "address"
+        }
+      },
+      {
+        "name": "name",
+        "source": {
+          "sourceType": "request.body",
+          "path": "name"
+        }
+      },
+      {
+        "name": "amount",
+        "source": {
+          "sourceType": "request.body",
+          "path": "amount"
+        }
+      },
+      {
+        "name": "accountId",
+        "source": {
+          "sourceType": "response.body",
+          "path": "accountId"
+        }
+      }
+    ]
+  }
+}

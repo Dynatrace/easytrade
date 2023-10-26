@@ -1,0 +1,58 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [offerservice | Node.js] - GET /api/offers/{platform}",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "GET",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/api/offers",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.offer"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "Response",
+        "source": {
+          "sourceType": "response.body",
+          "path": "*"
+        }
+      },
+      {
+        "name": "maxYearlyFeeFilter",
+        "source": {
+          "sourceType": "request.parameters",
+          "path": "maxYearlyFeeFilter"
+        }
+      },
+      {
+        "name": "productFilter",
+        "source": {
+          "sourceType": "request.parameters",
+          "path": "productFilter"
+        }
+      }
+    ]
+  }
+}

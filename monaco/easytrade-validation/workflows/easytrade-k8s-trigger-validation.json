@@ -1,0 +1,27 @@
+{
+  "description": "",
+  "isPrivate": false,
+  "ownerType": "USER",
+  "schemaVersion": 3,
+  "taskDefaults": {},
+  "tasks": {
+    "send_trigger_event": {
+      "action": "dynatrace.automations:run-javascript",
+      "description": "Build a custom task running js Code",
+      "input": {
+        "script": "import { businessEventsClient } from \"@dynatrace-sdk/client-classic-environment-v2\"\n\nexport default async function () {\n  const jobId = crypto.randomUUID().toString()\n  const bizeventBody = {\n    \"timeframe.from\": \"now-1h\",\n    \"timeframe.to\": \"now\",\n    \"srg.variable.timeframe\": \"60\",\n    \"tags.job.id\": jobId,\n    \"tags.application\": \"easytrade-k8s\",\n    \"event.provider\": \"workflows.manual\",\n    \"event.type\": \"demoability.validation.trigger\",\n  }\n\n  console.log(\"Ingesting event: \", bizeventBody)\n  businessEventsClient.ingest({\n    type: \"application/json; charset=utf-8\",\n    body: bizeventBody,\n  })\n}"
+      },
+      "name": "send_trigger_event",
+      "position": {
+        "x": 0,
+        "y": 1
+      },
+      "predecessors": []
+    }
+  },
+  "title": "{{.name}}",
+  "trigger": {},
+  "triggerType": "Manual",
+  "usages": [],
+  "version": 4
+}

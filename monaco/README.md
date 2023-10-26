@@ -9,14 +9,47 @@
   - `DataExport`
   - `ReadConfig`
   - `WriteConfig`
+- Prepare OAuthClient
 - Set the env vars for tenant
-  - **TENANT_URL** - base url of tenant (eg. https://abc1234.live.dynatrace.com)
+  - **TENANT_URL** - base url of tenant (eg. https://abc1234.apps.dynatrace.com)
+    > **NOTE:** when using oAuth client this must be a new Dynatrace (platform) url
   - **TENANT_TOKEN** - API token prepared earlier
+  - **CLIENT_ID** - oauth client id
+  - **CLIENT_SECRET** - oauth client secret
 
 ## Deploy configuration
 
+The list of available environments and projects can be found in `manifest.yaml`
+
 ```bash
-monaco deploy manifest.yaml -v -e dev
+# to deploy a project to environment
+monaco deploy manifest.yaml -e {{environment-name}} -p {{project-name}}
+
+# when a project is marked as GROUPING
+# you can deploy all it's configs at once
+monaco deploy manifest.yaml -e staging -p easytrade-validation
+
+# or choose to deploy any individual part of it
+monaco deploy mainfest.yaml -e staging -p easytrade-validation.workflows -p easytrade-validation.site-reliability-guardians
+```
+
+> NOTE: only 1 level of project nesting is supported for the grouping type
+
+### Secrets
+
+The tokens and oauth clients are provided via env variables, one possible way to make it more manageable is to create `.env` file (or multiple files)
+
+```bash
+export WKF_TENANT_TOKEN="..."
+export WKF_CLIENT_ID="..."
+export WKF_CLIENT_SECRET="..."
+```
+
+which can then be used to load those envs
+
+```bash
+source .env
+monaco deploy ...
 ```
 
 ## Optional: download configuration

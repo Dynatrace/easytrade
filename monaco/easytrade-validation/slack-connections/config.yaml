@@ -1,0 +1,13 @@
+configs:
+- id: demoability-test-bot
+  config:
+    parameters:
+      slack_connection_token:
+        name: SLACK_TOKEN
+        type: environment
+    template: demoability-test-bot.json
+    skip: false
+  type:
+    settings:
+      schema: app:dynatrace.slack:connection
+      scope: environment

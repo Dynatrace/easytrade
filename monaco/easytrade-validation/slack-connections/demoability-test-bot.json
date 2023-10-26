@@ -1,0 +1,4 @@
+{
+  "name": "demoability-test-bot",
+  "token": "{{ .slack_connection_token }}"
+}
