@@ -1,0 +1,120 @@
+{
+  "description": "",
+  "isPrivate": false,
+  "ownerType": "USER",
+  "schemaVersion": 3,
+  "taskDefaults": {},
+  "tasks": {
+    "aggregate_validation_results": {
+      "action": "dynatrace.automations:run-javascript",
+      "conditions": {
+        "states": {
+          "bizevents_frontend_validation": "OK",
+          "bizevents_validation": "OK",
+          "loadgen_visits_validation": "OK"
+        }
+      },
+      "description": "Build a custom task running js Code",
+      "input": {
+        "script": "import { executionsClient } from \"@dynatrace-sdk/client-automation\"\nimport { businessEventsClient } from \"@dynatrace-sdk/client-classic-environment-v2\"\n\ntype ResultString = keyof typeof resultMapping\ntype TaskResult = {\n  name: string\n  result: string\n  guardianId: string\n  validationId: string\n}\ntype Context = {\n  jobId: string\n  jobProvider: string\n  application: string\n  timeframe: string\n}\ntype ResultBizevent = {\n  \"event.type\": \"demoability.validation.result\"\n  \"event.provider\": string\n  \"tags.job.id\": string\n  \"tags.application\": string\n  result: ResultString\n  details: TaskResult[]\n}\ntype Guardian = {\n  taskName: string\n  guardianName: string\n}\n\nconst guardians: Guardian[] = [\n  {\n    taskName: \"bizevents_validation\",\n    guardianName: \"easytrade-k8s-bizevents\",\n  },\n  {\n    taskName: \"loadgen_visits_validation\",\n    guardianName: \"easytrade-k8s-loadgen-visits\",\n  },\n  {\n    taskName: \"bizevents_frontend_validation\",\n    guardianName: \"easytrade-k8s-bizevents-frontend\",\n  },\n]\n\nconst resultMapping = {\n  error: 0,\n  fail: 1,\n  warning: 2,\n  pass: 3,\n}\n\nexport default async function ({ execution_id }) {\n  const context = await getExecutionContext(execution_id)\n  console.log(\"Execution context: \", context)\n  const taskResults = await Promise.all(\n    guardians.map((guardian) =\u003e getTaskExecutionResult(execution_id, guardian))\n  )\n  console.log(\"Tasks results: \", taskResults)\n  const bizeventBody = getBizeventBody(context, taskResults)\n  console.log(\"Sending result bizevent: \", bizeventBody)\n  await ingestBizevent(bizeventBody)\n}\n\nasync function getExecutionContext(executionId: string): Promise\u003cContext\u003e {\n  const execution = await executionsClient.getExecution({ id: executionId })\n  // console.log(\"-- execution body\", execution)\n  const event = execution.params?.event\n  return {\n    jobId: event[\"tags.job.id\"],\n    jobProvider: event[\"event.provider\"],\n    application: event[\"tags.application\"],\n    timeframe: event[\"srg.variable.timeframe\"],\n  }\n}\n\nasync function getTaskExecutionResult(\n  executionId: string,\n  { taskName, guardianName }: Guardian\n): Promise\u003cTaskResult\u003e {\n  const result = await executionsClient.getTaskExecutionResult({\n    executionId,\n    id: taskName,\n  })\n  return {\n    name: guardianName,\n    result: result.validation_status,\n    guardianId: result.guardian_id,\n    validationId: result.validation_id,\n  }\n}\n\nfunction resultMapper(result: string): ResultString {\n  if (result in resultMapping) {\n    return result as ResultString\n  }\n  console.error(\n    `Result [${result}] not found in list of possible results [${Object.keys(\n      resultMapping\n    )}]`\n  )\n  return \"error\"\n}\n\nfunction getFinalResult(taskResults: { result: string }[]): ResultString {\n  return taskResults\n    .map(({ result }) =\u003e resultMapper(result))\n    .reduce(\n      (acc, curr) =\u003e (resultMapping[acc] \u003c resultMapping[curr] ? acc : curr),\n      \"pass\"\n    )\n}\n\nfunction getBizeventBody(\n  context: Context,\n  taskResults: TaskResult[]\n): ResultBizevent {\n  return {\n    \"event.type\": \"demoability.validation.result\",\n    \"event.provider\": context.jobProvider,\n    \"tags.job.id\": context.jobId,\n    \"tags.application\": context.application,\n    timeframeMinutes: context.timeframe,\n    result: getFinalResult(taskResults),\n    details: taskResults.map(({ result, ...rest }) =\u003e ({\n      ...rest,\n      result: resultMapper(result),\n    })),\n  }\n}\n\nasync function ingestBizevent(body: ResultBizevent) {\n  await businessEventsClient.ingest({\n    type: \"application/json; charset=utf-8\",\n    body,\n  })\n}\n"
+      },
+      "name": "aggregate_validation_results",
+      "position": {
+        "x": 0,
+        "y": 2
+      },
+      "predecessors": [
+        "loadgen_visits_validation",
+        "bizevents_validation",
+        "bizevents_frontend_validation"
+      ]
+    },
+    "bizevents_frontend_validation": {
+      "action": "dynatrace.site.reliability.guardian:validate-guardian-action",
+      "description": "Automation action to start a Site Reliability Guardian validation",
+      "input": {
+        "executionId": "{{`{{`}} execution().id {{`}}`}}",
+        "expressionFrom": "{{`{{`}} event()['timeframe.from'] {{`}}`}}",
+        "expressionTo": "{{`{{`}} event()['timeframe.to'] {{`}}`}}",
+        "objectId": "{{ .easytrade_k8s_bizevents_frontend_id }}",
+        "timeframeInputType": "expression",
+        "variables": [
+          {
+            "definition": "+{{`{{`}} event()[\"srg.variable.timeframe\"] {{`}}`}}",
+            "name": "timeframeMinutes"
+          }
+        ]
+      },
+      "name": "bizevents_frontend_validation",
+      "position": {
+        "x": 1,
+        "y": 1
+      },
+      "predecessors": []
+    },
+    "bizevents_validation": {
+      "action": "dynatrace.site.reliability.guardian:validate-guardian-action",
+      "description": "Automation action to start a Site Reliability Guardian validation",
+      "input": {
+        "executionId": "{{`{{`}} execution().id {{`}}`}}",
+        "expressionFrom": "{{`{{`}} event()[\"timeframe.from\"] {{`}}`}}",
+        "expressionTo": "{{`{{`}} event()[\"timeframe.to\"] {{`}}`}}",
+        "objectId": "{{ .easytrade_k8s_bizevents_id }}",
+        "timeframeInputType": "expression",
+        "variables": [
+          {
+            "definition": "+{{`{{`}} event()[\"srg.variable.timeframe\"] {{`}}`}}",
+            "name": "timeframeMinutes"
+          }
+        ]
+      },
+      "name": "bizevents_validation",
+      "position": {
+        "x": -1,
+        "y": 1
+      },
+      "predecessors": []
+    },
+    "loadgen_visits_validation": {
+      "action": "dynatrace.site.reliability.guardian:validate-guardian-action",
+      "description": "Automation action to start a Site Reliability Guardian validation",
+      "input": {
+        "executionId": "{{`{{`}} execution().id {{`}}`}}",
+        "expressionFrom": "{{`{{`}} event()[\"timeframe.from\"] {{`}}`}}",
+        "expressionTo": "{{`{{`}} event()[\"timeframe.to\"] {{`}}`}}",
+        "objectId": "{{ .easytrade_k8s_loadgen_visits_id }}",
+        "timeframeInputType": "expression",
+        "variables": [
+          {
+            "definition": "+{{`{{`}} event()[\"srg.variable.timeframe\"] {{`}}`}}",
+            "name": "timeframeMinutes"
+          }
+        ]
+      },
+      "name": "loadgen_visits_validation",
+      "position": {
+        "x": 0,
+        "y": 1
+      },
+      "predecessors": []
+    }
+  },
+  "title": "{{.name}}",
+  "trigger": {
+    "eventTrigger": {
+      "filterQuery": "event.type == \"demoability.validation.trigger\" AND tags.application == \"easytrade-k8s\"",
+      "isActive": true,
+      "triggerConfiguration": {
+        "type": "event",
+        "value": {
+          "eventType": "bizevents",
+          "query": "event.type == \"demoability.validation.trigger\" AND tags.application == \"easytrade-k8s\""
+        }
+      },
+      "uniqueExpression": null
+    }
+  },
+  "triggerType": "Event",
+  "usages": [],
+  "version": 9
+}

@@ -1,0 +1,44 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [pricing-service | Go] - GET /v1/prices/instrument/{instrumentId}",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/v1/prices/instrument",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "GET",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.instrument-price"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "records",
+        "source": {
+          "sourceType": "request.parameters",
+          "path": "records"
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,66 @@
+configs:
+  - id: easytrade-k8s-bizevents-frontend
+    config:
+      template: easytrade-k8s-bizevents-frontend.json
+      skip: false
+      parameters:
+        timeframeMinutes: 15
+        referenceTimeframeMinutes: 15
+        depositStartReferenceCount: 30
+        depositFinishReferenceCount: 30
+        depositErrorReferenceCount: 5
+        withdrawStartReferenceCount: 5
+        withdrawFinishReferenceCount: 5
+        withdrawErrorReferenceCount: 5
+        buyStartReferenceCount: 5
+        sellStartReferenceCount: 5
+        buyFinishReferenceCount: 5
+        sellFinishReferenceCount: 5
+        buyErrorReferenceCount: 5
+        sellErrorReferenceCount: 5
+    type:
+      settings:
+        schema: app:dynatrace.site.reliability.guardian:guardians
+        scope: environment
+  - id: easytrade-k8s-loadgen-visits
+    config:
+      template: easytrade-k8s-loadgen-visits.json
+      skip: false
+      parameters:
+        timeframeMinutes: 15
+        referenceTimeframeMinutes: 15
+        visitsReferenceCount: 50
+        failureRatePercentThreshold: 15
+    type:
+      settings:
+        schema: app:dynatrace.site.reliability.guardian:guardians
+        scope: environment
+  - id: easytrade-k8s-bizevents
+    config:
+      template: easytrade-k8s-bizevents.json
+      skip: false
+      parameters:
+        timeframeMinutes: 15
+        referenceTimeframeMinutes: 15
+        totalReferenceCount: 7500
+        depositReferenceCount: 20
+        withdrawReferenceCount: 5
+        longBuySellReferenceCount: 45
+        quickBuySellReferenceCount: 10
+        balanceReferenceCount: 100
+        instrumentsReferenceCount: 80
+        flagReferenceCount: 1250
+        offerReferenceCount: 1250
+        managerPackageReferenceCount: 1250
+        managerProductReferenceCount: 1250
+        loginReferenceCount: 70
+        logoutReferenceCount: 65
+        priceReferenceCount: 70
+        managerAccountReferenceCount: 70
+        latestPriceReferenceCount: 90
+        longProcessReferenceCount: 10
+        accountReferenceCount: 70
+    type:
+      settings:
+        schema: app:dynatrace.site.reliability.guardian:guardians
+        scope: environment

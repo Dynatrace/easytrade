@@ -1,14 +1,29 @@
 manifestVersion: 1.0
 projects:
+  - name: application
   - name: bizevents
-    path: bizevents
-
+  - name: bizevents-processing-rules
+  - name: management-zone
+  - name: easytrade-validation
+    path: easytrade-validation
+    type: grouping
 environmentGroups:
   - name: development
     environments:
       - name: dev
         url:
-          value: "[fill dev environment url]"
+          type: environment
+          value: TENANT_URL
         auth:
           token:
-            name: "devToken"
+            type: environment
+            name: TENANT_TOKEN
+          oAuth:
+            clientId:
+              type: environment
+              name: CLIENT_ID
+            clientSecret:
+              type: environment
+              name: CLIENT_SECRET
+            tokenEndpoint:
+              value: https://sso-sprint.dynatracelabs.com/sso/oauth2/token

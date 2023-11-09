@@ -1,0 +1,523 @@
+configs:
+  - id: easytrade_credit-card-order-service_get-shipping-address
+    config:
+      name: easytrade_credit-card-order-service_get-shipping-address
+      template: easytrade_credit-card-order-service_get-shipping-address.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_quick-sell
+    config:
+      name: easytrade_nginx_quick-sell
+      template: easytrade_nginx_quick-sell.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_get-flags
+    config:
+      name: easytrade_nginx_get-flags
+      template: easytrade_nginx_get-flags.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_logout
+    config:
+      name: easytrade_nginx_logout
+      template: easytrade_nginx_logout.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_manager_get-packages
+    config:
+      name: easytrade_manager_get-packages
+      template: easytrade_manager_get-packages.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_accountservice_get-preset-accounts
+    config:
+      name: easytrade_accountservice_get-preset-accounts
+      template: easytrade_accountservice_get-preset-accounts.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_feature-flag-service_get-flag
+    config:
+      name: easytrade_feature-flag-service_get-flag
+      template: easytrade_feature-flag-service_get-flag.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_feature-flag-service_get-flags
+    config:
+      name: easytrade_feature-flag-service_get-flags
+      template: easytrade_feature-flag-service_get-flags.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_long-sell
+    config:
+      name: easytrade_nginx_long-sell
+      template: easytrade_nginx_long-sell.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_manager_get-product
+    config:
+      name: easytrade_manager_get-product
+      template: easytrade_manager_get-product.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_withdraw
+    config:
+      name: easytrade_nginx_withdraw
+      template: easytrade_nginx_withdraw.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_get-trades
+    config:
+      name: easytrade_nginx_get-trades
+      template: easytrade_nginx_get-trades.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_get-account
+    config:
+      name: easytrade_nginx_get-account
+      template: easytrade_nginx_get-account.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_pricing-service_latest
+    config:
+      name: easytrade_pricing-service_latest
+      template: easytrade_pricing-service_latest.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_broker-service_quick-buy
+    config:
+      name: easytrade_broker-service_quick-buy
+      template: easytrade_broker-service_quick-buy.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_get-preset-accounts
+    config:
+      name: easytrade_nginx_get-preset-accounts
+      template: easytrade_nginx_get-preset-accounts.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_login
+    config:
+      name: easytrade_nginx_login
+      template: easytrade_nginx_login.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_broker-service_long-sell
+    config:
+      name: easytrade_broker-service_long-sell
+      template: easytrade_broker-service_long-sell.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_manager_get-package
+    config:
+      name: easytrade_manager_get-package
+      template: easytrade_manager_get-package.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_loginservice_signup
+    config:
+      name: easytrade_loginservice_signup
+      template: easytrade_loginservice_signup.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_pricing-service_last
+    config:
+      name: easytrade_pricing-service_last
+      template: easytrade_pricing-service_last.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_offerservice_get-offer
+    config:
+      name: easytrade_offerservice_get-offer
+      template: easytrade_offerservice_get-offer.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_get-balance
+    config:
+      name: easytrade_nginx_get-balance
+      template: easytrade_nginx_get-balance.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_credit-card-order-service_order
+    config:
+      name: easytrade_credit-card-order-service_order
+      template: easytrade_credit-card-order-service_order.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_toggle-flag
+    config:
+      name: easytrade_nginx_toggle-flag
+      template: easytrade_nginx_toggle-flag.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_quick-buy
+    config:
+      name: easytrade_nginx_quick-buy
+      template: easytrade_nginx_quick-buy.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_broker-service_process-long-trades
+    config:
+      name: easytrade_broker-service_process-long-trades
+      template: easytrade_broker-service_process-long-trades.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_order-credit-card
+    config:
+      name: easytrade_nginx_order-credit-card
+      template: easytrade_nginx_order-credit-card.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_manager_get-account
+    config:
+      name: easytrade_manager_get-account
+      template: easytrade_manager_get-account.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_long-buy
+    config:
+      name: easytrade_nginx_long-buy
+      template: easytrade_nginx_long-buy.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_pricing-service_get-instrument-price
+    config:
+      name: easytrade_pricing-service_get-instrument-price
+      template: easytrade_pricing-service_get-instrument-price.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_credit-card-order-service_delete-card
+    config:
+      name: easytrade_credit-card-order-service_delete-card
+      template: easytrade_credit-card-order-service_delete-card.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_broker-service_withdraw
+    config:
+      name: easytrade_broker-service_withdraw
+      template: easytrade_broker-service_withdraw.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_accountservice_get-account
+    config:
+      name: easytrade_accountservice_get-account
+      template: easytrade_accountservice_get-account.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_broker-service_get-instruments
+    config:
+      name: easytrade_broker-service_get-instruments
+      template: easytrade_broker-service_get-instruments.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_engine_trade-closed
+    config:
+      name: easytrade_engine_trade-closed
+      template: easytrade_engine_trade-closed.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_loginservice_login
+    config:
+      name: easytrade_loginservice_login
+      template: easytrade_loginservice_login.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_credit-card-latest-status
+    config:
+      name: easytrade_nginx_credit-card-latest-status
+      template: easytrade_nginx_credit-card-latest-status.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_delete-card-order
+    config:
+      name: easytrade_nginx_delete-card-order
+      template: easytrade_nginx_delete-card-order.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_credit-card-status
+    config:
+      name: easytrade_nginx_credit-card-status
+      template: easytrade_nginx_credit-card-status.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_broker-service_get-trades
+    config:
+      name: easytrade_broker-service_get-trades
+      template: easytrade_broker-service_get-trades.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_credit-card-order-service_update-order-status
+    config:
+      name: easytrade_credit-card-order-service_update-order-status
+      template: easytrade_credit-card-order-service_update-order-status.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_credit-card-order-service_get-latest-status
+    config:
+      name: easytrade_credit-card-order-service_get-latest-status
+      template: easytrade_credit-card-order-service_get-latest-status.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_get-instrument-price
+    config:
+      name: easytrade_nginx_get-instrument-price
+      template: easytrade_nginx_get-instrument-price.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_broker-service_get-balance
+    config:
+      name: easytrade_broker-service_get-balance
+      template: easytrade_broker-service_get-balance.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_broker-service_long-buy
+    config:
+      name: easytrade_broker-service_long-buy
+      template: easytrade_broker-service_long-buy.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_broker-service_quick-sell
+    config:
+      name: easytrade_broker-service_quick-sell
+      template: easytrade_broker-service_quick-sell.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_loginservice_logout
+    config:
+      name: easytrade_loginservice_logout
+      template: easytrade_loginservice_logout.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_get-instruments
+    config:
+      name: easytrade_nginx_get-instruments
+      template: easytrade_nginx_get-instruments.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_signup
+    config:
+      name: easytrade_nginx_signup
+      template: easytrade_nginx_signup.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_feature-flag-service_toggle-flag
+    config:
+      name: easytrade_feature-flag-service_toggle-flag
+      template: easytrade_feature-flag-service_toggle-flag.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_broker-service_deposit
+    config:
+      name: easytrade_broker-service_deposit
+      template: easytrade_broker-service_deposit.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_credit-card-order-service_get-status
+    config:
+      name: easytrade_credit-card-order-service_get-status
+      template: easytrade_credit-card-order-service_get-status.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_manager_get-products
+    config:
+      name: easytrade_manager_get-products
+      template: easytrade_manager_get-products.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_manager_get-accounts
+    config:
+      name: easytrade_manager_get-accounts
+      template: easytrade_manager_get-accounts.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_offerservice_signup
+    config:
+      name: easytrade_offerservice_signup
+      template: easytrade_offerservice_signup.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_nginx_deposit
+    config:
+      name: easytrade_nginx_deposit
+      template: easytrade_nginx_deposit.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
+  - id: easytrade_manager_modify-account
+    config:
+      name: easytrade_manager_modify-account
+      template: easytrade_manager_modify-account.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment

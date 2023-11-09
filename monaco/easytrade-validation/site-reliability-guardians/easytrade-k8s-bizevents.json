@@ -1,0 +1,214 @@
+{
+  "name": "easytrade-k8s-bizevents",
+  "tags": [],
+  "variables": [
+    {
+      "name": "timeframeMinutes",
+      "definition": "{{ .timeframeMinutes }}"
+    },
+    {
+      "name": "referenceTimeframeMinutes",
+      "definition": "{{ .referenceTimeframeMinutes }}"
+    },
+    {
+      "name": "totalReferenceCount",
+      "definition": "{{ .totalReferenceCount }}"
+    },
+    {
+      "name": "depositReferenceCount",
+      "definition": "{{ .depositReferenceCount }}"
+    },
+    {
+      "name": "withdrawReferenceCount",
+      "definition": "{{ .withdrawReferenceCount }}"
+    },
+    {
+      "name": "longBuySellReferenceCount",
+      "definition": "{{ .longBuySellReferenceCount }}"
+    },
+    {
+      "name": "quickBuySellReferenceCount",
+      "definition": "{{ .quickBuySellReferenceCount }}"
+    },
+    {
+      "name": "balanceReferenceCount",
+      "definition": "{{ .balanceReferenceCount }}"
+    },
+    {
+      "name": "instrumentsReferenceCount",
+      "definition": "{{ .instrumentsReferenceCount }}"
+    },
+    {
+      "name": "flagReferenceCount",
+      "definition": "{{ .flagReferenceCount }}"
+    },
+    {
+      "name": "offerReferenceCount",
+      "definition": "{{ .offerReferenceCount }}"
+    },
+    {
+      "name": "managerPackageReferenceCount",
+      "definition": "{{ .managerPackageReferenceCount }}"
+    },
+    {
+      "name": "managerProductReferenceCount",
+      "definition": "{{ .managerProductReferenceCount }}"
+    },
+    {
+      "name": "loginReferenceCount",
+      "definition": "{{ .loginReferenceCount }}"
+    },
+    {
+      "name": "logoutReferenceCount",
+      "definition": "{{ .logoutReferenceCount }}"
+    },
+    {
+      "name": "priceReferenceCount",
+      "definition": "{{ .priceReferenceCount }}"
+    },
+    {
+      "name": "managerAccountReferenceCount",
+      "definition": "{{ .managerAccountReferenceCount }}"
+    },
+    {
+      "name": "latestPriceReferenceCount",
+      "definition": "{{ .latestPriceReferenceCount }}"
+    },
+    {
+      "name": "longProcessReferenceCount",
+      "definition": "{{ .longProcessReferenceCount }}"
+    },
+    {
+      "name": "accountReferenceCount",
+      "definition": "{{ .accountReferenceCount }}"
+    }
+  ],
+  "objectives": [
+    {
+      "name": "Bizevent for [EasyTrade] total count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.provider, \"www.easytrade.com\")\n| fieldsAdd n = 1\n| summarize sum(n) / $totalReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [deposit] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.deposit\")\n| fieldsAdd n = 1\n| summarize sum(n) / $depositReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [withdraw] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.withdraw\")\n| fieldsAdd n = 1\n| summarize sum(n) / $withdrawReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [long-buy | long-sell] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.long-buy\") or matchesValue(event.type, \"com.easytrade.long-sell\")\n| fieldsAdd n = 1\n| summarize sum(n) / $longBuySellReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [quick-buy | quick-sell] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.quick-buy\") or matchesValue(event.type, \"com.easytrade.quick-sell\")\n| fieldsAdd n = 1\n| summarize sum(n) / $quickBuySellReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [balance] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.balance\")\n| fieldsAdd n = 1\n| summarize sum(n) / $balanceReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [instruments] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.instruments\")\n| fieldsAdd n = 1\n| summarize sum(n) / $instrumentsReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [account] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.account\")\n| fieldsAdd n = 1\n| summarize sum(n) / $accountReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [flag] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.flag\")\n| fieldsAdd n = 1\n| summarize sum(n) / $flagReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [login] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.login\")\n| fieldsAdd n = 1\n| summarize sum(n) / $loginReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [logout] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.logout\")\n| fieldsAdd n = 1\n| summarize sum(n) / $logoutReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [offer] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.offer\")\n| fieldsAdd n = 1\n| summarize sum(n) / $offerReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [instrument-price] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.instrument-price\")\n| fieldsAdd n = 1\n| summarize sum(n) / $priceReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [manager.account] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.manager.account\")\n| fieldsAdd n = 1\n| summarize sum(n) / $managerAccountReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [manager.packages] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.manager.packages\")\n| fieldsAdd n = 1\n| summarize sum(n) / $managerPackageReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [manager.products] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.manager.products\")\n| fieldsAdd n = 1\n| summarize sum(n) / $managerProductReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [latest-prices] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.latest-prices\")\n| fieldsAdd n = 1\n| summarize sum(n) / $latestPriceReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [process-long-trades] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.process-long-trades\")\n| fieldsAdd n = 1\n| summarize sum(n) / $longProcessReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    }
+  ]
+}
