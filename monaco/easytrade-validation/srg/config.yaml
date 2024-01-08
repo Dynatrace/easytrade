@@ -1,6 +1,7 @@
 configs:
   - id: easytrade-k8s-bizevents-frontend
     config:
+      name: easytrade-k8s-bizevents-frontend
       template: easytrade-k8s-bizevents-frontend.json
       skip: false
       parameters:
@@ -24,6 +25,7 @@ configs:
         scope: environment
   - id: easytrade-k8s-loadgen-visits
     config:
+      name: easytrade-k8s-loadgen-visits
       template: easytrade-k8s-loadgen-visits.json
       skip: false
       parameters:
@@ -31,12 +33,16 @@ configs:
         referenceTimeframeMinutes: 15
         visitsReferenceCount: 50
         failureRatePercentThreshold: 15
+        loadgenContainerName: loadgen
+        visitStartMsg: Running visit
+        visitErrorMsg: Worker had error when running visit
     type:
       settings:
         schema: app:dynatrace.site.reliability.guardian:guardians
         scope: environment
   - id: easytrade-k8s-bizevents
     config:
+      name: easytrade-k8s-bizevents
       template: easytrade-k8s-bizevents.json
       skip: false
       parameters:
