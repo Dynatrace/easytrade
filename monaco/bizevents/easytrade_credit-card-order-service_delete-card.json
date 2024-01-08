@@ -38,6 +38,13 @@
           "sourceType": "response.body",
           "path": "message"
         }
+      },
+      {
+        "name": "statusCode",
+        "source": {
+          "sourceType": "response.body",
+          "path": "statusCode"
+        }
       }
     ]
   }

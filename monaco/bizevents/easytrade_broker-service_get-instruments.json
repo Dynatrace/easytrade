@@ -33,10 +33,59 @@
     },
     "data": [
       {
+        "name": "array",
+        "source": {
+          "sourceType": "constant.string",
+          "source": "true"
+        }
+      },
+      {
         "name": "accountId",
         "source": {
           "sourceType": "request.parameters",
           "path": "accountId"
+        }
+      },
+      {
+        "name": "firstId",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.0.id"
+        }
+      },
+      {
+        "name": "firstCode",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.0.code"
+        }
+      },
+      {
+        "name": "firstName",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.0.name"
+        }
+      },
+      {
+        "name": "firstProductId",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.0.productId"
+        }
+      },
+      {
+        "name": "firstAmount",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.0.amount"
+        }
+      },
+      {
+        "name": "firstPriceClose",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.0.price.close"
         }
       }
     ]
