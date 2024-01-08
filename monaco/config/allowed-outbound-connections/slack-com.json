@@ -1,8 +1,6 @@
 {
   "allowedOutboundConnections": {
     "enforced": true,
-    "hostList": [
-      "slack.com"
-    ]
+    "hostList": ["slack.com"]
   }
 }

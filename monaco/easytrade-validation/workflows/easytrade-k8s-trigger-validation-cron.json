@@ -19,7 +19,7 @@
       "predecessors": []
     }
   },
-  "title": "{{.name}}",
+  "title": "{{ .name }}",
   "trigger": {
     "schedule": {
       "filterParameters": {},
@@ -36,6 +36,5 @@
     }
   },
   "triggerType": "Schedule",
-  "usages": [],
-  "version": 2
+  "usages": []
 }
