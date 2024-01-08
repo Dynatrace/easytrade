@@ -1,7 +1,16 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [credit-card-order-service | Java] - POST /v1/orders/{id}/status",
+  "ruleName": "EasyTrade [credit-card-order-service | Java] - POST /v1/orders/{id}/status:error",
   "triggers": [
+    {
+      "source": {
+        "dataSource": "request.body",
+        "path": "type"
+      },
+      "type": "EQUALS",
+      "value": "CARD_ERROR",
+      "caseSensitive": false
+    },
     {
       "source": {
         "dataSource": "request.method"
@@ -34,7 +43,7 @@
     },
     "type": {
       "sourceType": "constant.string",
-      "source": "com.easytrade.update-credit-card-status"
+      "source": "com.easytrade.update-credit-card-status.error"
     },
     "category": {
       "sourceType": "request.path"

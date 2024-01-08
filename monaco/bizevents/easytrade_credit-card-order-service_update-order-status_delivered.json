@@ -1,0 +1,82 @@
+{
+  "enabled": true,
+  "ruleName": "EasyTrade [credit-card-order-service | Java] - POST /v1/orders/{id}/status:delivered",
+  "triggers": [
+    {
+      "source": {
+        "dataSource": "request.body",
+        "path": "type"
+      },
+      "type": "EQUALS",
+      "value": "CARD_DELIVERED",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.method"
+      },
+      "type": "EQUALS",
+      "value": "POST",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "ENDS_WITH",
+      "value": "/status",
+      "caseSensitive": false
+    },
+    {
+      "source": {
+        "dataSource": "request.path"
+      },
+      "type": "STARTS_WITH",
+      "value": "/v1/orders",
+      "caseSensitive": false
+    }
+  ],
+  "event": {
+    "provider": {
+      "sourceType": "constant.string",
+      "source": "www.easytrade.com"
+    },
+    "type": {
+      "sourceType": "constant.string",
+      "source": "com.easytrade.update-credit-card-status.delivered"
+    },
+    "category": {
+      "sourceType": "request.path"
+    },
+    "data": [
+      {
+        "name": "details",
+        "source": {
+          "sourceType": "request.body",
+          "path": "details"
+        }
+      },
+      {
+        "name": "timestamp",
+        "source": {
+          "sourceType": "request.body",
+          "path": "timestamp"
+        }
+      },
+      {
+        "name": "type",
+        "source": {
+          "sourceType": "request.body",
+          "path": "type"
+        }
+      },
+      {
+        "name": "orderId",
+        "source": {
+          "sourceType": "request.body",
+          "path": "orderId"
+        }
+      }
+    ]
+  }
+}
