@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: offerservice
-          image: gcr.io/dynatrace-demoability/easytrade/offerservice:a9edfaf
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/offerservice:b97fdff
           ports:
             - containerPort: 8080
           envFrom:

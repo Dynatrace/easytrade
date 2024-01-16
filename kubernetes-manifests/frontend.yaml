@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: gcr.io/dynatrace-demoability/easytrade/frontend:a9edfaf
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/frontend:b97fdff
           ports:
             - containerPort: 3000
           resources:

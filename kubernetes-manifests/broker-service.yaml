@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: broker-service
-          image: gcr.io/dynatrace-demoability/easytrade/broker-service:a9edfaf
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/broker-service:b97fdff
           ports:
             - containerPort: 80
           envFrom:

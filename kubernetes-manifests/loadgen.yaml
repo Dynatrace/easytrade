@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: loadgen
-          image: loadgen
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loadgen:b97fdff
           imagePullPolicy: Always
           env:
             - name: EASYTRADE_URL
