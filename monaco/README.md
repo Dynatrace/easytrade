@@ -4,18 +4,45 @@
 
 - Install the Monaco ([docs](https://www.dynatrace.com/support/help/manage/configuration-as-code/monaco/installation))
 - Prepare the API token with permissions
-  - `settings.read`
-  - `settings.write`
-  - `DataExport`
-  - `ReadConfig`
-  - `WriteConfig`
+  - _CaptureRequestData_
+  - _credentialVault.read_
+  - _credentialVault.write_
+  - _DataExport_
+  - _ReadConfig_
+  - _settings.read_
+  - _settings.write_
+  - _WriteConfig_
 - Prepare OAuthClient
+  - _app-engine:apps:run_
+  - _app-engine:apps:install_
+  - _automation:calendars:read_
+  - _automation:calendars:write_
+  - _automation:rules:write_
+  - _automation:rules:read_
+  - _automation:workflows:run_
+  - _automation:workflows:write_
+  - _automation:workflows:read_
+  - _settings:schemas:read_
+  - _settings:objects:write_
+  - _settings:objects:read_
 - Set the env vars for tenant
   - **TENANT_URL** - base url of tenant (eg. https://abc1234.apps.dynatrace.com)
     > **NOTE:** when using oAuth client this must be a new Dynatrace (platform) url
   - **TENANT_TOKEN** - API token prepared earlier
   - **CLIENT_ID** - oauth client id
   - **CLIENT_SECRET** - oauth client secret
+
+## Warning
+
+> NOTE: This configuration contains `allowed-outbound-connections` settings which is a singleton. Which means if you deploy it, it will override your existing configuration.
+
+If you have outbound connections defined, before deploying this config either back it up:
+
+```bash
+monaco download --manifest manifest.yaml -e dev -s builtin:dt-javascript-runtime.allowed-outbound-connections
+```
+
+or add it to this [configuration](./config/allowed-outbound-connections/config.yaml).
 
 ## Deploy configuration
 

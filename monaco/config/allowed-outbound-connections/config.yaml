@@ -1,7 +1,12 @@
 configs:
-  - id: slack-com
+  - id: outbound-connections
     config:
-      template: slack-com.json
+      template: outbound-connections.json
+      parameters:
+        connectionList:
+          type: list
+          values:
+            - slack.com
       skip: false
     type:
       settings:
