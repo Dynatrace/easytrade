@@ -64,17 +64,12 @@ monaco deploy mainfest.yaml -e staging -p easytrade-validation.workflows -p easy
 
 ### Secrets
 
-The tokens and oauth clients are provided via env variables, one possible way to make it more manageable is to create `.env` file (or multiple files)
+The tokens and oauth clients are provided via env variables, one possible way to make it more manageable is to create `.env` file (or multiple files) which can then be used to load those envs.
+
+> You can use the `.env.example` as a template for your `.env` file. _NOTE:_ don't update it directly as it's tracked by git and you may end up pushing secrets to repository.
 
 ```bash
-export WKF_TENANT_TOKEN="..."
-export WKF_CLIENT_ID="..."
-export WKF_CLIENT_SECRET="..."
-```
-
-which can then be used to load those envs
-
-```bash
+# if you followed the .env.example template you can load envs like this
 source .env
 monaco deploy ...
 ```
