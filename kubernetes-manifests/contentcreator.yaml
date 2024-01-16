@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: contentcreator
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/contentcreator:b97fdff
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/contentcreator:d863a2e
           env:
             - name: MSSQL_CONNECTIONSTRING
               valueFrom:

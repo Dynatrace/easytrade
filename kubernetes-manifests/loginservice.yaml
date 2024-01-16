@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: loginservice
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loginservice:b97fdff
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loginservice:d863a2e
           ports:
             - containerPort: 80
           env:
