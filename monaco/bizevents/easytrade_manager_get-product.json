@@ -54,7 +54,7 @@
         }
       },
       {
-        "name": "productId",
+        "name": "response",
         "source": {
           "sourceType": "response.body",
           "path": "id"

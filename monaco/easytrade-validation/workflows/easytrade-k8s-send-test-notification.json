@@ -9,7 +9,7 @@
       "action": "dynatrace.automations:run-javascript",
       "description": "Build a custom task running js Code",
       "input": {
-        "script": "import { executionsClient } from \"@dynatrace-sdk/client-automation\"\n\nconst resultIcons = {\n  error: \"failed\",\n  fail: \"failed\",\n  warning: \"warning\",\n  pass: \"passed\",\n}\n\ntype ResultString = keyof typeof resultIcons\ntype EventDetail = {\n  name: string\n  result: ResultString\n  guardianId: string\n  validationId: string\n}\ntype Context = {\n  result: ResultString\n  details: EventDetail[]\n}\ntype ResultDetail = {\n  name: string\n  result: ResultString\n  resultIcon: string\n  link: string\n}\ntype Result = {\n  tenantUrl: string\n  tenantId: string\n  result: ResultString\n  resultIcon: string\n  details: ResultDetail[]\n}\n\nexport default async function ({ execution_id }) {\n  const context = await getExecutionContext(execution_id)\n  console.log(\"Context: \", context)\n  const result: Result = {\n    tenantId: globalThis.tenantId,\n    tenantUrl: globalThis.environmentUrl,\n    result: context.result,\n    resultIcon: resultIcons[context.result],\n    details: context.details.map(detailMapper),\n  }\n  console.log(\"Passing result to slack step: \", result)\n  return result\n}\n\nasync function getExecutionContext(executionId: string): Promise\u003cContext\u003e {\n  const execution = await executionsClient.getExecution({ id: executionId })\n  // console.log(\"-- execution body\", execution)\n  const event = execution.params?.event\n  return {\n    result: event[\"result\"],\n    details: JSON.parse(event[\"details\"]),\n  }\n}\n\nfunction getValidationLink(guardianId: string, validationId: string) {\n  const baseUrl = globalThis.environmentUrl\n  const path = `ui/apps/dynatrace.site.reliability.guardian/analysis/${guardianId{{`}}`}}`\n  const params = `validationId=${validationId}`\n  return `${baseUrl}${path}?${params}`\n}\n\nfunction detailMapper({\n  result,\n  name,\n  guardianId,\n  validationId,\n}: EventDetail): ResultDetail {\n  return {\n    result,\n    name,\n    resultIcon: resultIcons[result],\n    link: getValidationLink(guardianId, validationId),\n  }\n}"
+        "script": "import { executionsClient } from \"@dynatrace-sdk/client-automation\"\n\nconst resultIcons = {\n  error: \"failed\",\n  fail: \"failed\",\n  warning: \"warning\",\n  pass: \"passed\",\n}\n\ntype ResultString = keyof typeof resultIcons\ntype ValidationDetail = {\n  name: string\n  result: ResultString\n  validationUrl: string\n}\ntype EventData = {\n  result: ResultString\n  details: ValidationDetail[]\n}\ntype ResultDetail = {\n  name: string\n  result: ResultString\n  resultIcon: string\n  validationUrl: string\n}\ntype Result = {\n  tenantUrl: string\n  tenantId: string\n  result: ResultString\n  resultIcon: string\n  details: ResultDetail[]\n}\n\nexport default async function ({ execution_id }) {\n  const eventData = await getEventData(execution_id)\n  console.log(\"Context: \", eventData)\n  const result: Result = {\n    tenantId: globalThis.tenantId,\n    tenantUrl: globalThis.environmentUrl,\n    result: eventData.result,\n    resultIcon: resultIcons[eventData.result],\n    details: eventData.details.map(({ result, ...rest }) =\u003e ({\n      ...rest,\n      result,\n      resultIcon: resultIcons[result],\n    })),\n  }\n  console.log(\"Passing result to slack step: \", result)\n  return result\n}\n\nasync function getEventData(executionId: string): Promise\u003cEventData\u003e {\n  const execution = await executionsClient.getExecution({ id: executionId })\n  // console.log(\"-- execution body\", execution)\n  const event = execution.params?.event\n  return {\n    result: event[\"result\"],\n    details: JSON.parse(event[\"details\"]),\n  }\n}\n"
       },
       "name": "preprocess",
       "position": {
@@ -34,7 +34,7 @@
         "connection": "{{ .slack_connection_id }}",
         "executionDate": "{{`{{`}} execution().started_at {{`}}`}}",
         "executionID": "{{`{{`}} execution().id {{`}}`}}",
-        "message": "*Environment*: \u003c{{`{{`}} result(\"preprocess\").tenantUrl {{`}}`}}|{{`{{`}} result(\"preprocess\").tenantId {{`}}`}}\u003e\n*Trigger*: _{{`{{`}} event()[\"event.provider\"] {{`}}`}}_\n*Timeframe*: {{`{{`}} event()[\"timeframeMinutes\"] {{`}}`}}m\n*Application*: _easytrade-k8s_\n*Result*: :{{`{{`}} result(\"preprocess\").resultIcon {{`}}`}}: *{{`{{`}} event()[\"result\"] {{`}}`}}* :{{`{{`}} result(\"preprocess\").resultIcon {{`}}`}}:\n*Details*:\n{% for detail in result(\"preprocess\").details %}\n- *{{`{{`}}detail.name{{`}}`}}*: :{{`{{`}} detail.resultIcon {{`}}`}}: \u003c{{`{{`}} detail.link {{`}}`}}|{{`{{`}} detail.result {{`}}`}}\u003e :{{`{{`}} detail.resultIcon {{`}}`}}:\n{% endfor %}\n*DQL* to get result bizevent:\n```\nfetch bizevents\n| filter event.type == \"demoability.validation.result\" AND event.id == \"{{`{{`}} event()[\"event.id\"] {{`}}`}}\"\n```",
+        "message": "*Environment*: \u003c{{`{{`}} result(\"preprocess\").tenantUrl {{`}}`}}|{{`{{`}} result(\"preprocess\").tenantId {{`}}`}}\u003e\n*Trigger*: _{{`{{`}} event()[\"event.provider\"] {{`}}`}}_\n*Application*: _easytrade-k8s_\n*Result*: :{{`{{`}} result(\"preprocess\").resultIcon {{`}}`}}: *{{`{{`}} result(\"preprocess\").result {{`}}`}}* :{{`{{`}} result(\"preprocess\").resultIcon {{`}}`}}:\n*Details*:\n{% for detail in result(\"preprocess\").details %}\n- *{{`{{`}} detail.name {{`}}`}}*: :{{`{{`}} detail.resultIcon {{`}}`}}: \u003c{{`{{`}} detail.validationUrl {{`}}`}}|{{`{{`}} detail.result {{`}}`}}\u003e :{{`{{`}} detail.resultIcon {{`}}`}}:\n{% endfor %}\n*DQL* to get result bizevent:\n```\nfetch bizevents\n| filter event.type == \"workflows.validation.result\" AND event.id == \"{{`{{`}} event()[\"event.id\"] {{`}}`}}\"\n```",
         "reaction": [],
         "selectedRequestType": 0,
         "workflowID": "{{`{{`}} execution().workflow.id {{`}}`}}"
@@ -47,7 +47,7 @@
       "predecessors": ["preprocess"]
     }
   },
-  "title": "{{.name}}",
+  "title": "{{ .name }}",
   "trigger": {
     "eventTrigger": {
       "filterQuery": "event.type == \"demoability.validation.result\" AND tags.application == \"easytrade-k8s\"",
@@ -63,6 +63,5 @@
     }
   },
   "triggerType": "Event",
-  "usages": [],
-  "version": 2
+  "usages": []
 }

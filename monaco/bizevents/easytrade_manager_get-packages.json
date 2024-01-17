@@ -33,6 +33,41 @@
     },
     "data": [
       {
+        "name": "array",
+        "source": {
+          "sourceType": "constant.string",
+          "source": "true"
+        }
+      },
+      {
+        "name": "firstId",
+        "source": {
+          "sourceType": "response.body",
+          "path": "0.id"
+        }
+      },
+      {
+        "name": "firstName",
+        "source": {
+          "sourceType": "response.body",
+          "path": "0.name"
+        }
+      },
+      {
+        "name": "firstPrice",
+        "source": {
+          "sourceType": "response.body",
+          "path": "0.price"
+        }
+      },
+      {
+        "name": "firstSupport",
+        "source": {
+          "sourceType": "response.body",
+          "path": "0.support"
+        }
+      },
+      {
         "name": "response",
         "source": {
           "sourceType": "response.body",

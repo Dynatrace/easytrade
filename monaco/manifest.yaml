@@ -7,6 +7,9 @@ projects:
   - name: easytrade-validation
     path: easytrade-validation
     type: grouping
+  - name: config
+    path: config
+    type: grouping
 environmentGroups:
   - name: development
     environments:

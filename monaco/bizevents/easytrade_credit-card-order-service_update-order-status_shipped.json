@@ -1,13 +1,22 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [credit-card-order-service | Java] - GET /v1/orders/{id}/shipping-address",
+  "ruleName": "EasyTrade [credit-card-order-service | Java] - POST /v1/orders/{id}/status:shipped",
   "triggers": [
+    {
+      "source": {
+        "dataSource": "request.body",
+        "path": "type"
+      },
+      "type": "EQUALS",
+      "value": "CARD_SHIPPED",
+      "caseSensitive": false
+    },
     {
       "source": {
         "dataSource": "request.method"
       },
       "type": "EQUALS",
-      "value": "GET",
+      "value": "POST",
       "caseSensitive": false
     },
     {
@@ -15,7 +24,7 @@
         "dataSource": "request.path"
       },
       "type": "ENDS_WITH",
-      "value": "/shipping-address",
+      "value": "/status",
       "caseSensitive": false
     },
     {
@@ -34,45 +43,38 @@
     },
     "type": {
       "sourceType": "constant.string",
-      "source": "com.easytrade.credit-card-shipping-address"
+      "source": "com.easytrade.update-credit-card-status.shipped"
     },
     "category": {
       "sourceType": "request.path"
     },
     "data": [
       {
-        "name": "statusCode",
+        "name": "details",
         "source": {
-          "sourceType": "response.body",
-          "path": "statusCode"
+          "sourceType": "request.body",
+          "path": "details"
         }
       },
       {
-        "name": "message",
+        "name": "timestamp",
         "source": {
-          "sourceType": "response.body",
-          "path": "message"
+          "sourceType": "request.body",
+          "path": "timestamp"
         }
       },
       {
-        "name": "email",
+        "name": "type",
         "source": {
-          "sourceType": "response.body",
-          "path": "results.email"
+          "sourceType": "request.body",
+          "path": "type"
         }
       },
       {
-        "name": "name",
+        "name": "orderId",
         "source": {
-          "sourceType": "response.body",
-          "path": "results.name"
-        }
-      },
-      {
-        "name": "shippingAddress",
-        "source": {
-          "sourceType": "response.body",
-          "path": "results.shippingAddress"
+          "sourceType": "request.body",
+          "path": "orderId"
         }
       }
     ]

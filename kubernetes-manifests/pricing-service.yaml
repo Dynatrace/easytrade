@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: pricing-service
-          image: gcr.io/dynatrace-demoability/easytrade/pricing-service:a9edfaf
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/pricing-service:d863a2e
           ports:
             - containerPort: 8080
           env:

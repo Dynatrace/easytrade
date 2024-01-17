@@ -23,13 +23,10 @@ x-feature-flag-service: &feature-flag-service-env
   FEATURE_FLAG_SERVICE_BASE_URL: feature-flag-service
   FEATURE_FLAG_SERVICE_PORT: 8080
 
-x-connection-strings: 
-  JAVA_CONNECTION_STRING: &java-connection-string 
-    jdbc:sqlserver://db:1433;database=TradeManagement;user=sa;password=yourStrong(!)Password;encrypt=false;trustServerCertificate=false;loginTimeout=30;
-  DOTNET_CONNECTION_STRING: &dotnet-connection-string 
-    Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
-  GO_CONNECTION_STRING: &go-connection-string 
-    sqlserver://sa:yourStrong(!)Password@db:1433?database=TradeManagement&connection+encrypt=false&connection+TrustServerCertificate=false&connection+loginTimeout=30
+x-connection-strings:
+  JAVA_CONNECTION_STRING: &java-connection-string jdbc:sqlserver://db:1433;database=TradeManagement;user=sa;password=yourStrong(!)Password;encrypt=false;trustServerCertificate=false;loginTimeout=30;
+  DOTNET_CONNECTION_STRING: &dotnet-connection-string Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
+  GO_CONNECTION_STRING: &go-connection-string sqlserver://sa:yourStrong(!)Password@db:1433?database=TradeManagement&connection+encrypt=false&connection+TrustServerCertificate=false&connection+loginTimeout=30
 
 services:
   db:
@@ -131,14 +128,13 @@ services:
     ports:
       - 80:80
 
-  headlessloadgen:
+  loadgen:
     <<: *default-service
-    image: gcr.io/dynatrace-demoability/headlessloadgen:${LOADGEN_TAG}
+    image: ${REGISTRY}/loadgen:${TAG}
     depends_on:
       - frontendreverseproxy
     environment:
-      EASY_TRADE_DOMAIN: frontendreverseproxy
-      EASY_TRADE_PORT: 80
+      EASYTRADE_URL: http://frontendreverseproxy
 
   offerservice:
     <<: *default-service
@@ -187,6 +183,7 @@ services:
       PROXY_PREFIX: credit-card-order-service
       MSSQL_CONNECTIONSTRING: *java-connection-string
       THIRD_PARTY_SERVICE_HOSTANDPORT: third-party-service:8080
+      <<: *feature-flag-service-env
       WORK_DELAY: 300
       WORK_RATE: 900
 

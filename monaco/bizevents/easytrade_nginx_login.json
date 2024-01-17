@@ -33,10 +33,31 @@
     },
     "data": [
       {
-        "name": "accountId",
+        "name": "xml",
+        "source": {
+          "sourceType": "constant.string",
+          "source": "true"
+        }
+      },
+      {
+        "name": "username",
+        "source": {
+          "sourceType": "request.body",
+          "path": "LoginRequest.username"
+        }
+      },
+      {
+        "name": "password",
+        "source": {
+          "sourceType": "request.body",
+          "path": "LoginRequest.password"
+        }
+      },
+      {
+        "name": "id",
         "source": {
           "sourceType": "response.body",
-          "path": "id"
+          "path": "IdResponse.id"
         }
       }
     ]

@@ -41,10 +41,52 @@
     },
     "data": [
       {
+        "name": "statusCode",
+        "source": {
+          "sourceType": "response.body",
+          "path": "statusCode"
+        }
+      },
+      {
         "name": "message",
         "source": {
           "sourceType": "response.body",
           "path": "message"
+        }
+      },
+      {
+        "name": "resultsId",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.id"
+        }
+      },
+      {
+        "name": "creditCardOrderId",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.creditCardOrderId"
+        }
+      },
+      {
+        "name": "time",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.timestamp"
+        }
+      },
+      {
+        "name": "status",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.status"
+        }
+      },
+      {
+        "name": "details",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.details"
         }
       }
     ]

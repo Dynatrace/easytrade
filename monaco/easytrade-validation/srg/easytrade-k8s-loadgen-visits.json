@@ -1,0 +1,50 @@
+{
+  "name": "{{ .name }}",
+  "tags": [],
+  "variables": [
+    {
+      "name": "timeframeMinutes",
+      "definition": "{{ .timeframeMinutes }}"
+    },
+    {
+      "name": "referenceTimeframeMinutes",
+      "definition": "{{ .referenceTimeframeMinutes }}"
+    },
+    {
+      "name": "visitsReferenceCount",
+      "definition": "{{ .visitsReferenceCount }}"
+    },
+    {
+      "name": "failureRatePercentThreshold",
+      "definition": "{{ .failureRatePercentThreshold }}"
+    },
+    {
+      "name": "loadgenContainerName",
+      "definition": "{{ .loadgenContainerName }}"
+    },
+    {
+      "name": "visitStartMsg",
+      "definition": "{{ .visitStartMsg }}"
+    },
+    {
+      "name": "visitErrorMsg",
+      "definition": "{{ .visitErrorMsg }}"
+    }
+  ],
+  "objectives": [
+    {
+      "name": "Visit failure rate",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch logs\n| filter k8s.container.name == \"$loadgenContainerName\" AND k8s.namespace.name == \"easytrade\"\n| fieldsAdd visitStart = toLong(contains(content, \"$visitStartMsg\"))\n| fieldsAdd visitFail = toLong(contains(content, \"$visitErrorMsg\"))\n| summarize failRate = sum(visitFail) / sum(visitStart) * 100 / $failureRatePercentThreshold",
+      "comparisonOperator": "LESS_THAN_OR_EQUAL",
+      "target": 1.0
+    },
+    {
+      "name": "Visit count",
+      "objectiveType": "DQL",
+      "dqlQuery": "fetch logs\n| filter k8s.container.name == \"$loadgenContainerName\" AND k8s.namespace.name == \"easytrade\" AND contains(content, \"$visitStartMsg\")\n| fieldsAdd n = 1\n| summarize sum(n) / $visitsReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "target": 1.0
+    }
+  ]
+}

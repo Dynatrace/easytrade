@@ -1,5 +1,5 @@
 {
-  "name": "easytrade-k8s-bizevents-frontend",
+  "name": "{{ .name }}",
   "tags": [],
   "variables": [
     {

@@ -33,6 +33,13 @@
     },
     "data": [
       {
+        "name": "statusCode",
+        "source": {
+          "sourceType": "response.body",
+          "path": "statusCode"
+        }
+      },
+      {
         "name": "message",
         "source": {
           "sourceType": "response.body",

@@ -1,70 +1,51 @@
 configs:
-- id: easytrade-k8s-trigger-validation
-  config:
-    name:
-      type: value
-      value: easytrade-k8s-trigger-validation
-    template: easytrade-k8s-trigger-validation.json
-    skip: false
-  type:
-    automation:
-      resource: workflow
-
-- id: easytrade-k8s-send-test-notification
-  config:
-    name:
-      type: value
-      value: easytrade-k8s-send-test-notification
-    parameters:
-      slack_connection_id:
-        configId: demoability-test-bot
-        configType: app:dynatrace.slack:connection
-        project: easytrade-validation.slack-connections
-        property: id
-        type: reference
-    template: easytrade-k8s-send-test-notification.json
-    skip: false
-  type:
-    automation:
-      resource: workflow
-
-- id: easytrade-k8s-trigger-validation-cron
-  config:
-    name:
-      type: value
-      value: easytrade-k8s-trigger-validation-cron
-    template: easytrade-k8s-trigger-validation-cron.json
-    skip: false
-  type:
-    automation:
-      resource: workflow
-
-- id: easytrade-k8s-run-validation
-  config:
-    name:
-      type: value
-      value: easytrade-k8s-run-validation
-    parameters:
-      easytrade_k8s_bizevents_id:
-        configId: easytrade-k8s-bizevents
-        configType: app:dynatrace.site.reliability.guardian:guardians
-        project: easytrade-validation.site-reliability-guardians
-        property: id
-        type: reference
-      easytrade_k8s_bizevents_frontend_id:
-        configId: easytrade-k8s-bizevents-frontend
-        configType: app:dynatrace.site.reliability.guardian:guardians
-        project: easytrade-validation.site-reliability-guardians
-        property: id
-        type: reference
-      easytrade_k8s_loadgen_visits_id:
-        configId: easytrade-k8s-loadgen-visits
-        configType: app:dynatrace.site.reliability.guardian:guardians
-        project: easytrade-validation.site-reliability-guardians
-        property: id
-        type: reference
-    template: easytrade-k8s-run-validation.json
-    skip: false
-  type:
-    automation:
-      resource: workflow
+  - id: easytrade-k8s-send-test-notification
+    config:
+      name: easytrade-k8s-send-test-notification
+      parameters:
+        slack_connection_id:
+          type: reference
+          project: config.slack-connections
+          configType: app:dynatrace.slack:connection
+          configId: slack-bot
+          property: id
+      template: easytrade-k8s-send-test-notification.json
+      skip: false
+    type:
+      automation:
+        resource: workflow
+  - id: easytrade-k8s-trigger-validation-cron
+    config:
+      name: easytrade-k8s-trigger-validation-cron
+      template: easytrade-k8s-trigger-validation-cron.json
+      skip: false
+    type:
+      automation:
+        resource: workflow
+  - id: easytrade-k8s-run-validation
+    config:
+      name: easytrade-k8s-run-validation
+      parameters:
+        easytrade_k8s_bizevents_id:
+          type: reference
+          project: easytrade-validation.srg
+          configType: app:dynatrace.site.reliability.guardian:guardians
+          configId: easytrade-k8s-bizevents
+          property: id
+        easytrade_k8s_bizevents_frontend_id:
+          type: reference
+          project: easytrade-validation.srg
+          configType: app:dynatrace.site.reliability.guardian:guardians
+          configId: easytrade-k8s-bizevents-frontend
+          property: id
+        easytrade_k8s_loadgen_visits_id:
+          type: reference
+          project: easytrade-validation.srg
+          configType: app:dynatrace.site.reliability.guardian:guardians
+          configId: easytrade-k8s-loadgen-visits
+          property: id
+      template: easytrade-k8s-run-validation.json
+      skip: false
+    type:
+      automation:
+        resource: workflow

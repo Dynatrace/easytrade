@@ -31,6 +31,42 @@
     "category": {
       "sourceType": "request.path"
     },
-    "data": []
+    "data": [
+      {
+        "name": "array",
+        "source": {
+          "sourceType": "constant.string",
+          "source": "true"
+        }
+      },
+      {
+        "name": "firstId",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.0.id"
+        }
+      },
+      {
+        "name": "firstInstrumentId",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.0.instrumentId"
+        }
+      },
+      {
+        "name": "firstTime",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.0.time"
+        }
+      },
+      {
+        "name": "firstClose",
+        "source": {
+          "sourceType": "response.body",
+          "path": "results.0.close"
+        }
+      }
+    ]
   }
 }

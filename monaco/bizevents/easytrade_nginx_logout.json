@@ -33,10 +33,24 @@
     },
     "data": [
       {
+        "name": "xml",
+        "source": {
+          "sourceType": "constant.string",
+          "source": "true"
+        }
+      },
+      {
         "name": "accountId",
         "source": {
           "sourceType": "request.body",
-          "path": "accountId"
+          "path": "LogoutRequest.accountId"
+        }
+      },
+      {
+        "name": "message",
+        "source": {
+          "sourceType": "response.body",
+          "path": "MessageResponse.message"
         }
       }
     ]
