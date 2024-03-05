@@ -11,9 +11,9 @@ projects:
     path: config
     type: grouping
 environmentGroups:
-  - name: development
+  - name: production
     environments:
-      - name: dev
+      - name: prod
         url:
           type: environment
           value: TENANT_URL
