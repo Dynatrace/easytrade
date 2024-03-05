@@ -1,0 +1,29 @@
+name: deploy easytrade
+run-name: deploy easytrade
+on:
+  issues:
+    types:
+      - "opened"
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: create namespace
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        with:
+          args: create namespace easytrade
+      - name: deploy
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        with:
+          args: apply -f ./easytrade/kubernetes-manifests -n easytrade
+      - name: monaco
+        uses: actions-hub/docker/cli@master
+        env:
+          SKIP_LOGIN: true
+      - run: docker run --env TENANT_TOKEN=${{ secrets.TENANT_TOKEN }} --env CLIENT_ID=${{ secrets.CLIENT_ID }} --env CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} --env SLACK_TOKEN=${{ secrets.SLACK_TOKEN }} --mount type=bind,src="/easytrade/monaco",target=/monaco dynatrace/dynatrace-configuration-as-code:latest deploy -d manifest.yaml
