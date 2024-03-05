@@ -11,8 +11,8 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
-      - name: print workspace
-        run: echo $GITHUB_WORKSPACE
+      - run: echo $GITHUB_WORKSPACE
+      - run: ls $GITHUB_WORKSPACE
       - name: create namespace
         uses: actions-hub/kubectl@master
         env:
