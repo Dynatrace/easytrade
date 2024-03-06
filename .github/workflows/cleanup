@@ -1,0 +1,24 @@
+name: Cleanup
+run-name: Cleanup
+on:
+  issues:
+    types:
+      - "closed"
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: automating-dynatrace
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: delete namespace
+        uses: actions-hub/kubectl@master
+        env:
+          KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+        with:
+          args: delete namespace easytrade
+      - name: run monaco
+        uses: actions-hub/docker/cli@master
+        env:
+          SKIP_LOGIN: true
+      - run: docker run --env TENANT_URL=${{ secrets.TENANT_URL }} --env TENANT_TOKEN=${{ secrets.TENANT_TOKEN }} --env CLIENT_ID=${{ secrets.CLIENT_ID }} --env CLIENT_SECRET=${{ secrets.CLIENT_SECRET }} --env SLACK_TOKEN=${{ secrets.SLACK_TOKEN }} --mount type=bind,src=$GITHUB_WORKSPACE/monaco,target=/monaco dynatrace/dynatrace-configuration-as-code:latest delete --manifest manifest.yaml --file delete.yaml
