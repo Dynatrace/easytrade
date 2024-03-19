@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: pricing-service
 spec:
+  annotations:
+    instrumentation.opentelemetry.io/inject-go: "true"
   selector:
     matchLabels:
       app: pricing-service
