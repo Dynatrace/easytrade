@@ -10,8 +10,6 @@ spec:
     metadata:
       labels:
         app: frontendreverseproxy
-      annotations:
-        instrumentation.opentelemetry.io/inject-nginx: "true"
     spec:
       containers:
         - name: frontendreverseproxy
