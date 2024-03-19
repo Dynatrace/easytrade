@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: third-party-service
 spec:
+  annotations:
+    instrumentation.opentelemetry.io/inject-java: "true"
   selector:
     matchLabels:
       app: third-party-service

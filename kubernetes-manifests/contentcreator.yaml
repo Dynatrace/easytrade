@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: contentcreator
 spec:
+  annotations:
+    instrumentation.opentelemetry.io/inject-java: "true"
   selector:
     matchLabels:
       app: contentcreator
