@@ -13,6 +13,8 @@ kind: Deployment
 metadata:
   name: broker-service
 spec:
+  annotations:
+    instrumentation.opentelemetry.io/inject-dotnet: "true"
   selector:
     matchLabels:
       app: broker-service

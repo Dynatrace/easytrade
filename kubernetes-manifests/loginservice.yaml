@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: loginservice
 spec:
+  annotations:
+    instrumentation.opentelemetry.io/inject-dotnet: "true"
   selector:
     matchLabels:
       app: loginservice
