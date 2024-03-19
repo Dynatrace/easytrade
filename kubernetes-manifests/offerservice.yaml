@@ -13,8 +13,6 @@ kind: Deployment
 metadata:
   name: offerservice
 spec:
-  annotations:
-    instrumentation.opentelemetry.io/inject-nodejs: "true"
   selector:
     matchLabels:
       app: offerservice
@@ -22,6 +20,8 @@ spec:
     metadata:
       labels:
         app: offerservice
+      annotations:
+        instrumentation.opentelemetry.io/inject-nodejs: "true"
     spec:
       containers:
         - name: offerservice

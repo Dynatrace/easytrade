@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: accountservice
 spec:
-  annotations:
-    instrumentation.opentelemetry.io/inject-java: "true"
   selector:
     matchLabels:
       app: accountservice
@@ -12,6 +10,8 @@ spec:
     metadata:
       labels:
         app: accountservice
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: "true"
     spec:
       containers:
         - name: accountservice

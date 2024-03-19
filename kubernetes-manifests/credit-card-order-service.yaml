@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: credit-card-order-service
 spec:
-  annotations:
-    instrumentation.opentelemetry.io/inject-java: "true"
   selector:
     matchLabels:
       app: credit-card-order-service
@@ -12,6 +10,8 @@ spec:
     metadata:
       labels:
         app: credit-card-order-service
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: "true"
     spec:
       containers:
         - name: credit-card-order-service

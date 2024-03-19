@@ -5,8 +5,6 @@ metadata:
     app: loadgen
   name: loadgen
 spec:
-  annotations:
-    instrumentation.opentelemetry.io/inject-python: "true"
   selector:
     matchLabels:
       app: loadgen
@@ -14,6 +12,8 @@ spec:
     metadata:
       labels:
         app: loadgen
+      annotations:
+        instrumentation.opentelemetry.io/inject-python: "true"
     spec:
       containers:
         - name: loadgen

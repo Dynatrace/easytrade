@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: manager
 spec:
-  annotations:
-    instrumentation.opentelemetry.io/inject-dotnet: "true"
   selector:
     matchLabels:
       app: manager
@@ -12,6 +10,8 @@ spec:
     metadata:
       labels:
         app: manager
+      annotations:
+        instrumentation.opentelemetry.io/inject-dotnet: "true"
     spec:
       containers:
         - name: manager

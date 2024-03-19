@@ -3,8 +3,6 @@ kind: Deployment
 metadata:
   name: engine
 spec:
-  annotations:
-    instrumentation.opentelemetry.io/inject-java: "true"
   selector:
     matchLabels:
       app: engine
@@ -12,6 +10,8 @@ spec:
     metadata:
       labels:
         app: engine
+      annotations:
+        instrumentation.opentelemetry.io/inject-java: "true"
     spec:
       containers:
         - name: engine
