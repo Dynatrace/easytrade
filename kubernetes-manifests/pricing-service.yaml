@@ -12,6 +12,7 @@ spec:
         app: pricing-service
       annotations:
         instrumentation.opentelemetry.io/inject-go: "true"
+        instrumentation.opentelemetry.io/otel-go-auto-target-exe: "/pricing-service"
     spec:
       containers:
         - name: pricing-service
