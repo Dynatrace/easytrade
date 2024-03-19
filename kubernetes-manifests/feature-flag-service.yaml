@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: feature-flag-service
 spec:
+  annotations:
+    instrumentation.opentelemetry.io/inject-java: "true"
   selector:
     matchLabels:
       app: feature-flag-service
