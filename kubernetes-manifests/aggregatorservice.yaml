@@ -72,8 +72,8 @@ spec:
     metadata:
       labels:
         app: aggregatorservice
-    annotations:
-      instrumentation.opentelemetry.io/inject-nodejs: "true"
+      annotations:
+        instrumentation.opentelemetry.io/inject-nodejs: "true"
     spec:
       containers:
         - name: aggregatorservice-1
