@@ -3,6 +3,8 @@ kind: Deployment
 metadata:
   name: frontendreverseproxy
 spec:
+  annotations:
+    instrumentation.opentelemetry.io/inject-nginx: "true"
   selector:
     matchLabels:
       app: frontendreverseproxy
