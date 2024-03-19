@@ -65,6 +65,8 @@ kind: Deployment
 metadata:
   name: aggregatorservice
 spec:
+  annotations:
+    instrumentation.opentelemetry.io/inject-nodejs: "true"
   selector:
     matchLabels:
       app: aggregatorservice

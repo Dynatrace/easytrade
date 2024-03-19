@@ -13,6 +13,8 @@ kind: Deployment
 metadata:
   name: offerservice
 spec:
+  annotations:
+    instrumentation.opentelemetry.io/inject-nodejs: "true"
   selector:
     matchLabels:
       app: offerservice
