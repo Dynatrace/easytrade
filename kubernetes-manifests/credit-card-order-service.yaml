@@ -16,6 +16,9 @@ spec:
           image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/credit-card-order-service:d863a2e
           ports:
             - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: feature-flag-service-setup
           env:
             - name: PROXY_PREFIX
               value: "credit-card-order-service"
