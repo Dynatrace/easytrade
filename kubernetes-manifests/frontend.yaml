@@ -13,12 +13,15 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/frontend:d863a2e
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/frontend:1ccb463
           ports:
             - containerPort: 3000
+          env: []
           resources:
             requests:
-              cpu: 300m
+              cpu: 30m
+              memory: 100Mi
+            limits:
               memory: 100Mi
 ---
 apiVersion: v1

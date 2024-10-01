@@ -13,13 +13,16 @@ spec:
     spec:
       containers:
         - name: frontendreverseproxy
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/frontendreverseproxy:d863a2e
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/frontendreverseproxy:1ccb463
           ports:
             - containerPort: 80
+          env: []
           resources:
             requests:
               cpu: 50m
-              memory: 50Mi
+              memory: 75Mi
+            limits:
+              memory: 75Mi
 ---
 apiVersion: v1
 kind: Service
@@ -30,6 +33,6 @@ spec:
   selector:
     app: frontendreverseproxy
   ports:
-    - name: easytrade-frontend
+    - name: http
       port: 80
       targetPort: 80

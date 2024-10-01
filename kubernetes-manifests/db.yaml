@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: db
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/db:d863a2e
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/db:1ccb463
           ports:
             - containerPort: 1433
           env:
@@ -21,8 +21,10 @@ spec:
               value: "yourStrong(!)Password"
           resources:
             requests:
-              cpu: 300m
-              memory: 1Gi
+              cpu: 40m
+              memory: 1.25Gi
+            limits:
+              memory: 1.25Gi
 ---
 apiVersion: v1
 kind: Service

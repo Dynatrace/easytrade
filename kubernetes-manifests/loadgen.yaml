@@ -15,8 +15,7 @@ spec:
     spec:
       containers:
         - name: loadgen
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loadgen:d863a2e
-          imagePullPolicy: Always
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loadgen:1ccb463
           env:
             - name: EASYTRADE_URL
               value: "http://frontendreverseproxy-easytrade"
@@ -24,7 +23,7 @@ spec:
               value: "60"
           resources:
             requests:
-              memory: "500Mi"
-              cpu: "500m"
+              cpu: "1"
+              memory: 2Gi
             limits:
-              memory: "2Gi"
+              memory: 2Gi
