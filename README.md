@@ -19,11 +19,11 @@ EasyTrade consists of the following services/components:
 | Service                                                          | Proxy port | Proxy endpoint               |
 | ---------------------------------------------------------------- | ---------- | ---------------------------- |
 | [Account service](./docs/accountservice.md)                      | 80         | `/accountservice`            |
-| [Aggregator service](./docs/aggregatorservice.md)                | 80         | `---`                        |
+| [Aggregator service](./docs/aggregator-service.md)               | 80         | `---`                        |
 | [Broker service](./docs/broker-service.md)                       | 80         | `/broker-service`            |
 | [Calculation service](./docs/calculationservice.md)              | 80         | `---`                        |
-| [Credit card order service](./docs/credit-card-order-service.md) | 80         | `/credit-card-order-service` |
 | [Content creator](./docs/contentcreator.md)                      | 80         | `---`                        |
+| [Credit card order service](./docs/credit-card-order-service.md) | 80         | `/credit-card-order-service` |
 | [Db](./docs/db.md)                                               | 80         | `---`                        |
 | [Engine](./docs/engine.md)                                       | 80         | `/engine`                    |
 | [Feature flag service](./docs/feature-flag-service.md)           | 80         | `/feature-flag-service`      |
@@ -33,6 +33,8 @@ EasyTrade consists of the following services/components:
 | [Manager](./docs/manager.md)                                     | 80         | `/manager`                   |
 | [Offer service](./docs/offerservice.md)                          | 80         | `/offerservice`              |
 | [Pricing service](./docs/pricing-service.md)                     | 80         | `/pricing-service`           |
+| [Problem operator](./docs/problem-operator.md)                   | 80         | `---`                        |
+| [RabbitMQ](./docs/rabbitmq.md)                                   | 80         | `---`                        |
 | [Third party service](./docs/third-party-service.md)             | 80         | `/third-party-service`       |
 
 > To learn more about endpoints / swagger for the services go to their respective readmes

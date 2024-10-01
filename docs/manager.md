@@ -4,8 +4,8 @@ This service performs the role of a data access layer to database. Almost all ca
 
 ## Technologies used
 
+- .NET 8.0
 - Docker
-- .Net 6
 
 Manager has support for one problem pattern - DbNotRespondingPlugin. When this problem pattern is enabled, no new records will be added to Trade table, as they will fail.  
 Problem pattern can be enabled manually with an endpoint, or via the PluginService

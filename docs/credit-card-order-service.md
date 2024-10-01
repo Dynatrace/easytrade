@@ -4,7 +4,7 @@ A java service that lets the user order/remove a credit card for their account. 
 
 ## Technologies used
 
-- Java 17
+- Java 21
 - Docker
 - MSSql
 

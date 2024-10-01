@@ -6,7 +6,7 @@ Dynatrace currently fully supports golang up to 1.19.5. As we have created the n
 
 ## Technologies used
 
-- Go 1.19
+- Go 1.23
 - Docker
 - MSSql
 
