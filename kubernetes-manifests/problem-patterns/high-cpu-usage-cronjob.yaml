@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: enable-high-cpu-usage
+spec:
+  schedule: "00 04 * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 60
+      template:
+        spec:
+          containers:
+            - name: enable-high-cpu-usage
+              image: curlimages/curl
+              imagePullPolicy: IfNotPresent
+              args:
+                - "http://feature-flag-service:8080/v1/flags/high_cpu_usage"
+                - "-X"
+                - "PUT"
+                - "-H"
+                - "Content-Type: application/json"
+                - "-d"
+                - '{"enabled": true}'
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: disable-high-cpu-usage
+spec:
+  schedule: "25 04 * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 60
+      template:
+        spec:
+          containers:
+            - name: disable-high-cpu-usage
+              image: curlimages/curl
+              imagePullPolicy: IfNotPresent
+              args:
+                - "http://feature-flag-service:8080/v1/flags/high_cpu_usage"
+                - "-X"
+                - "PUT"
+                - "-H"
+                - "Content-Type: application/json"
+                - "-d"
+                - '{"enabled": false}'
+          restartPolicy: OnFailure

@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: enable-db-not-responding
+spec:
+  schedule: "00 20 * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 60
+      template:
+        spec:
+          containers:
+            - name: enable-db-not-responding
+              image: curlimages/curl
+              imagePullPolicy: IfNotPresent
+              args:
+                - "http://feature-flag-service:8080/v1/flags/db_not_responding"
+                - "-X"
+                - "PUT"
+                - "-H"
+                - "Content-Type: application/json"
+                - "-d"
+                - '{"enabled": true}'
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: disable-db-not-responding
+spec:
+  schedule: "25 20 * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 60
+      template:
+        spec:
+          containers:
+            - name: disable-db-not-responding
+              image: curlimages/curl
+              imagePullPolicy: IfNotPresent
+              args:
+                - "http://feature-flag-service:8080/v1/flags/db_not_responding"
+                - "-X"
+                - "PUT"
+                - "-H"
+                - "Content-Type: application/json"
+                - "-d"
+                - '{"enabled": false}'
+          restartPolicy: OnFailure
