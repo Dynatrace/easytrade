@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: loadgen
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loadgen:1ccb463
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loadgen:fba7925
           env:
             - name: EASYTRADE_URL
               value: "http://frontendreverseproxy-easytrade"
