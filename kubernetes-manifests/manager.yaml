@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: manager
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/manager:fba7925
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/manager:1993c20
           ports:
             - containerPort: 8080
           env:

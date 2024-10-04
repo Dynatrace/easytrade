@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: credit-card-order-service
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/credit-card-order-service:fba7925
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/credit-card-order-service:1993c20
           ports:
             - containerPort: 8080
           envFrom:
