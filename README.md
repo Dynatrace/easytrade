@@ -151,42 +151,9 @@ If you are deploying easyTrade on K8s, you can also apply [these cronjobs](./kub
 
 ## EasyTrade on Dynatrace - how to configure
 
-### Automatically via [Monaco](https://github.com/Dynatrace/dynatrace-configuration-as-code)
+All Dynatrace configuration required for Easytrade should be applied using [Monaco](https://github.com/Dynatrace/dynatrace-configuration-as-code). More information on how to deploy it can be found in the [`monaco` directory](./monaco).
 
-### Manually
-
-1. Go to your tenant.
-
-2. Create a new application. You can either make it based on the traffic detected in "My web application" or just manually. The application detection rule will most probably look like this:
-
-   - "frontendreverseproxy" - in the case of docker-compose based application
-   - "111.111.111.111" - in the case of kubernetes based application
-     ![Detection rules](./img/dt/1.png)
-
-3. Go to you new application. Click on "Edit".  
-   ![Edit application 1](./img/dt/2.png)
-   ![Edit application 2](./img/dt/3.png)
-
-4. Go to "Capturing" → "Async web requests and SPAs".  
-   ![Async web requests and SPAs](./img/dt/4.png)
-
-5. Turn on the capturing of "XmlHttpRequest (XHR)" and "fetch() requests".
-
-6. Click on the save button.  
-   ![Save button](./img/dt/5.png)
-
-7. Go to "Capturing" → "User tag".  
-   ![User tag detection](./img/dt/6.png)
-
-8. Click on the "Add user tag rule".
-
-9. Select the "Source type" as "CSS selector" and fill in the value of "CSS selector" as "label.labelPositioning".
-
-10. Turn on the cleanup rule and set the "Regex" as "Hi,.(.\*+)".
-
-11. Click on the save button.
-
-## Business events in Dynatrace
+### Business events in Dynatrace
 
 EasyTrade application has been developed in order to showcase business events. Usually business events can be created in two ways:
 
