@@ -64,7 +64,7 @@ docker compose up -d
 
 You should be able to access the app at `localhost:80` or simply `localhost`.
 
-> **NOTE:** It make take a few minutes for the app to stabilize, you may expirience errors in the frontend or see missing data before that happens.
+> **NOTE:** It make take a few minutes for the app to stabilize, you may experience errors in the frontend or see missing data before that happens.
 
 > **NOTE:** Docker Compose V1 which came as a separate binary (`docker-compose`) will not work with this version. You can check this [guide](https://www.howtogeek.com/devops/how-to-upgrade-to-docker-compose-v2/) on how to upgrade.
 
@@ -83,6 +83,10 @@ kubectl create namespace easytrade
 
 # then use the manifests to deploy
 kubectl -n easytrade apply -f ./kubernetes-manifests
+
+# Optional: if you want the problem patterns to be automatically
+# enabled once a day, deploy these manifests too
+kubectl -n easytrade apply -f ./kubernetes-manifests/problem-patterns
 
 # to get the ip of reverse proxy
 # look for EXTERNAL-IP of frontendreverseproxy
@@ -116,14 +120,18 @@ If you want to use easyTrade, then you will need a user. You can either:
 
 ## Problem patterns
 
-Currently there are only 2 problem patterns supported in easyTrade:
+Currently there are 4 problem patterns supported in easyTrade:
 
-1. DbNotRespondingPlugin - after turning it on no new trades can be created as the database will throw an error. This problem pattern is kind of proof on concept that problem patterns work. Running it for around 20 minutes should generate a problem in dynatrace.
+1. DbNotResponding - after turning it on no new trades can be created as the database will throw an error. This problem pattern is kind of proof on concept that problem patterns work. Running it for around 20 minutes should generate a problem in dynatrace.
 
-2. ErgoAggregatorSlowdownPlugin - after turning it on 2 of the aggregators will start receiving slower responses which will make them stop sending requests after some time. A potential run could take:
+2. ErgoAggregatorSlowdown - after turning it on 2 of the aggregators will start receiving slower responses which will make them stop sending requests after some time. A potential run could take:
 
    - 15 min - then we will notice a small slowdown (for 150 seconds) followed by 40% lower traffic for 15 minutes on some requests
    - 20 min - then we will notice a small slowdown (for 150 seconds) followed by 40% lower traffic for 30 minutes on some requests
+
+3. FactoryCrisis - when enabled, the factory won't produce new cards, which will cause the Third party service not to process credit card orders. This will block the Credit Card Order service.
+
+4. HighCpuUsage - this problem pattern causes a slowdown of broker-service response time and highly increases CPU usage during that time. If the app is deployed on K8s, a CPU resource limit is also applied by the problem operator. This should generate CPU throttling on the pod.
 
 To turn a plugin on/off send a request similar to the following:
 
@@ -135,9 +143,17 @@ curl -X PUT "http://{IP_ADDRESS}/feature-flag-service/v1/flags/{FEATURE_ID}/"
 
 Of course please set the value of "IP_ADDRESS" to the correct host IP and VALUE to false/true. \
 
+You can also manage enabled problem patterns via the easyTrade frontend.
+
 > **NOTE:** More information on the feature flag service's parameters available in [feature flag service's doc](./docs/featureflagservice.md).
 
+If you are deploying easyTrade on K8s, you can also apply [these cronjobs](./kubernetes-manifests/problem-patterns/), which will enable the problem patterns once a day.
+
 ## EasyTrade on Dynatrace - how to configure
+
+### Automatically via [Monaco](https://github.com/Dynatrace/dynatrace-configuration-as-code)
+
+### Manually
 
 1. Go to your tenant.
 
@@ -175,15 +191,15 @@ Of course please set the value of "IP_ADDRESS" to the correct host IP and VALUE 
 EasyTrade application has been developed in order to showcase business events. Usually business events can be created in two ways:
 
 - directly - using one of Dynatrace SDKs in the code - so for example in Javascript or Java
-- inderectly - configure catch rules for request that are monitored by Dynatrace
+- indirectly - configure catch rules for request that are monitored by Dynatrace
 
-If you want to learn more about business events then we suggest looking at the information on our website: [Business event capture](https://www.dynatrace.com/support/help/platform-modules/business-analytics/ba-events-capturing). There you will find information on how to create events directly (with OpenKit, Javascript, Android and more) and inderectly with capture rules in Dynatrace.
+If you want to learn more about business events then we suggest looking at the information on our website: [Business event capture](https://www.dynatrace.com/support/help/platform-modules/business-analytics/ba-events-capturing). There you will find information on how to create events directly (with OpenKit, Javascript, Android and more) and indirectly with capture rules in Dynatrace.
 
 For those interested in creating capturing rules for easyTrade we suggest to have a look at the configuration exported with Monaco in this repository. Have a look at the [README](./monaco/README.md)
 
 ## Body types
 
-EasyTrade network trafic is handled by REST requests using mostly JSON payloads. However, some of the services
+EasyTrade network traffic is handled by REST requests using mostly JSON payloads. However, some of the services
 can also handle XML requests. Data types are negotiated based on `Accept` and `Content-Type` headers.
 
 #### XML compatible services
@@ -194,17 +210,3 @@ can also handle XML requests. Data types are negotiated based on `Accept` and `C
 | [CreditCardOrderService](./docs/credit-card-order-service.md) | `application/xml`                                  |
 | [OfferService](./docs/offerservice.md)                        | `application/xml`; `text/xml`                      |
 | [PricingService](./docs/pricing-service.md)                   | `application/xml`                                  |
-
-## Resolve **Span Default Service** showing instead of regular .NET services
-
-If instead of regular .NET services, like this:
-
-![Correct dotnet service names](./img/dt/correct_dotnet_services.png)
-
-You see **Span Default Service** for all of them, like this:
-
-![Spand default service names](./img/dt/wrong_dotnet_services.png)
-
-Go into `Settings -> Server-side service monitoring -> Span capturing`, and click `Add item` to add rule that ignores span with name `Microsoft.AspNetCore.Hosting.HttpRequestIn`, like so:
-
-![Ignore ASP.NET span](./img/dt/span_ignore_rule.png)
