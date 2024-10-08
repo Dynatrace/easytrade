@@ -1,0 +1,3 @@
+fetch bizevents
+| filter event.type == "com.easytrade.process-long-trades"
+| summarize s = toDouble(count()) / $longProcessReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes

@@ -35,15 +35,17 @@
     {
       "name": "Visit failure rate",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch logs\n| filter k8s.container.name == \"$loadgenContainerName\" AND k8s.namespace.name == \"easytrade\"\n| fieldsAdd visitStart = toLong(contains(content, \"$visitStartMsg\"))\n| fieldsAdd visitFail = toLong(contains(content, \"$visitErrorMsg\"))\n| summarize failRate = sum(visitFail) / sum(visitStart) * 100 / $failureRatePercentThreshold",
+      "dqlQuery": "{{ .queryFailureRate }}",
       "comparisonOperator": "LESS_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Visit count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch logs\n| filter k8s.container.name == \"$loadgenContainerName\" AND k8s.namespace.name == \"easytrade\" AND contains(content, \"$visitStartMsg\")\n| fieldsAdd n = 1\n| summarize sum(n) / $visitsReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryCount }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     }
   ]

@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [loginservice | .NET] - POST /api/Logout",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

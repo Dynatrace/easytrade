@@ -16,7 +16,7 @@
       },
       "description": "Build a custom task running js Code",
       "input": {
-        "script": "import { executionsClient } from \"@dynatrace-sdk/client-automation\"\nimport { businessEventsClient } from \"@dynatrace-sdk/client-classic-environment-v2\"\n\ntype ResultString = keyof typeof resultMapping\ntype TaskResult = {\n  name: string\n  result: string\n  validationUrl: string\n}\ntype Context = Record\u003cstring, unknown\u003e\ntype EventData = {\n  jobId: string\n  jobProvider: string\n  application: string\n  timeframe: string\n  context?: Context\n}\ntype ResultBizevent = {\n  \"event.type\": \"demoability.validation.result\"\n  \"event.provider\": string\n  \"tags.job.id\": string\n  \"tags.application\": string\n  result: ResultString\n  details: TaskResult[]\n  timeframeMinutes: string\n  context?: Context\n}\n\nconst validationTasks: string[] = [\n  \"bizevents_validation\",\n  \"loadgen_visits_validation\",\n  \"bizevents_frontend_validation\",\n]\n\nconst resultMapping = {\n  error: 0,\n  fail: 1,\n  warning: 2,\n  pass: 3,\n}\n\nexport default async function ({ execution_id }) {\n  const context = await getExecutionContext(execution_id)\n  console.log(\"Execution context: \", context)\n  const taskResults = await Promise.all(\n    validationTasks.map((result) =\u003e\n      getTaskExecutionResult(execution_id, result)\n    )\n  )\n  console.log(\"Tasks results: \", taskResults)\n  const bizeventBody = getBizeventBody(context, taskResults)\n  console.log(\"Sending result bizevent: \", bizeventBody)\n  await ingestBizevent(bizeventBody)\n}\n\nasync function getExecutionContext(executionId: string): Promise\u003cEventData\u003e {\n  const execution = await executionsClient.getExecution({ id: executionId })\n  // console.log(\"-- execution body\", execution)\n  const event = execution.params?.event\n  return {\n    jobId: event[\"tags.job.id\"],\n    jobProvider: event[\"event.provider\"],\n    application: event[\"tags.application\"],\n    timeframe: event[\"srg.variable.timeframe\"],\n    context: event[\"context\"],\n  }\n}\n\nasync function getTaskExecutionResult(\n  executionId: string,\n  taskName: string\n): Promise\u003cTaskResult\u003e {\n  const result = await executionsClient.getTaskExecutionResult({\n    executionId,\n    id: taskName,\n  })\n  return {\n    name: result.guardian_name,\n    result: result.validation_status,\n    validationUrl: result.validation_url,\n  }\n}\n\nfunction resultMapper(result: string): ResultString {\n  if (result in resultMapping) {\n    return result as ResultString\n  }\n  console.error(\n    `Result [${result}] not found in list of possible results [${Object.keys(\n      resultMapping\n    )}]`\n  )\n  return \"error\"\n}\n\nfunction getFinalResult(taskResults: { result: string }[]): ResultString {\n  return taskResults\n    .map(({ result }) =\u003e resultMapper(result))\n    .reduce(\n      (acc, curr) =\u003e (resultMapping[acc] \u003c resultMapping[curr] ? acc : curr),\n      \"pass\"\n    )\n}\n\nfunction getBizeventBody(\n  eventData: EventData,\n  taskResults: TaskResult[]\n): ResultBizevent {\n  return {\n    \"event.type\": \"demoability.validation.result\",\n    \"event.provider\": eventData.jobProvider,\n    \"tags.job.id\": eventData.jobId,\n    \"tags.application\": eventData.application,\n    timeframeMinutes: eventData.timeframe,\n    result: getFinalResult(taskResults),\n    details: taskResults.map(({ result, ...rest }) =\u003e ({\n      ...rest,\n      result: resultMapper(result),\n    })),\n    context: eventData.context,\n  }\n}\n\nasync function ingestBizevent(body: ResultBizevent) {\n  await businessEventsClient.ingest({\n    type: \"application/json; charset=utf-8\",\n    body,\n  })\n}\n"
+        "script": "{{ .workflowCode }}"
       },
       "name": "aggregate_validation_results",
       "position": {
@@ -40,7 +40,7 @@
         "timeframeInputType": "expression",
         "variables": [
           {
-            "definition": "+{{`{{`}} event()[\"srg.variable.timeframe\"] {{`}}`}}",
+            "definition": "{{`{{`}} event()[\"srg.variable.timeframe\"] {{`}}`}}",
             "name": "timeframeMinutes"
           }
         ]
@@ -63,7 +63,7 @@
         "timeframeInputType": "expression",
         "variables": [
           {
-            "definition": "+{{`{{`}} event()[\"srg.variable.timeframe\"] {{`}}`}}",
+            "definition": "{{`{{`}} event()[\"srg.variable.timeframe\"] {{`}}`}}",
             "name": "timeframeMinutes"
           }
         ]
@@ -86,7 +86,7 @@
         "timeframeInputType": "expression",
         "variables": [
           {
-            "definition": "+{{`{{`}} event()[\"srg.variable.timeframe\"] {{`}}`}}",
+            "definition": "{{`{{`}} event()[\"srg.variable.timeframe\"] {{`}}`}}",
             "name": "timeframeMinutes"
           }
         ]

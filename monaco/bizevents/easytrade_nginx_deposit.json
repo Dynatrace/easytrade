@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [nginx] - POST /broker-service/v1/balance/{accountId}/deposit",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

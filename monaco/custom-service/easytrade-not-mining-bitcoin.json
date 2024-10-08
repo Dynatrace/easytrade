@@ -1,0 +1,28 @@
+{
+  "enabled": true,
+  "name": "{{ .name }}",
+  "processGroups": [],
+  "queueEntryPoint": false,
+  "queueEntryPointType": null,
+  "rules": [
+    {
+      "annotations": [],
+      "className": "EasyTrade.BrokerService.ProblemPatterns.HighCpuUsage.HighCpuUsageMiddleware",
+      "enabled": true,
+      "fileName": "",
+      "matcher": "EQUALS",
+      "methodRules": [
+        {
+          "argumentTypes": [
+            "Microsoft.AspNetCore.Http.HttpContext",
+            "Microsoft.AspNetCore.Http.RequestDelegate"
+          ],
+          "methodName": "InvokeAsync",
+          "modifiers": [],
+          "returnType": "System.Threading.Tasks.Task",
+          "visibility": "PUBLIC"
+        }
+      ]
+    }
+  ]
+}

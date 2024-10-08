@@ -1,0 +1,92 @@
+{
+  "name": "[easyTrade] Credit card order",
+  "description": "Process of ordering a credit card from easyTrade, from triggering it online to the card being delivered - including manufacturing issues.",
+  "version": 7,
+  "steps": [
+    {
+      "name": "Order Credit Card",
+      "id": "4a4bceba-8955-47e5-98a7-5a4d6da0a287",
+      "events": [
+        {
+          "id": "provider:www.easytrade.com-event:com.easytrade.order-credit-card",
+          "name": "com.easytrade.order-credit-card",
+          "provider": "www.easytrade.com",
+          "isError": false,
+          "isDisabled": false
+        }
+      ]
+    },
+    {
+      "name": "Credit Card manufactured",
+      "id": "8394ae60-11d2-4cf0-a2bc-0b9bfa1facb6",
+      "events": [
+        {
+          "id": "provider:www.easytrade.com-event:com.easytrade.update-credit-card-status.created",
+          "name": "com.easytrade.update-credit-card-status.created",
+          "provider": "www.easytrade.com",
+          "isError": false,
+          "isDisabled": false
+        },
+        {
+          "id": "provider:www.easytrade.com-event:com.easytrade.update-credit-card-status.error",
+          "name": "com.easytrade.update-credit-card-status.error",
+          "provider": "www.easytrade.com",
+          "isError": true,
+          "isDisabled": false
+        }
+      ]
+    },
+    {
+      "name": "Credit Card shipped",
+      "id": "93d19d34-74e9-4bcf-b200-d8019703ff68",
+      "events": [
+        {
+          "id": "provider:www.easytrade.com-event:com.easytrade.update-credit-card-status.shipped",
+          "name": "com.easytrade.update-credit-card-status.shipped",
+          "provider": "www.easytrade.com",
+          "isError": false,
+          "isDisabled": false
+        }
+      ]
+    },
+    {
+      "name": "Credit Card delivered",
+      "id": "b0c6b2ef-ef26-44b5-811d-c51a540c52dc",
+      "events": [
+        {
+          "id": "provider:www.easytrade.com-event:com.easytrade.update-credit-card-status.delivered",
+          "name": "com.easytrade.update-credit-card-status.delivered",
+          "provider": "www.easytrade.com",
+          "isError": false,
+          "isDisabled": false
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "4a4bceba-8955-47e5-98a7-5a4d6da0a287__8394ae60-11d2-4cf0-a2bc-0b9bfa1facb6",
+      "source": "4a4bceba-8955-47e5-98a7-5a4d6da0a287",
+      "target": "8394ae60-11d2-4cf0-a2bc-0b9bfa1facb6"
+    },
+    {
+      "id": "8394ae60-11d2-4cf0-a2bc-0b9bfa1facb6__93d19d34-74e9-4bcf-b200-d8019703ff68",
+      "source": "8394ae60-11d2-4cf0-a2bc-0b9bfa1facb6",
+      "target": "93d19d34-74e9-4bcf-b200-d8019703ff68"
+    },
+    {
+      "id": "93d19d34-74e9-4bcf-b200-d8019703ff68__b0c6b2ef-ef26-44b5-811d-c51a540c52dc",
+      "source": "93d19d34-74e9-4bcf-b200-d8019703ff68",
+      "target": "b0c6b2ef-ef26-44b5-811d-c51a540c52dc"
+    }
+  ],
+  "correlationID": "orderId",
+  "kpiLabel": "Potential Credit",
+  "kpi": "accountId",
+  "kpiEvent": {
+    "name": "com.easytrade.order-credit-card",
+    "provider": "www.easytrade.com"
+  },
+  "kpiUnit": "$",
+  "analysisType": "conversion"
+}

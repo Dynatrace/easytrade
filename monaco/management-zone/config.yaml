@@ -1,6 +1,7 @@
 configs:
   - id: app_easytrade
     config:
+      name: EasyTrade
       template: app_easytrade.json
       skip: false
     type:

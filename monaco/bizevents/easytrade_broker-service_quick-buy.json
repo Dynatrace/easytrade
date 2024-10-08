@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [broker-service | .NET] - POST /v1/trade/buy",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

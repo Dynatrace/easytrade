@@ -1,0 +1,3 @@
+fetch bizevents
+| filter event.type == "com.easytrade.withdraw.start"
+| summarize s = toDouble(count()) / $withdrawStartReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes

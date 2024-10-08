@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [accountservice | Java] - GET /api/accounts/{accountId}",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

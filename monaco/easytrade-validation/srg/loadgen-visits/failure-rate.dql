@@ -1,0 +1,5 @@
+fetch logs
+| filter k8s.container.name == "$loadgenContainerName" AND k8s.namespace.name == "easytrade"
+| fieldsAdd visitStart = toLong(contains(content, "$visitStartMsg"))
+| fieldsAdd visitFail = toLong(contains(content, "$visitErrorMsg"))
+| summarize failRate = sum(visitFail) / sum(visitStart) * 100 / $failureRatePercentThreshold

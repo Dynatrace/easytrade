@@ -5,11 +5,41 @@
   "schemaVersion": 3,
   "taskDefaults": {},
   "tasks": {
+    "mention-on-fail": {
+      "action": "dynatrace.slack:slack-send-message",
+      "conditions": {
+        "custom": "{{`{{`}} result(\"preprocess\").sendFailNotification{{`}}`}}",
+        "else": "SKIP",
+        "states": {
+          "preprocess": "OK"
+        }
+      },
+      "description": "Send a message to a Slack workspace",
+      "input": {
+        "appendToThread": false,
+        "attachmentToggleValue": "none",
+        "channel": "{{ .channel_id }}",
+        "channelType": "id",
+        "connection": "{{ .slack_connection_id }}",
+        "executionDate": "{{`{{`}} execution().started_at {{`}}`}}",
+        "executionID": "{{`{{`}} execution().id {{`}}`}}",
+        "message": "Hey there \u003c!here\u003e, it seems there were some problems with validations ...",
+        "reaction": [],
+        "selectedRequestType": 0,
+        "workflowID": "{{`{{`}} execution().workflow.id {{`}}`}}"
+      },
+      "name": "mention-on-fail",
+      "position": {
+        "x": 0,
+        "y": 2
+      },
+      "predecessors": ["preprocess"]
+    },
     "preprocess": {
       "action": "dynatrace.automations:run-javascript",
       "description": "Build a custom task running js Code",
       "input": {
-        "script": "import { executionsClient } from \"@dynatrace-sdk/client-automation\"\n\nconst resultIcons = {\n  error: \"failed\",\n  fail: \"failed\",\n  warning: \"warning\",\n  pass: \"passed\",\n}\n\ntype ResultString = keyof typeof resultIcons\ntype ValidationDetail = {\n  name: string\n  result: ResultString\n  validationUrl: string\n}\ntype EventData = {\n  result: ResultString\n  details: ValidationDetail[]\n}\ntype ResultDetail = {\n  name: string\n  result: ResultString\n  resultIcon: string\n  validationUrl: string\n}\ntype Result = {\n  tenantUrl: string\n  tenantId: string\n  result: ResultString\n  resultIcon: string\n  details: ResultDetail[]\n}\n\nexport default async function ({ execution_id }) {\n  const eventData = await getEventData(execution_id)\n  console.log(\"Context: \", eventData)\n  const result: Result = {\n    tenantId: globalThis.tenantId,\n    tenantUrl: globalThis.environmentUrl,\n    result: eventData.result,\n    resultIcon: resultIcons[eventData.result],\n    details: eventData.details.map(({ result, ...rest }) =\u003e ({\n      ...rest,\n      result,\n      resultIcon: resultIcons[result],\n    })),\n  }\n  console.log(\"Passing result to slack step: \", result)\n  return result\n}\n\nasync function getEventData(executionId: string): Promise\u003cEventData\u003e {\n  const execution = await executionsClient.getExecution({ id: executionId })\n  // console.log(\"-- execution body\", execution)\n  const event = execution.params?.event\n  return {\n    result: event[\"result\"],\n    details: JSON.parse(event[\"details\"]),\n  }\n}\n"
+        "script": "{{ .workflowCode }}"
       },
       "name": "preprocess",
       "position": {
@@ -21,15 +51,16 @@
     "send-notification": {
       "action": "dynatrace.slack:slack-send-message",
       "conditions": {
+        "custom": "",
         "states": {
-          "preprocess": "OK"
+          "mention-on-fail": "OK"
         }
       },
       "description": "Send a message to a Slack workspace",
       "input": {
         "appendToThread": false,
         "attachmentToggleValue": "none",
-        "channel": "G7LJU769Y",
+        "channel": "{{ .channel_id }}",
         "channelType": "id",
         "connection": "{{ .slack_connection_id }}",
         "executionDate": "{{`{{`}} execution().started_at {{`}}`}}",
@@ -42,9 +73,9 @@
       "name": "send-notification",
       "position": {
         "x": 0,
-        "y": 2
+        "y": 3
       },
-      "predecessors": ["preprocess"]
+      "predecessors": ["mention-on-fail"]
     }
   },
   "title": "{{ .name }}",

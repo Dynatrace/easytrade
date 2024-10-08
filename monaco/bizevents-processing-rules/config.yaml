@@ -1,4 +1,12 @@
 configs:
+  - id: easytrade_trading-volume
+    config:
+      template: easytrade_trading-volume.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:bizevents-processing-metrics.rule
+        scope: environment
   - id: easytrade_mask-cvv
     config:
       template: easytrade_mask-cvv.json

@@ -1,0 +1,17 @@
+configs:
+  - id: easytrade-credit-card-order-bizflow
+    config:
+      template: easytrade-credit-card-order-bizflow.json
+      skip: false
+    type:
+      settings:
+        schema: app:dynatrace.biz.flow:biz-flow-settings
+        scope: environment
+  - id: easytrade-deposit-trade-bizflow
+    config:
+      template: easytrade-deposit-trade-bizflow.json
+      skip: false
+    type:
+      settings:
+        schema: app:dynatrace.biz.flow:biz-flow-settings
+        scope: environment

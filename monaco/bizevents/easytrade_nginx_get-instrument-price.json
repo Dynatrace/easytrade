@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [nginx] - GET /pricing-service/v1/prices/instrument/{instrumentId}",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

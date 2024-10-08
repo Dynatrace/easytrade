@@ -9,7 +9,7 @@
       "action": "dynatrace.automations:run-javascript",
       "description": "Build a custom task running js Code",
       "input": {
-        "script": "import { businessEventsClient } from \"@dynatrace-sdk/client-classic-environment-v2\"\n\nexport default async function () {\n  const jobId = crypto.randomUUID().toString()\n  const bizeventBody = {\n    \"timeframe.from\": \"now-1h\",\n    \"timeframe.to\": \"now\",\n    \"srg.variable.timeframe\": 60,\n    \"tags.job.id\": jobId,\n    \"tags.application\": \"easytrade-k8s\",\n    \"event.provider\": \"workflows.cron\",\n    \"event.type\": \"demoability.validation.trigger\",\n  }\n\n  console.log(\"Ingesting event: \", bizeventBody)\n  businessEventsClient.ingest({\n    type: \"application/json; charset=utf-8\",\n    body: bizeventBody,\n  })\n}"
+        "script": "{{ .workflowCode }}"
       },
       "name": "send_trigger_event",
       "position": {
@@ -26,11 +26,11 @@
       "inputs": {},
       "isActive": true,
       "isFaulty": false,
-      "nextExecution": "2023-10-19T22:00:00Z",
+      "nextExecution": "2024-01-11T15:00:00Z",
       "rule": null,
       "timezone": "Europe/Warsaw",
       "trigger": {
-        "cron": "0 */8 * * *",
+        "cron": "{{ .cronExpression }}",
         "type": "cron"
       }
     }

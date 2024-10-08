@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [manager | .NET] - PUT /api/Accounts/ModifyAccount",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

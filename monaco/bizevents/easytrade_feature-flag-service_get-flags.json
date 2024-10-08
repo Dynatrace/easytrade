@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [feature-flag-service | Java] - GET /v1/flags",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {
