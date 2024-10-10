@@ -13,14 +13,17 @@ spec:
     spec:
       containers:
         - name: rabbitmq
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/rabbitmq:d863a2e
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/rabbitmq:1993c20
           ports:
             - containerPort: 5672
             - containerPort: 15672
+          env: []
           resources:
             requests:
-              cpu: 100m
-              memory: 150Mi
+              cpu: 10m
+              memory: 175Mi
+            limits:
+              memory: 175Mi
 ---
 apiVersion: v1
 kind: Service
@@ -37,3 +40,14 @@ spec:
     - name: rabbitmq-ui
       port: 15672
       targetPort: 15672
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rabbitmq-vars
+data:
+  RABBITMQ_USER: userxxx
+  RABBITMQ_PASSWORD: passxxx
+  RABBITMQ_HOST: rabbitmq
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_QUEUE: Trade_Data_Raw

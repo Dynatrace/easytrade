@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [nginx] - GET /feature-flag-service/v1/flags",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

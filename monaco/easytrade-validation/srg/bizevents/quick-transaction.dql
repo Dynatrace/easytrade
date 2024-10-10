@@ -1,0 +1,3 @@
+fetch bizevents
+| filter event.type == "com.easytrade.quick-buy" or event.type == "com.easytrade.quick-sell"
+| summarize s = toDouble(count()) / $quickBuySellReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes

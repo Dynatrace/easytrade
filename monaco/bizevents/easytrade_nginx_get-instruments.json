@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [nginx] - GET /broker-service/v1/instrument",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

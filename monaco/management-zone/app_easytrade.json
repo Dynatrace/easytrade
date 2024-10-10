@@ -1,5 +1,5 @@
 {
-  "name": "EasyTrade",
+  "name": "{{ .name }}",
   "rules": [
     {
       "enabled": true,

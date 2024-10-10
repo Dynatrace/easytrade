@@ -1,0 +1,8 @@
+configs:
+  - id: not-mining-bitcoin
+    config:
+      name: NotMiningBitcoin
+      template: easytrade-not-mining-bitcoin.json
+      skip: false
+    type:
+      api: custom-service-dotnet

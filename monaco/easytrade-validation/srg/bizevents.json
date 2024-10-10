@@ -87,127 +87,145 @@
     {
       "name": "Bizevent for [EasyTrade] total count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.provider, \"www.easytrade.com\")\n| fieldsAdd n = 1\n| summarize sum(n) / $totalReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryTotal }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [deposit] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.deposit\")\n| fieldsAdd n = 1\n| summarize sum(n) / $depositReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryDeposit }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [withdraw] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.withdraw\")\n| fieldsAdd n = 1\n| summarize sum(n) / $withdrawReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryWithdraw }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [long-buy | long-sell] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.long-buy\") or matchesValue(event.type, \"com.easytrade.long-sell\")\n| fieldsAdd n = 1\n| summarize sum(n) / $longBuySellReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryLongTransaction }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [quick-buy | quick-sell] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.quick-buy\") or matchesValue(event.type, \"com.easytrade.quick-sell\")\n| fieldsAdd n = 1\n| summarize sum(n) / $quickBuySellReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryQuickTransaction }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [balance] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.balance\")\n| fieldsAdd n = 1\n| summarize sum(n) / $balanceReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryBalance }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [instruments] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.instruments\")\n| fieldsAdd n = 1\n| summarize sum(n) / $instrumentsReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryInstruments }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [account] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.account\")\n| fieldsAdd n = 1\n| summarize sum(n) / $accountReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryAccount }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [flag] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.flag\")\n| fieldsAdd n = 1\n| summarize sum(n) / $flagReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryFlag }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [login] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.login\")\n| fieldsAdd n = 1\n| summarize sum(n) / $loginReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryLogin }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [logout] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.logout\")\n| fieldsAdd n = 1\n| summarize sum(n) / $logoutReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryLogout }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [offer] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.offer\")\n| fieldsAdd n = 1\n| summarize sum(n) / $offerReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryOffer }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [instrument-price] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.instrument-price\")\n| fieldsAdd n = 1\n| summarize sum(n) / $priceReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryInstrumentPrice }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [manager.account] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.manager.account\")\n| fieldsAdd n = 1\n| summarize sum(n) / $managerAccountReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryManagerAccount }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [manager.packages] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.manager.packages\")\n| fieldsAdd n = 1\n| summarize sum(n) / $managerPackageReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryManagerPackages }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [manager.products] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.manager.products\")\n| fieldsAdd n = 1\n| summarize sum(n) / $managerProductReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryManagerProducts }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [latest-prices] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.latest-prices\")\n| fieldsAdd n = 1\n| summarize sum(n) / $latestPriceReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryLatestPrices }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     },
     {
       "name": "Bizevent type [process-long-trades] count",
       "objectiveType": "DQL",
-      "dqlQuery": "fetch bizevents\n| filter matchesValue(event.type, \"com.easytrade.process-long-trades\")\n| fieldsAdd n = 1\n| summarize sum(n) / $longProcessReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes",
+      "dqlQuery": "{{ .queryProcessLongTrades }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
       "target": 1.0
     }
   ]

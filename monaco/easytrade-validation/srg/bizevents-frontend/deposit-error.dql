@@ -1,0 +1,3 @@
+fetch bizevents
+| filter event.type == "com.easytrade.deposit.error"
+| summarize s = toDouble(count()) / $depositErrorReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes

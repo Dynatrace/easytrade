@@ -13,9 +13,9 @@ spec:
     spec:
       containers:
         - name: manager
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/manager:d863a2e
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/manager:1993c20
           ports:
-            - containerPort: 80
+            - containerPort: 8080
           env:
             - name: PROXY_PREFIX
               value: "manager"
@@ -26,8 +26,10 @@ spec:
                   key: DOTNET_CONNECTION_STRING
           resources:
             requests:
-              cpu: 150m
-              memory: 350Mi
+              cpu: 50m
+              memory: 300Mi
+            limits:
+              memory: 300Mi
 ---
 apiVersion: v1
 kind: Service
@@ -39,5 +41,5 @@ spec:
     app: manager
   ports:
     - name: http
-      port: 80
-      targetPort: 80
+      port: 8080
+      targetPort: 8080

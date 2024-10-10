@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [nginx] DELETE /credit-card-order-service/v1/order/{accountId}",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

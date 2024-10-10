@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: third-party-service
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/third-party-service:d863a2e
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/third-party-service:1993c20
           ports:
             - containerPort: 8080
           env:
@@ -34,8 +34,10 @@ spec:
                 name: feature-flag-service-setup
           resources:
             requests:
-              cpu: 150m
-              memory: 100Mi
+              cpu: 10m
+              memory: 300Mi
+            limits:
+              memory: 300Mi
 ---
 apiVersion: v1
 kind: Service

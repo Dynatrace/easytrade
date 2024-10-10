@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [offerservice | Node.js] - PUT /api/signup",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

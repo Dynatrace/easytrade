@@ -2,7 +2,7 @@ configs:
   - id: easytrade-k8s-bizevents-frontend
     config:
       name: easytrade-k8s-bizevents-frontend
-      template: easytrade-k8s-bizevents-frontend.json
+      template: bizevents-frontend.json
       skip: false
       parameters:
         timeframeMinutes: 15
@@ -19,23 +19,42 @@ configs:
         sellStartReferenceCount: 10
         sellFinishReferenceCount: 10
         sellErrorReferenceCount: 5
-    type:
-      settings:
-        schema: app:dynatrace.site.reliability.guardian:guardians
-        scope: environment
-  - id: easytrade-k8s-loadgen-visits
-    config:
-      name: easytrade-k8s-loadgen-visits
-      template: easytrade-k8s-loadgen-visits.json
-      skip: false
-      parameters:
-        timeframeMinutes: 15
-        referenceTimeframeMinutes: 15
-        visitsReferenceCount: 50
-        failureRatePercentThreshold: 15
-        loadgenContainerName: loadgen
-        visitStartMsg: Running visit
-        visitErrorMsg: Worker had error when running visit
+        queryBuyError:
+          type: file
+          path: bizevents-frontend/buy-error.dql
+        queryBuyFinish:
+          type: file
+          path: bizevents-frontend/buy-finish.dql
+        queryBuyStart:
+          type: file
+          path: bizevents-frontend/buy-start.dql
+        queryDepositError:
+          type: file
+          path: bizevents-frontend/deposit-error.dql
+        queryDepositFinish:
+          type: file
+          path: bizevents-frontend/deposit-finish.dql
+        queryDepositStart:
+          type: file
+          path: bizevents-frontend/deposit-start.dql
+        querySellError:
+          type: file
+          path: bizevents-frontend/sell-error.dql
+        querySellFinish:
+          type: file
+          path: bizevents-frontend/sell-finish.dql
+        querySellStart:
+          type: file
+          path: bizevents-frontend/sell-start.dql
+        queryWithdrawError:
+          type: file
+          path: bizevents-frontend/withdraw-error.dql
+        queryWithdrawFinish:
+          type: file
+          path: bizevents-frontend/withdraw-finish.dql
+        queryWithdrawStart:
+          type: file
+          path: bizevents-frontend/withdraw-start.dql
     type:
       settings:
         schema: app:dynatrace.site.reliability.guardian:guardians
@@ -43,7 +62,7 @@ configs:
   - id: easytrade-k8s-bizevents
     config:
       name: easytrade-k8s-bizevents
-      template: easytrade-k8s-bizevents.json
+      template: bizevents.json
       skip: false
       parameters:
         timeframeMinutes: 15
@@ -66,6 +85,83 @@ configs:
         latestPriceReferenceCount: 150
         longProcessReferenceCount: 10
         accountReferenceCount: 120
+        queryAccount:
+          type: file
+          path: bizevents/account.dql
+        queryBalance:
+          type: file
+          path: bizevents/balance.dql
+        queryDeposit:
+          type: file
+          path: bizevents/deposit.dql
+        queryFlag:
+          type: file
+          path: bizevents/flag.dql
+        queryInstrumentPrice:
+          type: file
+          path: bizevents/instrument-price.dql
+        queryInstruments:
+          type: file
+          path: bizevents/instruments.dql
+        queryLatestPrices:
+          type: file
+          path: bizevents/latest-prices.dql
+        queryLogin:
+          type: file
+          path: bizevents/login.dql
+        queryLogout:
+          type: file
+          path: bizevents/logout.dql
+        queryLongTransaction:
+          type: file
+          path: bizevents/long-transaction.dql
+        queryManagerAccount:
+          type: file
+          path: bizevents/manager-account.dql
+        queryManagerPackages:
+          type: file
+          path: bizevents/manager-packages.dql
+        queryManagerProducts:
+          type: file
+          path: bizevents/manager-products.dql
+        queryOffer:
+          type: file
+          path: bizevents/offer.dql
+        queryProcessLongTrades:
+          type: file
+          path: bizevents/process-long-trades.dql
+        queryQuickTransaction:
+          type: file
+          path: bizevents/quick-transaction.dql
+        queryTotal:
+          type: file
+          path: bizevents/total.dql
+        queryWithdraw:
+          type: file
+          path: bizevents/withdraw.dql
+    type:
+      settings:
+        schema: app:dynatrace.site.reliability.guardian:guardians
+        scope: environment
+  - id: easytrade-k8s-loadgen-visits
+    config:
+      name: easytrade-k8s-loadgen-visits
+      template: loadgen-visits.json
+      skip: false
+      parameters:
+        timeframeMinutes: 15
+        referenceTimeframeMinutes: 15
+        visitsReferenceCount: 50
+        failureRatePercentThreshold: 15
+        loadgenContainerName: loadgen
+        visitStartMsg: Running visit
+        visitErrorMsg: Worker had error when running visit
+        queryCount:
+          type: file
+          path: loadgen-visits/count.dql
+        queryFailureRate:
+          type: file
+          path: loadgen-visits/failure-rate.dql
     type:
       settings:
         schema: app:dynatrace.site.reliability.guardian:guardians

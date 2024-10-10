@@ -1,0 +1,3 @@
+fetch bizevents
+| filter event.type == "com.easytrade.instruments"
+| summarize s = toDouble(count()) / $instrumentsReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes

@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [broker-service | .NET] - GET /v1/balance/{accountId}",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

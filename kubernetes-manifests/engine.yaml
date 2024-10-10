@@ -13,18 +13,20 @@ spec:
     spec:
       containers:
         - name: engine
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/engine:d863a2e
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/engine:1993c20
           ports:
             - containerPort: 8080
           env:
             - name: BROKER_HOSTANDPORT
-              value: "broker-service:80"
+              value: "broker-service:8080"
             - name: PROXY_PREFIX
               value: "engine"
           resources:
             requests:
-              cpu: 150m
-              memory: 100Mi
+              cpu: 10m
+              memory: 350Mi
+            limits:
+              memory: 350Mi
 ---
 apiVersion: v1
 kind: Service

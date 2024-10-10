@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [nginx] - GET /accountservice/api/accounts/presets",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

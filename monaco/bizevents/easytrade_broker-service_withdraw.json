@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [broker-service | .NET] - POST /v1/balance/{accountId}/withdraw",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [nginx] - PUT /feature-flag-service/v1/flags/{flagId}",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

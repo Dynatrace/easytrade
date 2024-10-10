@@ -4,7 +4,7 @@ This service is used to manage accounts' balances and process trades.
 
 ## Technologies used
 
-- .NET 6 (ASP.NET Core)
+- .NET 8 (ASP.NET Core)
 - Docker
 
 ## Endpoints or logic
@@ -24,8 +24,15 @@ http://SOMEWHERE/broker-service/swagger
 
 ---
 
-Manager has support for one problem pattern - `db_not_responding`. When this problem pattern is enabled, no new records will be added to Trade table, as they will fail.  
-Problem pattern can be enabled using the api provided with the feature flag service. More information on using the feature flag service is available in the [feature flag service readme](./feature-flag-service.md).
+The problem patterns are toggled through [feature flag service](./feature-flag-service.md). The responses from the service are cached for **FEATURE_FLAG_CACHE_DURATION_S** or default value if env var not set.
+
+#### Db not responding
+
+When enabled, no new records will be added to Trade table, as they will fail. Problem pattern can be enabled using the api provided with the feature flag service.
+
+#### High CPU usage
+
+When enabled every request will be delayed by **HIGH_CPU_USAGE_REQUEST_DELAY_MS** or default value if env var not set. During this time Collatz conjecture will be calculated for random numbers on to add a significant load to cpu. It will be run on **HIGH_CPU_USAGE_CONCURRENCY** tasks.
 
 ### Balance
 

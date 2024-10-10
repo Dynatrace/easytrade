@@ -6,6 +6,9 @@ configs:
         slack_connection_token:
           name: SLACK_TOKEN
           type: environment
+        slack_channel_id:
+          name: SLACK_CHANNEL
+          type: environment
       template: slack-bot.json
       skip: false
     type:

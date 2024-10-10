@@ -1,0 +1,3 @@
+fetch bizevents
+| filter event.type == "com.easytrade.flag"
+| summarize s = toDouble(count()) / $flagReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes

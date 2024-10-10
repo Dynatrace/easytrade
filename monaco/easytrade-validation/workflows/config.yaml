@@ -1,4 +1,17 @@
 configs:
+  - id: easytrade-k8s-trigger-validation-cron
+    config:
+      name: easytrade-k8s-trigger-validation-cron
+      parameters:
+        cronExpression: 0 */6 * * *
+        workflowCode:
+          type: file
+          path: trigger-validation.ts
+      template: easytrade-k8s-trigger-validation-cron.json
+      skip: false
+    type:
+      automation:
+        resource: workflow
   - id: easytrade-k8s-send-test-notification
     config:
       name: easytrade-k8s-send-test-notification
@@ -9,15 +22,16 @@ configs:
           configType: app:dynatrace.slack:connection
           configId: slack-bot
           property: id
+        channel_id:
+          type: reference
+          project: config.slack-connections
+          configType: app:dynatrace.slack:connection
+          configId: slack-bot
+          property: slack_channel_id
+        workflowCode:
+          type: file
+          path: send-test-notification.ts
       template: easytrade-k8s-send-test-notification.json
-      skip: false
-    type:
-      automation:
-        resource: workflow
-  - id: easytrade-k8s-trigger-validation-cron
-    config:
-      name: easytrade-k8s-trigger-validation-cron
-      template: easytrade-k8s-trigger-validation-cron.json
       skip: false
     type:
       automation:
@@ -44,6 +58,9 @@ configs:
           configType: app:dynatrace.site.reliability.guardian:guardians
           configId: easytrade-k8s-loadgen-visits
           property: id
+        workflowCode:
+          type: file
+          path: run-validation.ts
       template: easytrade-k8s-run-validation.json
       skip: false
     type:

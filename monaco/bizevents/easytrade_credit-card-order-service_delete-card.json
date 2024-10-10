@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [credit-card-order-service | Java] DELETE /v1/order/{accountId}",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

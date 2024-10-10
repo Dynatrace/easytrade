@@ -10,11 +10,28 @@ configs:
     config:
       parameters:
         easytrade_web_app:
-          configId: easytrade
-          configType: application-web
-          property: id
           type: reference
+          configType: application-web
+          configId: easytrade
+          property: id
       template: easytrade-proxy.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:rum.web.app-detection
+        scope: environment
+  - id: easytrade-domain
+    config:
+      template: easytrade-domain.json
+      parameters:
+        applicationId:
+          type: reference
+          configType: application-web
+          configId: easytrade
+          property: id
+        domain:
+          name: DOMAIN
+          type: environment
       skip: false
     type:
       settings:

@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [manager | .NET] - GET /api/Accounts/GetAccountById/{id}",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

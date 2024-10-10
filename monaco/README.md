@@ -31,6 +31,9 @@
   - **TENANT_TOKEN** - API token prepared earlier
   - **CLIENT_ID** - oauth client id
   - **CLIENT_SECRET** - oauth client secret
+  - **DOMAIN** - URL of EasyTrade used for application detection
+  - **SLACK_TOKEN** - Slack bot token used in the Easytrade validation workflow
+  - **SLACK_CHANNEL** - Slack channel ID used in the Easytrade validation workflow
 
 ## Warning
 
@@ -61,6 +64,8 @@ monaco deploy mainfest.yaml -e staging -p easytrade-validation.workflows -p easy
 ```
 
 > NOTE: only 1 level of project nesting is supported for the grouping type
+
+> NOTE: If you want to exclude some parts of the configuration, change `skip: false` to `skip: true` in corresponding `config.yaml`.
 
 ### Secrets
 

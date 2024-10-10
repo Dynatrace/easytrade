@@ -1,0 +1,82 @@
+{
+  "name": "[easyTrade] Deposit and trade flow",
+  "description": "Tracking from a customer depositing funds, buying/trading stock and then withdrawing funds at the end.",
+  "version": 7,
+  "steps": [
+    {
+      "name": "Deposit",
+      "id": "d72bd1d7-42e9-4700-a881-fa5a2a90b3f8",
+      "events": [
+        {
+          "id": "www.easytrade.com-com.easytrade.deposit",
+          "name": "com.easytrade.deposit",
+          "provider": "www.easytrade.com",
+          "isError": false,
+          "isDisabled": false
+        }
+      ]
+    },
+    {
+      "name": "Quick Buy",
+      "id": "e0e911cb-d0cb-46bc-aba8-7f713efd0fcb",
+      "events": [
+        {
+          "id": "www.easytrade.com-com.easytrade.quick-buy",
+          "name": "com.easytrade.quick-buy",
+          "provider": "www.easytrade.com",
+          "isError": false,
+          "isDisabled": false
+        }
+      ]
+    },
+    {
+      "name": "Quick Sell",
+      "id": "0f05186a-4e2d-421e-93d0-45c5c4c70ee5",
+      "events": [
+        {
+          "id": "www.easytrade.com-com.easytrade.quick-sell",
+          "name": "com.easytrade.quick-sell",
+          "provider": "www.easytrade.com",
+          "isError": false,
+          "isDisabled": false
+        }
+      ]
+    },
+    {
+      "name": "Withdrawl",
+      "id": "8335fdff-dd62-488e-9c8c-463402e488ac",
+      "events": [
+        {
+          "id": "www.easytrade.com-com.easytrade.withdraw",
+          "name": "com.easytrade.withdraw",
+          "provider": "www.easytrade.com",
+          "isError": false,
+          "isDisabled": false
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "d72bd1d7-42e9-4700-a881-fa5a2a90b3f8__e0e911cb-d0cb-46bc-aba8-7f713efd0fcb",
+      "source": "d72bd1d7-42e9-4700-a881-fa5a2a90b3f8",
+      "target": "e0e911cb-d0cb-46bc-aba8-7f713efd0fcb"
+    },
+    {
+      "id": "e0e911cb-d0cb-46bc-aba8-7f713efd0fcb__0f05186a-4e2d-421e-93d0-45c5c4c70ee5",
+      "source": "e0e911cb-d0cb-46bc-aba8-7f713efd0fcb",
+      "target": "0f05186a-4e2d-421e-93d0-45c5c4c70ee5"
+    },
+    {
+      "id": "0f05186a-4e2d-421e-93d0-45c5c4c70ee5__8335fdff-dd62-488e-9c8c-463402e488ac",
+      "source": "0f05186a-4e2d-421e-93d0-45c5c4c70ee5",
+      "target": "8335fdff-dd62-488e-9c8c-463402e488ac"
+    }
+  ],
+  "correlationID": "accountId",
+  "kpi": "amount",
+  "kpiEvent": {
+    "name": "com.easytrade.withdraw",
+    "provider": "www.easytrade.com"
+  }
+}

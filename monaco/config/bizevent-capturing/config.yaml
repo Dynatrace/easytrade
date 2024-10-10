@@ -1,0 +1,39 @@
+configs:
+  - id: http-dotnet
+    config:
+      template: &template oneagent-feature.json
+      skip: false
+      parameters:
+        featureKey: SENSOR_DOTNET_BIZEVENTS_HTTP_INCOMING
+    type: &type
+      settings:
+        schema: builtin:oneagent.features
+        scope: environment
+  - id: http-webserver
+    config:
+      template: *template
+      skip: false
+      parameters:
+        featureKey: SENSOR_WEBSERVER_BIZEVENTS_HTTP_INCOMING
+    type: *type
+  - id: http-nodejs
+    config:
+      template: *template
+      skip: false
+      parameters:
+        featureKey: SENSOR_NODEJS_BIZEVENTS_HTTP_INCOMING
+    type: *type
+  - id: http-java
+    config:
+      template: *template
+      skip: false
+      parameters:
+        featureKey: SENSOR_JAVA_BIZEVENTS_HTTP_INCOMING
+    type: *type
+  - id: http-go
+    config:
+      template: *template
+      skip: false
+      parameters:
+        featureKey: SENSOR_GO_BIZEVENTS_HTTP_INCOMING
+    type: *type

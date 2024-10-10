@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [engine | Java] - POST /api/trade/scheduler/notification",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

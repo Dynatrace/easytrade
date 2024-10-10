@@ -13,18 +13,20 @@ spec:
     spec:
       containers:
         - name: accountservice
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice:d863a2e
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice:1993c20
           ports:
             - containerPort: 8080
           env:
             - name: MANAGER_HOSTANDPORT
-              value: "manager:80"
+              value: "manager:8080"
             - name: PROXY_PREFIX
               value: "accountservice"
           resources:
             requests:
-              cpu: 150m
-              memory: 100Mi
+              cpu: 30m
+              memory: 450Mi
+            limits:
+              memory: 450Mi
 ---
 apiVersion: v1
 kind: Service

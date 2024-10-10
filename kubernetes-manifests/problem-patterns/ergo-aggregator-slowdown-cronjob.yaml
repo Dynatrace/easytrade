@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: enable-ergo-aggregator-slowdown
+spec:
+  schedule: "00 22 * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 60
+      template:
+        spec:
+          containers:
+            - name: enable-ergo-aggregator-slowdown
+              image: curlimages/curl
+              imagePullPolicy: IfNotPresent
+              args:
+                - "http://feature-flag-service:8080/v1/flags/ergo_aggregator_slowdown"
+                - "-X"
+                - "PUT"
+                - "-H"
+                - "Content-Type: application/json"
+                - "-d"
+                - '{"enabled": true}'
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: disable-ergo-aggregator-slowdown
+spec:
+  schedule: "25 22 * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 60
+      template:
+        spec:
+          containers:
+            - name: disable-ergo-aggregator-slowdown
+              image: curlimages/curl
+              imagePullPolicy: IfNotPresent
+              args:
+                - "http://feature-flag-service:8080/v1/flags/ergo_aggregator_slowdown"
+                - "-X"
+                - "PUT"
+                - "-H"
+                - "Content-Type: application/json"
+                - "-d"
+                - '{"enabled": false}'
+          restartPolicy: OnFailure

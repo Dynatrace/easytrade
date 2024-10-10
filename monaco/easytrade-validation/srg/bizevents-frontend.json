@@ -1,0 +1,160 @@
+{
+  "name": "{{ .name }}",
+  "tags": [],
+  "variables": [
+    {
+      "name": "timeframeMinutes",
+      "definition": "{{ .timeframeMinutes }}"
+    },
+    {
+      "name": "referenceTimeframeMinutes",
+      "definition": "{{ .referenceTimeframeMinutes }}"
+    },
+    {
+      "name": "depositStartReferenceCount",
+      "definition": "{{ .depositStartReferenceCount }}"
+    },
+    {
+      "name": "depositFinishReferenceCount",
+      "definition": "{{ .depositFinishReferenceCount }}"
+    },
+    {
+      "name": "depositErrorReferenceCount",
+      "definition": "{{ .depositErrorReferenceCount }}"
+    },
+    {
+      "name": "withdrawStartReferenceCount",
+      "definition": "{{ .withdrawStartReferenceCount }}"
+    },
+    {
+      "name": "withdrawFinishReferenceCount",
+      "definition": "{{ .withdrawFinishReferenceCount }}"
+    },
+    {
+      "name": "withdrawErrorReferenceCount",
+      "definition": "{{ .withdrawErrorReferenceCount }}"
+    },
+    {
+      "name": "buyStartReferenceCount",
+      "definition": "{{ .buyStartReferenceCount }}"
+    },
+    {
+      "name": "sellStartReferenceCount",
+      "definition": "{{ .sellStartReferenceCount }}"
+    },
+    {
+      "name": "buyFinishReferenceCount",
+      "definition": "{{ .buyFinishReferenceCount }}"
+    },
+    {
+      "name": "sellFinishReferenceCount",
+      "definition": "{{ .sellFinishReferenceCount }}"
+    },
+    {
+      "name": "buyErrorReferenceCount",
+      "definition": "{{ .buyErrorReferenceCount }}"
+    },
+    {
+      "name": "sellErrorReferenceCount",
+      "definition": "{{ .sellErrorReferenceCount }}"
+    }
+  ],
+  "objectives": [
+    {
+      "name": "Bizevent type [com.easytrade.buy.error] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "{{ .queryBuyError }}",
+      "comparisonOperator": "LESS_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [com.easytrade.buy.finish] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "{{ .queryBuyFinish }}",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [com.easytrade.buy.start] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "{{ .queryBuyStart }}",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [com.easytrade.deposit.error] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "{{ .queryDepositError }}",
+      "comparisonOperator": "LESS_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [com.easytrade.deposit.finish] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "{{ .queryDepositFinish }}",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [com.easytrade.deposit.start] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "{{ .queryDepositStart }}",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [com.easytrade.sell.error] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "{{ .querySellError }}",
+      "comparisonOperator": "LESS_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [com.easytrade.sell.finish] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "{{ .querySellFinish }}",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [com.easytrade.sell.start] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "{{ .querySellStart }}",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [com.easytrade.withdraw.error] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "{{ .queryWithdrawError }}",
+      "comparisonOperator": "LESS_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [com.easytrade.withdraw.finish] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "{{ .queryWithdrawFinish }}",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
+      "target": 1.0
+    },
+    {
+      "name": "Bizevent type [com.easytrade.withdraw.start] count",
+      "objectiveType": "DQL",
+      "dqlQuery": "{{ .queryWithdrawStart }}",
+      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
+      "autoAdaptiveThresholdEnabled": false,
+      "target": 1.0
+    }
+  ]
+}

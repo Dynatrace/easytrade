@@ -4,7 +4,7 @@ A java service that should not be monitored and handles credit card manufacture 
 
 ## Technologies used
 
-- Java 17
+- Java 21
 - Docker
 
 ## Endpoints or logic

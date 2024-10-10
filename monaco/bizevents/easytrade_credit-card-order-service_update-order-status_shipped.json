@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [credit-card-order-service | Java] - POST /v1/orders/{id}/status:shipped",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

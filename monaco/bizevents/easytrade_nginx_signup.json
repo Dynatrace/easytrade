@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [nginx] - POST /loginservice/api/Signup",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {

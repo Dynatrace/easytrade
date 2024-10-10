@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "ruleName": "EasyTrade [pricing-service | Go] - GET /v1/prices/latest",
+  "ruleName": "{{ .name }}",
   "triggers": [
     {
       "source": {
