@@ -28,6 +28,10 @@ apiVersion: v1
 kind: Service
 metadata:
   name: frontendreverseproxy-easytrade
+  # Uncomment the annotations block to allow the service
+  # to be exposed publicly if deployed on EKS
+  # annotations:
+  #   service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
 spec:
   type: LoadBalancer
   selector:
