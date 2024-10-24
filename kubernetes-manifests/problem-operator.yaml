@@ -43,7 +43,7 @@ spec:
       serviceAccountName: problem-operator-service-account
       containers:
         - name: problem-operator
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/problem-operator:1993c20
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/problem-operator:8831949
           env:
             - name: POD_NAMESPACE
               valueFrom:
