@@ -136,12 +136,10 @@ Currently there are 4 problem patterns supported in easyTrade:
 To turn a plugin on/off send a request similar to the following:
 
 ```sh
-curl -X PUT "http://{IP_ADDRESS}/feature-flag-service/v1/flags/{FEATURE_ID}/"
-            -H  "accept: application/json"
-            -d "{\"enabled\": {VALUE}}"
+curl -X PUT "http://{IP_ADDRESS}/feature-flag-service/v1/flags/{FEATURE_ID}/" \
+-H  "accept: application/json" \
+-d '{"enabled": {VALUE}}'
 ```
-
-Of course please set the value of "IP_ADDRESS" to the correct host IP and VALUE to false/true. \
 
 You can also manage enabled problem patterns via the easyTrade frontend.
 

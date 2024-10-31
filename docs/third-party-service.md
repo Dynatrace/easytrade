@@ -34,38 +34,38 @@ Third party service has support for one problem pattern - `factory_crisis`. When
 
 ##### Parameters
 
-> | name                | type     | data type | description                            | source    |
-> | ------------------- | -------- | --------- | -------------------------------------- | --------- |
-> | `creditCardOrderId` | required | string    | Credit card order ID                   | Body JSON |
-> | `name`              | required | string    | Name of card holder                    | Body JSON |
-> | `cardLevel`         | required | string    | Type of card: silver, gold or platinum | Body JSON |
+| name                | type     | data type | description                            | source    |
+| ------------------- | -------- | --------- | -------------------------------------- | --------- |
+| `creditCardOrderId` | required | string    | Credit card order ID                   | Body JSON |
+| `name`              | required | string    | Name of card holder                    | Body JSON |
+| `cardLevel`         | required | string    | Type of card: silver, gold or platinum | Body JSON |
 
 ##### Responses
 
-> | http code | content-type       | response                                                              |
-> | --------- | ------------------ | --------------------------------------------------------------------- |
-> | `200`     | `application/json` | `{"statusCode": 200, "message": "Credit card is being manufactured"}` |
+| http code | content-type       | response                                                              |
+| --------- | ------------------ | --------------------------------------------------------------------- |
+| `200`     | `application/json` | `{"statusCode": 200, "message": "Credit card is being manufactured"}` |
 
 ##### Example of request JSON body
 
-> ```json
-> {
->   "creditCardOrderId": "b0404285-41ca-4748-a8d9-8a104a0a9d08",
->   "name": "John Doe",
->   "cardLevel": "silver"
-> }
-> ```
+```json
+{
+  "creditCardOrderId": "b0404285-41ca-4748-a8d9-8a104a0a9d08",
+  "name": "John Doe",
+  "cardLevel": "silver"
+}
+```
 
 ##### Example cURL
 
-> ```bash
-> curl -X 'POST' \
->   'http://localhost/third-party-service/v1/manufacturer' \
->   -H 'accept: */*' \
->   -H 'Content-Type: application/json' \
->   -d '{
->   "creditCardOrderId": "b0404285-41ca-4748-a8d9-8a104a0a9d08",
->   "name": "John Doe",
->   "cardLevel": "silver"
-> }'
-> ```
+```bash
+curl -X 'POST' \
+  'http://localhost/third-party-service/v1/manufacturer' \
+  -H 'accept: */*' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "creditCardOrderId": "b0404285-41ca-4748-a8d9-8a104a0a9d08",
+  "name": "John Doe",
+  "cardLevel": "silver"
+}'
+```
