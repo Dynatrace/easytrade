@@ -1,0 +1,50 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: enable-credit-card-meltdown
+spec:
+  schedule: "00 20 * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 60
+      template:
+        spec:
+          containers:
+            - name: enable-credit-card-meltdown
+              image: curlimages/curl
+              imagePullPolicy: IfNotPresent
+              args:
+                - "http://feature-flag-service.svc.cluster.local:8080/v1/flags/credit_card_meltdown"
+                - "-X"
+                - "PUT"
+                - "-H"
+                - "Content-Type: application/json"
+                - "-d"
+                - '{"enabled": true}'
+          restartPolicy: OnFailure
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: disable-credit-card-meltdown
+spec:
+  schedule: "25 20 * * *"
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 60
+      template:
+        spec:
+          containers:
+            - name: disable-credit-card-meltdown
+              image: curlimages/curl
+              imagePullPolicy: IfNotPresent
+              args:
+                - "http://feature-flag-service.svc.cluster.local:8080/v1/flags/credit_card_meltdown"
+                - "-X"
+                - "PUT"
+                - "-H"
+                - "Content-Type: application/json"
+                - "-d"
+                - '{"enabled": false}'
+          restartPolicy: OnFailure
