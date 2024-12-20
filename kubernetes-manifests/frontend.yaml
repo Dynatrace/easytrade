@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/frontend:8831949
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/frontend:3c6307b
           ports:
             - containerPort: 3000
           env: []
