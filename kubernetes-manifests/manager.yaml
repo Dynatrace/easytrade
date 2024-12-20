@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: manager
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/manager:8831949
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/manager:3c6307b
           ports:
             - containerPort: 8080
           env:

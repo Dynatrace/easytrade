@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: offerservice
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/offerservice:8831949
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/offerservice:3c6307b
           ports:
             - containerPort: 8080
           env: []
