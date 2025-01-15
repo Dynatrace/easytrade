@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: loginservice
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loginservice:3c6307b
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loginservice:6c90716
           ports:
             - containerPort: 8080
           env:
@@ -27,9 +27,9 @@ spec:
           resources:
             requests:
               cpu: 20m
-              memory: 300Mi
+              memory: 400Mi
             limits:
-              memory: 300Mi
+              memory: 400Mi
 ---
 apiVersion: v1
 kind: Service

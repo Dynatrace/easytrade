@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: accountservice
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice:3c6307b
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice:6c90716
           ports:
             - containerPort: 8080
           env:
@@ -24,9 +24,9 @@ spec:
           resources:
             requests:
               cpu: 30m
-              memory: 450Mi
+              memory: 600Mi
             limits:
-              memory: 450Mi
+              memory: 600Mi
 ---
 apiVersion: v1
 kind: Service

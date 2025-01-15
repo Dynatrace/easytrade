@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: manager
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/manager:3c6307b
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/manager:6c90716
           ports:
             - containerPort: 8080
           env:
@@ -27,9 +27,9 @@ spec:
           resources:
             requests:
               cpu: 50m
-              memory: 300Mi
+              memory: 400Mi
             limits:
-              memory: 300Mi
+              memory: 400Mi
 ---
 apiVersion: v1
 kind: Service

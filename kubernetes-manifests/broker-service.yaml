@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: broker-service
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/broker-service:3c6307b
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/broker-service:6c90716
           ports:
             - containerPort: 8080
           env:
@@ -40,9 +40,9 @@ spec:
           resources:
             requests:
               cpu: 150m
-              memory: 325Mi
+              memory: 350Mi
             limits:
-              memory: 325Mi
+              memory: 350Mi
 ---
 apiVersion: v1
 kind: Service

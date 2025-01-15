@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: third-party-service
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/third-party-service:3c6307b
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/third-party-service:6c90716
           ports:
             - containerPort: 8080
           env:
@@ -35,9 +35,9 @@ spec:
           resources:
             requests:
               cpu: 10m
-              memory: 300Mi
+              memory: 350Mi
             limits:
-              memory: 300Mi
+              memory: 350Mi
 ---
 apiVersion: v1
 kind: Service

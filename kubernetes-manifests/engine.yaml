@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: engine
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/engine:3c6307b
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/engine:6c90716
           ports:
             - containerPort: 8080
           env:
@@ -24,9 +24,9 @@ spec:
           resources:
             requests:
               cpu: 10m
-              memory: 350Mi
+              memory: 450Mi
             limits:
-              memory: 350Mi
+              memory: 450Mi
 ---
 apiVersion: v1
 kind: Service
