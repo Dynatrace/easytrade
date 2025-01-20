@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: aggregator-service
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/aggregator-service:6c90716
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/aggregator-service:4d5adb3
           env: []
           envFrom:
             - configMapRef:
