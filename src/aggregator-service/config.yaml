@@ -1,0 +1,40 @@
+offerservice:
+  protocol: "http"
+  host: "offerservice"
+  port: 8080
+
+defaults:
+  delay: "3s"
+  failDelay: "15m"
+  requestTimeLimit: "1s"
+  signupInterval: "1h"
+  consecutiveFailLimit: 50
+
+platforms:
+  - name: "dynatestsieger.at"
+    packageProbability:
+      starter: 0.6
+      light:   0.3
+      pro:     0.1
+  - name: "tradeCom.co.uk"
+    packageProbability:
+      starter: 0.8
+      light:   0.2
+      pro:     0
+  - name: "CryptoTrading.com"
+    filter: '["Crypto"]'
+    packageProbability:
+      starter: 0.5
+      light:   0.4
+      pro:     0.1
+  - name: "CheapTrading.mi"
+    packageProbability:
+      starter: 1
+      light:   0
+      pro:     0
+  - name: "Stratton-oakmount.com"
+    filter: '["Shares"]'
+    packageProbability:
+      starter: 0
+      light:   0.1
+      pro:     0.9

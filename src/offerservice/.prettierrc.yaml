@@ -1,0 +1,13 @@
+trailingComma: es5
+semi: false
+tabWidth: 4
+overrides:
+  - files:
+      - package.json
+      - package-lock.json
+      - tsconfig.json
+      - tsconfig.node.json
+      - .prettierrc.yaml
+      - "*.md"
+    options:
+      tabWidth: 2

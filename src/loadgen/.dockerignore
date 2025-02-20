@@ -1,0 +1,5 @@
+*
+!/.npmrc
+!/*.json
+!/resources
+!/src
