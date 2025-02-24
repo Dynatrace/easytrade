@@ -1,0 +1,26 @@
+{
+  "name": "easytrade-load-generator",
+  "version": "0.1.0",
+  "description": "Load generator for easyTrade based on loadgen-core",
+  "main": "./build/src/main.js",
+  "scripts": {
+    "build": "rm -rf ./build & tsc",
+    "start": "node .",
+    "dev": "node -r ts-node/register --env-file=.env ./src/main.ts",
+    "format": "prettier -w .",
+    "lint": "eslint ./src"
+  },
+  "dependencies": {
+    "@demoability/loadgen-core": "^1.3.29",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "@types/eslint__js": "^8.42.3",
+    "eslint": "^9.18.0",
+    "prettier": "^3.4.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
+  }
+}

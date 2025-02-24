@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "user-generator"
+version = "0.1.0"
+description = ""
+authors = ["Krzysztof Sajko <krzysztof.sajko@dynatrace.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Faker = "^11.3.0"
+PyYAML = "^6.0"
+rich = "^11.0.0"
+scipy = "^1.8.0"
+deserialize = "^1.8.3"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+black = "^21.12b0"
+isort = "^5.10.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+
+[tool.poetry.scripts]
+generate_users = "user_generator.main:entrypoint_generate_users"
+extend_users = "user_generator.main:entrypoint_extend_users"
+generate_easytrade_data = "user_generator.main:entrypoint_generate_easy_trade_data"
+simplify_passwords = "user_generator.main:entrypoint_make_simple_passwords"
+update_password_hashes = "user_generator.main:entrypoint_update_password_hash"

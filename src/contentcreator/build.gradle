@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+}
+
+group 'com.dynatrace.easytrade.contentcreator'
+version '1.0.0-easytrade'
+java {
+  sourceCompatibility = JavaVersion.VERSION_21
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
+    testImplementation "org.mockito:mockito-core:5.15.2"
+
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+
+    implementation 'com.microsoft.sqlserver:mssql-jdbc:12.8.1.jre11'
+
+    implementation 'ch.qos.logback:logback-core:1.5.16'
+    implementation 'ch.qos.logback:logback-classic:1.5.16'
+    implementation 'org.slf4j:slf4j-api:2.0.16'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+  manifest {
+    attributes(
+      'Main-Class': 'com.dynatrace.easytrade.contentcreator.ContentCreator',
+    )
+  }
+}
+
+task fatJar(type: Jar) {
+  manifest.from jar.manifest
+  duplicatesStrategy = DuplicatesStrategy.INCLUDE
+  from {
+    configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+  } {
+    exclude "META-INF/*.SF"
+    exclude "META-INF/*.DSA"
+    exclude "META-INF/*.RSA"
+  }
+  with jar
+}
