@@ -1,0 +1,48 @@
+name: Get validation result
+description: Fetch and check the validation workflow result
+
+inputs:
+  access_token:
+    description: Authentication token for the Dynatrace tenant
+    required: true
+  tenant_url:
+    description: URL of the Dynatrace tenant
+    required: true
+  event_type:
+    description: Event type of the validation result event
+    required: true
+  timeframe:
+    description: Timeframe for validation
+    required: true
+  job_id:
+    description: Job ID
+    required: true
+  retries:
+    description: Retry count limit
+    default: "3"
+    required: true
+  interval_seconds:
+    description: Interval between retires in seconds
+    default: "30"
+    required: true
+
+outputs:
+  result:
+    description: Validation result
+    value: ${{ steps.get-validation-result.outputs.result }}
+
+runs:
+  using: composite
+  steps:
+    - name: Get result of Validation
+      id: get-validation-result
+      shell: bash
+      env:
+        ACCESS_TOKEN: ${{ inputs.access_token }}
+        TENANT_URL: ${{ inputs.tenant_url }}
+        EVENT_TYPE: ${{ inputs.event_type }}
+        TIMEFRAME: ${{ inputs.timeframe }}
+        JOB_ID: ${{ github.run_number }}-${{ github.sha }}
+        RETRIES: ${{ inputs.retries }}
+        INTERVAL_SECONDS: ${{ inputs.interval_seconds }}
+      run: ./.github/actions/scripts/get-validation-result.sh

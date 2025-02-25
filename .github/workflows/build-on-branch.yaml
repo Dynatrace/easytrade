@@ -1,0 +1,27 @@
+name: Build easytrade on branch
+on:
+  push:
+    branches:
+      - "*"
+      - "!master"
+#   paths:
+#     - src/**
+#     - skaffold.yaml
+
+env:
+  SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/test-easytrade
+  SKAFFOLD_VERSION: 2.13.2
+
+jobs:
+  build-easytrade:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build easytrade without pushing to docker repository
+        uses: hiberbee/github-action-skaffold@1.27.0
+        with:
+          command: build
+          push: false
+          skaffold-version: ${{ env.SKAFFOLD_VERSION }}
