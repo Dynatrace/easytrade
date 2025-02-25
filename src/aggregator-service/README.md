@@ -7,16 +7,9 @@ Golang service simulating many aggregators. Each platform fetches data from the 
 - Go
 - Docker
 
-## Local build instructions
-
-```bash
-docker build -t IMAGE_NAME .
-docker run -d --name SERVICE_NAME IMAGE_NAME
-```
-
 ## Configuration
 
-This service can be configured with a YAML file. Default location is `./config.yaml`. You can change configuration file location with `--config <path>` flag.
+This service can be configured with a YAML file. Default location is `/app/config.yaml`. You can mount your own file to the container.
 
 ### `config.yaml` structure
 
@@ -48,8 +41,6 @@ platforms: # sequence of platforms
     consecutiveFailLimit: 50 # how many consecutive failures should appear before pausing
 ```
 
-Default config can be found in [config.yaml](./config.yaml)
-
 Moreover, you can override the Offer Service connection configuration with these environment variables.
 
 | Name                   | Description                                         | Default      |
@@ -57,4 +48,3 @@ Moreover, you can override the Offer Service connection configuration with these
 | OFFER_SERVICE_PROTOCOL | Protocol used to communicate with the offer service | http         |
 | OFFER_SERVICE_HOST     | Hostname of the offer service                       | offerservice |
 | OFFER_SERVICE_PORT     | Port of the offer service                           | 8080         |
-

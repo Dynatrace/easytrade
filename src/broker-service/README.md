@@ -7,26 +7,6 @@ This service is used to manage accounts' balances and process trades.
 - .NET 8 (ASP.NET Core)
 - Docker
 
-## Local build instructions
-
-```bash
-docker build -t broker-service .
-docker run -d --name easytrade-broker-service broker-service
-```
-
-If you want the service to work properly, you should try setting these ENV variables:
-
-| Name                          | Description                            | Default                                                                                                                            |
-| ----------------------------- | -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| ACCOUNTSERVICE_HOSTANDPORT    | account service host and port          | accountservice:8080                                                                                                                |
-| PRICINGSERVICE_HOSTANDPORT    | pricing service host and port          | pricing-service:8080                                                                                                               |
-| ENGINE_HOSTANDPORT            | engine service host and port           | engine:8080                                                                                                                        |
-| FEATURE_FLAG_SERVICE_PROTOCOL | feature flag service protocol          | http                                                                                                                               |
-| FEATURE_FLAG_SERVICE_BASE_URL | base feature flag service url          | feature-flag-service                                                                                                               |
-| FEATURE_FLAG_SERVICE_PORT     | feature flag service port              | 8080                                                                                                                               |
-| PROXY_PREFIX                  | prefix identifying service in nginx    | broker                                                                                                                             |
-| MSSQL_CONNECTIONSTRING        | Microsoft SQL Server connection string | Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=password;TrustServerCertificate=true |
-
 ## Endpoints or logic
 
 ### Swagger
@@ -36,23 +16,15 @@ If you want the service to work properly, you should try setting these ENV varia
 Swagger endpoint is available at:
 
 ```bash
-# when deployed locally
-http://localhost:8080/swagger
-
-# when deployed with docker-compose
-http://localhost:8084/swagger
-
 # when deployed with k8s
 http://SOMEWHERE/broker-service/swagger
 ```
-
-Version endpoint is available at `/version`
 
 ### Problem pattern
 
 ---
 
-The problem patterns are toggled through [feature flag service](../feature-flag-service/README.md). The responses from the service are cached for **FEATURE_FLAG_CACHE_DURATION_S** or default value if env var not set.
+The problem patterns are toggled through [feature flag service](./feature-flag-service.md). The responses from the service are cached for **FEATURE_FLAG_CACHE_DURATION_S** or default value if env var not set.
 
 #### Db not responding
 
@@ -60,7 +32,7 @@ When enabled, no new records will be added to Trade table, as they will fail. Pr
 
 #### High CPU usage
 
-When enabled every request will be delayed by **HIGH_CPU_USAGE_REQUEST_DELAY_MS** or default value (700) if env var not set. During this time Collatz conjecture will be calculated for random numbers on to add a significant load to cpu. It will be run on **HIGH_CPU_USAGE_CONCURRENCY** tasks.
+When enabled every request will be delayed by **HIGH_CPU_USAGE_REQUEST_DELAY_MS** or default value if env var not set. During this time Collatz conjecture will be calculated for random numbers on to add a significant load to cpu. It will be run on **HIGH_CPU_USAGE_CONCURRENCY** tasks.
 
 ### Balance
 
@@ -70,56 +42,56 @@ When enabled every request will be delayed by **HIGH_CPU_USAGE_REQUEST_DELAY_MS*
 
 ##### Parameters
 
-> | name         | type     | data type | description | source    |
-> | ------------ | -------- | --------- | ----------- | --------- |
-> | `accountId`  | required | int       | Account ID  | Path      |
-> | `amount`     | required | decimal   | Amount      | Body JSON |
-> | `name`       | required | string    | Name        | Body JSON |
-> | `address`    | required | string    | Address     | Body JSON |
-> | `email`      | required | string    | Email       | Body JSON |
-> | `cardNumber` | required | string    | Card number | Body JSON |
-> | `cardType`   | required | string    | Card type   | Body JSON |
-> | `cvv`        | required | string    | CVV         | Body JSON |
+| name         | type     | data type | description | source    |
+| ------------ | -------- | --------- | ----------- | --------- |
+| `accountId`  | required | int       | Account ID  | Path      |
+| `amount`     | required | decimal   | Amount      | Body JSON |
+| `name`       | required | string    | Name        | Body JSON |
+| `address`    | required | string    | Address     | Body JSON |
+| `email`      | required | string    | Email       | Body JSON |
+| `cardNumber` | required | string    | Card number | Body JSON |
+| `cardType`   | required | string    | Card type   | Body JSON |
+| `cvv`        | required | string    | CVV         | Body JSON |
 
 ##### Responses
 
-> | http code | content-type       | response                                                        |
-> | --------- | ------------------ | --------------------------------------------------------------- |
-> | `200`     | `application/json` | `{"accountId": 1, "value": 23.6}`                               |
-> | `400`     | `application/json` | `{"code":"400","message":"Amount can't be lower that 0"}`       |
-> | `404`     | `application/json` | `{"code":"404","message":"Account with id {id} doesn't exist"}` |
+| http code | content-type       | response                                                        |
+| --------- | ------------------ | --------------------------------------------------------------- |
+| `200`     | `application/json` | `{"accountId": 1, "value": 23.6}`                               |
+| `400`     | `application/json` | `{"code":"400","message":"Amount can't be lower that 0"}`       |
+| `404`     | `application/json` | `{"code":"404","message":"Account with id {id} doesn't exist"}` |
 
 ##### Example of request JSON body
 
-> ```json
-> {
->   "amount": 100,
->   "name": "Name",
->   "address": "Address",
->   "email": "Email",
->   "cardNumber": "Card Number",
->   "cardType": "Card Type",
->   "cvv": "123"
-> }
-> ```
+```json
+{
+  "amount": 100,
+  "name": "Name",
+  "address": "Address",
+  "email": "Email",
+  "cardNumber": "Card Number",
+  "cardType": "Card Type",
+  "cvv": "123"
+}
+```
 
 ##### Example cURL
 
-> ```bash
->  curl -X 'POST' \
->  'http://localhost/broker-service/v1/balance/1/deposit' \
->  -H 'accept: text/plain' \
->  -H 'Content-Type: application/json' \
->  -d '{
->  "amount": 100,
->  "name": "Name",
->  "address": "Address",
->  "email": "Email",
->  "cardNumber": "Card Number",
->  "cardType": "Card Type",
->  "cvv": "123"
-> }'
-> ```
+```bash
+curl -X 'POST' \
+'http://localhost/broker-service/v1/balance/1/deposit' \
+-H 'accept: text/plain' \
+-H 'Content-Type: application/json' \
+-d '{
+    "amount": 100,
+    "name": "Name",
+    "address": "Address",
+    "email": "Email",
+    "cardNumber": "Card Number",
+    "cardType": "Card Type",
+    "cvv": "123"
+}'
+```
 
 ---
 
@@ -127,53 +99,53 @@ When enabled every request will be delayed by **HIGH_CPU_USAGE_REQUEST_DELAY_MS*
 
 ##### Parameters
 
-> | name         | type     | data type | description | source    |
-> | ------------ | -------- | --------- | ----------- | --------- |
-> | `accountId`  | required | int       | Account ID  | Path      |
-> | `amount`     | required | decimal   | Amount      | Body JSON |
-> | `name`       | required | string    | Name        | Body JSON |
-> | `address`    | required | string    | Address     | Body JSON |
-> | `email`      | required | string    | Email       | Body JSON |
-> | `cardNumber` | required | string    | Card number | Body JSON |
-> | `cardType`   | required | string    | Card type   | Body JSON |
+| name         | type     | data type | description | source    |
+| ------------ | -------- | --------- | ----------- | --------- |
+| `accountId`  | required | int       | Account ID  | Path      |
+| `amount`     | required | decimal   | Amount      | Body JSON |
+| `name`       | required | string    | Name        | Body JSON |
+| `address`    | required | string    | Address     | Body JSON |
+| `email`      | required | string    | Email       | Body JSON |
+| `cardNumber` | required | string    | Card number | Body JSON |
+| `cardType`   | required | string    | Card type   | Body JSON |
 
 ##### Responses
 
-> | http code | content-type       | response                                                        |
-> | --------- | ------------------ | --------------------------------------------------------------- |
-> | `200`     | `application/json` | `{"accountId": 1, "value": 23.6}`                               |
-> | `400`     | `application/json` | `{"code":"400","message":"Amount can't be lower that 0"}`       |
-> | `404`     | `application/json` | `{"code":"404","message":"Account with id {id} doesn't exist"}` |
+| http code | content-type       | response                                                        |
+| --------- | ------------------ | --------------------------------------------------------------- |
+| `200`     | `application/json` | `{"accountId": 1, "value": 23.6}`                               |
+| `400`     | `application/json` | `{"code":"400","message":"Amount can't be lower that 0"}`       |
+| `404`     | `application/json` | `{"code":"404","message":"Account with id {id} doesn't exist"}` |
 
 ##### Example of request JSON body
 
-> ```json
-> {
->   "amount": 10,
->   "name": "Name",
->   "address": "Address",
->   "email": "Email",
->   "cardNumber": "Card Number",
->   "cardType": "Card Type"
-> }
-> ```
+```json
+{
+  "amount": 10,
+  "name": "Name",
+  "address": "Address",
+  "email": "Email",
+  "cardNumber": "Card Number",
+  "cardType": "Card Type"
+}
+```
 
 ##### Example cURL
 
-> ```bash
-> curl -X 'POST' \
->   'http://localhost/broker-service/v1/balance/1/withdraw' \
->   -H 'accept: text/plain' \
->   -H 'Content-Type: application/json' \
->   -d '{
->   "amount": 10,
->   "name": "Name",
->   "address": "Address",
->   "email": "Email",
->   "cardNumber": "Card Number",
->   "cardType": "Card Type"
-> }'
-> ```
+```bash
+curl -X 'POST' \
+'http://localhost/broker-service/v1/balance/1/withdraw' \
+-H 'accept: text/plain' \
+-H 'Content-Type: application/json' \
+-d '{
+  "amount": 10,
+  "name": "Name",
+  "address": "Address",
+  "email": "Email",
+  "cardNumber": "Card Number",
+  "cardType": "Card Type"
+}'
+```
 
 ---
 
@@ -181,24 +153,24 @@ When enabled every request will be delayed by **HIGH_CPU_USAGE_REQUEST_DELAY_MS*
 
 ##### Parameters
 
-> | name        | type     | data type | description | source |
-> | ----------- | -------- | --------- | ----------- | ------ |
-> | `accountId` | required | int       | Account ID  | Path   |
+| name        | type     | data type | description | source |
+| ----------- | -------- | --------- | ----------- | ------ |
+| `accountId` | required | int       | Account ID  | Path   |
 
 ##### Responses
 
-> | http code | content-type       | response                                                        |
-> | --------- | ------------------ | --------------------------------------------------------------- |
-> | `200`     | `application/json` | `{"accountId": 1, "value": 23.6}`                               |
-> | `404`     | `application/json` | `{"code":"404","message":"Account with id {id} doesn't exist"}` |
+| http code | content-type       | response                                                        |
+| --------- | ------------------ | --------------------------------------------------------------- |
+| `200`     | `application/json` | `{"accountId": 1, "value": 23.6}`                               |
+| `404`     | `application/json` | `{"code":"404","message":"Account with id {id} doesn't exist"}` |
 
 ##### Example cURL
 
-> ```bash
-> curl -X 'GET' \
->   'http://localhost/broker-service/v1/balance/1' \
->   -H 'accept: text/plain'
-> ```
+```bash
+curl -X 'GET' \
+'http://localhost/broker-service/v1/balance/1' \
+-H 'accept: text/plain'
+```
 
 ### Instrument
 
@@ -208,64 +180,64 @@ When enabled every request will be delayed by **HIGH_CPU_USAGE_REQUEST_DELAY_MS*
 
 ##### Parameters
 
-> | name        | type     | data type | description | source |
-> | ----------- | -------- | --------- | ----------- | ------ |
-> | `accountId` | optional | int       | Account ID  | Query  |
+| name        | type     | data type | description | source |
+| ----------- | -------- | --------- | ----------- | ------ |
+| `accountId` | optional | int       | Account ID  | Query  |
 
 ##### Responses
 
-> | http code | content-type       | response  |
-> | --------- | ------------------ | --------- |
-> | `200`     | `application/json` | JSON body |
+| http code | content-type       | response  |
+| --------- | ------------------ | --------- |
+| `200`     | `application/json` | JSON body |
 
 ##### Example of response JSON body
 
-> ```json
-> {
->   "results": [
->     {
->       "id": 1,
->       "code": "ETRAVE",
->       "name": "EasyTravel",
->       "description": "EasyTravel Incorporated",
->       "productId": 1,
->       "productName": "Share",
->       "price": {
->         "timestamp": "2023-07-24T13:44:22+00:00",
->         "open": 139.34791667,
->         "close": 139.38958333,
->         "low": 137.94991929,
->         "high": 140.74087808
->       },
->       "amount": 344
->     },
->     {
->       "id": 2,
->       "code": "EPLANE",
->       "name": "EasyPlanes",
->       "description": "EasyPlanes Worldwide",
->       "productId": 2,
->       "productName": "ETF",
->       "price": {
->         "timestamp": "2023-07-24T13:44:22+00:00",
->         "open": 96.63777778,
->         "close": 96.68222222,
->         "low": 96.06399455,
->         "high": 97.23283949
->       },
->       "amount": 966
->     }
->   ]
-> }
-> ```
+```json
+{
+  "results": [
+    {
+      "id": 1,
+      "code": "ETRAVE",
+      "name": "EasyTravel",
+      "description": "EasyTravel Incorporated",
+      "productId": 1,
+      "productName": "Share",
+      "price": {
+        "timestamp": "2023-07-24T13:44:22+00:00",
+        "open": 139.34791667,
+        "close": 139.38958333,
+        "low": 137.94991929,
+        "high": 140.74087808
+      },
+      "amount": 344
+    },
+    {
+      "id": 2,
+      "code": "EPLANE",
+      "name": "EasyPlanes",
+      "description": "EasyPlanes Worldwide",
+      "productId": 2,
+      "productName": "ETF",
+      "price": {
+        "timestamp": "2023-07-24T13:44:22+00:00",
+        "open": 96.63777778,
+        "close": 96.68222222,
+        "low": 96.06399455,
+        "high": 97.23283949
+      },
+      "amount": 966
+    }
+  ]
+}
+```
 
 ##### Example cURL
 
-> ```bash
-> curl -X 'GET' \
->   'http://localhost/broker-service/v1/instrument?accountId=6' \
->   -H 'accept: text/plain'
-> ```
+```bash
+curl -X 'GET' \
+'http://localhost/broker-service/v1/instrument?accountId=6' \
+-H 'accept: text/plain'
+```
 
 ### Trades
 
@@ -275,59 +247,59 @@ When enabled every request will be delayed by **HIGH_CPU_USAGE_REQUEST_DELAY_MS*
 
 Parameters
 
-> | name           | type     | data type | description   | source    |
-> | -------------- | -------- | --------- | ------------- | --------- |
-> | `accountId`    | required | int       | Account ID    | Body JSON |
-> | `instrumentId` | required | int       | Instrument ID | Body JSON |
-> | `amount`       | required | decimal   | Amount        | Body JSON |
+| name           | type     | data type | description   | source    |
+| -------------- | -------- | --------- | ------------- | --------- |
+| `accountId`    | required | int       | Account ID    | Body JSON |
+| `instrumentId` | required | int       | Instrument ID | Body JSON |
+| `amount`       | required | decimal   | Amount        | Body JSON |
 
 Responses
 
-> | http code | content-type       | response                                                                   |
-> | --------- | ------------------ | -------------------------------------------------------------------------- |
-> | `200`     | -                  | JSON Body                                                                  |
-> | `400`     | `application/json` | `{"code":"400","message":"Amount can't be lower that 0"}`                  |
-> | `404`     | `application/json` | `{"code":"404","message":"Account/Instrument with id {id} doesn't exist"}` |
+| http code | content-type       | response                                                                   |
+| --------- | ------------------ | -------------------------------------------------------------------------- |
+| `200`     | -                  | JSON Body                                                                  |
+| `400`     | `application/json` | `{"code":"400","message":"Amount can't be lower that 0"}`                  |
+| `404`     | `application/json` | `{"code":"404","message":"Account/Instrument with id {id} doesn't exist"}` |
 
 ##### Example of request JSON body
 
-> ```json
-> {
->   "accountId": 6,
->   "instrumentId": 1,
->   "amount": 12.5
-> }
-> ```
+```json
+{
+  "accountId": 6,
+  "instrumentId": 1,
+  "amount": 12.5
+}
+```
 
 ##### Example of response JSON body
 
-> ```json
-> {
->   "instrumentId": 1,
->   "direction": "buy",
->   "quantity": 12.5,
->   "entryPrice": 140.22291667,
->   "timestampOpen": "2023-08-30T14:05:37.6132984+00:00",
->   "timestampClose": "2023-08-30T14:05:37.6132999+00:00",
->   "tradeClosed": true,
->   "transactionHappened": true,
->   "status": "Instant Buy done."
-> }
-> ```
+```json
+{
+  "instrumentId": 1,
+  "direction": "buy",
+  "quantity": 12.5,
+  "entryPrice": 140.22291667,
+  "timestampOpen": "2023-08-30T14:05:37.6132984+00:00",
+  "timestampClose": "2023-08-30T14:05:37.6132999+00:00",
+  "tradeClosed": true,
+  "transactionHappened": true,
+  "status": "Instant Buy done."
+}
+```
 
 ##### Example cURL
 
-> ```bash
-> curl -X 'POST' \
->   'http://localhost/broker-service/v1/trade/buy' \
->   -H 'accept: */*' \
->   -H 'Content-Type: application/json' \
->   -d '{
->   "accountId": 6,
->   "instrumentId": 1,
->   "amount": 12.5
-> }'
-> ```
+```bash
+curl -X 'POST' \
+'http://localhost/broker-service/v1/trade/buy' \
+-H 'accept: */*' \
+-H 'Content-Type: application/json' \
+-d '{
+  "accountId": 6,
+  "instrumentId": 1,
+  "amount": 12.5
+}'
+```
 
 ---
 
@@ -335,59 +307,59 @@ Responses
 
 Parameters
 
-> | name           | type     | data type | description   | source    |
-> | -------------- | -------- | --------- | ------------- | --------- |
-> | `accountId`    | required | int       | Account ID    | Body JSON |
-> | `instrumentId` | required | int       | Instrument ID | Body JSON |
-> | `amount`       | required | decimal   | Amount        | Body JSON |
+| name           | type     | data type | description   | source    |
+| -------------- | -------- | --------- | ------------- | --------- |
+| `accountId`    | required | int       | Account ID    | Body JSON |
+| `instrumentId` | required | int       | Instrument ID | Body JSON |
+| `amount`       | required | decimal   | Amount        | Body JSON |
 
 Responses
 
-> | http code | content-type       | response                                                                   |
-> | --------- | ------------------ | -------------------------------------------------------------------------- |
-> | `200`     | -                  | JSON Body                                                                  |
-> | `400`     | `application/json` | `{"code":"400","message":"Amount can't be lower that 0"}`                  |
-> | `404`     | `application/json` | `{"code":"404","message":"Account/Instrument with id {id} doesn't exist"}` |
+| http code | content-type       | response                                                                   |
+| --------- | ------------------ | -------------------------------------------------------------------------- |
+| `200`     | -                  | JSON Body                                                                  |
+| `400`     | `application/json` | `{"code":"400","message":"Amount can't be lower that 0"}`                  |
+| `404`     | `application/json` | `{"code":"404","message":"Account/Instrument with id {id} doesn't exist"}` |
 
 ##### Example of request JSON body
 
-> ```json
-> {
->   "accountId": 6,
->   "instrumentId": 1,
->   "amount": 12.5
-> }
-> ```
+```json
+{
+  "accountId": 6,
+  "instrumentId": 1,
+  "amount": 12.5
+}
+```
 
 ##### Example of response JSON body
 
-> ```json
-> {
->   "instrumentId": 1,
->   "direction": "sell",
->   "quantity": 12.5,
->   "entryPrice": 140.26458333,
->   "timestampOpen": "2023-08-30T14:06:23.5028116+00:00",
->   "timestampClose": "2023-08-30T14:06:23.5028126+00:00",
->   "tradeClosed": true,
->   "transactionHappened": true,
->   "status": "Instant Sell done."
-> }
-> ```
+```json
+{
+  "instrumentId": 1,
+  "direction": "sell",
+  "quantity": 12.5,
+  "entryPrice": 140.26458333,
+  "timestampOpen": "2023-08-30T14:06:23.5028116+00:00",
+  "timestampClose": "2023-08-30T14:06:23.5028126+00:00",
+  "tradeClosed": true,
+  "transactionHappened": true,
+  "status": "Instant Sell done."
+}
+```
 
 ##### Example cURL
 
-> ```bash
-> curl -X 'POST' \
->   'http://localhost/broker-service/v1/trade/sell' \
->   -H 'accept: */*' \
->   -H 'Content-Type: application/json' \
->   -d '{
->   "accountId": 6,
->   "instrumentId": 1,
->   "amount": 12.5
-> }'
-> ```
+```bash
+curl -X 'POST' \
+'http://localhost/broker-service/v1/trade/sell' \
+-H 'accept: */*' \
+-H 'Content-Type: application/json' \
+-d '{
+  "accountId": 6,
+  "instrumentId": 1,
+  "amount": 12.5
+}'
+```
 
 ---
 
@@ -395,65 +367,65 @@ Responses
 
 Parameters
 
-> | name           | type     | data type | description       | source    |
-> | -------------- | -------- | --------- | ----------------- | --------- |
-> | `accountId`    | required | int       | Account ID        | Body JSON |
-> | `instrumentId` | required | int       | Instrument ID     | Body JSON |
-> | `amount`       | required | decimal   | Amount            | Body JSON |
-> | `duration`     | required | int       | Duration in hours | Body JSON |
-> | `price`        | required | decimal   | Price             | Body JSON |
+| name           | type     | data type | description       | source    |
+| -------------- | -------- | --------- | ----------------- | --------- |
+| `accountId`    | required | int       | Account ID        | Body JSON |
+| `instrumentId` | required | int       | Instrument ID     | Body JSON |
+| `amount`       | required | decimal   | Amount            | Body JSON |
+| `duration`     | required | int       | Duration in hours | Body JSON |
+| `price`        | required | decimal   | Price             | Body JSON |
 
 Responses
 
-> | http code | content-type       | response                                                                   |
-> | --------- | ------------------ | -------------------------------------------------------------------------- |
-> | `200`     | -                  | JSON Body                                                                  |
-> | `400`     | `application/json` | `{"code":"400","message":"Amount/Duration/Price can't be lower that 0"}`   |
-> | `404`     | `application/json` | `{"code":"404","message":"Account/Instrument with id {id} doesn't exist"}` |
+| http code | content-type       | response                                                                   |
+| --------- | ------------------ | -------------------------------------------------------------------------- |
+| `200`     | -                  | JSON Body                                                                  |
+| `400`     | `application/json` | `{"code":"400","message":"Amount/Duration/Price can't be lower that 0"}`   |
+| `404`     | `application/json` | `{"code":"404","message":"Account/Instrument with id {id} doesn't exist"}` |
 
 ##### Example of request JSON body
 
-> ```json
-> {
->   "accountId": 6,
->   "instrumentId": 1,
->   "amount": 5.5,
->   "duration": 24,
->   "price": 125.5
-> }
-> ```
+```json
+{
+  "accountId": 6,
+  "instrumentId": 1,
+  "amount": 5.5,
+  "duration": 24,
+  "price": 125.5
+}
+```
 
 ##### Example of response JSON body
 
-> ```json
-> {
->   "instrumentId": 1,
->   "direction": "longbuy",
->   "quantity": 5.5,
->   "entryPrice": 125/5,
->   "timestampOpen": "2023-08-30T14:09:25.5985529+00:00",
->   "timestampClose": "2023-08-31T14:09:25.5985546+00:00",
->   "tradeClosed": false,
->   "transactionHappened": false,
->   "status": "LongBuy registered."
-> }
-> ```
+```json
+{
+  "instrumentId": 1,
+  "direction": "longbuy",
+  "quantity": 5.5,
+  "entryPrice": 125/5,
+  "timestampOpen": "2023-08-30T14:09:25.5985529+00:00",
+  "timestampClose": "2023-08-31T14:09:25.5985546+00:00",
+  "tradeClosed": false,
+  "transactionHappened": false,
+  "status": "LongBuy registered."
+}
+```
 
 ##### Example cURL
 
-> ```bash
-> curl -X 'POST' \
->   'http://localhost/broker-service/v1/trade/long/buy' \
->   -H 'accept: */*' \
->   -H 'Content-Type: application/json' \
->   -d '{
->   "accountId": 6,
->   "instrumentId": 1,
->   "amount": 5.5,
->   "duration": 24,
->   "price": 125.5
-> }'
-> ```
+```bash
+curl -X 'POST' \
+'http://localhost/broker-service/v1/trade/long/buy' \
+-H 'accept: */*' \
+-H 'Content-Type: application/json' \
+-d '{
+  "accountId": 6,
+  "instrumentId": 1,
+  "amount": 5.5,
+  "duration": 24,
+  "price": 125.5
+}'
+```
 
 ---
 
@@ -461,82 +433,82 @@ Responses
 
 Parameters
 
-> | name           | type     | data type | description       | source    |
-> | -------------- | -------- | --------- | ----------------- | --------- |
-> | `accountId`    | required | int       | Account ID        | Body JSON |
-> | `instrumentId` | required | int       | Instrument ID     | Body JSON |
-> | `amount`       | required | decimal   | Amount            | Body JSON |
-> | `duration`     | required | int       | Duration in hours | Body JSON |
-> | `price`        | required | decimal   | Price             | Body JSON |
+| name           | type     | data type | description       | source    |
+| -------------- | -------- | --------- | ----------------- | --------- |
+| `accountId`    | required | int       | Account ID        | Body JSON |
+| `instrumentId` | required | int       | Instrument ID     | Body JSON |
+| `amount`       | required | decimal   | Amount            | Body JSON |
+| `duration`     | required | int       | Duration in hours | Body JSON |
+| `price`        | required | decimal   | Price             | Body JSON |
 
 Responses
 
-> | http code | content-type       | response                                                                   |
-> | --------- | ------------------ | -------------------------------------------------------------------------- |
-> | `200`     | -                  | JSON Body                                                                  |
-> | `400`     | `application/json` | `{"code":"400","message":"Amount/Duration/Price can't be lower that 0"}`   |
-> | `404`     | `application/json` | `{"code":"404","message":"Account/Instrument with id {id} doesn't exist"}` |
+| http code | content-type       | response                                                                   |
+| --------- | ------------------ | -------------------------------------------------------------------------- |
+| `200`     | -                  | JSON Body                                                                  |
+| `400`     | `application/json` | `{"code":"400","message":"Amount/Duration/Price can't be lower that 0"}`   |
+| `404`     | `application/json` | `{"code":"404","message":"Account/Instrument with id {id} doesn't exist"}` |
 
 ##### Example of request JSON body
 
-> ```json
-> {
->   "accountId": 6,
->   "instrumentId": 1,
->   "amount": 5.5,
->   "duration": 24,
->   "price": 125.5
-> }
-> ```
+```json
+{
+  "accountId": 6,
+  "instrumentId": 1,
+  "amount": 5.5,
+  "duration": 24,
+  "price": 125.5
+}
+```
 
 ##### Example of response JSON body
 
-> ```json
-> {
->   "instrumentId": 1,
->   "direction": "longsell",
->   "quantity": 5.5,
->   "entryPrice": 125.5,
->   "timestampOpen": "2023-08-30T14:09:25.5985529+00:00",
->   "timestampClose": "2023-08-31T14:09:25.5985546+00:00",
->   "tradeClosed": false,
->   "transactionHappened": false,
->   "status": "LongSell registered."
-> }
-> ```
+```json
+{
+  "instrumentId": 1,
+  "direction": "longsell",
+  "quantity": 5.5,
+  "entryPrice": 125.5,
+  "timestampOpen": "2023-08-30T14:09:25.5985529+00:00",
+  "timestampClose": "2023-08-31T14:09:25.5985546+00:00",
+  "tradeClosed": false,
+  "transactionHappened": false,
+  "status": "LongSell registered."
+}
+```
 
 ##### Example cURL
 
-> ```bash
-> curl -X 'POST' \
->   'http://localhost/broker-service/v1/trade/long/sell' \
->   -H 'accept: */*' \
->   -H 'Content-Type: application/json' \
->   -d '{
->   "accountId": 6,
->   "instrumentId": 1,
->   "amount": 5.5,
->   "duration": 24,
->   "price": 125.5
-> }'
-> ```
+```bash
+curl -X 'POST' \
+'http://localhost/broker-service/v1/trade/long/sell' \
+-H 'accept: */*' \
+-H 'Content-Type: application/json' \
+-d '{
+  "accountId": 6,
+  "instrumentId": 1,
+  "amount": 5.5,
+  "duration": 24,
+  "price": 125.5
+}'
+```
 
 ---
 
 #### `POST` **/v1/trade/long/process** `Process all the long running transactions`
 
-> | http code | content-type | response       |
-> | --------- | ------------ | -------------- |
-> | `200`     | -            | Empty response |
+| http code | content-type | response       |
+| --------- | ------------ | -------------- |
+| `200`     | -            | Empty response |
 
 ##### Example cURL
 
-> ```bash
-> curl -X 'POST' \
->   'http://localhost/broker-service/v1/trade/long/process' \
->   -H 'accept: */*' \
->   -d ''
-> ```
+```bash
+curl -X 'POST' \
+'http://localhost/broker-service/v1/trade/long/process' \
+-H 'accept: */*' \
+-d ''
+```
 
 ---
 
@@ -544,55 +516,55 @@ Responses
 
 ##### Parameters
 
-> | name        | type     | data type | description                                     | source |
-> | ----------- | -------- | --------- | ----------------------------------------------- | ------ |
-> | `accountId` | required | int       | Account ID                                      | Path   |
-> | `count`     | optional | int       | Number of last trades (default value = 10)      | Query  |
-> | `page`      | optional | int       | Page (default value = 0)                        | Query  |
-> | `onlyOpen`  | optional | int       | Filter only open trades (default value = false) | Query  |
-> | `onlyLong`  | optional | int       | Filter only long trades (default value = false) | Query  |
+| name        | type     | data type | description                                     | source |
+| ----------- | -------- | --------- | ----------------------------------------------- | ------ |
+| `accountId` | required | int       | Account ID                                      | Path   |
+| `count`     | optional | int       | Number of last trades (default value = 10)      | Query  |
+| `page`      | optional | int       | Page (default value = 0)                        | Query  |
+| `onlyOpen`  | optional | int       | Filter only open trades (default value = false) | Query  |
+| `onlyLong`  | optional | int       | Filter only long trades (default value = false) | Query  |
 
 ##### Responses
 
-> | http code | content-type       | response  |
-> | --------- | ------------------ | --------- |
-> | `200`     | `application/json` | JSON body |
+| http code | content-type       | response  |
+| --------- | ------------------ | --------- |
+| `200`     | `application/json` | JSON body |
 
 ##### Example of response JSON body
 
-> ```json
-> {
->   "results": [
->     {
->       "instrumentId": 1,
->       "direction": "longbuy",
->       "quantity": 5.5,
->       "entryPrice": 125.5,
->       "timestampOpen": "2023-07-24T14:00:12+00:00",
->       "timestampClose": "2023-07-25T14:00:12+00:00",
->       "tradeClosed": false,
->       "transactionHappened": false,
->       "status": "LongBuy registered."
->     },
->     {
->       "instrumentId": 1,
->       "direction": "sell",
->       "quantity": 12.5,
->       "entryPrice": 139.80625,
->       "timestampOpen": "2023-07-24T13:56:01+00:00",
->       "timestampClose": "2023-07-24T13:56:01+00:00",
->       "tradeClosed": true,
->       "transactionHappened": true,
->       "status": "Instant Sell done."
->     }
->   ]
-> }
-> ```
+```json
+{
+  "results": [
+    {
+      "instrumentId": 1,
+      "direction": "longbuy",
+      "quantity": 5.5,
+      "entryPrice": 125.5,
+      "timestampOpen": "2023-07-24T14:00:12+00:00",
+      "timestampClose": "2023-07-25T14:00:12+00:00",
+      "tradeClosed": false,
+      "transactionHappened": false,
+      "status": "LongBuy registered."
+    },
+    {
+      "instrumentId": 1,
+      "direction": "sell",
+      "quantity": 12.5,
+      "entryPrice": 139.80625,
+      "timestampOpen": "2023-07-24T13:56:01+00:00",
+      "timestampClose": "2023-07-24T13:56:01+00:00",
+      "tradeClosed": true,
+      "transactionHappened": true,
+      "status": "Instant Sell done."
+    }
+  ]
+}
+```
 
 ##### Example cURL
 
-> ```bash
-> curl -X 'GET' \
->   'http://localhost/broker-service/v1/trade/6?count=10&page=0&onlyOpen=false&onlyLong=false' \
->   -H 'accept: text/plain'
-> ```
+```bash
+curl -X 'GET' \
+'http://localhost/broker-service/v1/trade/6?count=10&page=0&onlyOpen=false&onlyLong=false' \
+-H 'accept: text/plain'
+```
