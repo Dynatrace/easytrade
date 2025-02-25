@@ -12,7 +12,6 @@ export default function CreditCardLayout() {
     const { pathname } = useLocation()
 
     if (data === undefined || data.type === "error") {
-        // TODO: handle the error in a better way
         throw new Error(
             data?.error ?? "Couldn't get data for credit card order status."
         )
