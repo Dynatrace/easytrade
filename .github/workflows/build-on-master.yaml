@@ -10,7 +10,7 @@ on:
 env:
   GAR_ADDRESS: europe-docker.pkg.dev
   NAMESPACE: easytrade-github
-  SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/test-easytrade
+  SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   SKAFFOLD_VERSION: 2.13.2
 
 jobs:
@@ -50,8 +50,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          path: et
 
       - name: Retrieve kubeconfig
         run: |
@@ -63,7 +61,7 @@ jobs:
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           repository: dynatrace/easytrade-infrastructure
-          path: et-infrastructure
+          path: infrastructure
 
       - name: Export short commit SHA
         run: echo "COMMIT_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
@@ -75,7 +73,7 @@ jobs:
           tag: ${{ env.COMMIT_SHA_SHORT }}
           namespace: ${{ env.NAMESPACE }}
           profile: aws-staging
-          working-directory: ${{ github.workspace }}/et
+          working-directory: ${{ github.workspace }}/easytrade
 
   run-tests:
     runs-on: ubuntu-24.04
