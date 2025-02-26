@@ -4,9 +4,10 @@ on:
     branches:
       - "*"
       - "!master"
-#   paths:
-#     - src/**
-#     - skaffold.yaml
+    paths:
+      - kubernetes-manifests/**
+      - src/**
+      - skaffold.yaml
 
 env:
   SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade

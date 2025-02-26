@@ -3,9 +3,10 @@ on:
   push:
     branches:
       - "master"
-#   paths:
-#     - src/**
-#     - skaffold.yaml
+    paths:
+      - kubernetes-manifests/**
+      - src/**
+      - skaffold.yaml
 
 env:
   GAR_ADDRESS: europe-docker.pkg.dev
