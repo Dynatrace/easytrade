@@ -126,7 +126,6 @@ describe("Withdraw Form", () => {
     })
 
     it("when amount is negative it displays error", async () => {
-        // user.type doesn't seem to work with negative numbers
         fireEvent.input(getAmountInput(), {
             target: {
                 value: -1000,

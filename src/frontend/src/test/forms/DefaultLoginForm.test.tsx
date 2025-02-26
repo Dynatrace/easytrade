@@ -12,7 +12,6 @@ const mockUsers: PresetUser[] = [
 
 test("is disabled when passed empty list of users", () => {
     render(<DefaultLoginForm users={[]} submitHandler={vi.fn()} />)
-    // this is quite specific way of checking the element and may need to be changed in the future
     expect(screen.getByRole("combobox", { name: /^user/i })).toHaveAttribute(
         "aria-disabled",
         "true"

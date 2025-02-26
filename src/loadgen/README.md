@@ -2,7 +2,7 @@
 
 ## About
 
-Load generator for the EasyTrade app based on the [loadgen-core](https://bitbucket.lab.dynatrace.org/projects/DEM/repos/loadgen-core/browse).
+Load generator for the EasyTrade app based on the implementation using Puppeteer.
 
 ## Visits:
 

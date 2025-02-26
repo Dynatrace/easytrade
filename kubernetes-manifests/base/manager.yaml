@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: manager
+spec:
+  selector:
+    matchLabels:
+      app: manager
+  template:
+    metadata:
+      labels:
+        app: manager
+    spec:
+      containers:
+        - name: manager
+          image: manager
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PROXY_PREFIX
+              value: "manager"
+            - name: MSSQL_CONNECTIONSTRING
+              valueFrom:
+                configMapKeyRef:
+                  name: connection-strings
+                  key: DOTNET_CONNECTION_STRING
+          resources:
+            requests:
+              cpu: 50m
+              memory: 400Mi
+            limits:
+              memory: 400Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: manager
+spec:
+  type: ClusterIP
+  selector:
+    app: manager
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

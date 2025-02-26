@@ -39,8 +39,6 @@ namespace easyTradeLoginService.Controllers
                 return NotFound(new ErrorResponse("Invalid accountId"));
             }
 
-            //TODO: add some logout logic
-
             return Ok(new MessageResponse("User has been successfully logged out."));
         }
     }

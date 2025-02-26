@@ -4,17 +4,10 @@ C++ service that reads some data from RabbitMQ and puts the result on the defaul
 
 ## Technologies used
 
+- Docker
 - C++
 - RabbitMQ
-- Docker
 
-## Local build instructions
+## Logic
 
-```bash
-docker build -t easytradecalculationservice .
-docker run -d --name calculationservice easytradecalculationservice
-```
-
-## Endpoints or logic
-
-The service has no endpoints - it is running an endless loop that checks if there is some data to consume in the message queue each 15 seconds.
+Service runs an endless loop that that tries to consume data from the message queue each 15 seconds.
