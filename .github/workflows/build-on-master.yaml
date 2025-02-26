@@ -2,8 +2,7 @@ name: Build easytrade on master
 on:
   push:
     branches:
-      - "*"
-      - "!master"
+      - "master"
 #   paths:
 #     - src/**
 #     - skaffold.yaml
@@ -51,6 +50,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          path: easytrade
 
       - name: Retrieve kubeconfig
         run: |
@@ -62,8 +63,8 @@ jobs:
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           repository: dynatrace/easytrade-infrastructure
-          path: easytrade-infrastructure
           sparse-checkout: kubernetes-manifests
+          path: easytrade-infrastructure
 
 
       - name: Export short commit SHA
@@ -76,6 +77,8 @@ jobs:
           tag: ${{ env.COMMIT_SHA_SHORT }}
           namespace: ${{ env.NAMESPACE }}
           profile: aws-staging
+
+          working-directory: ${{ github.workspace }}/easytrade
 
   run-tests:
     runs-on: ubuntu-24.04
