@@ -2,14 +2,15 @@ name: Build easytrade on master
 on:
   push:
     branches:
-      - "master"
+      - "*"
+      - "!master"
 #   paths:
 #     - src/**
 #     - skaffold.yaml
 
 env:
   GAR_ADDRESS: europe-docker.pkg.dev
-  NAMESPACE: easytrade-github
+  NAMESPACE: easytrade
   SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   SKAFFOLD_VERSION: 2.13.2
 
@@ -61,7 +62,9 @@ jobs:
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           repository: dynatrace/easytrade-infrastructure
-          path: infrastructure
+          path: easytrade-infrastructure
+          sparse-checkout: kubernetes-manifests
+
 
       - name: Export short commit SHA
         run: echo "COMMIT_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
@@ -73,7 +76,6 @@ jobs:
           tag: ${{ env.COMMIT_SHA_SHORT }}
           namespace: ${{ env.NAMESPACE }}
           profile: aws-staging
-          working-directory: ${{ github.workspace }}/easytrade
 
   run-tests:
     runs-on: ubuntu-24.04
