@@ -5,9 +5,12 @@ on:
       - "main"
       - "master"
     paths:
+      - .github/**
       - kubernetes-manifests/**
-      - src/**
       - skaffold.yaml
+      - src/**
+      
+      
   workflow_call:
     secrets:
       GAR_CREDENTIALS:
