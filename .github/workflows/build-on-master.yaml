@@ -2,7 +2,7 @@ name: Build easytrade on master
 on:
   push:
     branches:
-      - "master"
+      - "main"
     paths:
       - kubernetes-manifests/**
       - src/**
