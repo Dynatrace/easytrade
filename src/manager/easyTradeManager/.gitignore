@@ -1,0 +1,5 @@
+obj/
+bin/
+*.bak
+.vs
+.vscode

@@ -1,0 +1,13 @@
+# Vendored dependencies
+vendor/
+
+# Ignore files
+.dockerignore
+.gitignore
+
+# VS Code
+.vscode
+
+# Binaries
+aggregator-service
+*.exe

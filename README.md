@@ -16,26 +16,27 @@ Of course it is all fake data and the price has a 24 hour cycle...
 
 EasyTrade consists of the following services/components:
 
-| Service                                                          | Proxy port | Proxy endpoint               |
-| ---------------------------------------------------------------- | ---------- | ---------------------------- |
-| [Account service](./docs/accountservice.md)                      | 80         | `/accountservice`            |
-| [Aggregator service](./docs/aggregator-service.md)               | 80         | `---`                        |
-| [Broker service](./docs/broker-service.md)                       | 80         | `/broker-service`            |
-| [Calculation service](./docs/calculationservice.md)              | 80         | `---`                        |
-| [Content creator](./docs/contentcreator.md)                      | 80         | `---`                        |
-| [Credit card order service](./docs/credit-card-order-service.md) | 80         | `/credit-card-order-service` |
-| [Db](./docs/db.md)                                               | 80         | `---`                        |
-| [Engine](./docs/engine.md)                                       | 80         | `/engine`                    |
-| [Feature flag service](./docs/feature-flag-service.md)           | 80         | `/feature-flag-service`      |
-| [Frontend](./docs/frontend.md)                                   | 80         | `/`                          |
-| [Frontend reverse-proxy](./docs/frontendreverseproxy.md)         | 80         | `---`                        |
-| [Login service](./docs/loginservice.md)                          | 80         | `/loginservice`              |
-| [Manager](./docs/manager.md)                                     | 80         | `/manager`                   |
-| [Offer service](./docs/offerservice.md)                          | 80         | `/offerservice`              |
-| [Pricing service](./docs/pricing-service.md)                     | 80         | `/pricing-service`           |
-| [Problem operator](./docs/problem-operator.md)                   | 80         | `---`                        |
-| [RabbitMQ](./docs/rabbitmq.md)                                   | 80         | `---`                        |
-| [Third party service](./docs/third-party-service.md)             | 80         | `/third-party-service`       |
+| Service                                                              | Proxy port | Proxy endpoint               |
+| -------------------------------------------------------------------- | ---------- | ---------------------------- |
+| [Account service](src/accountservice/README.md)                      | 80         | `/accountservice`            |
+| [Aggregator service](src/aggregator-service/README.md)               | 80         | `---`                        |
+| [Broker service](src/broker-service/README.md)                       | 80         | `/broker-service`            |
+| [Calculation service](src/calculationservice/README.md)              | 80         | `---`                        |
+| [Content creator](src/contentcreator/README.md)                      | 80         | `---`                        |
+| [Credit card order service](src/credit-card-order-service/README.md) | 80         | `/credit-card-order-service` |
+| [Db](src/db/README.md)                                               | 80         | `---`                        |
+| [Engine](src/engine/README.md)                                       | 80         | `/engine`                    |
+| [Feature flag service](src/feature-flag-service/README.md)           | 80         | `/feature-flag-service`      |
+| [Frontend](src/frontend/README.md)                                   | 80         | `/`                          |
+| [Frontend reverse-proxy](src/frontendreverseproxy/README.md)         | 80         | `---`                        |
+| [Loadgen](src/loadgen/README.md)                                     | --         | `---`                        |
+| [Login service](src/loginservice/README.md)                          | 80         | `/loginservice`              |
+| [Manager](src/manager/easyTradeManager/README.md)                    | 80         | `/manager`                   |
+| [Offer service](src/offerservice/README.md)                          | 80         | `/offerservice`              |
+| [Pricing service](src/pricing-service/README.md)                     | 80         | `/pricing-service`           |
+| [Problem operator](src/problem-operator/README.md)                   | 80         | `---`                        |
+| [RabbitMQ](src/rabbitmq/README.md)                                   | 80         | `---`                        |
+| [Third party service](src/third-party-service/README.md)             | 80         | `/third-party-service`       |
 
 > To learn more about endpoints / swagger for the services go to their respective readmes
 
@@ -82,7 +83,7 @@ To deploy Easytrade in kubernetes you need to have:
 kubectl create namespace easytrade
 
 # then use the manifests to deploy
-kubectl -n easytrade apply -f ./kubernetes-manifests
+kubectl -n easytrade apply -f ./kubernetes-manifests/release
 
 # Optional: if you want the problem patterns to be automatically
 # enabled once a day, deploy these manifests too
@@ -143,7 +144,7 @@ curl -X PUT "http://{IP_ADDRESS}/feature-flag-service/v1/flags/{FEATURE_ID}/" \
 
 You can also manage enabled problem patterns via the easyTrade frontend.
 
-> **NOTE:** More information on the feature flag service's parameters available in [feature flag service's doc](./docs/featureflagservice.md).
+> **NOTE:** More information on the feature flag service's parameters available in [feature flag service's doc](src/feature-flag-service/README.md).
 
 If you are deploying easyTrade on K8s, you can also apply [these cronjobs](./kubernetes-manifests/problem-patterns/), which will enable the problem patterns once a day.
 
@@ -169,9 +170,9 @@ can also handle XML requests. Data types are negotiated based on `Accept` and `C
 
 #### XML compatible services
 
-| Service                                                       | Accepted XML MIME types                            |
-| ------------------------------------------------------------- | -------------------------------------------------- |
-| [LoginService](./docs/loginservice.md)                        | `application/xml`; `text/xml`; `application/*+xml` |
-| [CreditCardOrderService](./docs/credit-card-order-service.md) | `application/xml`                                  |
-| [OfferService](./docs/offerservice.md)                        | `application/xml`; `text/xml`                      |
-| [PricingService](./docs/pricing-service.md)                   | `application/xml`                                  |
+| Service                                                           | Accepted XML MIME types                            |
+| ----------------------------------------------------------------- | -------------------------------------------------- |
+| [LoginService](src/loginservice/README.md)                        | `application/xml`; `text/xml`; `application/*+xml` |
+| [CreditCardOrderService](src/credit-card-order-service/README.md) | `application/xml`                                  |
+| [OfferService](src/offerservice/README.md)                        | `application/xml`; `text/xml`                      |
+| [PricingService](src/pricing-service/README.md)                   | `application/xml`                                  |

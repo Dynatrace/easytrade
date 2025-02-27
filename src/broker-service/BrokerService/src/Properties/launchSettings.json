@@ -1,0 +1,30 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:14805",
+      "sslPort": 44347
+    }
+  },
+  "profiles": {
+    "BrokerService": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "https://+:7207;http://+:5221",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MSSQL_CONNECTIONSTRING": "Data Source=localhost;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true",
+        "ACCOUNTSERVICE_HOSTANDPORT": "localhost:8089",
+        "PRICINGSERVICE_HOSTANDPORT": "localhost:8083",
+        "ENGINE_HOSTANDPORT": "localhost:8090",
+        "FEATURE_FLAG_SERVICE_PROTOCOL": "http",
+        "FEATURE_FLAG_SERVICE_BASE_URL": "localhost",
+        "FEATURE_FLAG_SERVICE_PORT": "8094"
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contentcreator
+spec:
+  selector:
+    matchLabels:
+      app: contentcreator
+  template:
+    metadata:
+      labels:
+        app: contentcreator
+    spec:
+      containers:
+        - name: contentcreator
+          image: contentcreator
+          env:
+            - name: MSSQL_CONNECTIONSTRING
+              valueFrom:
+                configMapKeyRef:
+                  name: connection-strings
+                  key: JAVA_CONNECTION_STRING
+          resources:
+            requests:
+              cpu: 10m
+              memory: 300Mi
+            limits:
+              memory: 300Mi
