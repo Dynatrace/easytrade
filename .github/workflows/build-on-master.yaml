@@ -3,10 +3,25 @@ on:
   push:
     branches:
       - "main"
+      - "master"
     paths:
       - kubernetes-manifests/**
       - src/**
       - skaffold.yaml
+  workflow_call:
+    secrets:
+      GAR_CREDENTIALS:
+        required: true
+      KUBECONFIG:
+        required: true
+      OQR_CLIENT_SECRET:
+        required: true
+      OQR_URL:
+        required: true
+      SSH_PRIVATE_KEY:
+        required: true
+      SSO_URL:
+        required: true
 
 env:
   GAR_ADDRESS: europe-docker.pkg.dev
@@ -66,7 +81,6 @@ jobs:
           repository: dynatrace/easytrade-infrastructure
           sparse-checkout: kubernetes-manifests
           path: easytrade-infrastructure
-
 
       - name: Export short commit SHA
         run: echo "COMMIT_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
