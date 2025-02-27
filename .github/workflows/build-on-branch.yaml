@@ -9,12 +9,25 @@ on:
       - kubernetes-manifests/**
       - src/**
       - skaffold.yaml
+  workflow_call:
+    secrets:
+      SNYK_API_TOKEN:
+        required: true
 
 env:
   SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   SKAFFOLD_VERSION: 2.13.2
 
 jobs:
+  snyk:
+    uses: ./.github/workflows/snyk.yaml
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    secrets:
+      SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
+
   build-easytrade:
     runs-on: ubuntu-24.04
     steps:
