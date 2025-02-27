@@ -7,6 +7,13 @@ This .Net service is responsible for authenticating users.
 - .NET 8
 - Docker
 
+## Local build instructions
+
+```bash
+docker build -t IMAGE_NAME .
+docker run -d --name SERVICE_NAME IMAGE_NAME
+```
+
 ## Endpoints
 
 ### Swagger

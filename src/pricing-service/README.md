@@ -8,6 +8,13 @@ A go service that provides information about instrument prices. Pricing is conne
 - Docker
 - MSSql
 
+## Local build instructions
+
+```bash
+docker build -t IMAGE_NAME .
+docker run -d --name SERVICE_NAME IMAGE_NAME
+```
+
 ## Endpoints or logic
 
 ### Swagger

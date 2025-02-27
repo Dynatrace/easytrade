@@ -7,6 +7,13 @@ A java rest service with swagger. It allows to get and update feature flag data.
 - Java
 - Docker
 
+## Local build instructions
+
+```bash
+docker build -t IMAGE_NAME .
+docker run -d --name SERVICE_NAME IMAGE_NAME
+```
+
 ## Endpoints or logic
 
 ### Swagger

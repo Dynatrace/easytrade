@@ -9,6 +9,13 @@ Java service that creates the pricing data each minute.
 - SQL
 - Stock exchange information - candle data
 
+## Local build instructions
+
+```bash
+docker build -t IMAGE_NAME .
+docker run -d --name SERVICE_NAME IMAGE_NAME
+```
+
 ## Logic
 
 1. **ONCE:** Clear the database.

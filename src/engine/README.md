@@ -8,6 +8,13 @@ Right now it only tries to finalize long running transactions each 60 seconds.
 - Docker
 - Java
 
+## Local build instructions
+
+```bash
+docker build -t IMAGE_NAME .
+docker run -d --name SERVICE_NAME IMAGE_NAME
+```
+
 ## Endpoints
 
 ### Swagger
