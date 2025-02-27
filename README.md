@@ -83,7 +83,7 @@ To deploy Easytrade in kubernetes you need to have:
 kubectl create namespace easytrade
 
 # then use the manifests to deploy
-kubectl -n easytrade apply -f ./kubernetes-manifests
+kubectl -n easytrade apply -f ./kubernetes-manifests/release
 
 # Optional: if you want the problem patterns to be automatically
 # enabled once a day, deploy these manifests too
