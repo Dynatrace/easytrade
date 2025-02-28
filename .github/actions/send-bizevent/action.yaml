@@ -1,0 +1,26 @@
+name: Send bizevent
+description: Push a bizevent to the Dynatrace tenant
+
+inputs:
+  access_token:
+    description: Authentication token for the Dynatrace tenant
+    required: true
+  tenant_url:
+    description: URL of the Dynatrace tenant
+    required: true
+  bizevent_body:
+    description: JSON body of the bizevent
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Send bizevent
+      shell: bash
+      run: |
+        curl -sfLX POST "${{ inputs.tenant_url }}/platform/classic/environment-api/v2/bizevents/ingest" \
+          --header "Content-Type: application/json" \
+          --header "Authorization: Bearer ${{ inputs.access_token }}" \
+          --data-raw "$(echo '${{ inputs.bizevent_body }}' | jq -c)"
+
+         echo "Bizevent sent"

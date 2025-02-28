@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+
+  "compilerOptions": {
+    "module": "CommonJS",
+    "target": "ES2022",
+    "strict": true,
+    "preserveConstEnums": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "dist",
+    "sourceMap": true,
+    "inlineSources": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "**/*.spec.ts", "./test"]
+}

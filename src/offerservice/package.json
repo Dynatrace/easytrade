@@ -1,0 +1,39 @@
+{
+  "name": "easytrade_offer_service",
+  "version": "1.0.0-easytrade",
+  "buildDate": "{{BUILD_DATE}}",
+  "buildCommit": "{{BUILD_COMMIT}}",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node dist/src/app.js",
+    "dev": "APP_PORT=8087 ts-node src/app.ts",
+    "build": "rm -rf ./dist && tsc",
+    "lint": "eslint src"
+  },
+  "author": "tomasz.wieremjewicz@dynatrace.com",
+  "license": "ISC",
+  "dependencies": {
+    "@openfeature/server-sdk": "^1.17.0",
+    "axios": "^1.7.9",
+    "body-parser": "^1.20.3",
+    "cloudbees-openfeature-provider-node": "^1.0.0",
+    "express": "^4.21.2",
+    "fast-xml-parser": "^4.5.1",
+    "path-to-regexp": "^8.2.0",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.18.0",
+    "@types/eslint__js": "^8.42.3",
+    "@types/express": "^5.0.0",
+    "@types/lodash": "^4.17.14",
+    "@types/mocha": "^10.0.10",
+    "@types/superagent": "^8.1.9",
+    "eslint": "^9.18.0",
+    "prettier": "^3.4.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
+  }
+}
