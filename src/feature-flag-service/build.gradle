@@ -21,6 +21,12 @@ repositories {
 	mavenCentral()
 }
 
+configurations.all {
+    resolutionStrategy {
+        force 'net.minidev:json-smart:2.5.2'
+    }
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
