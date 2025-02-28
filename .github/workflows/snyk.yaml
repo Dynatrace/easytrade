@@ -50,7 +50,8 @@ jobs:
       - name: Run Snyk test
         run: snyk test --all-projects --sarif-file-output=result.sarif --severity-threshold=medium
 
-      - name: Replace security-severity undefined for license-related findings 
+      - name: Replace security-severity undefined for license-related findings
+        if: always()
         run: |
           sed -i 's/"security-severity": "undefined"/"security-severity": "0"/g' result.sarif
 
