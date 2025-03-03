@@ -1,0 +1,100 @@
+apiVersion: skaffold/v4beta2
+kind: Config
+build:
+  artifacts:
+    - image: calculationservice
+      context: src/calculationservice
+    - image: contentcreator
+      context: src/contentcreator
+    - image: db
+      context: src/db
+    - image: feature-flag-service
+      context: src/feature-flag-service
+    - image: frontend
+      context: src/frontend
+    - image: frontendreverseproxy
+      context: src/frontendreverseproxy
+    - image: loginservice
+      context: src/loginservice
+    - image: manager
+      context: src/manager/easyTradeManager
+    - image: pricing-service
+      context: src/pricing-service
+    - image: rabbitmq
+      context: src/rabbitmq
+    - image: offerservice
+      context: src/offerservice
+    - image: accountservice
+      context: src/accountservice
+    - image: aggregator-service
+      context: src/aggregator-service
+    - image: engine
+      context: src/engine
+    - image: credit-card-order-service
+      context: src/credit-card-order-service
+    - image: third-party-service
+      context: src/third-party-service
+    - image: broker-service
+      context: src/broker-service
+    - image: loadgen
+      context: src/loadgen
+    - image: problem-operator
+      context: src/problem-operator
+  tagPolicy:
+    gitCommit: { ignoreChanges: true }
+  local:
+    concurrency: 4
+    push: false
+    tryImportMissing: true
+    useBuildkit: true
+deploy:
+  statusCheckDeadlineSeconds: 300
+  tolerateFailuresUntilDeadline: true
+  kubectl: {}
+manifests:
+  kustomize:
+    paths:
+      - ./kubernetes-manifests/base
+profiles:
+  - name: aws-live
+    deploy:
+      kubectl: {}
+    manifests:
+      kustomize:
+        paths:
+          - ../easytrade-infrastructure/kubernetes-manifests/aws-live
+  - name: aws-live-ld
+    deploy:
+      kubectl: {}
+    manifests:
+      kustomize:
+        paths:
+          - ../easytrade-infrastructure/kubernetes-manifests/aws-live-ld
+  - name: aws-staging
+    deploy:
+      kubectl: {}
+    manifests:
+      kustomize:
+        paths:
+          - ../easytrade-infrastructure/kubernetes-manifests/aws-staging
+  - name: aws-staging-ld
+    deploy:
+      kubectl: {}
+    manifests:
+      kustomize:
+        paths:
+          - ../easytrade-infrastructure/kubernetes-manifests/aws-staging-ld
+  - name: aws-playground
+    deploy:
+      kubectl: {}
+    manifests:
+      kustomize:
+        paths:
+          - ../easytrade-infrastructure/kubernetes-manifests/aws-playground
+  - name: aws-playground-staging
+    deploy:
+      kubectl: {}
+    manifests:
+      kustomize:
+        paths:
+          - ../easytrade-infrastructure/kubernetes-manifests/aws-playground-staging

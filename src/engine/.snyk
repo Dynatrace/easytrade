@@ -1,0 +1,50 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.0
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'snyk:lic:maven:ch.qos.logback:logback-classic:(EPL-1.0_OR_LGPL-2.1)':
+    - '*':
+        reason: licence issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T13:10:13.151Z
+  'snyk:lic:maven:ch.qos.logback:logback-core:(EPL-1.0_OR_LGPL-2.1)':
+    - '*':
+        reason: licence issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T13:10:21.046Z
+  'snyk:lic:maven:jakarta.annotation:jakarta.annotation-api:(EPL-2.0_OR_GPL-2.0-with-classpath-exception)':
+    - '*':
+        reason: licence issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T13:11:01.158Z
+  'snyk:lic:maven:javax.annotation:javax.annotation-api:(CDDL-1.1_OR_GPL-2.0-with-classpath-exception)':
+    - '*':
+        reason: licence issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T13:11:16.771Z
+  'snyk:lic:maven:org.junit.jupiter:junit-jupiter-api:EPL-2.0':
+    - '*':
+        reason: licence issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T13:11:30.771Z
+  'snyk:lic:maven:org.junit.jupiter:junit-jupiter-params:EPL-2.0':
+    - '*':
+        reason: licence issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T13:11:42.976Z
+  'snyk:lic:maven:org.junit.jupiter:junit-jupiter:EPL-2.0':
+    - '*':
+        reason: licence issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T13:11:49.207Z
+  'snyk:lic:maven:org.junit.platform:junit-platform-commons:EPL-2.0':
+    - '*':
+        reason: licence issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T13:11:59.465Z
+  'snyk:lic:maven:org.junit:junit-bom:EPL-2.0':
+    - '*':
+        reason: licence issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T13:12:07.555Z
+patch: {}

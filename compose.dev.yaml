@@ -1,0 +1,232 @@
+x-service: &default-service
+  restart: always
+
+x-feature-flag-service: &feature-flag-service-env
+  FEATURE_FLAG_SERVICE_PROTOCOL: http
+  FEATURE_FLAG_SERVICE_BASE_URL: feature-flag-service
+  FEATURE_FLAG_SERVICE_PORT: 8080
+
+x-connection-strings:
+  JAVA_CONNECTION_STRING: &java-connection-string jdbc:sqlserver://db:1433;database=TradeManagement;user=sa;password=yourStrong(!)Password;encrypt=false;trustServerCertificate=false;loginTimeout=30;
+  DOTNET_CONNECTION_STRING: &dotnet-connection-string Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
+  GO_CONNECTION_STRING: &go-connection-string sqlserver://sa:yourStrong(!)Password@db:1433?database=TradeManagement&connection+encrypt=false&connection+TrustServerCertificate=false&connection+loginTimeout=30
+
+x-rabbit-vars: &rabbit-vars
+  RABBITMQ_USER: userxxx
+  RABBITMQ_PASSWORD: passxxx
+  RABBITMQ_PORT: "5672"
+  RABBITMQ_HOST: rabbitmq
+  RABBITMQ_QUEUE: Trade_Data_Raw
+
+services:
+  db:
+    <<: *default-service
+    build: src/db
+    ports:
+      - 1433:1433
+    environment:
+      SA_PASSWORD: yourStrong(!)Password
+
+  contentcreator:
+    <<: *default-service
+    build: src/contentcreator
+    depends_on:
+      - db
+    environment:
+      MSSQL_CONNECTIONSTRING: *java-connection-string
+
+  manager:
+    <<: *default-service
+    build: src/manager/easyTradeManager
+    depends_on:
+      - db
+    ports:
+      - 8081:8080
+    environment:
+      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
+      PROXY_PREFIX: manager
+
+  pricing-service:
+    <<: *default-service
+    build: src/pricing-service
+    depends_on:
+      - db
+      - rabbitmq
+    ports:
+      - 8083:8080
+    environment:
+      MSSQL_CONNECTIONSTRING: *go-connection-string
+      PROXY_PREFIX: pricing-service
+      <<: *rabbit-vars
+
+  broker-service:
+    <<: *default-service
+    build: src/broker-service
+    ports:
+      - 8084:8080
+    depends_on:
+      - db
+      - accountservice
+      - pricing-service
+      - feature-flag-service
+    environment:
+      ACCOUNTSERVICE_HOSTANDPORT: accountservice:8080
+      PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
+      ENGINE_HOSTANDPORT: engine:8080
+      <<: *feature-flag-service-env
+      PROXY_PREFIX: broker-service
+      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
+
+  rabbitmq:
+    <<: *default-service
+    build: src/rabbitmq
+    ports:
+      - 8082:15672
+
+  calculationservice:
+    <<: *default-service
+    build: src/calculationservice
+    depends_on:
+      - rabbitmq
+    environment:
+      <<: *rabbit-vars
+
+  frontend:
+    <<: *default-service
+    build:
+      context: src/frontend
+      dockerfile: Dockerfile.dev
+    # depends_on:
+    #   - broker-service
+    #   - loginservice
+    #   - pricing-service
+    #   - accountservice
+    #   - credit-card-order-service
+    ports:
+      - 8092:3000
+    volumes:
+      - ./src/frontend/src:/app/src:ro
+
+  loginservice:
+    <<: *default-service
+    build: src/loginservice
+    environment:
+      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
+      PROXY_PREFIX: loginservice
+    depends_on:
+      - db
+    ports:
+      - 8086:8080
+
+  frontendreverseproxy:
+    <<: *default-service
+    build: src/frontendreverseproxy
+    depends_on:
+      - broker-service
+      - frontend
+      - loginservice
+      - pricing-service
+      - feature-flag-service
+      - offerservice
+      - accountservice
+      - engine
+      - credit-card-order-service
+      - third-party-service
+    ports:
+      - 80:80
+
+  loadgen:
+    <<: *default-service
+    build: src/loadgen
+    depends_on:
+      - frontendreverseproxy
+    environment:
+      EASYTRADE_URL: http://frontendreverseproxy
+
+  offerservice:
+    <<: *default-service
+    build: src/offerservice
+    depends_on:
+      - loginservice
+      - manager
+      - feature-flag-service
+    ports:
+      - 8087:8080
+    environment:
+      <<: *feature-flag-service-env
+      LOGIN_SERVICE_PORT: 8080
+      LOGIN_SERVICE_BASE_URL: loginservice
+      MANAGER_BASE_URL: manager
+      MANAGER_PORT: 8080
+
+  accountservice:
+    <<: *default-service
+    build: src/accountservice
+    depends_on:
+      - manager
+    ports:
+      - 8089:8080
+    environment:
+      MANAGER_HOSTANDPORT: manager:8080
+      PROXY_PREFIX: accountservice
+
+  engine:
+    <<: *default-service
+    build: src/engine
+    depends_on:
+      - broker-service
+    ports:
+      - 8090:8080
+    environment:
+      BROKER_HOSTANDPORT: broker-service:8080
+      PROXY_PREFIX: engine
+
+  credit-card-order-service:
+    <<: *default-service
+    build: src/credit-card-order-service
+    depends_on:
+      - db
+      - third-party-service
+    ports:
+      - 8091:8080
+    environment:
+      PROXY_PREFIX: credit-card-order-service
+      MSSQL_CONNECTIONSTRING: *java-connection-string
+      THIRD_PARTY_SERVICE_HOSTANDPORT: third-party-service:8080
+      <<: *feature-flag-service-env
+      WORK_DELAY: 30
+      WORK_RATE: 30
+
+  third-party-service:
+    <<: *default-service
+    build: src/third-party-service
+    ports:
+      - 8093:8080
+    environment:
+      <<: *feature-flag-service-env
+      PROXY_PREFIX: third-party-service
+      CREDIT_CARD_ORDER_SERVICE_HOSTANDPORT: credit-card-order-service:8080
+      COURIER_DELAY: 10
+      COURIER_RATE: 10
+      MANUFACTURE_DELAY: 10
+      MANUFACTURE_RATE: 10
+
+  feature-flag-service:
+    <<: *default-service
+    build: src/feature-flag-service
+    ports:
+      - 8094:8080
+    environment:
+      PROXY_PREFIX: feature-flag-service
+      # ENABLE_MODIFY: "false"
+      # ENABLE_FRONTEND_MODIFY: "false"
+
+  aggregator-service:
+    <<: *default-service
+    build: src/aggregator-service
+    depends_on:
+      - offerservice
+    environment:
+      OFFER_SERVICE_PROTOCOL: http
+      OFFER_SERVICE_HOST: offerservice
+      OFFER_SERVICE_PORT: 8080
