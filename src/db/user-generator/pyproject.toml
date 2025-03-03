@@ -14,7 +14,7 @@ deserialize = "^1.8.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
-black = "^21.12b0"
+black = "^24.3"
 isort = "^5.10.1"
 
 [build-system]
