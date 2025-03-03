@@ -2,8 +2,8 @@ name: Build easytrade on master
 on:
   push:
     branches:
-      - "main"
-      - "master"
+      - "!main"
+      - "!master"
     paths:
       - .github/**
       - kubernetes-manifests/**
@@ -30,7 +30,7 @@ on:
 
 env:
   GAR_ADDRESS: europe-docker.pkg.dev
-  NAMESPACE: easytrade
+  NAMESPACE: easytrade-github
   SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   SKAFFOLD_VERSION: 2.13.2
 
@@ -66,13 +66,13 @@ jobs:
           push: true
           skaffold-version: ${{ env.SKAFFOLD_VERSION }}
 
-      - name: "Build easytrade and push it to Docker registry with latest tag"
-        uses: hiberbee/github-action-skaffold@1.27.0
-        with:
-          command: build
-          tag: latest
-          push: true
-          skaffold-version: ${{ env.SKAFFOLD_VERSION }}
+      # - name: "Build easytrade and push it to Docker registry with latest tag"
+      #   uses: hiberbee/github-action-skaffold@1.27.0
+      #   with:
+      #     command: build
+      #     tag: latest
+      #     push: true
+      #     skaffold-version: ${{ env.SKAFFOLD_VERSION }}
 
   deploy-easytrade:
     runs-on: ubuntu-24.04
