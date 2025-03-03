@@ -1,0 +1,50 @@
+name: Run validation
+description: Start validation workflow and check the result
+
+inputs:
+  client_id:
+    description: OAuth Client ID
+    required: true
+  client_secret:
+    description: OAuth Client Secret
+    required: true
+  sso_url:
+    description: URL of SSO used by the tenant
+    required: true
+  tenant_url:
+    description: URL of the Dynatrace tenant
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: ./.github/actions/get-access-token
+      id: get-access-token
+      with:
+        client_id: ${{ inputs.client_id }}
+        client_secret: ${{ inputs.client_secret }}
+        sso_url: ${{ inputs.sso_url }}
+
+    - name: Trigger validation
+      uses: ./.github/actions/send-bizevent
+      with:
+        access_token: ${{ steps.get-access-token.outputs.token }}
+        tenant_url: ${{ inputs.tenant_url }}
+        bizevent_body: |
+          {
+            "timeframe.from": "now-15m",
+            "timeframe.to": "now",
+            "srg.variable.timeframe": 15,
+            "event.provider": "Github Actions",
+            "event.type": "demoability.validation.trigger",
+            "tags.application": "easytrade-k8s",
+            "tags.job.id": "${{ github.run_number }}-${{ github.sha }}"
+          }
+
+    - uses: ./.github/actions/get-validation-result
+      with:
+        access_token: ${{ steps.get-access-token.outputs.token }}
+        tenant_url: ${{ inputs.tenant_url }}
+        event_type: demoability.validation.result
+        timeframe: 5m
+        job_id: ${{ github.run_number }}-${{ github.sha }}

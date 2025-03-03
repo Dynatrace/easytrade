@@ -1,0 +1,45 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.0
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'snyk:lic:maven:ch.qos.logback:logback-classic:(EPL-1.0_OR_LGPL-2.1)':
+    - '*':
+        reason: license issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T08:48:49.419Z
+  'snyk:lic:maven:ch.qos.logback:logback-core:(EPL-1.0_OR_LGPL-2.1)':
+    - '*':
+        reason: license issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T08:49:34.979Z
+  'snyk:lic:maven:jakarta.annotation:jakarta.annotation-api:(EPL-2.0_OR_GPL-2.0-with-classpath-exception)':
+    - '*':
+        reason: license issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T08:51:10.479Z
+  'snyk:lic:maven:org.junit.jupiter:junit-jupiter-api:EPL-2.0':
+    - '*':
+        reason: license issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T08:52:01.045Z
+  'snyk:lic:maven:org.junit.jupiter:junit-jupiter-params:EPL-2.0':
+    - '*':
+        reason: license issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T08:52:18.737Z
+  'snyk:lic:maven:org.junit.jupiter:junit-jupiter:EPL-2.0':
+    - '*':
+        reason: license issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T08:52:27.508Z
+  'snyk:lic:maven:org.junit.platform:junit-platform-commons:EPL-2.0':
+    - '*':
+        reason: license issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T08:52:40.518Z
+  'snyk:lic:maven:org.junit:junit-bom:EPL-2.0':
+    - '*':
+        reason: license issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2024-07-19T08:52:53.794Z
+patch: {}

@@ -1,0 +1,31 @@
+name: Order credit card
+description: Order a new credit card in the EasyTrade application
+
+inputs:
+  user_id:
+    description: ID of the credit card owner
+    default: "3"
+  namespace:
+    description: Kubernetes namespace in which EasyTrade is deployed
+    default: "easytrade"
+
+runs:
+  using: composite
+  steps:
+    - name: Get token
+      shell: bash
+      run: |
+        BODY='{
+          "accountId": ${{ inputs.user_id }},
+          "email": "demo.user@dynatrace.com",
+          "name": "Demo User",
+          "shippingAddress": "ulica Andersa 352 91-682 Ilaw",
+          "cardLevel": "Platinum"
+        }'
+
+        RESPONSE=$(./.github/actions/scripts/curl-on-cluster.sh ${{ inputs.namespace }} \
+          -sLX POST 'credit-card-order-service:8080/v1/orders' \
+          -H 'accept: application/json' \
+          -H 'Content-Type: application/json' \
+          -d "${BODY}")
+        echo "Card ordered, response: [${RESPONSE}]"

@@ -1,0 +1,14 @@
+name: Set version
+description: Set EasyTrade release version
+
+inputs:
+  version:
+    description: Version of the EasyTrade application
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Set application version
+      shell: bash
+      run: ./.github/actions/scripts/set-version.sh ${{ inputs.version }}

@@ -1,0 +1,94 @@
+definitions:
+  price.price:
+    properties:
+      close:
+        type: number
+      high:
+        type: number
+      id:
+        type: integer
+      instrumentId:
+        type: integer
+      low:
+        type: number
+      open:
+        type: number
+      timestamp:
+        type: string
+    type: object
+  price.pricesResult:
+    properties:
+      results:
+        items:
+          $ref: '#/definitions/price.price'
+        type: array
+    type: object
+info:
+  contact: {}
+  description: This service provides information about the prices of instruments being
+    handled by easyTrade.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Pricing service API
+  version: "1.0"
+paths:
+  /v1/prices/instrument/{instrumentId}:
+    get:
+      consumes:
+      - '*/*'
+      description: Get specific number of records of particular instrument
+      parameters:
+      - description: Instrument id
+        in: path
+        name: instrumentId
+        required: true
+        type: integer
+      - description: Number of records
+        in: query
+        name: records
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/price.pricesResult'
+      summary: Get prices of a particular instrument
+      tags:
+      - Pricing-service
+  /v1/prices/last:
+    get:
+      consumes:
+      - '*/*'
+      description: Get last price of instrument
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/price.price'
+      summary: Get instrument price
+      tags:
+      - Pricing-service
+  /v1/prices/latest:
+    get:
+      consumes:
+      - '*/*'
+      description: Get current price of each instrument
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/price.pricesResult'
+      summary: Get instrument prices
+      tags:
+      - Pricing-service
+schemes:
+- http
+swagger: "2.0"
