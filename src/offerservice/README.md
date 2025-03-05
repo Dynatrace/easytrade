@@ -10,6 +10,13 @@ A node.js service that return information of product/package and also allows to 
 Offer service has support for one problem pattern - ErgoAggregatorSlowdownPlugin. When this problem pattern is enabled, two of the aggregator services connected to offer service will start to get slower responses from offer service.  
 Problem pattern can be enabled manually with an endpoint, or via the PluginService
 
+## Local build instructions
+
+```bash
+docker build -t IMAGE_NAME .
+docker run -d --name SERVICE_NAME IMAGE_NAME
+```
+
 ## Endpoints or logic
 
 ### Problem pattern

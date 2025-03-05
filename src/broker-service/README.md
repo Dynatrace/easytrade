@@ -7,6 +7,13 @@ This service is used to manage accounts' balances and process trades.
 - .NET 8 (ASP.NET Core)
 - Docker
 
+## Local build instructions
+
+```bash
+docker build -t IMAGE_NAME .
+docker run -d --name SERVICE_NAME IMAGE_NAME
+```
+
 ## Endpoints or logic
 
 ### Swagger

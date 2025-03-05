@@ -9,3 +9,10 @@ Nginx reverse proxy. It is used for two things:
 
 - Docker
 - Nginx
+
+## Local build instructions
+
+```bash
+docker build -t IMAGE_NAME .
+docker run -d --name SERVICE_NAME IMAGE_NAME
+```

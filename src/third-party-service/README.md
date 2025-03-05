@@ -7,6 +7,13 @@ A java service that should not be monitored and handles credit card manufacture 
 - Java 21
 - Docker
 
+## Local build instructions
+
+```bash
+docker build -t easytradethirdpartyservice .
+docker run -d -p 8093:8080 --name third-party-service -e CREDIT_CARD_ORDER_SERVICE_HOSTANDPORT=credit-card-order-service:8080 -e COURIER_DELAY=400 -e COURIER_RATE=900 -e MANUFACTURE_DELAY=500 -e MANUFACTURE_RATE=900 -e PROXY_PREFIX=third-party-service -e FEATURE_FLAG_SERVICE_PROTOCOL=http -e FEATURE_FLAG_SERVICE_BASE_URL=feature-flag-service -e FEATURE_FLAG_SERVICE_PORT=8080
+```
+
 ## Endpoints or logic
 
 ### Swagger

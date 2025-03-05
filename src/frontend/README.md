@@ -8,6 +8,13 @@ A frontend for easyTrade written in react. It has been refreshed and uses materi
 - React.js
 - TypeScript
 
+## Local build instructions
+
+```bash
+docker build -t IMAGE_NAME .
+docker run -d --name SERVICE_NAME IMAGE_NAME
+```
+
 ## Features
 
 The new fronted has the following features:

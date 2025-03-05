@@ -83,7 +83,7 @@ To deploy Easytrade in kubernetes you need to have:
 kubectl create namespace easytrade
 
 # then use the manifests to deploy
-kubectl -n easytrade apply -f ./kubernetes-manifests
+kubectl -n easytrade apply -f ./kubernetes-manifests/release
 
 # Optional: if you want the problem patterns to be automatically
 # enabled once a day, deploy these manifests too
@@ -144,7 +144,7 @@ curl -X PUT "http://{IP_ADDRESS}/feature-flag-service/v1/flags/{FEATURE_ID}/" \
 
 You can also manage enabled problem patterns via the easyTrade frontend.
 
-> **NOTE:** More information on the feature flag service's parameters available in [feature flag service's doc](./docs/featureflagservice.md).
+> **NOTE:** More information on the feature flag service's parameters available in [feature flag service's doc](src/feature-flag-service/README.md).
 
 If you are deploying easyTrade on K8s, you can also apply [these cronjobs](./kubernetes-manifests/problem-patterns/), which will enable the problem patterns once a day.
 
@@ -170,9 +170,9 @@ can also handle XML requests. Data types are negotiated based on `Accept` and `C
 
 #### XML compatible services
 
-| Service                                                       | Accepted XML MIME types                            |
-| ------------------------------------------------------------- | -------------------------------------------------- |
-| [LoginService](./docs/loginservice.md)                        | `application/xml`; `text/xml`; `application/*+xml` |
-| [CreditCardOrderService](./docs/credit-card-order-service.md) | `application/xml`                                  |
-| [OfferService](./docs/offerservice.md)                        | `application/xml`; `text/xml`                      |
-| [PricingService](./docs/pricing-service.md)                   | `application/xml`                                  |
+| Service                                                           | Accepted XML MIME types                            |
+| ----------------------------------------------------------------- | -------------------------------------------------- |
+| [LoginService](src/loginservice/README.md)                        | `application/xml`; `text/xml`; `application/*+xml` |
+| [CreditCardOrderService](src/credit-card-order-service/README.md) | `application/xml`                                  |
+| [OfferService](src/offerservice/README.md)                        | `application/xml`; `text/xml`                      |
+| [PricingService](src/pricing-service/README.md)                   | `application/xml`                                  |

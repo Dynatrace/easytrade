@@ -10,6 +10,13 @@ This service performs the role of a data access layer to database. Almost all ca
 Manager has support for one problem pattern - DbNotRespondingPlugin. When this problem pattern is enabled, no new records will be added to Trade table, as they will fail.  
 Problem pattern can be enabled manually with an endpoint, or via the PluginService
 
+## Local build instructions
+
+```bash
+docker build -t IMAGE_NAME .
+docker run -d --name SERVICE_NAME IMAGE_NAME
+```
+
 ## Endpoints or logic
 
 > Manager is not exposed by reverse proxy so this is not available outside of the deployment

@@ -9,6 +9,24 @@ MSSQL database service
 - Bash scripts
 - JSON
 
+## Local build instructions
+
+```bash
+# by default db will start on port 1433
+
+docker build -t easytradedb .
+docker run -d --name db easytradedb
+
+# running with default password passed in ENV
+docker run -d --env SA_PASSWORD=yourStrong(!)Password --name db easytradedb
+```
+
+If you want the service to work properly, you should try setting these ENV variables:
+
+| Name        | Description           | Default               |
+| ----------- | --------------------- | --------------------- |
+| SA_PASSWORD | the database password | yourStrong(!)Password |
+
 ## Logic
 
 ### DB initialization

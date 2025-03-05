@@ -7,6 +7,13 @@ Golang service simulating many aggregators. Each platform fetches data from the 
 - Go
 - Docker
 
+## Local build instructions
+
+```bash
+docker build -t IMAGE_NAME .
+docker run -d --name SERVICE_NAME IMAGE_NAME
+```
+
 ## Configuration
 
 This service can be configured with a YAML file. Default location is `/app/config.yaml`. You can mount your own file to the container.
