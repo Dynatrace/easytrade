@@ -62,39 +62,39 @@ profiles:
     manifests:
       kustomize:
         paths:
-          - ./easytrade-infrastructure/kubernetes-manifests/aws-live
+          - ../easytrade-infrastructure/kubernetes-manifests/aws-live
   - name: aws-live-ld
     deploy:
       kubectl: {}
     manifests:
       kustomize:
         paths:
-          - ./easytrade-infrastructure/kubernetes-manifests/aws-live-ld
+          - ../easytrade-infrastructure/kubernetes-manifests/aws-live-ld
   - name: aws-staging
     deploy:
       kubectl: {}
     manifests:
       kustomize:
         paths:
-          - ./easytrade-infrastructure/kubernetes-manifests/aws-staging
+          - ../easytrade-infrastructure/kubernetes-manifests/aws-staging
   - name: aws-staging-ld
     deploy:
       kubectl: {}
     manifests:
       kustomize:
         paths:
-          - ./easytrade-infrastructure/kubernetes-manifests/aws-staging-ld
+          - ../easytrade-infrastructure/kubernetes-manifests/aws-staging-ld
   - name: aws-playground
     deploy:
       kubectl: {}
     manifests:
       kustomize:
         paths:
-          - ./easytrade-infrastructure/kubernetes-manifests/aws-playground
+          - ../easytrade-infrastructure/kubernetes-manifests/aws-playground
   - name: aws-playground-staging
     deploy:
       kubectl: {}
     manifests:
       kustomize:
         paths:
-          - ./easytrade-infrastructure/kubernetes-manifests/aws-playground-staging
+          - ../easytrade-infrastructure/kubernetes-manifests/aws-playground-staging
