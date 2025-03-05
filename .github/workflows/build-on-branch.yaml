@@ -1,0 +1,44 @@
+name: Build easytrade on branch
+on:
+  push:
+    branches:
+      - "*"
+      - "!master"
+      - "!main"
+    paths:
+      - .github/**
+      - kubernetes-manifests/**
+      - skaffold.yaml
+      - src/**
+      
+  workflow_call:
+    secrets:
+      SNYK_API_TOKEN:
+        required: true
+
+env:
+  SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
+  SKAFFOLD_VERSION: 2.13.2
+
+jobs:
+  snyk:
+    uses: ./.github/workflows/snyk.yaml
+    permissions:
+      security-events: write
+      contents: read
+      actions: read
+    secrets:
+      SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
+
+  build-easytrade:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build easytrade without pushing to docker repository
+        uses: hiberbee/github-action-skaffold@1.27.0
+        with:
+          command: build
+          push: false
+          skaffold-version: ${{ env.SKAFFOLD_VERSION }}

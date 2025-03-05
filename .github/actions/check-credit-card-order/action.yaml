@@ -1,0 +1,40 @@
+name: Check credit card order
+description: Fetch and check the status of the credit card
+
+inputs:
+  user_id:
+    description: ID of the credit card owner
+    default: "3"
+  namespace:
+    description: Kubernetes namespace in which EasyTrade is deployed
+    default: "easytrade"
+
+outputs:
+  result:
+    description: Validation result
+    value: ${{ steps.check-credit-card-order.outputs.result }}
+
+runs:
+  using: composite
+  steps:
+    - name: Check credit card order
+      id: check-credit-card-order
+      shell: bash
+      run: |
+        RESPONSE=$(./.github/actions/scripts/curl-on-cluster.sh ${{ inputs.namespace }} \
+          -sLX GET 'credit-card-order-service:8080/v1/orders/${{ inputs.user_id }}/status/latest' \
+          -H 'accept: application/json')
+        echo "Response: [${RESPONSE}]"
+
+        STATUS=$(echo $RESPONSE | jq -re '.results.status')
+        echo "Latest card status: [${STATUS}]"
+
+        if [[ "$STATUS" == "card_delivered" ]]; then
+          echo Credit card order test passed
+          echo "result=pass" >>$GITHUB_OUTPUT
+          exit 0
+        else
+          echo "::error::Credit card order test failed"
+          echo "result=fail" >>$GITHUB_OUTPUT
+          exit 1
+        fi

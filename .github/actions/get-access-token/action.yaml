@@ -1,0 +1,37 @@
+name: Get access token
+description: Fetch access token for an OAuth client
+
+inputs:
+  client_id:
+    description: OAuth Client ID
+    required: true
+  client_secret:
+    description: OAuth Client Secret
+    required: true
+  sso_url:
+    description: URL of SSO used by the tenant
+    required: true
+
+outputs:
+  token:
+    description: Generated token
+    value: ${{ steps.get-token.outputs.token }}
+
+runs:
+  using: composite
+  steps:
+    - name: Get token
+      id: get-token
+      shell: bash
+      run: |
+        TOKEN=$(curl -sfLX POST "${{ inputs.sso_url }}" \
+          --header "Content-Type: application/x-www-form-urlencoded" \
+          --data-urlencode "grant_type=client_credentials" \
+          --data-urlencode "client_id=${{ inputs.client_id }}" \
+          --data-urlencode "client_secret=${{ inputs.client_secret }}" \
+          --data-urlencode "scope=storage:buckets:read storage:bizevents:read storage:events:write" \
+          | jq -re '.access_token')
+
+        echo "::add-mask::$TOKEN"
+        echo "token=$TOKEN" >> $GITHUB_OUTPUT
+        echo "Generated new token"
