@@ -17,6 +17,8 @@ on:
         required: true
       KUBECONFIG:
         required: true
+      OQR_CLIENT_ID:
+        required: true
       OQR_CLIENT_SECRET:
         required: true
       OQR_URL:
