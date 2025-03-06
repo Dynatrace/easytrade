@@ -21,6 +21,6 @@ runs:
         curl -sfLX POST "${{ inputs.tenant_url }}/platform/classic/environment-api/v2/bizevents/ingest" \
           --header "Content-Type: application/json" \
           --header "Authorization: Bearer ${{ inputs.access_token }}" \
-          --data-raw "$(echo '${{ inputs.bizevent_body }}' | jq -c)"
+          --data-raw "$(echo '${{ inputs.bizevent_body }}' | jq -c) -v"
 
          echo "Bizevent sent"
