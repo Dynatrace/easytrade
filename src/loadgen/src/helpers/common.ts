@@ -54,6 +54,7 @@ export async function gotoPageWithNavBar(
 ): Promise<void> {
     await showNavbar(pageActions)
     await pageActions.navigate(navBarSelector)
+    await pageActions.standardDelay()
 }
 
 export async function pageSetup(page: Page, user: User, appUrl: URL) {
