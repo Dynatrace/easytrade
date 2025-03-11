@@ -2,7 +2,7 @@ name: Build easytrade on branch
 on:
   push:
     branches:
-      - "*"
+      - "**"
       - "!master"
       - "!main"
     paths:
