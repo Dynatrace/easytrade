@@ -13,7 +13,7 @@ scipy = "^1.15.2"
 deserialize = "^1.8.3"
 
 [tool.poetry.dev-dependencies]
-pytest = "^5.2"
+pytest = "^7.2.0"
 black = "^24.3"
 isort = "^5.10.1"
 
