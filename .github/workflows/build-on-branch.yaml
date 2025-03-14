@@ -23,7 +23,7 @@ env:
 
 jobs:
   snyk:
-    if: github.event_name == 'pull_request_target'
+    # if: github.event_name == 'pull_request_target'
     uses: ./.github/workflows/snyk.yaml
     permissions:
       security-events: write
