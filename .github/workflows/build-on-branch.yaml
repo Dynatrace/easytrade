@@ -10,8 +10,6 @@ on:
       - kubernetes-manifests/**
       - skaffold.yaml
       - src/**
-  pull_request_target:
-    types: [opened, synchronize, reopened]
       
   workflow_call:
     secrets:
@@ -23,7 +21,6 @@ env:
   SKAFFOLD_VERSION: 2.13.2
 
 jobs:
-
   snyk:
     uses: ./.github/workflows/snyk.yaml
     permissions:
