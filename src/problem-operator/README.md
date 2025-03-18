@@ -1,18 +1,12 @@
 # easyTradeProblemOperator
 
-<<<<<<< HEAD
-Kubernetes operator for easyTrade that automatically makes changes to the deployment based on feature flags turned on. It repeatedly checks the current state of resources and feature flags. Information on whether the new configuration has been applied is saved in the custom annotation. The code that defines to which resource and how the changes should be applied is located in a custom controller.
-=======
 Kubernetes operator for easyTrade that automatically makes changes to the deployment based on feature flags turned on. It repeatedly checks the current state of resources and feature flags. Information on whether the new configuration has been applied is saved in the custom annotation. The code that defines to which resource and how the changes should be applied is located in a custom controller, which should implement the [`operator.Controller`](./operator/controller.go) interface. Each controller instance should define conditions for a single resource when a specific flag is turned on.
->>>>>>> fd83f05e767c948c53f26f2aaa70d88bf87b47bc
 
 ## Technologies used
 
 - Golang 1.23
 - [Go client for Kubernetes](https://github.com/kubernetes/client-go)
 
-<<<<<<< HEAD
-=======
 ## Local build instructions
 
 ```bash
@@ -64,7 +58,6 @@ operator.RegisterController(controller)
 
 Controllers defined for the same flag are run in parallel inside an errgroup. If one fails, others are cancelled too (if possible). Controller groups defined for different flags run sequentially to reduce the possibility of conflicts. If a conflict occurs, the action will be retried. If the synchronization doesn't finish before the next one starts, all actions will be cancelled, and the synchronization interval will be extended by 10% to ensure actions are being completed successfully before timing out.
 
->>>>>>> fd83f05e767c948c53f26f2aaa70d88bf87b47bc
 ## Implemented Controllers
 
 | Controller             | Flag           | Resource                    | Description      |
@@ -81,8 +74,4 @@ This controller behavior can be altered using environment variables:
 
 | Name                                    | Description                                                          | Default |
 | --------------------------------------- | -------------------------------------------------------------------- | ------- |
-<<<<<<< HEAD
 | HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT | CPU resource value that should be applied during the problem pattern | 300m    |
-=======
-| HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT | CPU resource value that should be applied during the problem pattern | 300m    |
->>>>>>> fd83f05e767c948c53f26f2aaa70d88bf87b47bc
