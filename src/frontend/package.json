@@ -26,7 +26,7 @@
     "@tanstack/react-query": "^5.51.11",
     "@tanstack/react-query-devtools": "^5.51.11",
     "axios": "^1.8.2",
-    "fast-xml-parser": "^4.4.1",
+    "fast-xml-parser": "^5.0.9",
     "luxon": "^3.4.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
