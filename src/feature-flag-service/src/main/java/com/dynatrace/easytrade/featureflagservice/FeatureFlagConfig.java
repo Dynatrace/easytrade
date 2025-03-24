@@ -7,8 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import java.util.*;
 import java.util.stream.*;
 
-import com.dynatrace.easytrade.featureflagservice.Flag;
-
 @Configuration
 public class FeatureFlagConfig {
         @Value("${app.flags.enableModify}")
