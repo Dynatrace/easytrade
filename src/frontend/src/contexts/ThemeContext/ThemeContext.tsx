@@ -5,6 +5,7 @@ import { IThemeContext, ThemeProviderProps } from "./types"
 
 const ThemeContext = createContext<IThemeContext>({
     theme: themes.dark,
+    themeMode: "dark",
     isDarkTheme: true,
     toggleTheme: () => {},
 })
@@ -26,7 +27,9 @@ function ThemeProvider({
     }
 
     return (
-        <ThemeContext.Provider value={{ theme, isDarkTheme, toggleTheme }}>
+        <ThemeContext.Provider
+            value={{ theme, themeMode, isDarkTheme, toggleTheme }}
+        >
             <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
         </ThemeContext.Provider>
     )

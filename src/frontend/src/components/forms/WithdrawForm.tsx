@@ -28,6 +28,7 @@ import { WithdrawHandler } from "../../api/creditCard/withdraw/types"
 import { Edit } from "@mui/icons-material"
 import { balanceInvalidateQuery } from "../../contexts/QueryContext/user/queries"
 import { Stack } from "@mui/system"
+import { useFormatter } from "../../contexts/FormatterContext/context"
 
 const formSchema = z.object({
     amount: z
@@ -63,10 +64,9 @@ type DepositFormProps = {
 }
 
 export default function WithdrawForm({ submitHandler }: DepositFormProps) {
-    const authUserData = useAuthUserData()
-    const user = authUserData.user,
-        balance = authUserData.balance
+    const { user, balance } = useAuthUserData()
     const { userId } = useAuthUser()
+    const { formatCurrency } = useFormatter()
 
     const formContext = useForm<FormData>({
         defaultValues,
@@ -153,7 +153,11 @@ export default function WithdrawForm({ submitHandler }: DepositFormProps) {
                 <TextField
                     name="balance"
                     label="Current balance"
-                    value={balance?.value ?? "Loading..."}
+                    value={
+                        balance?.value === undefined
+                            ? "Loading..."
+                            : formatCurrency(balance.value)
+                    }
                     disabled
                     fullWidth
                 />

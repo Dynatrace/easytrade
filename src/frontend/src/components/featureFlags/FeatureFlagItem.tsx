@@ -194,11 +194,6 @@ export default function FeatureFlagItem({
                         <Tooltip
                             title="Managing flags on frontend has been disabled in this environment"
                             disableHoverListener={modifyDisabled}
-                            slotProps={{
-                                popper: {
-                                    "data-dt-mouse-over": "300",
-                                } as any,
-                            }}
                         >
                             <span>
                                 <Button
@@ -207,6 +202,7 @@ export default function FeatureFlagItem({
                                     variant="outlined"
                                     color={enabled ? "error" : "success"}
                                     disabled={modifyDisabled}
+                                    data-dt-mouse-over="300"
                                 >
                                     {enabled ? "Disable" : "Enable"}
                                 </Button>

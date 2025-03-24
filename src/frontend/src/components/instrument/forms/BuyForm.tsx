@@ -83,9 +83,7 @@ function BuyAutofillButton({
 }
 
 export default function BuyForm() {
-    const authUserData = useAuthUserData()
-    const user = authUserData.user,
-        balance = authUserData.balance
+    const { balance } = useAuthUserData()
     const { instrument, buyHandler } = useInstrument()
 
     const formContext = useForm<FormData>({

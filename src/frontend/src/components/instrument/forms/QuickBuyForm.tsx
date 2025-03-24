@@ -34,9 +34,7 @@ const formSchema = z
 export type FormData = z.infer<typeof formSchema>
 
 export default function QuickBuyForm() {
-    const authUserData = useAuthUserData()
-    const user = authUserData.user,
-        balance = authUserData.balance
+    const { balance } = useAuthUserData()
     const { instrument, quickBuyHandler } = useInstrument()
     const formContext = useForm<FormData>({
         values: {
@@ -79,7 +77,6 @@ export default function QuickBuyForm() {
             setSuccess("Transaction successful")
             reset()
             await quickTransactionInvalidateQuery(queryClient, userId)
-            // setValue("currentBalance", user?.availableBalance ?? 0)
         },
         onError: setError,
     })

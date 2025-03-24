@@ -65,7 +65,7 @@ function CustomTooltip({
         const [openPrice, closePrice] = payload[0].payload.openClosePriceRange
         const [lowPrice, highPrice] = payload[0].payload.lowHighPriceRange
         return (
-            <Box data-dt-mouse-over="300">
+            <Box>
                 <Typography variant="h6">{label}</Typography>
                 <Typography variant="body1">{`open: ${openPrice}; close: ${closePrice} `}</Typography>
                 <Typography variant="body1">{`low: ${lowPrice}; high: ${highPrice}`}</Typography>
@@ -101,6 +101,7 @@ export default function InstrumentPriceChart({
             width="100%"
             display={"flex"}
             justifyContent={"center"}
+            data-dt-mouse-over="300"
         >
             <ResponsiveContainer width="90%" height="100%">
                 <BarChart data={priceData}>
