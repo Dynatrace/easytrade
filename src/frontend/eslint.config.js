@@ -26,17 +26,17 @@ export default defineConfig([
     },
     pluginReact.configs.flat.recommended,
     {
-        settings: {
-            react: {
-                version: "detect", // Automatically detect the React version
-            },
-        },
-    },
-    {
         rules: {
             "@typescript-eslint/no-deprecated": "warn",
             "@typescript-eslint/only-throw-error": "off",
             "@typescript-eslint/no-unsafe-assignment": "off",
+        },
+    },
+    {
+        settings: {
+            react: {
+                version: "detect", // Automatically detect the React version
+            },
         },
     },
 ])
