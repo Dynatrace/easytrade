@@ -17,6 +17,6 @@
     "jsx": "react-jsx",
     "types": ["vite/client", "vitest/globals"]
   },
-  "include": ["src"],
+  "include": ["src", "eslint.config.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

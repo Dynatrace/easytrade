@@ -15,13 +15,28 @@ export default defineConfig([
         plugins: { js },
         extends: ["js/recommended"],
     },
-    tseslint.configs.recommended,
+    tseslint.configs.recommendedTypeChecked,
+    {
+        languageOptions: {
+            parserOptions: {
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
+            },
+        },
+    },
     pluginReact.configs.flat.recommended,
     {
         settings: {
             react: {
                 version: "detect", // Automatically detect the React version
             },
+        },
+    },
+    {
+        rules: {
+            "@typescript-eslint/no-deprecated": "warn",
+            "@typescript-eslint/only-throw-error": "off",
+            "@typescript-eslint/no-unsafe-assignment": "off",
         },
     },
 ])
