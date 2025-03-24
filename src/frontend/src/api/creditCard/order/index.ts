@@ -118,6 +118,7 @@ export async function getOrderStatusHistory(
             type: "success",
             orderId: results.creditCardOrderId,
             statusList: results.statusList.map(
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 ({ creditCardOrderId, id, ...rest }) => ({
                     orderId: creditCardOrderId,
                     ...rest,

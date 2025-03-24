@@ -1,3 +1,4 @@
+import React from "react"
 import Grid from "@mui/material/Grid2"
 import { useNavigate, useParams, useRouteLoaderData } from "react-router"
 import FullInstrumentCard from "../../components/instrument/FullInstrumentCard"

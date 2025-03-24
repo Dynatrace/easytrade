@@ -1,3 +1,4 @@
+import React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
     Button,
@@ -116,6 +117,7 @@ export default function WithdrawForm({ submitHandler }: DepositFormProps) {
     const { mutate, isPending } = useMutation({
         mutationFn: async ({
             cardholderName: name,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             agreementCheck,
             ...rest
         }: FormData) => {

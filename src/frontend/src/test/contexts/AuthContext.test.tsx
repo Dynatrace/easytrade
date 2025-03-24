@@ -1,3 +1,4 @@
+import React from "react"
 import "@testing-library/jest-dom"
 import { render, screen } from "@testing-library/react"
 import { AuthProvider, useAuth, localStore } from "../../contexts/AuthContext"
@@ -95,7 +96,7 @@ test("sets user id to null when user logs out", async () => {
     render(
         <AuthProvider
             loginHandler={vi.fn()}
-            logoutHandler={vi.fn(async (userId: string) => ({
+            logoutHandler={vi.fn(async () => ({
                 message: "logged out",
             }))}
             initialId={"1"}

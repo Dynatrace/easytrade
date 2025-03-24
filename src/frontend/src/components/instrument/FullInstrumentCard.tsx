@@ -1,3 +1,4 @@
+import React from "react"
 import { Card, CardHeader } from "@mui/material"
 import InstrumentHeader from "./InstrumentHeader"
 import { useInstrument } from "../../contexts/InstrumentContext/context"

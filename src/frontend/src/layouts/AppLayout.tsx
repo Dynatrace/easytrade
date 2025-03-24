@@ -1,3 +1,4 @@
+import React from "react"
 import { Stack } from "@mui/material"
 import AppHeader from "../components/AppHeader/AppHeader"
 import { Outlet } from "react-router"

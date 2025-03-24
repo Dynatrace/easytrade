@@ -1,3 +1,4 @@
+import React from "react"
 import { TableRow, TableCell, Alert } from "@mui/material"
 import { ServiceVersion } from "../../api/version/types"
 import { getFrontendVersion } from "../../api/version/versions"
@@ -7,8 +8,8 @@ interface VersionListItemProps {
 }
 
 interface DifferenceAlertProps {
-    value: any
-    expectedValue: any
+    value: string
+    expectedValue: string
 }
 
 function DifferenceWarning(props: DifferenceAlertProps) {

@@ -1,3 +1,4 @@
+import React from "react"
 import Grid from "@mui/material/Grid2"
 import InstrumentsGrid from "../../components/instrument/InstrumentsGrid"
 import { useAuthUser } from "../../contexts/UserContext/context"

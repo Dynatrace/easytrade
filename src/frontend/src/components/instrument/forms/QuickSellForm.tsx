@@ -1,3 +1,4 @@
+import React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { FormContainer } from "react-hook-form-mui"
@@ -72,7 +73,7 @@ export default function QuickSellForm() {
         onSuccess: async () => {
             setSuccess("Transaction successful")
             reset()
-            quickTransactionInvalidateQuery(queryClient, instrument.id)
+            await quickTransactionInvalidateQuery(queryClient)
         },
         onError: setError,
     })

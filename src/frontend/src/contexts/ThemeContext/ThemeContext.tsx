@@ -1,3 +1,4 @@
+import React from "react"
 import { createContext, PropsWithChildren, useContext, useState } from "react"
 import { ThemeProvider as MuiThemeProvider } from "@mui/material"
 import { getPreferredTheme, themes } from "./theme"

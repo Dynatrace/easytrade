@@ -1,3 +1,4 @@
+import React from "react"
 import {
     Bar,
     BarChart,
@@ -129,6 +130,7 @@ export default function InstrumentPriceChart({
                         dataKey="lowHighPriceRange"
                         barSize={1}
                         xAxisId={0}
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         shape={(props: any) => (
                             <CustomBar
                                 {...props}
@@ -141,6 +143,7 @@ export default function InstrumentPriceChart({
                         dataKey="openClosePriceRange"
                         xAxisId={1}
                         minPointSize={1}
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
                         shape={(props: any) => (
                             <CustomBar
                                 {...props}

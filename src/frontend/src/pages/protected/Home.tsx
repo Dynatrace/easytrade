@@ -1,3 +1,4 @@
+import React from "react"
 import { Container, Stack } from "@mui/material"
 import AccountInfo from "../../components/AccountInfo"
 import InstrumentsTable from "../../components/InstrumentsTable"

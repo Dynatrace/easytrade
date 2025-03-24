@@ -1,3 +1,4 @@
+import React from "react"
 import {
     DataGrid,
     GridColDef,
@@ -38,7 +39,8 @@ function getColumnData(
             flex: 1.5,
             align: "center",
             headerAlign: "center",
-            renderCell: (params: GridRenderCellParams<any, String>) => (
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            renderCell: (params: GridRenderCellParams<any, string>) => (
                 <Stack direction={"row"}>
                     {params.value === "ACTIVE" ? (
                         <AutorenewIcon fontSize="small" color="info" />

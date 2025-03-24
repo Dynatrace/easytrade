@@ -1,3 +1,4 @@
+import React from "react"
 import { PropsWithChildren } from "react"
 import { QueryClientProvider } from "../contexts/QueryContext/QueryContext"
 import { UserContextProvider } from "../contexts/UserContext/context"
@@ -5,7 +6,6 @@ import { FormatterProvider } from "../contexts/FormatterContext/context"
 import { QueryProviderProps } from "../contexts/QueryContext/types"
 
 export function QueryClientWrapper({
-    getUser,
     children,
 }: PropsWithChildren<Partial<QueryProviderProps>>) {
     return (

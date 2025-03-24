@@ -1,3 +1,4 @@
+import React from "react"
 import { PropsWithChildren, createContext, useContext } from "react"
 import { IInstrumentContext, InstrumentProviderProps } from "./types"
 

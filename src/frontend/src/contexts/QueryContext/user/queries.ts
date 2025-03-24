@@ -52,10 +52,7 @@ export async function logoutInvalidateQuery(client: QueryClient) {
     client.removeQueries({ queryKey: creditCardKeys.all })
 }
 
-export async function quickTransactionInvalidateQuery(
-    client: QueryClient,
-    instrumentId: string
-) {
+export async function quickTransactionInvalidateQuery(client: QueryClient) {
     await client.invalidateQueries({ queryKey: balanceKeys.current })
     await client.invalidateQueries({
         queryKey: instrumentKeys.all,
