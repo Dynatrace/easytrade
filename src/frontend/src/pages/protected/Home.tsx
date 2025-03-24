@@ -15,7 +15,7 @@ import TransactionsCharts from "../../components/charts/TransactionsCharts"
 
 export default function Home() {
     const { userId } = useAuthUser()
-    const transactionData = useLoaderData() as Transaction[]
+    const transactionData: Transaction[] = useLoaderData()
     const transactionsData = useTransactionQuery(userId, transactionData)
     const instrumentData = useRouteLoaderData(
         LoaderIds.instruments

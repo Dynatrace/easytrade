@@ -53,7 +53,7 @@ const mockTransactions: Transaction[] = [
 ]
 
 describe("Transactions table", () => {
-    test("displays full transaction data", async () => {
+    test("displays full transaction data", () => {
         render(
             <FormatterWrapper>
                 <TransactionsTable
@@ -85,7 +85,7 @@ describe("Transactions table", () => {
             })
         ).toBeInTheDocument()
     })
-    test("displays all rows", async () => {
+    test("displays all rows", () => {
         render(
             <FormatterWrapper>
                 <TransactionsTable

@@ -44,7 +44,7 @@ export async function transactionInvalidateQuery(client: QueryClient) {
     await client.invalidateQueries({ queryKey: transactionKeys.all })
 }
 
-export async function logoutInvalidateQuery(client: QueryClient) {
+export function logoutInvalidateQuery(client: QueryClient) {
     client.removeQueries({ queryKey: transactionKeys.all })
     client.removeQueries({ queryKey: instrumentKeys.all })
     client.removeQueries({ queryKey: userKeys.current })

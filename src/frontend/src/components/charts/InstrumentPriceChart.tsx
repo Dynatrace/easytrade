@@ -62,9 +62,11 @@ function CustomTooltip({
     payload,
     label,
 }: TooltipProps<number, string>) {
-    if (active && payload && payload.length) {
-        const [openPrice, closePrice] = payload[0].payload.openClosePriceRange
+    if (active && payload && payload.length > 0) {
+        /* eslint-disable */
+        const [openPrice, closePrice] = payload[0]?.payload?.openClosePriceRange
         const [lowPrice, highPrice] = payload[0].payload.lowHighPriceRange
+        /* eslint-enable */
         return (
             <Box>
                 <Typography variant="h6">{label}</Typography>
@@ -115,7 +117,7 @@ export default function InstrumentPriceChart({
                             maxValue + 0.01 * minValue,
                         ]}
                         allowDataOverflow={false}
-                        tickFormatter={(tick) => tick.toFixed(3)}
+                        tickFormatter={(tick: number) => tick.toFixed(3)}
                     />
                     <Tooltip
                         content={<CustomTooltip />}

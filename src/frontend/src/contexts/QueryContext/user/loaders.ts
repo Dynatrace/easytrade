@@ -9,7 +9,7 @@ export function sessionUserProvider() {
     // strings coming from session storage are wrapped in ""
     // using json to parse it removes them and feels like better solution
     // than using string replacements
-    return userId !== null ? JSON.parse(userId) : null
+    return userId !== null ? (JSON.parse(userId) as string) : null
 }
 
 export function loadWithUser<T = unknown>(

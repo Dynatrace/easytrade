@@ -18,9 +18,11 @@ export default function FullInstrumentCard() {
             <CardHeader
                 title={<InstrumentHeader instrument={instrument} />}
                 subheader={instrument.code}
-                subheaderTypographyProps={{
-                    sx: {
-                        fontStyle: "italic",
+                slotProps={{
+                    subheader: {
+                        sx: {
+                            fontStyle: "italic",
+                        },
                     },
                 }}
             />

@@ -60,7 +60,7 @@ describe("Deposit Form", () => {
     let mockHandler: Mock<DepositHandler>
     let user: UserEvent
     beforeEach(async () => {
-        mockHandler = vi.fn(async () => ({}))
+        mockHandler = vi.fn(() => Promise.resolve({}))
         user = userEvent.setup()
         const router = createMemoryRouter(
             [
@@ -69,8 +69,8 @@ describe("Deposit Form", () => {
                     element: (
                         <FormatterProvider currency="USD" locale="en-US">
                             <QueryClientWrapper
-                                getUser={async () => userData}
-                                getBalance={async () => balanceData}
+                                getUser={() => Promise.resolve(userData)}
+                                getBalance={() => Promise.resolve(balanceData)}
                             >
                                 <UserContextWrapper>
                                     <DepositForm submitHandler={mockHandler} />

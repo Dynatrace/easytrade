@@ -145,7 +145,6 @@ export default function TransactionsTable({
             rows={transactions}
             columns={getColumnData(formatCurrency, formatDate)}
             slots={{ toolbar: CustomToolbar }}
-            autoHeight={true}
             initialState={{
                 pagination: { paginationModel: { pageSize: 5 } },
             }}

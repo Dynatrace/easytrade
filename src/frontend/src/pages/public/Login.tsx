@@ -9,7 +9,7 @@ import { usePresetUsersQuery } from "../../contexts/QueryContext/user/hooks"
 
 export default function Login() {
     const { loginHandler, defaultLoginHandler } = useAuth()
-    const initialData = useLoaderData() as PresetUser[]
+    const initialData: PresetUser[] = useLoaderData()
     const { data } = usePresetUsersQuery(initialData)
 
     return (

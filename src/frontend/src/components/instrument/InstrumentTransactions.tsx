@@ -39,7 +39,9 @@ export default function InstrumentTransactions() {
                 <Grid size={{ xs: 2 }}>
                     <Card>
                         <TabList
-                            onChange={(event, value) => setFormId(value)}
+                            onChange={(_event, value: FormId) =>
+                                setFormId(value)
+                            }
                             orientation="vertical"
                         >
                             <Tab label="Quick Buy" value={FormId.QuickBuy} />

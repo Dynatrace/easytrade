@@ -24,9 +24,11 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
     const { formatCurrency } = useFormatter()
 
     if (active && payload && payload.length) {
+        /* eslint-disable */
         const name = payload[0].payload.name
         const amount = payload[0].payload.amount
         const totalValue = formatCurrency(payload[0].payload.totalValue)
+        /* eslint-enable */
         return (
             <Box>
                 <Typography variant="h6">{name}</Typography>

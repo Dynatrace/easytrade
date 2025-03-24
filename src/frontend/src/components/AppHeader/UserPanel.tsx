@@ -69,8 +69,8 @@ export default function UserPanel() {
             }
         },
         onMutate: handleClose,
-        onSuccess: async () => {
-            await logoutInvalidateQuery(queryClient)
+        onSuccess: () => {
+            logoutInvalidateQuery(queryClient)
         },
         onError: (error) => {
             console.error(`There was an error during logout: ${error}`)

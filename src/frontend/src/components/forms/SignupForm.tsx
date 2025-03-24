@@ -67,7 +67,7 @@ export default function SignupForm({ submitHandler }: SignupFormProps) {
     })
 
     useEffect(() => {
-        const { unsubscribe } = watch((data, { type }) => {
+        const { unsubscribe } = watch((_data, { type }) => {
             if (type === "change") {
                 resetStatus()
             }
@@ -77,7 +77,7 @@ export default function SignupForm({ submitHandler }: SignupFormProps) {
 
     return (
         <FormContainer
-            onSuccess={async (data: FormData) => mutate(data)}
+            onSuccess={(data: FormData) => mutate(data)}
             formContext={formContext}
         >
             <Stack direction={"column"} spacing={2}>

@@ -135,9 +135,9 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
             }
         },
         onMutate: resetStatus,
-        onSuccess: () => {
+        onSuccess: async () => {
             setSuccess("Deposit successful")
-            balanceInvalidateQuery(queryClient)
+            await balanceInvalidateQuery(queryClient)
             reset()
         },
         onError: setError,
@@ -152,7 +152,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
 
     return (
         <FormContainer
-            onSuccess={async (data: FormData) => mutate(data)}
+            onSuccess={(data: FormData) => mutate(data)}
             formContext={formContext}
         >
             <Stack direction={"column"} spacing={2}>

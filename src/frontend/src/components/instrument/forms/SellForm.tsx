@@ -101,7 +101,7 @@ export default function SellForm() {
     }, [watch(["amount", "price"])])
 
     useEffect(() => {
-        const { unsubscribe } = watch((data, { type }) => {
+        const { unsubscribe } = watch((_data, { type }) => {
             if (type === "change") {
                 resetStatus()
             }
@@ -125,14 +125,14 @@ export default function SellForm() {
         onSuccess: async () => {
             setSuccess("Transaction scheduled")
             reset()
-            transactionInvalidateQuery(queryClient)
+            await transactionInvalidateQuery(queryClient)
         },
         onError: setError,
     })
 
     return (
         <FormContainer
-            onSuccess={async (data: FormData) => mutate(data)}
+            onSuccess={(data: FormData) => mutate(data)}
             formContext={formContext}
         >
             <Stack direction={"column"} spacing={2} minWidth={300}>

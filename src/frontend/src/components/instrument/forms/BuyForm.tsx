@@ -131,14 +131,14 @@ export default function BuyForm() {
         onSuccess: async () => {
             setSuccess("Transaction scheduled")
             reset()
-            transactionInvalidateQuery(queryClient)
+            await transactionInvalidateQuery(queryClient)
         },
         onError: setError,
     })
 
     return (
         <FormContainer
-            onSuccess={async (data: FormData) => mutate(data)}
+            onSuccess={(data: FormData) => mutate(data)}
             formContext={formContext}
         >
             <Stack direction={"column"} spacing={2} minWidth={300}>

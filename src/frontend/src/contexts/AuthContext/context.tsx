@@ -30,7 +30,7 @@ export function AuthProvider({
         return { message, error }
     }
 
-    async function defaultLogin(userId: string) {
+    function defaultLogin(userId: string) {
         setUserId(userId)
     }
 

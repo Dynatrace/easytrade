@@ -10,18 +10,22 @@ export function QueryClientWrapper({
 }: PropsWithChildren<Partial<QueryProviderProps>>) {
     return (
         <QueryClientProvider
-            getUser={async (userId: string) => ({
-                id: userId,
-                firstName: "First",
-                lastName: "Last",
-                email: "test@email.com",
-                packageType: "1",
-                address: "test address 123",
-            })}
-            getBalance={async (userId: string) => ({
-                accountId: userId,
-                value: 123,
-            })}
+            getUser={(userId: string) =>
+                Promise.resolve({
+                    id: userId,
+                    firstName: "First",
+                    lastName: "Last",
+                    email: "test@email.com",
+                    packageType: "1",
+                    address: "test address 123",
+                })
+            }
+            getBalance={(userId: string) =>
+                Promise.resolve({
+                    accountId: userId,
+                    value: 123,
+                })
+            }
             getPresetUsers={vi.fn()}
             getTransactions={vi.fn()}
             getInstruments={vi.fn()}

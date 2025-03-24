@@ -7,7 +7,7 @@ import { Box } from "@mui/material"
 
 export default function CreditCardLayout() {
     const { userId } = useAuthUser()
-    const orderStatus = useLoaderData() as OrderStatusResponse
+    const orderStatus: OrderStatusResponse = useLoaderData()
     const { data } = useCreditCardOrderStatus(userId, orderStatus)
 
     const { pathname } = useLocation()

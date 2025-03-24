@@ -56,7 +56,7 @@ describe("Withdraw Form", () => {
     let mockHandler: Mock
     let user: UserEvent
     beforeEach(async () => {
-        mockHandler = vi.fn(async () => ({}))
+        mockHandler = vi.fn(() => Promise.resolve({}))
         user = userEvent.setup()
         const router = createMemoryRouter(
             [
@@ -65,8 +65,8 @@ describe("Withdraw Form", () => {
                     element: (
                         <FormatterProvider currency="USD" locale="en-US">
                             <QueryClientWrapper
-                                getUser={async () => userData}
-                                getBalance={async () => balanceData}
+                                getUser={() => Promise.resolve(userData)}
+                                getBalance={() => Promise.resolve(balanceData)}
                             >
                                 <UserContextWrapper>
                                     <WithdrawForm submitHandler={mockHandler} />

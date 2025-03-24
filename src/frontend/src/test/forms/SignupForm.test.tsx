@@ -36,7 +36,7 @@ describe("Signup Form", () => {
     let mockHandler: Mock
     let user: UserEvent
     beforeEach(() => {
-        mockHandler = vi.fn(async () => ({}))
+        mockHandler = vi.fn(() => Promise.resolve({}))
         user = userEvent.setup()
         render(<SignupForm submitHandler={mockHandler} />, {
             wrapper: QueryClientWrapper,
