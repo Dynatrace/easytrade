@@ -1,3 +1,4 @@
+import React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
     Button,
@@ -28,6 +29,7 @@ import { DepositHandler } from "../../api/creditCard/deposit/types"
 import { Edit } from "@mui/icons-material"
 import { balanceInvalidateQuery } from "../../contexts/QueryContext/user/queries"
 import { Stack } from "@mui/system"
+import { useFormatter } from "../../contexts/FormatterContext/context"
 
 const cvvRegex = new RegExp(/^[0-9]{3,4}$/)
 
@@ -67,9 +69,9 @@ type DepositFormProps = {
 }
 
 export default function DepositForm({ submitHandler }: DepositFormProps) {
-    const authUserData = useAuthUserData()
-    const { user, balance } = authUserData
+    const { user, balance } = useAuthUserData()
     const { userId } = useAuthUser()
+    const { formatCurrency } = useFormatter()
 
     const formContext = useForm<FormData>({
         defaultValues,
@@ -119,6 +121,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
     const { mutate, isPending } = useMutation({
         mutationFn: async ({
             cardholderName: name,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             agreementCheck,
             ...rest
         }: FormData) => {
@@ -132,9 +135,9 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
             }
         },
         onMutate: resetStatus,
-        onSuccess: () => {
+        onSuccess: async () => {
             setSuccess("Deposit successful")
-            balanceInvalidateQuery(queryClient)
+            await balanceInvalidateQuery(queryClient)
             reset()
         },
         onError: setError,
@@ -149,16 +152,23 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
 
     return (
         <FormContainer
-            onSuccess={async (data: FormData) => mutate(data)}
+            onSuccess={(data: FormData) => mutate(data)}
             formContext={formContext}
         >
             <Stack direction={"column"} spacing={2}>
                 <TextField
                     name="balance"
                     label="Current balance"
-                    value={balance?.value ?? "Loading..."}
+                    value={
+                        balance?.value === undefined
+                            ? "Loading..."
+                            : formatCurrency(balance.value)
+                    }
                     disabled
                     fullWidth
+                    slotProps={{
+                        htmlInput: { "data-dt-content": true },
+                    }}
                 />
                 <NumberFormField
                     id="amount"
@@ -168,6 +178,9 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     required
                     autoFocus
                     fullWidth
+                    slotProps={{
+                        htmlInput: { "data-dt-content": true },
+                    }}
                 />
                 <TextFieldElement
                     id="cardholderName"
@@ -175,6 +188,9 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     label="Cardholder name"
                     required
                     fullWidth
+                    slotProps={{
+                        htmlInput: { "data-dt-content": true },
+                    }}
                 />
                 <TextFieldElement
                     id="address"
@@ -182,6 +198,9 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     label="Address"
                     required
                     fullWidth
+                    slotProps={{
+                        htmlInput: { "data-dt-content": true },
+                    }}
                 />
                 <TextFieldElement
                     id="email"
@@ -189,6 +208,9 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     label="Email"
                     required
                     fullWidth
+                    slotProps={{
+                        htmlInput: { "data-dt-content": true },
+                    }}
                 />
                 <TextFieldElement
                     id="cardNumber"
@@ -209,6 +231,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                                 </InputAdornment>
                             ),
                         },
+                        htmlInput: { "data-dt-content": true },
                     }}
                 />
                 <SelectElement
@@ -238,6 +261,9 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     sx={{
                         minWidth: "150px",
                     }}
+                    slotProps={{
+                        htmlInput: { "data-dt-content": true },
+                    }}
                 />
                 <TextFieldElement
                     id="cvv"
@@ -245,6 +271,9 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     label="CVV"
                     required
                     fullWidth
+                    slotProps={{
+                        htmlInput: { "data-dt-content": true },
+                    }}
                 />
                 <CheckboxElement
                     id="agreement"

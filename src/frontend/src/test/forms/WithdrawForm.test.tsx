@@ -1,3 +1,4 @@
+import React from "react"
 import "@testing-library/jest-dom"
 import { screen, render, fireEvent, waitFor, act } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
@@ -8,6 +9,7 @@ import WithdrawForm from "../../components/forms/WithdrawForm"
 import { QueryClientWrapper, UserContextWrapper } from "../providers"
 import { LoaderIds } from "../../router"
 import { User, Balance } from "../../api/user/types"
+import { FormatterProvider } from "../../contexts/FormatterContext/context"
 
 function getAmountInput() {
     return screen.getByRole("spinbutton", { name: /amount/i })
@@ -54,21 +56,24 @@ describe("Withdraw Form", () => {
     let mockHandler: Mock
     let user: UserEvent
     beforeEach(async () => {
-        mockHandler = vi.fn(async () => ({}))
+        mockHandler = vi.fn(() => Promise.resolve({}))
         user = userEvent.setup()
         const router = createMemoryRouter(
             [
                 {
                     path: "/withdraw",
                     element: (
-                        <QueryClientWrapper
-                            getUser={async (userId: string) => userData}
-                            getBalance={async (userId: string) => balanceData}
-                        >
-                            <UserContextWrapper>
-                                <WithdrawForm submitHandler={mockHandler} />,
-                            </UserContextWrapper>
-                        </QueryClientWrapper>
+                        <FormatterProvider currency="USD" locale="en-US">
+                            <QueryClientWrapper
+                                getUser={() => Promise.resolve(userData)}
+                                getBalance={() => Promise.resolve(balanceData)}
+                            >
+                                <UserContextWrapper>
+                                    <WithdrawForm submitHandler={mockHandler} />
+                                    ,
+                                </UserContextWrapper>
+                            </QueryClientWrapper>
+                        </FormatterProvider>
                     ),
                     loader: () => {
                         return [userData, balanceData]

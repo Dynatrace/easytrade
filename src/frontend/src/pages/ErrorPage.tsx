@@ -1,3 +1,4 @@
+import React from "react"
 import { Box, Card, CssBaseline, Typography } from "@mui/material"
 import { useRouteError } from "react-router"
 import { getPreferredTheme } from "../contexts/ThemeContext/theme"

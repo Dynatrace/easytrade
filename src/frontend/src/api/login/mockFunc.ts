@@ -18,6 +18,7 @@ export async function loginMock(
         : { error: "Login or password invalid" }
 }
 
+// eslint-disable-next-line @typescript-eslint/require-await
 export async function logout() {
     console.log("mock [logout] API call")
 }

@@ -1,3 +1,4 @@
+import React from "react"
 import {
     Bar,
     BarChart,
@@ -23,11 +24,13 @@ function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
     const { formatCurrency } = useFormatter()
 
     if (active && payload && payload.length) {
+        /* eslint-disable */
         const name = payload[0].payload.name
         const amount = payload[0].payload.amount
         const totalValue = formatCurrency(payload[0].payload.totalValue)
+        /* eslint-enable */
         return (
-            <Box data-dt-mouse-over="300">
+            <Box>
                 <Typography variant="h6">{name}</Typography>
                 <Typography variant="body1">Amount: {amount}</Typography>
                 <Typography variant="body1">
@@ -61,6 +64,7 @@ export default function InstrumentsChart({
             display={"flex"}
             justifyContent={"center"}
             data-dt-feature={"main-chart"}
+            data-dt-mouse-over="300"
         >
             <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={instrumentsData}>

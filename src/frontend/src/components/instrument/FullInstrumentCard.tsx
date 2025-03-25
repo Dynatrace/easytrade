@@ -1,3 +1,4 @@
+import React from "react"
 import { Card, CardHeader } from "@mui/material"
 import InstrumentHeader from "./InstrumentHeader"
 import { useInstrument } from "../../contexts/InstrumentContext/context"
@@ -17,9 +18,11 @@ export default function FullInstrumentCard() {
             <CardHeader
                 title={<InstrumentHeader instrument={instrument} />}
                 subheader={instrument.code}
-                subheaderTypographyProps={{
-                    sx: {
-                        fontStyle: "italic",
+                slotProps={{
+                    subheader: {
+                        sx: {
+                            fontStyle: "italic",
+                        },
                     },
                 }}
             />

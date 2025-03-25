@@ -1,3 +1,4 @@
+import React from "react"
 import { Alert, Box, Snackbar } from "@mui/material"
 import { FeatureFlag } from "../../api/featureFlags/types"
 import { useReducer } from "react"

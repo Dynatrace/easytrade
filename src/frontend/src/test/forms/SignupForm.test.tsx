@@ -1,3 +1,4 @@
+import React from "react"
 import "@testing-library/jest-dom"
 import { screen, render, waitFor } from "@testing-library/react"
 import SignupForm from "../../components/forms/SignupForm"
@@ -35,7 +36,7 @@ describe("Signup Form", () => {
     let mockHandler: Mock
     let user: UserEvent
     beforeEach(() => {
-        mockHandler = vi.fn(async () => ({}))
+        mockHandler = vi.fn(() => Promise.resolve({}))
         user = userEvent.setup()
         render(<SignupForm submitHandler={mockHandler} />, {
             wrapper: QueryClientWrapper,

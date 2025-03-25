@@ -1,3 +1,4 @@
+import React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import {
     Button,
@@ -28,6 +29,7 @@ import { WithdrawHandler } from "../../api/creditCard/withdraw/types"
 import { Edit } from "@mui/icons-material"
 import { balanceInvalidateQuery } from "../../contexts/QueryContext/user/queries"
 import { Stack } from "@mui/system"
+import { useFormatter } from "../../contexts/FormatterContext/context"
 
 const formSchema = z.object({
     amount: z
@@ -63,10 +65,9 @@ type DepositFormProps = {
 }
 
 export default function WithdrawForm({ submitHandler }: DepositFormProps) {
-    const authUserData = useAuthUserData()
-    const user = authUserData.user,
-        balance = authUserData.balance
+    const { user, balance } = useAuthUserData()
     const { userId } = useAuthUser()
+    const { formatCurrency } = useFormatter()
 
     const formContext = useForm<FormData>({
         defaultValues,
@@ -116,6 +117,7 @@ export default function WithdrawForm({ submitHandler }: DepositFormProps) {
     const { mutate, isPending } = useMutation({
         mutationFn: async ({
             cardholderName: name,
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             agreementCheck,
             ...rest
         }: FormData) => {
@@ -129,9 +131,9 @@ export default function WithdrawForm({ submitHandler }: DepositFormProps) {
             }
         },
         onMutate: resetStatus,
-        onSuccess: () => {
+        onSuccess: async () => {
             setSuccess("Withdraw successful")
-            balanceInvalidateQuery(queryClient)
+            await balanceInvalidateQuery(queryClient)
             reset()
         },
         onError: setError,
@@ -146,14 +148,18 @@ export default function WithdrawForm({ submitHandler }: DepositFormProps) {
 
     return (
         <FormContainer
-            onSuccess={async (data: FormData) => mutate(data)}
+            onSuccess={(data: FormData) => mutate(data)}
             formContext={formContext}
         >
             <Stack direction={"column"} spacing={2}>
                 <TextField
                     name="balance"
                     label="Current balance"
-                    value={balance?.value ?? "Loading..."}
+                    value={
+                        balance?.value === undefined
+                            ? "Loading..."
+                            : formatCurrency(balance.value)
+                    }
                     disabled
                     fullWidth
                 />

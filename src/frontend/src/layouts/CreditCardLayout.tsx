@@ -1,3 +1,4 @@
+import React from "react"
 import { Navigate, Outlet, useLoaderData, useLocation } from "react-router"
 import { useAuthUser } from "../contexts/UserContext/context"
 import { OrderStatusResponse } from "../api/creditCard/order"
@@ -6,7 +7,7 @@ import { Box } from "@mui/material"
 
 export default function CreditCardLayout() {
     const { userId } = useAuthUser()
-    const orderStatus = useLoaderData() as OrderStatusResponse
+    const orderStatus: OrderStatusResponse = useLoaderData()
     const { data } = useCreditCardOrderStatus(userId, orderStatus)
 
     const { pathname } = useLocation()

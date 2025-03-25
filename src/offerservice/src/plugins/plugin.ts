@@ -5,7 +5,7 @@ import { ERGO_AGGREGATOR_SLOWDOWN_CONST, PLATFORMS } from "./const"
 import { PluginProvider } from "./open-feature/pluginProvider"
 import { logger } from "../logger"
 import { OFFERS_ENDPOINTS } from "../routes/const"
-import { OpenFeature, Client } from "@openfeature/js-sdk"
+import { OpenFeature, Client } from "@openfeature/server-sdk"
 import { sampleArray } from "../utils"
 
 const pluginList: { route: string; plugin: IPlugin }[] = [

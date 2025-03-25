@@ -1,17 +1,22 @@
+import React from "react"
 import { Stack, TextField } from "@mui/material"
 import { useAuthUserData } from "../contexts/UserContext/hooks"
+import { useFormatter } from "../contexts/FormatterContext/context"
 
 export default function AccountInfo() {
-    const authUserData = useAuthUserData()
-    const user = authUserData.user,
-        balance = authUserData.balance
+    const { user, balance } = useAuthUserData()
+    const { formatCurrency } = useFormatter()
     return (
         <Stack direction="row" spacing={2} justifyContent="center">
             <TextField
                 id="currentBalance"
                 name="balance"
                 label="Current balance"
-                value={balance?.value ?? "Loading..."}
+                value={
+                    balance?.value === undefined
+                        ? "Loading..."
+                        : formatCurrency(balance.value)
+                }
                 disabled
                 slotProps={{
                     htmlInput: { "data-dt-content": true },

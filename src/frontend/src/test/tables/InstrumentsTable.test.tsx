@@ -1,3 +1,4 @@
+import React from "react"
 import "@testing-library/jest-dom"
 import { screen, render } from "@testing-library/react"
 import { FormatterWrapper } from "../providers"
@@ -88,7 +89,7 @@ const mockInstruments: Instrument[] = [
 ]
 
 describe("Instruments table", () => {
-    test("displays full transaction data", async () => {
+    test("displays full transaction data", () => {
         render(
             <FormatterWrapper>
                 <InstrumentsTable
@@ -114,7 +115,7 @@ describe("Instruments table", () => {
             screen.getByRole("gridcell", { name: /68,039.24/i })
         ).toBeInTheDocument()
     })
-    test("displays all rows", async () => {
+    test("displays all rows", () => {
         render(
             <FormatterWrapper>
                 <InstrumentsTable

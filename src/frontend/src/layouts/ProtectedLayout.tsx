@@ -1,3 +1,4 @@
+import React from "react"
 import { Box, useMediaQuery, useTheme } from "@mui/material"
 import { Navigate, Outlet } from "react-router"
 import Navigation from "../components/Navigation"

@@ -1,3 +1,4 @@
+import React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { FormContainer } from "react-hook-form-mui"
@@ -8,7 +9,6 @@ import { useEffect } from "react"
 import { useInstrument } from "../../../contexts/InstrumentContext/context"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { quickTransactionInvalidateQuery } from "../../../contexts/QueryContext/user/queries"
-import { useAuthUser } from "../../../contexts/UserContext/context"
 import useStatusDisplay from "../../../hooks/useStatusDisplay"
 import StatusDisplay from "../../StatusDisplay"
 import { useAuthUserData } from "../../../contexts/UserContext/hooks"
@@ -34,9 +34,7 @@ const formSchema = z
 export type FormData = z.infer<typeof formSchema>
 
 export default function QuickBuyForm() {
-    const authUserData = useAuthUserData()
-    const user = authUserData.user,
-        balance = authUserData.balance
+    const { balance } = useAuthUserData()
     const { instrument, quickBuyHandler } = useInstrument()
     const formContext = useForm<FormData>({
         values: {
@@ -65,7 +63,6 @@ export default function QuickBuyForm() {
         return unsubscribe
     }, [watch("amount")])
 
-    const { userId } = useAuthUser()
     const queryClient = useQueryClient()
     const { mutate, isPending } = useMutation({
         mutationFn: async (amount: number): Promise<void> => {
@@ -78,8 +75,7 @@ export default function QuickBuyForm() {
         onSuccess: async () => {
             setSuccess("Transaction successful")
             reset()
-            await quickTransactionInvalidateQuery(queryClient, userId)
-            // setValue("currentBalance", user?.availableBalance ?? 0)
+            await quickTransactionInvalidateQuery(queryClient)
         },
         onError: setError,
     })

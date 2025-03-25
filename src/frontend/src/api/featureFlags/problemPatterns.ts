@@ -52,7 +52,7 @@ export async function handleFlagToggle(
     }
 }
 
-async function mockHandleFlagToggle(flagId: string, enabled: boolean) {
+export async function mockHandleFlagToggle(flagId: string, enabled: boolean) {
     console.log("mock [handleFeatureFlagChange] API call with params", {
         flagId,
         enabled,
@@ -69,7 +69,7 @@ async function mockHandleFlagToggle(flagId: string, enabled: boolean) {
     return {}
 }
 
-async function mockGetFeatureFlags(): Promise<FlagResponseContainer> {
+export async function mockGetFeatureFlags(): Promise<FlagResponseContainer> {
     console.log("mock [getFeatureFlags] API call")
     await delay(2000)
     return FEATURE_FLAGS

@@ -1,3 +1,4 @@
+import React from "react"
 import { Button, CardActions, Stack } from "@mui/material"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -50,6 +51,7 @@ export default function SignupForm({ submitHandler }: SignupFormProps) {
         useStatusDisplay()
 
     const { mutate, isPending } = useMutation({
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         mutationFn: async ({ repeatPassword, ...data }: FormData) => {
             const { error } = await submitHandler(data)
             if (error !== undefined) {
@@ -65,7 +67,7 @@ export default function SignupForm({ submitHandler }: SignupFormProps) {
     })
 
     useEffect(() => {
-        const { unsubscribe } = watch((data, { type }) => {
+        const { unsubscribe } = watch((_data, { type }) => {
             if (type === "change") {
                 resetStatus()
             }
@@ -75,7 +77,7 @@ export default function SignupForm({ submitHandler }: SignupFormProps) {
 
     return (
         <FormContainer
-            onSuccess={async (data: FormData) => mutate(data)}
+            onSuccess={(data: FormData) => mutate(data)}
             formContext={formContext}
         >
             <Stack direction={"column"} spacing={2}>

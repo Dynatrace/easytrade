@@ -62,16 +62,15 @@ export type CardStatusHistory = {
     statusList: CardStatusResult[]
 }
 
-export type CreditCardResponse<
-    T extends CardStatusResult | CardStatusHistory | never,
-> = {
-    statusCode: number
-    message: string
-    results?: T
-}
+export type CreditCardResponse<T extends CardStatusResult | CardStatusHistory> =
+    {
+        statusCode: number
+        message: string
+        results?: T
+    }
 
 export type CreditCardResponseXml<
-    T extends CardStatusResult | CardStatusHistory | never,
+    T extends CardStatusResult | CardStatusHistory,
 > = {
     StandardResponse: CreditCardResponse<T>
 }

@@ -1,6 +1,6 @@
+import React from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import Grid from "@mui/material/Grid2"
 import {
     CheckboxElement,
     FormContainer,
@@ -36,9 +36,7 @@ type FormData = z.infer<typeof formSchema>
 
 export default function CreditCardForm() {
     const { userId } = useAuthUser()
-    const authUserData = useAuthUserData()
-    const user = authUserData.user,
-        balance = authUserData.balance
+    const { user } = useAuthUserData()
     const formContext = useForm<FormData>({
         defaultValues: {
             name: "",

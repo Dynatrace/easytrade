@@ -1,3 +1,4 @@
+import React from "react"
 import { Container, Stack } from "@mui/material"
 import AccountInfo from "../../components/AccountInfo"
 import InstrumentsTable from "../../components/InstrumentsTable"
@@ -14,7 +15,7 @@ import TransactionsCharts from "../../components/charts/TransactionsCharts"
 
 export default function Home() {
     const { userId } = useAuthUser()
-    const transactionData = useLoaderData() as Transaction[]
+    const transactionData: Transaction[] = useLoaderData()
     const transactionsData = useTransactionQuery(userId, transactionData)
     const instrumentData = useRouteLoaderData(
         LoaderIds.instruments

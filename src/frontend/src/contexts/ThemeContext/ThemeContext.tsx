@@ -1,3 +1,4 @@
+import React from "react"
 import { createContext, PropsWithChildren, useContext, useState } from "react"
 import { ThemeProvider as MuiThemeProvider } from "@mui/material"
 import { getPreferredTheme, themes } from "./theme"
@@ -5,6 +6,7 @@ import { IThemeContext, ThemeProviderProps } from "./types"
 
 const ThemeContext = createContext<IThemeContext>({
     theme: themes.dark,
+    themeMode: "dark",
     isDarkTheme: true,
     toggleTheme: () => {},
 })
@@ -26,7 +28,9 @@ function ThemeProvider({
     }
 
     return (
-        <ThemeContext.Provider value={{ theme, isDarkTheme, toggleTheme }}>
+        <ThemeContext.Provider
+            value={{ theme, themeMode, isDarkTheme, toggleTheme }}
+        >
             <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>
         </ThemeContext.Provider>
     )

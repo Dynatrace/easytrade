@@ -1,3 +1,4 @@
+import React from "react"
 import {
     Timeline,
     TimelineConnector,
@@ -60,7 +61,11 @@ export default function CreditCardsStatusTimeline({
         <Stack spacing={1}>
             <Typography id="order-id">
                 Order ID:{" "}
-                <Typography component={"span"} sx={{ fontFamily: "monospace" }}>
+                <Typography
+                    component={"span"}
+                    sx={{ fontFamily: "monospace" }}
+                    data-dt-mask
+                >
                     {data.orderId}
                 </Typography>
             </Typography>
