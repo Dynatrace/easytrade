@@ -63,7 +63,7 @@ export default function InstrumentsChart({
             width="100%"
             display={"flex"}
             justifyContent={"center"}
-            data-dt-feature={"main-chart"}
+            data-dt-features={"main-chart"}
             data-dt-mouse-over="300"
         >
             <ResponsiveContainer width="100%" height="100%">

@@ -23,7 +23,7 @@ export default function InstrumentsGrid({
     instruments: Instrument[]
 }) {
     return (
-        <Grid container spacing={2} data-dt-feature="instruments">
+        <Grid container spacing={2} data-dt-features="instruments">
             {instruments.map((instrument) => (
                 <Item key={instrument.id} {...instrument} />
             ))}

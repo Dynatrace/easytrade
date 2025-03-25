@@ -58,7 +58,7 @@ function CustomToolbar() {
                 sx={{
                     width: "100%",
                 }}
-                data-dt-feature="main-table,table-toolbar"
+                data-dt-features="main-table,table-toolbar"
             >
                 <GridToolbarColumnsButton />
                 <GridToolbarFilterButton />
@@ -86,7 +86,7 @@ export default function InstrumentsTable({
             slots={{ toolbar: CustomToolbar }}
             hideFooter={true}
             disableVirtualization={disableVirtualization}
-            data-dt-feature="main-table"
+            data-dt-features="main-table"
         />
     )
 }
