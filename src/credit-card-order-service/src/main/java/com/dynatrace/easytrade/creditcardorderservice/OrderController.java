@@ -109,12 +109,12 @@ public class OrderController {
     public ResponseEntity<StandardResponse> getLatestStatus(@PathVariable Integer accountId) {
         logger.info("Getting latest status for accountId: " + accountId);
 
-        final Client client = openFeatureAPI.getClient();
-        if (client.getBooleanValue("credit_card_meltdown", false)) {
-            CountSequenceTotal(5, 2, 14);
-        }
-
         try (Connection conn = dbHelper.getConnection()) {
+            final Client client = openFeatureAPI.getClient();
+            if (client.getBooleanValue("credit_card_meltdown", false)) {
+                CountSequenceTotal(5, 2, 14);
+            }
+
             Optional<CreditCardOrderStatus> status = dbHelper.getLastOrderStatusForAccountId(conn, accountId);
             return status
                     .map(s -> buildResponseEntity(HttpStatus.OK, "Status found successfully.", status))
@@ -122,6 +122,9 @@ public class OrderController {
                             "Status for the given account id does not exist!"));
         } catch (SQLException e) {
             return handleSQLException(e);
+        } catch (Exception e) {
+            logger.error("Excepiton occured", e);
+            throw e;
         }
     }
 
