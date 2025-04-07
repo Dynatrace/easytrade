@@ -20,4 +20,4 @@ WORKDIR /home/easytrade
 
 COPY --from=build --chown=easytrade:easytrade ["/app/build/libs/*.jar", "app.jar"]
 
-CMD ["java", "-XX:-OmitStackTraceInFastThrow", "-jar", "app.jar"]
+CMD ["java", "-jar", "app.jar"]
