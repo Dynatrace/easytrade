@@ -33,6 +33,8 @@ spec:
                 configMapKeyRef:
                   name: connection-strings
                   key: JAVA_CONNECTION_STRING
+            - name: JAVA_TOOL_OPTIONS
+              value: "-XX:-OmitStackTraceInFastThrow"     
           resources:
             requests:
               cpu: 20m

@@ -182,6 +182,7 @@ services:
       <<: *feature-flag-service-env
       WORK_DELAY: 300
       WORK_RATE: 900
+      JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
 
   third-party-service:
     <<: *default-service
