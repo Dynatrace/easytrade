@@ -34,7 +34,7 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.52.1",
     "react-hook-form-mui": "^7.0.1",
-    "react-router": "^7.1.5",
+    "react-router": "^7.5.2",
     "recharts": "^2.12.7",
     "usehooks-ts": "^3.1.0",
     "validator": "^13.12.0",
