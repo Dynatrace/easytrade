@@ -123,7 +123,7 @@ public class OrderController {
         } catch (SQLException e) {
             return handleSQLException(e);
         } catch (Exception e) {
-            logger.error("Excepiton occured", e);
+            logger.error("Exception occured", e);
             throw e;
         }
     }
