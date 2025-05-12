@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: third-party-service
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/third-party-service:4d5adb3
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/third-party-service:98288cf
           ports:
             - containerPort: 8080
           env:
