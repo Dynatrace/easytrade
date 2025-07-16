@@ -1,7 +1,8 @@
 plugins {
-	id 'org.springframework.boot' version '3.4.5'
-	id 'io.spring.dependency-management' version '1.1.6'
 	id 'java'
+	id 'org.springframework.boot' version '3.5.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.github.ben-manes.versions' version '0.52.0'
 }
 
 group = 'com.dynatrace.easytrade'
@@ -18,22 +19,38 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.3'
-	implementation 'io.swagger.core.v3:swagger-annotations:2.2.27'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
+	implementation 'io.swagger.core.v3:swagger-annotations:2.2.34'
 
-	implementation 'ch.qos.logback:logback-core:1.5.16'
-	implementation 'ch.qos.logback:logback-classic:1.5.16'
-	implementation 'org.slf4j:slf4j-api'
+	implementation 'ch.qos.logback:logback-core:1.5.18'
+	implementation 'ch.qos.logback:logback-classic:1.5.18'
+	implementation 'org.slf4j:slf4j-api:2.0.17'
 
-	implementation 'com.google.code.gson:gson:2.11.0'
+	implementation 'com.google.code.gson:gson:2.13.1'
 
 	//lombok
-    compileOnly 'org.projectlombok:lombok:1.18.36'
-    annotationProcessor 'org.projectlombok:lombok:1.18.36'
-    testCompileOnly 'org.projectlombok:lombok:1.18.36'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
+    compileOnly 'org.projectlombok:lombok:1.18.38'
+    annotationProcessor 'org.projectlombok:lombok:1.18.38'
+    testCompileOnly 'org.projectlombok:lombok:1.18.38'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
+
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation 'org.apache.commons:commons-lang3:3.18.0'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+def isNonStable = { String version ->
+  def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+  def regex = /^[0-9,.v-]+(-r)?$/
+  return !stableKeyword && !(version ==~ regex)
+}
+
+// https://github.com/ben-manes/gradle-versions-plugin
+tasks.named("dependencyUpdates").configure {
+  rejectVersionIf {
+    isNonStable(it.candidate.version)
+  }
 }
