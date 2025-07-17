@@ -33,8 +33,14 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok:1.18.38'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
 
-	// https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-    implementation 'org.apache.commons:commons-lang3:3.18.0'
+	// -- not direct dependencies but need bumps to patch vulns
+    // -- can be removed once the parent packages upgrade
+
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+      implementation 'org.apache.commons:commons-lang3:3.18.0'
+
+    // https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.43'
 }
 
 tasks.named('test') {
