@@ -2,49 +2,54 @@
 version: v1.25.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
-  'snyk:lic:maven:ch.qos.logback:logback-classic:(EPL-1.0_OR_LGPL-2.1)':
-    - '*':
+  "snyk:lic:maven:ch.qos.logback:logback-classic:(EPL-1.0_OR_LGPL-2.1)":
+    - "*":
         reason: licence issue reviewed
         expires: 2030-01-01T00:00:00.000Z
         created: 2024-07-19T12:37:46.149Z
-  'snyk:lic:maven:ch.qos.logback:logback-core:(EPL-1.0_OR_LGPL-2.1)':
-    - '*':
+  "snyk:lic:maven:ch.qos.logback:logback-core:(EPL-1.0_OR_LGPL-2.1)":
+    - "*":
         reason: licence issue reviewed
         expires: 2030-01-01T00:00:00.000Z
         created: 2024-07-19T12:38:27.621Z
-  'snyk:lic:maven:jakarta.annotation:jakarta.annotation-api:(EPL-2.0_OR_GPL-2.0-with-classpath-exception)':
-    - '*':
+  "snyk:lic:maven:jakarta.annotation:jakarta.annotation-api:(EPL-2.0_OR_GPL-2.0-with-classpath-exception)":
+    - "*":
         reason: licence issue reviewed
         expires: 2030-01-01T00:00:00.000Z
         created: 2024-07-19T12:38:49.224Z
-  'snyk:lic:maven:org.junit.jupiter:junit-jupiter-api:EPL-2.0':
-    - '*':
+  "snyk:lic:maven:org.junit.jupiter:junit-jupiter-api:EPL-2.0":
+    - "*":
         reason: licence issue reviewed
         expires: 2030-01-01T00:00:00.000Z
         created: 2024-07-19T12:38:58.548Z
-  'snyk:lic:maven:org.junit.jupiter:junit-jupiter-engine:EPL-2.0':
-    - '*':
+  "snyk:lic:maven:org.junit.jupiter:junit-jupiter-engine:EPL-2.0":
+    - "*":
         reason: licence issue reviewed
         expires: 2030-01-01T00:00:00.000Z
         created: 2024-07-19T12:39:07.495Z
-  'snyk:lic:maven:org.junit.jupiter:junit-jupiter-params:EPL-2.0':
-    - '*':
+  "snyk:lic:maven:org.junit.jupiter:junit-jupiter-params:EPL-2.0":
+    - "*":
         reason: licence issue reviewed
         expires: 2030-01-01T00:00:00.000Z
         created: 2024-07-19T12:39:15.536Z
-  'snyk:lic:maven:org.junit.platform:junit-platform-commons:EPL-2.0':
-    - '*':
+  "snyk:lic:maven:org.junit.platform:junit-platform-commons:EPL-2.0":
+    - "*":
         reason: licence issue reviewed
         expires: 2030-01-01T00:00:00.000Z
         created: 2024-07-19T12:39:31.589Z
-  'snyk:lic:maven:org.junit.platform:junit-platform-engine:EPL-2.0':
-    - '*':
+  "snyk:lic:maven:org.junit.platform:junit-platform-engine:EPL-2.0":
+    - "*":
         reason: licence issue reviewed
         expires: 2030-01-01T00:00:00.000Z
         created: 2024-07-19T12:39:45.979Z
-  'snyk:lic:maven:org.junit:junit-bom:EPL-2.0':
-    - '*':
+  "snyk:lic:maven:org.junit:junit-bom:EPL-2.0":
+    - "*":
         reason: licence issue reviewed
         expires: 2030-01-01T00:00:00.000Z
         created: 2024-07-19T12:40:04.936Z
+  "snyk:lic:maven:org.junit.platform:junit-platform-launcher:EPL-2.0":
+    - "*":
+        reason: license issue reviewed
+        expires: 2030-01-01T00:00:00.000Z
+        created: 2025-07-17T16:42:00.069Z
 patch: {}
