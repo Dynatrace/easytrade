@@ -1,5 +1,5 @@
 ﻿# https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
-FROM mcr.microsoft.com/dotnet/sdk:8.0.404-alpine3.20@sha256:4f1ce95847c5b28f957eba8333ed4a0df87c2899c51937e2c11db22be5b46bce AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.412-alpine3.22@sha256:ad6ab1a677854e5b681bc69f4fdb4ad9913e3798c4f89927254b6a53215d5b7d AS build
 
 WORKDIR /BrokerService
 COPY ["BrokerService/", "./"]
@@ -8,7 +8,7 @@ RUN dotnet test test/BrokerService.test.csproj \
     && dotnet publish src/BrokerService.csproj -o /publish
 
 # https://mcr.microsoft.com/v2/dotnet/aspnet/tags/list
-FROM mcr.microsoft.com/dotnet/aspnet:8.0.11-alpine3.20@sha256:a0062262fd674573be2314890006acadfd233fd7fdf89b3a5f44694b7632b29e AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0.18-alpine3.22@sha256:a6695199ce879ae4bcfc92f3dfd55b7db5e46e3bdc128a690c6594444f0e300a AS runtime
 
 # fix a problem with inotify instance limit
 # https://stackoverflow.com/a/67111195
