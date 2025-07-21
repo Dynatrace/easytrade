@@ -9,7 +9,7 @@ import {
     Typography,
 } from "@mui/material"
 import FeatureFlagList from "../components/featureFlags/FeatureFlagList"
-import Grid from "@mui/material/Grid2"
+import Grid from "@mui/material/Grid"
 import {
     useConfigFlagsQuery,
     useProblemFlagsQuery,

@@ -15,7 +15,7 @@ const formSchema = z
         firstName: z.string().min(1, "First name is required"),
         lastName: z.string().min(1, "Last name is required"),
         login: z.string().min(1, "Login is required"),
-        email: z.string().min(1, "Email is required").email("Invalid email"),
+        email: z.email("Invalid email"),
         address: z.string().min(1, "Address is required"),
         password: z.string().min(1, "Password is required"),
         repeatPassword: z.string().min(1, "Password is required"),

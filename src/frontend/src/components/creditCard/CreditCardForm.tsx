@@ -22,10 +22,7 @@ import { newCardOrderInvalidateQuery } from "../../contexts/QueryContext/creditC
 const formSchema = z.object({
     name: z.string().min(1, "Cardholder name is required."),
     address: z.string().min(1, "Cardholder address is required."),
-    email: z
-        .string()
-        .min(1, "Email is required.")
-        .email("Provide a valid email"),
+    email: z.email("Provide a valid email."),
     type: z.string().min(1, "Card type is required."),
     agreementCheck: z
         .boolean()

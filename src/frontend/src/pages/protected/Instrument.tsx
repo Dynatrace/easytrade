@@ -1,5 +1,5 @@
 import React from "react"
-import Grid from "@mui/material/Grid2"
+import Grid from "@mui/material/Grid"
 import { Navigate, useParams, useRouteLoaderData } from "react-router"
 import FullInstrumentCard from "../../components/instrument/FullInstrumentCard"
 import InstrumentTransactions from "../../components/instrument/InstrumentTransactions"
