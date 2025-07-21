@@ -1,9 +1,10 @@
 plugins {
     id 'java'
+    id 'com.github.ben-manes.versions' version '0.52.0'
 }
 
-group 'com.dynatrace.easytrade.contentcreator'
-version '1.0.0-easytrade'
+group = 'com.dynatrace.easytrade.contentcreator'
+version = '1.0.0-easytrade'
 java {
   sourceCompatibility = JavaVersion.VERSION_21
 }
@@ -13,16 +14,19 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.11.4'
-    testImplementation "org.mockito:mockito-core:5.15.2"
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.13.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.13.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-params:5.13.3'
+    testImplementation 'org.mockito:mockito-core:5.18.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.18.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.13.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.13.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-engine:1.13.3'
 
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    // https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc
+    implementation 'com.microsoft.sqlserver:mssql-jdbc:12.10.1.jre11'
 
-    implementation 'com.microsoft.sqlserver:mssql-jdbc:12.8.1.jre11'
-
-    implementation 'ch.qos.logback:logback-core:1.5.16'
-    implementation 'ch.qos.logback:logback-classic:1.5.16'
-    implementation 'org.slf4j:slf4j-api:2.0.16'
+    implementation 'org.slf4j:slf4j-api:2.0.17'
 }
 
 test {
@@ -48,4 +52,17 @@ task fatJar(type: Jar) {
     exclude "META-INF/*.RSA"
   }
   with jar
+}
+
+def isNonStable = { String version ->
+  def stableKeyword = ['RELEASE', 'FINAL', 'GA'].any { it -> version.toUpperCase().contains(it) }
+  def regex = /^[0-9,.v-]+(-r)?$/
+  return !stableKeyword && !(version ==~ regex)
+}
+
+// https://github.com/ben-manes/gradle-versions-plugin
+tasks.named("dependencyUpdates").configure {
+  rejectVersionIf {
+    isNonStable(it.candidate.version)
+  }
 }

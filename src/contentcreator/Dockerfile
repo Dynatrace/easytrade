@@ -1,20 +1,19 @@
-FROM eclipse-temurin:21.0.5_11-jdk-noble@sha256:397ce4722066bed7fa96f171e0c3c252bf509347da854ec4e9ca5664a00038c1 AS build
+FROM eclipse-temurin:21.0.7_6-jdk-alpine-3.21@sha256:8e26f8064f2b89bc8543faf43ded3f223f47dd0a7afca042fdc892f1f6a4a8c3 AS build
 
 WORKDIR /app
 # make gradlew download gradle files before copying source files to use caching
 COPY ["gradle", "gradle"]
 COPY ["build.gradle", "settings.gradle", "gradlew", "./"]
-RUN ./gradlew --version
+RUN ./gradlew dependencies
 
 COPY ["src", "./src"]
 
-RUN ./gradlew test --info
-RUN ./gradlew fatJar
+RUN ./gradlew test fatJar
 
-FROM eclipse-temurin:21.0.5_11-jre-ubi9-minimal@sha256:befbafaac4c0235c68f820516ec6ec613745237139fa0283f219e3ef60d22c45
+FROM eclipse-temurin:21.0.7_6-jre-alpine-3.21@sha256:7b5c88eb4182a92aab3a4b10550061a6e18639bf176e7ebca21f866b19f853c1
 
-RUN groupadd --system --gid 3369 spring \
-    && useradd --system --gid spring --create-home --uid 3369 spring
+RUN addgroup --system --gid 3369 spring \
+    && adduser --system --ingroup spring --uid 3369 spring
 USER spring:spring
 WORKDIR /home/spring
 
