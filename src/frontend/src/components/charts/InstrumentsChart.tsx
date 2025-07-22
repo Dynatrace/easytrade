@@ -7,7 +7,7 @@ import {
     Legend,
     ResponsiveContainer,
     Tooltip,
-    TooltipProps,
+    TooltipContentProps,
     XAxis,
     YAxis,
 } from "recharts"
@@ -20,7 +20,10 @@ type InstrumentsChartProps = {
     instruments: Instrument[]
 }
 
-function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
+function CustomTooltip({
+    active,
+    payload,
+}: TooltipContentProps<number, string>) {
     const { formatCurrency } = useFormatter()
 
     if (active && payload && payload.length) {
@@ -97,7 +100,7 @@ export default function InstrumentsChart({
                     </YAxis>
                     <CartesianGrid strokeDasharray="3 3" />
                     <Tooltip
-                        content={<CustomTooltip />}
+                        content={CustomTooltip}
                         wrapperStyle={{
                             backgroundColor: theme.palette.background.default,
                             color: theme.palette.text.primary,

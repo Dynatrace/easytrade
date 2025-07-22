@@ -1,5 +1,5 @@
 import React from "react"
-import Grid from "@mui/material/Grid2"
+import Grid from "@mui/material/Grid"
 import VersionsTable from "../components/version/VersionsTable"
 import { useVersionsQuery } from "../contexts/QueryContext/version/hooks"
 import { Box, CircularProgress } from "@mui/material"

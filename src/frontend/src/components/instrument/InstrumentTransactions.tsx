@@ -1,7 +1,7 @@
 import React from "react"
 import { TabContext, TabList, TabPanel } from "@mui/lab"
 import { Box, Card, Tab } from "@mui/material"
-import Grid from "@mui/material/Grid2"
+import Grid from "@mui/material/Grid"
 import { ReactElement, useState } from "react"
 import QuickBuyForm from "./forms/QuickBuyForm"
 import QuickSellForm from "./forms/QuickSellForm"
