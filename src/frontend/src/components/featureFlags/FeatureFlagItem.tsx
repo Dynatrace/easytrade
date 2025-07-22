@@ -13,7 +13,7 @@ import {
     Button,
 } from "@mui/material"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
-import Grid from "@mui/material/Grid2"
+import Grid from "@mui/material/Grid"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { featureFlagKeys } from "../../contexts/QueryContext/featureFlag/queries"
 import { handleFlagToggle } from "../../api/featureFlags/problemPatterns"

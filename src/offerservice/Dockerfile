@@ -1,4 +1,4 @@
-FROM node:22.11.0-alpine3.20@sha256:b64ced2e7cd0a4816699fe308ce6e8a08ccba463c757c00c14cd372e3d2c763e AS build
+FROM node:22.17.1-alpine3.21@sha256:f00440c423ce5657e4d2347fa3b9bf5887389f6fcf3daa25cc79ea11a6a00f80 AS build
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ COPY ["./src", "./src"]
 RUN npm ci \
     && npm run build
 
-FROM node:22.11.0-alpine3.20@sha256:b64ced2e7cd0a4816699fe308ce6e8a08ccba463c757c00c14cd372e3d2c763e AS dev
+FROM node:22.17.1-alpine3.21@sha256:f00440c423ce5657e4d2347fa3b9bf5887389f6fcf3daa25cc79ea11a6a00f80 AS dev
 
 RUN apk upgrade --no-cache \
     && addgroup --system --gid 3369 easytrade \

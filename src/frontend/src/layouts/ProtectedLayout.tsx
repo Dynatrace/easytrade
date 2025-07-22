@@ -4,7 +4,7 @@ import { Navigate, Outlet } from "react-router"
 import Navigation from "../components/Navigation"
 import { useAuth } from "../contexts/AuthContext/context"
 import { UserContextProvider } from "../contexts/UserContext/context"
-import Grid from "@mui/material/Grid2"
+import Grid from "@mui/material/Grid"
 import { useNavigation } from "../contexts/NavigationContext/context"
 import { useEffect } from "react"
 
