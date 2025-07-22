@@ -43,7 +43,7 @@ build:
   tagPolicy:
     gitCommit: { ignoreChanges: true }
   local:
-    concurrency: 2
+    concurrency: 4
     push: false
     tryImportMissing: true
     useBuildkit: true
