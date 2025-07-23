@@ -96,6 +96,7 @@ services:
     build:
       context: src/frontend
       dockerfile: Dockerfile.dev
+      # dockerfile: Dockerfile
     # depends_on:
     #   - broker-service
     #   - loginservice

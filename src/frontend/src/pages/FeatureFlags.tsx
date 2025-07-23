@@ -9,7 +9,7 @@ import {
     Typography,
 } from "@mui/material"
 import FeatureFlagList from "../components/featureFlags/FeatureFlagList"
-import Grid from "@mui/material/Grid"
+import Grid2 from "@mui/material/Grid2"
 import {
     useConfigFlagsQuery,
     useProblemFlagsQuery,
@@ -34,8 +34,8 @@ export default function FeatureFlags() {
 
     return (
         <>
-            <Grid container>
-                <Grid size={{ sm: 10 }} offset={{ sm: 1 }}>
+            <Grid2 container>
+                <Grid2 size={{ sm: 10 }} offset={{ sm: 1 }}>
                     <Stack direction="column" spacing={2}>
                         <Card sx={{ padding: 2 }}>
                             <Typography>
@@ -70,8 +70,8 @@ export default function FeatureFlags() {
                         </Stack>
                         <FeatureFlagList featureFlags={flags ?? []} />
                     </Stack>
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
             <Backdrop
                 open={isPending}
                 sx={{

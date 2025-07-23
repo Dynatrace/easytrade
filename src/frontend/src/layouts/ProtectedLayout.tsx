@@ -4,7 +4,7 @@ import { Navigate, Outlet } from "react-router"
 import Navigation from "../components/Navigation"
 import { useAuth } from "../contexts/AuthContext/context"
 import { UserContextProvider } from "../contexts/UserContext/context"
-import Grid from "@mui/material/Grid"
+import Grid2 from "@mui/material/Grid2"
 import { useNavigation } from "../contexts/NavigationContext/context"
 import { useEffect } from "react"
 
@@ -28,12 +28,12 @@ export default function ProtectedLayout() {
         <UserContextProvider userId={userId} logoutHandler={logoutHandler}>
             <Box sx={{ display: "static" }}>
                 <Navigation />
-                <Grid
+                <Grid2
                     container
                     sx={{ ml: navigationVisible ? "210px" : "0px" }}
                 >
                     <Outlet />
-                </Grid>
+                </Grid2>
             </Box>
         </UserContextProvider>
     )

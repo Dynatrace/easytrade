@@ -1,5 +1,5 @@
 import React from "react"
-import Grid from "@mui/material/Grid"
+import Grid2 from "@mui/material/Grid2"
 import { Navigate, useParams, useRouteLoaderData } from "react-router"
 import FullInstrumentCard from "../../components/instrument/FullInstrumentCard"
 import InstrumentTransactions from "../../components/instrument/InstrumentTransactions"
@@ -35,14 +35,14 @@ export default function Instrument() {
             sellHandler={sell}
             buyHandler={buy}
         >
-            <Grid container rowSpacing={3}>
-                <Grid size={{ xs: 12, md: 10 }} offset={{ md: 1 }}>
+            <Grid2 container rowSpacing={3}>
+                <Grid2 size={{ xs: 12, md: 10 }} offset={{ md: 1 }}>
                     <FullInstrumentCard />
-                </Grid>
-                <Grid size={{ xs: 12, md: 10 }} offset={{ md: 1 }}>
+                </Grid2>
+                <Grid2 size={{ xs: 12, md: 10 }} offset={{ md: 1 }}>
                     <InstrumentTransactions />
-                </Grid>
-            </Grid>
+                </Grid2>
+            </Grid2>
         </InstrumentProvider>
     )
 }

@@ -1,5 +1,5 @@
 import React from "react"
-import Grid from "@mui/material/Grid"
+import Grid2 from "@mui/material/Grid2"
 import InstrumentsGrid from "../../components/instrument/InstrumentsGrid"
 import { useAuthUser } from "../../contexts/UserContext/context"
 import { useRouteLoaderData } from "react-router"
@@ -17,10 +17,10 @@ export default function InstrumentsPage() {
         .data as Instrument[]
 
     return (
-        <Grid container sx={{ margin: 1 }}>
-            <Grid size={{ xs: 12, md: 10, xl: 8 }} offset={{ md: 1, xl: 2 }}>
+        <Grid2 container sx={{ margin: 1 }}>
+            <Grid2 size={{ xs: 12, md: 10, xl: 8 }} offset={{ md: 1, xl: 2 }}>
                 <InstrumentsGrid instruments={instruments} />
-            </Grid>
-        </Grid>
+            </Grid2>
+        </Grid2>
     )
 }
