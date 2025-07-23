@@ -13,7 +13,7 @@ import {
     Button,
 } from "@mui/material"
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
-import Grid from "@mui/material/Grid"
+import Grid2 from "@mui/material/Grid2"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { featureFlagKeys } from "../../contexts/QueryContext/featureFlag/queries"
 import { handleFlagToggle } from "../../api/featureFlags/problemPatterns"
@@ -123,8 +123,8 @@ export default function FeatureFlagItem({
                 </Stack>
             </AccordionSummary>
             <AccordionDetails>
-                <Grid container spacing={2}>
-                    <Grid size={{ xs: 10 }}>
+                <Grid2 container spacing={2}>
+                    <Grid2 size={{ xs: 10 }}>
                         <Typography>
                             <Typography
                                 color="primary"
@@ -184,8 +184,8 @@ export default function FeatureFlagItem({
                                 </Box>
                             </Stack>
                         </Paper>
-                    </Grid>
-                    <Grid
+                    </Grid2>
+                    <Grid2
                         size={{ xs: 2 }}
                         justifyContent={"right"}
                         display={"flex"}
@@ -209,8 +209,8 @@ export default function FeatureFlagItem({
                                 </Button>
                             </span>
                         </Tooltip>
-                    </Grid>
-                </Grid>
+                    </Grid2>
+                </Grid2>
             </AccordionDetails>
         </Accordion>
     )

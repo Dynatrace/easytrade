@@ -1,5 +1,5 @@
 import React from "react"
-import Grid from "@mui/material/Grid"
+import Grid2 from "@mui/material/Grid2"
 import VersionsTable from "../components/version/VersionsTable"
 import { useVersionsQuery } from "../contexts/QueryContext/version/hooks"
 import { Box, CircularProgress } from "@mui/material"
@@ -20,15 +20,15 @@ export default function Version() {
         )
     }
     return (
-        <Grid container>
-            <Grid
+        <Grid2 container>
+            <Grid2
                 size={{ xs: 12, md: 10, lg: 8 }}
                 offset={{ xs: 0, md: 1, lg: 2 }}
             >
                 <VersionsTable
                     versions={[getFrontendVersion(), ...(versions ?? [])]}
                 />
-            </Grid>
-        </Grid>
+            </Grid2>
+        </Grid2>
     )
 }
