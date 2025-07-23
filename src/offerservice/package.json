@@ -15,7 +15,7 @@
   "license": "ISC",
   "dependencies": {
     "@openfeature/server-sdk": "^1.17.0",
-    "axios": "^1.8.4",
+    "axios": "^1.11.0",
     "body-parser": "^2.2.0",
     "express": "^5.1.0",
     "fast-xml-parser": "^5.0.9",
