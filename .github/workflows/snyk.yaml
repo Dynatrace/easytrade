@@ -46,19 +46,18 @@ jobs:
 
       # - name: Restore .NET projects
       #   run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
-      - name: Go to service dir
-        run: cd src/offerservice
-
       - name: Run Snyk for node
         uses: snyk/actions/node@master
         continue-on-error: true
+        working-directory: src/offerservice
         with:
           args: >-
             --sarif-file-output=snyk.sarif
             --all-projects
-            
+
       - name: Upload sarif for node
         uses: github/codeql-action/upload-sarif@v3
+        working-directory: src/offerservice
         with:
           sarif_file: snyk.sarif
 
