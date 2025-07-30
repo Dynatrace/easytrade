@@ -19,9 +19,51 @@ jobs:
     strategy:
       matrix:
         this:
+          - service: accountservice
+            technology: java
+            version: 21
+          - service: aggregator-service
+            technology: go
+            version: 1.24
+          - service: broker-service
+            technology: dotnet
+            version: 8
+          - service: contentcreator
+            technology: java
+            version: 21
+          - service: credit-card-order-service
+            technology: java
+            version: 21
+          - service: engine
+            technology: java
+            version: 21
+          - service: feature-flag-service
+            technology: java
+            version: 21
+          - service: frontend
+            technology: node
+            version: 22
+          - service: loadgen
+            technology: node
+            version: 22
+          - service: loginservice
+            technology: dotnet
+            version: 8
+          - service: manager
+            technology: dotnet
+            version: 8
           - service: offerservice
             technology: node
             version: 22
+          - service: pricing-service
+            technology: go
+            version: 1.24
+          - service: problem-operator
+            technology: go
+            version: 1.24
+          - service: third-party-service
+            technology: java
+            version: 21
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,16 +71,18 @@ jobs:
       - name: Setup Snyk CLI
         uses: snyk/actions/setup@master
 
-      # - name: Setup .NET
-      #   uses: actions/setup-dotnet@v4
-      #   with:
-      #     dotnet-version: 8.0
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        if: matrix.this.technology == 'dotnet'
+        with:
+          dotnet-version: ${{ matrix.this.version}}
 
-      # - name: Setup Java
-      #   uses: actions/setup-java@v4
-      #   with:
-      #     java-version: 21
-      #     distribution: temurin
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        if: matrix.this.technology == 'java'
+        with:
+          java-version: ${{ matrix.this.version }}
+          distribution: temurin
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -46,13 +90,16 @@ jobs:
         with:
           node-version: ${{ matrix.this.version }}
 
-      # - name: Setup Go
-      #   uses: actions/setup-go@v5
-      #   with:
-      #     go-version: 1.24
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        if: matrix.this.technology == 'go'
+        with:
+          go-version: ${{ matrix.this.version }}
 
-      # - name: Restore .NET projects
-      #   run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
+      - name: Restore .NET projects
+        if: matrix.this.technology == 'dotnet'
+        working-directory: src/${{ matrix.this.service }}
+        run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
       # - name: Run Snyk for node
       #   uses: snyk/actions/node@master
       #   continue-on-error: true
@@ -63,8 +110,9 @@ jobs:
       #       --all-projects
 
       - name: Run Snyk for [${{ matrix.this.service }}]
-        run: snyk test --all-projects --sarif-file-output=snyk.sarif
         working-directory: src/${{ matrix.this.service }}
+        continue-on-error: true
+        run: snyk test --all-projects --sarif-file-output=snyk.sarif
 
       - name: Upload sarif for node
         uses: github/codeql-action/upload-sarif@v3
