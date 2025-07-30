@@ -17,6 +17,7 @@ jobs:
     env:
       SNYK_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
     strategy:
+      max-parallel: 3
       matrix:
         this:
           - service: accountservice
@@ -96,10 +97,10 @@ jobs:
         with:
           go-version: ${{ matrix.this.version }}
 
-      - name: Restore .NET projects
-        if: matrix.this.technology == 'dotnet'
-        working-directory: src/${{ matrix.this.service }}
-        run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
+      # - name: Restore .NET projects
+      #   if: matrix.this.technology == 'dotnet'
+      #   working-directory: src/${{ matrix.this.service }}
+      #   run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
       # - name: Run Snyk for node
       #   uses: snyk/actions/node@master
       #   continue-on-error: true
