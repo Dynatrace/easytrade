@@ -20,33 +20,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Snyk CLI
-        uses: snyk/actions/setup@master
+      # - name: Setup Snyk CLI
+      #   uses: snyk/actions/setup@master
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0
+      # - name: Setup .NET
+      #   uses: actions/setup-dotnet@v4
+      #   with:
+      #     dotnet-version: 8.0
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          java-version: 21
-          distribution: temurin
+      # - name: Setup Java
+      #   uses: actions/setup-java@v4
+      #   with:
+      #     java-version: 21
+      #     distribution: temurin
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
+      # - name: Setup Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: 22
 
-      - name: Setup Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: 1.24
+      # - name: Setup Go
+      #   uses: actions/setup-go@v5
+      #   with:
+      #     go-version: 1.24
 
-      - name: Restore .NET projects
-        run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
+      # - name: Restore .NET projects
+      #   run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
 
+
+      - name: Run ls
+        run: ls -la
+        
       - name: Run Snyk for node
         uses: snyk/actions/node@master
         continue-on-error: true
