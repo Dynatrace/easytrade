@@ -55,7 +55,11 @@ jobs:
         uses: snyk/actions/node@master
         continue-on-error: true
         with:
-          args: --sarif-file-output=snyk.sarif --all-projects
+          args: >-
+            --sarif-file-output=snyk.sarif
+            --file=src/frontend/package-lock.json
+            --file=src/loadgen/package-lock.json
+            --file=src/offerservice/package-lock.json
       
       - name: Upload sarif for node
         uses: github/codeql-action/upload-sarif@v3
