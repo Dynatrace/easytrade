@@ -58,7 +58,7 @@ jobs:
           args: >-
             --sarif-file-output=snyk.sarif
             --all-projects
-            --exclude=**/build.gradle,**/go.mod,**/project.assets.json,**/pyproject.toml
+            --exclude=build.gradle,go.mod,project.assets.json,pyproject.toml
       
       - name: Upload sarif for node
         uses: github/codeql-action/upload-sarif@v3
