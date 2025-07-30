@@ -1,15 +1,15 @@
 name: Build easytrade on branch
 on:
-  push:
-    branches:
-      - "**"
-      - "!master"
-      - "!main"
-    paths:
-      - .github/**
-      - kubernetes-manifests/**
-      - skaffold.yaml
-      - src/**
+  # push:
+  #   branches:
+  #     - "**"
+  #     - "!master"
+  #     - "!main"
+  #   paths:
+  #     - .github/**
+  #     - kubernetes-manifests/**
+  #     - skaffold.yaml
+  #     - src/**
       
   workflow_call:
     secrets:
