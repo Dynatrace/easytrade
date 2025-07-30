@@ -57,9 +57,8 @@ jobs:
         with:
           args: >-
             --sarif-file-output=snyk.sarif
-            --file=src/frontend/package-lock.json
-            --file=src/loadgen/package-lock.json
-            --file=src/offerservice/package-lock.json
+            --all-projects
+            --exclude=**/build.gradle,**/go.mod,**/project.assets.json,**/pyproject.toml
       
       - name: Upload sarif for node
         uses: github/codeql-action/upload-sarif@v3
@@ -91,3 +90,10 @@ jobs:
       # - name: Run Snyk monitor
       #   if: github.ref_name == 'master' || github.ref_name == 'main'
       #   run: snyk monitor --all-projects
+
+# files
+# - build.gradle
+# - go.mod
+# - project.assets.json
+# - pyproject.toml
+# - package-lock.json
