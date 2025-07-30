@@ -16,6 +16,12 @@ jobs:
       actions: read
     env:
       SNYK_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
+    strategy:
+      matrix:
+        this:
+          - service: offerservice
+            technology: node
+            version: 22
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -36,8 +42,9 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
+        if: matrix.this.technology == 'node'
         with:
-          node-version: 22
+          node-version: ${{ matrix.this.version }}
 
       # - name: Setup Go
       #   uses: actions/setup-go@v5
@@ -54,15 +61,16 @@ jobs:
       #     args: >-
       #       --sarif-file-output=snyk.sarif
       #       --all-projects
-      
-      - name: Run Snyk for offerservice
+
+      - name: Run Snyk for [${{ matrix.this.service }}]
         run: snyk test --all-projects --sarif-file-output=snyk.sarif
-        working-directory: src/offerservice
+        working-directory: src/${{ matrix.this.service }}
 
       - name: Upload sarif for node
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: src/offerservice/snyk.sarif
+          sarif_file: src/${{ matrix.this.service }}/snyk.sarif
+          category: snyk
 
       # - name: Run Snyk test
       #   run: snyk test --all-projects --sarif-file-output=result.sarif --severity-threshold=medium
@@ -89,7 +97,6 @@ jobs:
       # - name: Run Snyk monitor
       #   if: github.ref_name == 'master' || github.ref_name == 'main'
       #   run: snyk monitor --all-projects
-
 # files
 # - build.gradle
 # - go.mod
