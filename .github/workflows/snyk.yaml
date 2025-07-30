@@ -17,7 +17,7 @@ jobs:
     env:
       SNYK_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
     strategy:
-      max-parallel: 3
+      max-parallel: 5
       matrix:
         this:
           - service: accountservice
@@ -101,14 +101,6 @@ jobs:
         if: matrix.this.technology == 'dotnet'
         working-directory: src/${{ matrix.this.service }}
         run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
-      # - name: Run Snyk for node
-      #   uses: snyk/actions/node@master
-      #   continue-on-error: true
-      #   working-directory: src/offerservice
-      #   with:
-      #     args: >-
-      #       --sarif-file-output=snyk.sarif
-      #       --all-projects
 
       - name: Run Snyk for [${{ matrix.this.service }}]
         working-directory: src/${{ matrix.this.service }}
@@ -119,36 +111,8 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: src/${{ matrix.this.service }}/snyk.sarif
-          category: snyk
-
-      # - name: Run Snyk test
-      #   run: snyk test --all-projects --sarif-file-output=result.sarif --severity-threshold=medium
-
-      # - name: Show sarif file
-      #   run: cat result.sarif
-
-      # - name: Replace security-severity undefined for license-related findings
-      #   if: always()
-      #   run: |
-      #     sed -i 's/"security-severity": "undefined"/"security-severity": "0"/g' result.sarif
-
-      # - name: Show sarif file after sed
-      #   run: cat result.sarif
-
-      # - name: Upload result to GitHub Code Scanning
-      #   uses: github/codeql-action/upload-sarif@v3
-      #   if: always()
-      #   continue-on-error: true
-      #   with:
-      #     sarif_file: result.sarif
-      #     category: Snyk
+          category: Snyk
 
       # - name: Run Snyk monitor
       #   if: github.ref_name == 'master' || github.ref_name == 'main'
       #   run: snyk monitor --all-projects
-# files
-# - build.gradle
-# - go.mod
-# - project.assets.json
-# - pyproject.toml
-# - package-lock.json
