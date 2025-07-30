@@ -97,10 +97,10 @@ jobs:
         with:
           go-version: ${{ matrix.this.version }}
 
-      # - name: Restore .NET projects
-      #   if: matrix.this.technology == 'dotnet'
-      #   working-directory: src/${{ matrix.this.service }}
-      #   run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
+      - name: Restore .NET projects
+        if: matrix.this.technology == 'dotnet'
+        working-directory: src/${{ matrix.this.service }}
+        run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
       # - name: Run Snyk for node
       #   uses: snyk/actions/node@master
       #   continue-on-error: true
@@ -113,7 +113,7 @@ jobs:
       - name: Run Snyk for [${{ matrix.this.service }}]
         working-directory: src/${{ matrix.this.service }}
         continue-on-error: true
-        run: snyk test --all-projects --sarif-file-output=snyk.sarif
+        run: snyk test --all-projects --sarif-file-output=snyk.sarif --exclude=test
 
       - name: Upload sarif for node
         uses: github/codeql-action/upload-sarif@v3
