@@ -30,5 +30,3 @@ environmentGroups:
             clientSecret:
               type: environment
               name: CLIENT_SECRET
-            tokenEndpoint:
-              value: https://sso-sprint.dynatracelabs.com/sso/oauth2/token
