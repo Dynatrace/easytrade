@@ -16,55 +16,6 @@ jobs:
       actions: read
     env:
       SNYK_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
-    strategy:
-      max-parallel: 5
-      matrix:
-        this:
-          - service: accountservice
-            technology: java
-            version: 21
-          - service: aggregator-service
-            technology: go
-            version: 1.24
-          - service: broker-service
-            technology: dotnet
-            version: 8
-          - service: contentcreator
-            technology: java
-            version: 21
-          - service: credit-card-order-service
-            technology: java
-            version: 21
-          - service: engine
-            technology: java
-            version: 21
-          - service: feature-flag-service
-            technology: java
-            version: 21
-          - service: frontend
-            technology: node
-            version: 22
-          - service: loadgen
-            technology: node
-            version: 22
-          - service: loginservice
-            technology: dotnet
-            version: 8
-          - service: manager
-            technology: dotnet
-            version: 8
-          - service: offerservice
-            technology: node
-            version: 22
-          - service: pricing-service
-            technology: go
-            version: 1.24
-          - service: problem-operator
-            technology: go
-            version: 1.24
-          - service: third-party-service
-            technology: java
-            version: 21
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -74,49 +25,39 @@ jobs:
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
-        if: matrix.this.technology == 'dotnet'
         with:
-          dotnet-version: ${{ matrix.this.version}}
+          dotnet-version: 8.0
 
       - name: Setup Java
         uses: actions/setup-java@v4
-        if: matrix.this.technology == 'java'
         with:
-          java-version: ${{ matrix.this.version }}
+          java-version: 21
           distribution: temurin
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
-        if: matrix.this.technology == 'node'
         with:
-          node-version: ${{ matrix.this.version }}
+          node-version: 22
 
       - name: Setup Go
         uses: actions/setup-go@v5
-        if: matrix.this.technology == 'go'
         with:
-          go-version: ${{ matrix.this.version }}
+          go-version: 1.24
 
       - name: Restore .NET projects
-        if: matrix.this.technology == 'dotnet'
-        working-directory: src/${{ matrix.this.service }}
         run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
 
-      - name: Run Snyk for [${{ matrix.this.service }}]
-        working-directory: src/${{ matrix.this.service }}
-        continue-on-error: true
-        run: snyk test --all-projects --sarif-file-output=snyk.sarif --exclude=test
+      - name: Run Snyk test
+        run: snyk test --all-projects --severity-threshold=high
 
-      - name: Show sarif file
-        working-directory: src/${{matrix.this.service}}
-        run: cat snyk.sarif
-
-      - name: Upload sarif for [${{ matrix.this.service }}]
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: src/${{ matrix.this.service }}/snyk.sarif
-          category: Snyk
-
-      # - name: Run Snyk monitor
-      #   if: github.ref_name == 'master' || github.ref_name == 'main'
-      #   run: snyk monitor --all-projects
+      - name: Run Snyk monitor
+        if: github.ref_name == 'main'
+        run: >
+          snyk monitor
+          --all-projects
+          --org=capability_supportability_services
+          --target-reference=main
+          --project-environment=external
+          --project-lifecycle=sandbox
+          --project-business-criticality=low
+          --project-tags=team=team-demoability
