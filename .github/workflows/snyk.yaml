@@ -37,32 +37,27 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       - name: Restore .NET projects
         run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
 
       - name: Run Snyk test
-        run: snyk test --all-projects --sarif-file-output=result.sarif --severity-threshold=medium
+        run: snyk test --all-projects --severity-threshold=high
 
-      # - name: Replace security-severity undefined for license-related findings
-      #   if: always()
-      #   run: |
-      #     sed -i 's/"security-severity": "undefined"/"security-severity": "0"/g' result.sarif
-
-      # - name: Upload result to GitHub Code Scanning
-      #   uses: github/codeql-action/upload-sarif@v3
-      #   if: always()
-      #   continue-on-error: true
-      #   with:
-      #     sarif_file: result.sarif
-      #     category: Snyk
-
-      # - name: Run Snyk monitor
-      #   if: github.ref_name == 'master' || github.ref_name == 'main'
-      #   run: snyk monitor --all-projects
+      - name: Run Snyk monitor
+        if: github.ref_name == 'main'
+        run: >
+          snyk monitor
+          --all-projects
+          --org=capability_supportability_services
+          --target-reference=main
+          --project-environment=external
+          --project-lifecycle=sandbox
+          --project-business-criticality=low
+          --project-tags=team=team-demoability

@@ -3,14 +3,13 @@ on:
   push:
     branches:
       - "**"
-      - "!master"
       - "!main"
     paths:
       - .github/**
       - kubernetes-manifests/**
       - skaffold.yaml
       - src/**
-      
+
   workflow_call:
     secrets:
       SNYK_API_TOKEN:
