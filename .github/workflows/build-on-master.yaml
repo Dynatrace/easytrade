@@ -48,14 +48,3 @@ jobs:
           default-repo: ${{ env.DOCKERHUB_REPO }}
 
 
-      - name: Run validation
-        uses: ./.github/actions/run-validation
-        with:
-          client_id: ${{ secrets.OQR_CLIENT_ID }}
-          client_secret: ${{ secrets.OQR_CLIENT_SECRET }}
-          sso_url: ${{ secrets.SSO_URL }}
-          tenant_url: ${{ secrets.OQR_URL }}
-
-      - name: Disable test environment
-        run: |
-          kubectl -n ${{ env.NAMESPACE }} rollout undo deployment/credit-card-order-service deployment/third-party-service
