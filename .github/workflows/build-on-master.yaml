@@ -9,52 +9,21 @@ on:
       - kubernetes-manifests/**
       - skaffold.yaml
       - src/**
-      
-      
-  workflow_call:
-    secrets:
-      GAR_CREDENTIALS:
-        required: true
-      KUBECONFIG:
-        required: true
-      OQR_CLIENT_ID:
-        required: true
-      OQR_CLIENT_SECRET:
-        required: true
-      OQR_URL:
-        required: true
-      SNYK_API_TOKEN:
-        required: true
-      SSH_PRIVATE_KEY:
-        required: true
-      SSO_URL:
-        required: true
 
 env:
-  GAR_ADDRESS: europe-docker.pkg.dev
-  NAMESPACE: easytrade
-  SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
+  DOCKERHUB_REPO: mattreindt/easytrade
+  SKAFFOLD_DEFAULT_REPO: mattreindt/easytrade
   SKAFFOLD_VERSION: 2.13.2
 
 jobs:
-  snyk:
-    uses: ./.github/workflows/snyk.yaml
-    permissions:
-      security-events: write
-      contents: read
-      actions: read
-    secrets:
-      SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
-
   build-easytrade:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Retrieve gar credentials
-        run: |
-          echo "${{ secrets.GAR_CREDENTIALS }}" | docker login -u _json_key_base64 --password-stdin "${{ env.GAR_ADDRESS }}"
+      - name: Login to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Set application version
         uses: ./.github/actions/set-version
@@ -67,6 +36,7 @@ jobs:
           command: build
           push: true
           skaffold-version: ${{ env.SKAFFOLD_VERSION }}
+          default-repo: ${{ env.DOCKERHUB_REPO }}
 
       - name: "Build easytrade and push it to Docker registry with latest tag"
         uses: hiberbee/github-action-skaffold@1.27.0
@@ -75,74 +45,8 @@ jobs:
           tag: latest
           push: true
           skaffold-version: ${{ env.SKAFFOLD_VERSION }}
+          default-repo: ${{ env.DOCKERHUB_REPO }}
 
-  deploy-easytrade:
-    runs-on: ubuntu-24.04
-    needs: build-easytrade
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          path: easytrade
-
-      - name: Retrieve kubeconfig
-        run: |
-          mkdir ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
-
-      - name: Checkout infrastructure repo
-        uses: actions/checkout@v4
-        with:
-          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          repository: dynatrace/easytrade-infrastructure
-          sparse-checkout: kubernetes-manifests
-          path: easytrade-infrastructure
-
-      - name: Export short commit SHA
-        run: echo "COMMIT_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
-
-      - name: Deploy easytrade
-        uses: hiberbee/github-action-skaffold@1.27.0
-        with:
-          command: deploy
-          tag: ${{ env.COMMIT_SHA_SHORT }}
-          namespace: ${{ env.NAMESPACE }}
-          profile: aws-staging
-
-          working-directory: ${{ github.workspace }}/easytrade
-
-  run-tests:
-    runs-on: ubuntu-24.04
-    needs: deploy-easytrade
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Retrieve kubeconfig
-        run: |
-          mkdir ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
-
-      - name: Enable test environment
-        run: |
-          kubectl -n ${{ env.NAMESPACE }} set env deployment/credit-card-order-service WORK_DELAY=10 WORK_RATE=10
-          kubectl -n ${{ env.NAMESPACE }} set env deployment/third-party-service COURIER_DELAY=10 COURIER_RATE=10 MANUFACTURE_DELAY=10 MANUFACTURE_RATE=10
-
-      - name: Wait 3 minutes
-        run: sleep 3m
-
-      - name: Order credit card
-        uses: ./.github/actions/order-credit-card
-        with:
-          namespace: ${{ env.NAMESPACE }}
-
-      - name: Wait 12 minutes
-        run: sleep 12m
-
-      - name: Check credit card order
-        uses: ./.github/actions/check-credit-card-order
-        with:
-          namespace: ${{ env.NAMESPACE }}
 
       - name: Run validation
         uses: ./.github/actions/run-validation
