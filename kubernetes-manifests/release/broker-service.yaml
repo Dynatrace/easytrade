@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: broker-service
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/broker-service:4d5adb3
+          image: mattreindt/easytrade-broker-service:latest
           ports:
             - containerPort: 8080
           env:
