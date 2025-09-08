@@ -21,15 +21,6 @@ env:
   SKAFFOLD_VERSION: 2.13.2
 
 jobs:
-  snyk:
-    uses: ./.github/workflows/snyk.yaml
-    permissions:
-      security-events: write
-      contents: read
-      actions: read
-    secrets:
-      SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
-
   build-easytrade:
     runs-on: ubuntu-24.04
     steps:
