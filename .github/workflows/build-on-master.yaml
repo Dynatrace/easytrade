@@ -22,6 +22,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Send build start event to Dynatrace
+        run: |
+          curl -X POST "${{ secrets.DT_URL }}/api/v2/events/ingest" \
+            -H "Authorization: Api-Token ${{ secrets.DT_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "eventType": "CUSTOM_INFO",
+              "title": "Build Started",
+              "entitySelector": "type(APPLICATION)",
+              "properties": {
+                "dt.event.source": "GitHub Actions",
+                "dt.event.pipeline.name": "build-easytrade",
+                "dt.event.pipeline.stage": "build",
+                "dt.event.pipeline.status": "RUNNING",
+                "commit": "'$GITHUB_SHA'",
+                "branch": "'$GITHUB_REF_NAME'",
+                "repository": "'$GITHUB_REPOSITORY'"
+              }
+            }'
+
       - name: Login to Docker Hub
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
@@ -46,5 +66,47 @@ jobs:
           push: true
           skaffold-version: ${{ env.SKAFFOLD_VERSION }}
           default-repo: ${{ env.DOCKERHUB_REPO }}
+
+      - name: Send build success event to Dynatrace
+        if: success()
+        run: |
+          curl -X POST "${{ secrets.DT_URL }}/api/v2/events/ingest" \
+            -H "Authorization: Api-Token ${{ secrets.DT_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "eventType": "CUSTOM_INFO",
+              "title": "Build Completed Successfully",
+              "entitySelector": "type(APPLICATION)",
+              "properties": {
+                "dt.event.source": "GitHub Actions",
+                "dt.event.pipeline.name": "build-easytrade",
+                "dt.event.pipeline.stage": "build",
+                "dt.event.pipeline.status": "SUCCESS",
+                "commit": "'$GITHUB_SHA'",
+                "branch": "'$GITHUB_REF_NAME'",
+                "repository": "'$GITHUB_REPOSITORY'"
+              }
+            }'
+
+      - name: Send build failure event to Dynatrace
+        if: failure()
+        run: |
+          curl -X POST "${{ secrets.DT_URL }}/api/v2/events/ingest" \
+            -H "Authorization: Api-Token ${{ secrets.DT_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "eventType": "ERROR_EVENT",
+              "title": "Build Failed",
+              "entitySelector": "type(APPLICATION)",
+              "properties": {
+                "dt.event.source": "GitHub Actions",
+                "dt.event.pipeline.name": "build-easytrade",
+                "dt.event.pipeline.stage": "build",
+                "dt.event.pipeline.status": "FAILED",
+                "commit": "'$GITHUB_SHA'",
+                "branch": "'$GITHUB_REF_NAME'",
+                "repository": "'$GITHUB_REPOSITORY'"
+              }
+            }'
 
 
