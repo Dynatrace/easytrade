@@ -25,14 +25,14 @@ spec:
                   name: connection-strings
                   key: GO_CONNECTION_STRING
           envFrom:
-          - configMapRef:
-              name: rabbitmq-vars
+            - configMapRef:
+                name: rabbitmq-vars
           resources:
             requests:
               cpu: 20m
-              memory: 50Mi
+              memory: 80Mi
             limits:
-              memory: 50Mi
+              memory: 80Mi
 ---
 apiVersion: v1
 kind: Service

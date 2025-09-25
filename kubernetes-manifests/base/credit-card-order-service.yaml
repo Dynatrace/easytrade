@@ -34,13 +34,13 @@ spec:
                   name: connection-strings
                   key: JAVA_CONNECTION_STRING
             - name: JAVA_TOOL_OPTIONS
-              value: "-XX:-OmitStackTraceInFastThrow"     
+              value: "-XX:-OmitStackTraceInFastThrow"
           resources:
             requests:
               cpu: 20m
-              memory: 600Mi
+              memory: 650Mi
             limits:
-              memory: 600Mi
+              memory: 650Mi
 ---
 apiVersion: v1
 kind: Service
