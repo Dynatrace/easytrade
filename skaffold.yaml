@@ -98,3 +98,10 @@ profiles:
       kustomize:
         paths:
           - ../easytrade-infrastructure/kubernetes-manifests/aws-playground-staging
+  - name: azure-base
+    deploy:
+      kubectl: {}
+    manifests:
+      kustomize:
+        paths:
+          - ../easytrade-infrastructure/kubernetes-manifests/azure-base
