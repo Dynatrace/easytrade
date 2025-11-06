@@ -53,12 +53,12 @@ export default function CreditCardForm() {
         }
         const { setValue } = formContext
         setValue("name", `${user.firstName} ${user.lastName}`, {
-            shouldValidate: true,
+            shouldValidate: false,
         })
-        setValue("address", user.address, { shouldValidate: true })
-        setValue("type", "silver", { shouldValidate: true })
-        setValue("email", user.email, { shouldValidate: true })
-        setValue("agreementCheck", true, { shouldValidate: true })
+        setValue("address", user.address, { shouldValidate: false })
+        setValue("type", "silver", { shouldValidate: false })
+        setValue("email", user.email, { shouldValidate: false })
+        setValue("agreementCheck", true, { shouldValidate: false })
     }
     const queryClient = useQueryClient()
     const { mutate, isPending } = useMutation({

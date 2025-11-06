@@ -60,11 +60,11 @@ const defaultValues: FormData = {
     agreementCheck: false,
 }
 
-type DepositFormProps = {
+type WithdrawFormProps = {
     submitHandler: WithdrawHandler
 }
 
-export default function WithdrawForm({ submitHandler }: DepositFormProps) {
+export default function WithdrawForm({ submitHandler }: WithdrawFormProps) {
     const { user, balance } = useAuthUserData()
     const { userId } = useAuthUser()
     const { formatCurrency } = useFormatter()
@@ -84,32 +84,32 @@ export default function WithdrawForm({ submitHandler }: DepositFormProps) {
     function autofillForm() {
         if (getValues().amount === defaultValues.amount) {
             setValue("amount", 1000, {
-                shouldValidate: true,
+                shouldValidate: false,
             })
         }
         setValue("cardholderName", user?.firstName + " " + user?.lastName, {
-            shouldValidate: true,
+            shouldValidate: false,
         })
         setValue("address", user?.address ?? "Kochweg 4 01510 Kronach", {
-            shouldValidate: true,
+            shouldValidate: false,
         })
         setValue("email", user?.email ?? "mockemail@mail.com", {
-            shouldValidate: true,
+            shouldValidate: false,
         })
         setValue("cardNumber", "2293562484488276", {
-            shouldValidate: true,
+            shouldValidate: false,
         })
         setValue("cardType", "visaDebit", {
-            shouldValidate: true,
+            shouldValidate: false,
         })
         setValue("agreementCheck", true, {
-            shouldValidate: true,
+            shouldValidate: false,
         })
     }
 
     function autofillCardNumber() {
         setValue("cardNumber", "2293562484488276", {
-            shouldValidate: true,
+            shouldValidate: false,
         })
     }
 

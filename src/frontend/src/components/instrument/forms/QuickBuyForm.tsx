@@ -16,15 +16,15 @@ import { useAuthUserData } from "../../../contexts/UserContext/hooks"
 const formSchema = z
     .object({
         amount: z
-            .number({ required_error: "Amount is required" })
+            .number({ error: "Amount is required" })
             .positive("Amount must be greater than 0"),
         price: z
-            .number({ required_error: "Price is required" })
+            .number({ error: "Price is required" })
             .positive("Price must be grater than 0"),
         currentBalance: z.number({
-            required_error: "Current balance is required",
+            error: "Current balance is required",
         }),
-        total: z.number({ required_error: "Total price is required" }),
+        total: z.number({ error: "Total price is required" }),
     })
     .refine(
         ({ amount, price, currentBalance }) => amount * price <= currentBalance,
