@@ -1,4 +1,4 @@
-FROM gcc:14.2.0@sha256:561e2a4b76c441215d26625fbf2d5e345da60ef22b7d46e6ab45d1d53d95c43e AS build
+FROM gcc:14.3.0-trixie@sha256:0bb1ad383e858a31b24ce42e152af3262d68d1679db50b9096ceb75ca0edc44f AS build
 
 ARG C_FLAGS="-lonesdk_static -lamqpcpp -lpthread -levent -levent_core -Wl,--no-as-needed -ldl"
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -25,7 +25,7 @@ RUN wget ${ONEAGENT_SDK_URL} -O oneagentsdk.tar.gz \
     && tar -zxvf oneagentsdk.tar.gz \
     && g++ -std=c++17 -o consumeCandleData consume.cpp -I ./${ONEAGENT_SDK_DIR}/include -L ./${ONEAGENT_SDK_DIR}/lib/linux-x86_64 ${C_FLAGS}
 
-FROM ubuntu:24.04@sha256:eea047b4b181f2d3aeafbc0ce5294a2bbb3b98153a68b9ed4bc573d871ca9450
+FROM ubuntu:24.04@sha256:66460d557b25769b102175144d538d88219c077c678a49af4afca6fbfc1b5252
 
 RUN apt-get update \
     && apt-get install -y \
