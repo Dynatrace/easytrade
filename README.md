@@ -176,3 +176,16 @@ can also handle XML requests. Data types are negotiated based on `Accept` and `C
 | [CreditCardOrderService](src/credit-card-order-service/README.md) | `application/xml`                                  |
 | [OfferService](src/offerservice/README.md)                        | `application/xml`; `text/xml`                      |
 | [PricingService](src/pricing-service/README.md)                   | `application/xml`                                  |
+
+## Local Dynatrace MCP Server
+
+This repository comes with the [local Dynatrace MCP Server](https://github.com/dynatrace-oss/dynatrace-mcp) pre-configured for VSCode. You can read more about [MCP Servers on VSCode](https://code.visualstudio.com/docs/copilot/customization/mcp-servers).
+In order to try it out, you need access to the [Dynatrace Playground Environment](https://docs.dynatrace.com/docs/discover-dynatrace#playground), as well as access to [GitHub Copilot](https://github.com/features/copilot).
+
+If everything is setup, please open **Copilot Chat** in VSCode, switch to **Agent mode**, and ask questions like 
+
+> Which environment am I connected to?
+
+> Are there any problems with my components on Dynatrace?
+
+> Are there any security vulnerabilities for my component?
