@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: calculationservice
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/calculationservice:98288cf
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/calculationservice:fa6ccf2
           env: []
           envFrom:
             - configMapRef:
