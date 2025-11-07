@@ -11,7 +11,7 @@
     "lint": "eslint ./src"
   },
   "dependencies": {
-    "@demoability/loadgen-core": "^1.3.29",
+    "@demoability/loadgen-core": "^1.3.32",
     "winston": "^3.17.0"
   },
   "devDependencies": {
