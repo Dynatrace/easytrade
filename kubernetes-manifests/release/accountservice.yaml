@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: accountservice
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice:98288cf
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice:fa6ccf2
           ports:
             - containerPort: 8080
           env:

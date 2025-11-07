@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: db
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/db:98288cf
+          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/db:fa6ccf2
           ports:
             - containerPort: 1433
           env:
