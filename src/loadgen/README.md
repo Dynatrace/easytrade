@@ -87,7 +87,7 @@ This is an overview and my be out of date, check `src/config/getConifg.ts` for t
 # Build docker image
 docker build -t my-loadgen .
 # Run generator
-docker run my-loadgen -e EASYTRADE_URL={frontend-url}
+docker run -e EASYTRADE_URL={frontend-url} my-loadgen
 ```
 
 ## Technology
