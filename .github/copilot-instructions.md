@@ -14,13 +14,13 @@ You should find entities like `[eks-playground][easytrade] BrokerService`.
 You can find problems via the `list_problems` tool and applying the following filter:
 
 ```dql
-contains(k8s.namespace.name, "easytrade") OR contains(dt.entity.application.name, "EasyTrade")
+in(k8s.namespace.name, array("easytrade")) OR contains(dt.entity.application.name, "EasyTrade")
 ```
 
 If you want to narrow down the problem of a specific entity, like a service, you can use the following filter:
 
 ```dql
-in(affected_entity_ids, "<service-id>") OR dt.entity.$type == "<entity-id>" OR ...
+in(affected_entity_ids, "<entity-id>") OR matchesValue(affected_entity_ids, "<entity-id>") OR dt.entity.$type == "<entity-id>" OR ...
 ```
 
 ### Metrics
