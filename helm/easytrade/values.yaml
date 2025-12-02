@@ -1,6 +1,19 @@
 accountservice:
   enabled: true
-  
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice
+  env:
+    MANAGER_HOSTANDPORT: manager:8080
+    PROXY_PREFIX: accountservice
+  resources:
+    requests:
+      cpu: 30m
+      memory: 600Mi
+    limits:
+      memory: 600Mi
+  service:
+    port: 8080
+
 aggregator-service:
   enabled: true
 
