@@ -1,0 +1,77 @@
+apiVersion: v2
+name: easytrade
+description: A Helm chart for Kubernetes.
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
+
+dependencies:
+  - name: accountservice
+    repository: "file://./charts/app"
+    condition: accountservice.enabled
+  - name: aggregator-service
+    repository: "file://./charts/app"
+    condition: aggregator-service.enabled
+  - name: broker-service
+    repository: "file://./charts/app"
+    condition: broker-service.enabled
+  - name: calculationservice
+    repository: "file://./charts/app"
+    condition: calculationservice.enabled
+  - name: connection-strings
+    repository: "file://./charts/app"
+    condition: connection-strings.enabled
+  - name: contentcreator
+    repository: "file://./charts/app"
+    condition: contentcreator.enabled
+  - name: credit-card-order-service
+    repository: "file://./charts/app"
+    condition: credit-card-order-service.enabled
+  - name: db
+    repository: "file://./charts/app"
+    condition: db.enabled
+  - name: engine
+    repository: "file://./charts/app"
+    condition: engine.enabled
+  - name: feature-flag-service-setup
+    repository: "file://./charts/app"
+    condition: feature-flag-service-setup.enabled
+  - name: feature-flag-service
+    repository: "file://./charts/app"
+    condition: feature-flag-service.enabled
+  - name: frontend
+    repository: "file://./charts/app"
+    condition: frontend.enabled
+  - name: frontendreverseproxy
+    repository: "file://./charts/app"
+    condition: frontendreverseproxy.enabled
+  - name: kustomization
+    repository: "file://./charts/app"
+    condition: kustomization.enabled
+  - name: labels-and-envs
+    repository: "file://./charts/app"
+    condition: labels-and-envs.enabled
+  - name: loadgen
+    repository: "file://./charts/app"
+    condition: loadgen.enabled
+  - name: loginservice
+    repository: "file://./charts/app"
+    condition: loginservice.enabled
+  - name: manager
+    repository: "file://./charts/app"
+    condition: manager.enabled
+  - name: offerservice
+    repository: "file://./charts/app"
+    condition: offerservice.enabled
+  - name: pricing-service
+    repository: "file://./charts/app"
+    condition: pricing-service.enabled
+  - name: problem-operator
+    repository: "file://./charts/app"
+    condition: problem-operator.enabled
+  - name: rabbitmq
+    repository: "file://./charts/app"
+    condition: rabbitmq.enabled
+  - name: third-party-service
+    repository: "file://./charts/app"
+    condition: third-party-service.enabled

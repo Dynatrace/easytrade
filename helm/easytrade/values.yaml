@@ -1,0 +1,68 @@
+accountservice:
+  enabled: true
+  
+aggregator-service:
+  enabled: true
+
+broker-service:
+  enabled: true
+
+calculationservice:
+  enabled: true
+
+connection-strings:
+  enabled: true
+
+contentcreator:
+  enabled: true
+
+credit-card-order-service:
+  enabled: true
+
+db:
+  enabled: true
+
+engine:
+  enabled: true
+
+feature-flag-service-setup:
+  enabled: true
+
+feature-flag-service:
+  enabled: true
+
+frontend:
+  enabled: true
+
+frontendreverseproxy:
+  enabled: true
+
+kustomization:
+  enabled: true
+
+labels-and-envs:
+  enabled: true
+
+loadgen:
+  enabled: true
+
+loginservice:
+  enabled: true
+
+manager:
+  enabled: true
+
+offerservice:
+  enabled: true
+
+pricing-service:
+  enabled: true
+
+problem-operator:
+  enabled: true
+
+rabbitmq:
+  enabled: true
+
+third-party-service:
+  enabled: true
