@@ -23,16 +23,16 @@ aggregator-service:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/aggregator-service
-    env:
-      OFFER_SERVICE_PROTOCOL: "http"
-      OFFER_SERVICE_HOST: "{{ .Release.Name }}-offerservice"
-      OFFER_SERVICE_PORT: "8080"
-    resources:
-      requests:
-        cpu: 10m
-        memory: 30Mi
-      limits:
-        memory: 30Mi
+  env:
+    OFFER_SERVICE_PROTOCOL: "http"
+    OFFER_SERVICE_HOST: "{{ .Release.Name }}-offerservice"
+    OFFER_SERVICE_PORT: "8080"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 30Mi
+    limits:
+      memory: 30Mi
 
 broker-service:
   enabled: true
@@ -65,21 +65,75 @@ calculationservice:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/calculationservice
+  env:
+    RABBITMQ_USER: userxxx
+    RABBITMQ_PASSWORD: passxxx
+    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_PORT: "5672"
+    RABBITMQ_QUEUE: Trade_Data_Raw
+  resources:
+    requests:
+      cpu: 10m
+      memory: 25Mi
+    limits:
+      memory: 25Mi
 
 contentcreator:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/contentcreator
+  envFromSecret:
+    MSSQL_CONNECTIONSTRING:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "JAVA_CONNECTION_STRING"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 400Mi
+    limits:
+      memory: 400Mi
 
 credit-card-order-service:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/credit-card-order-service
+  env:
+    PROXY_PREFIX: "credit-card-order-service"
+    THIRD_PARTY_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-third-party-service:8080"
+    WORK_DELAY: "300"
+    WORK_RATE: "900"
+    JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
+  envFromSecret:
+    MSSQL_CONNECTIONSTRING:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "JAVA_CONNECTION_STRING"
+  resources:
+    requests:
+      cpu: 20m
+      memory: 650Mi
+    limits:
+      memory: 650Mi
+  service:
+    enabled: true
+    port: 8080
 
 db:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/db
+  envFromSecret:
+    SA_PASSWORD:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "SA_PASSWORD"
+  resources:
+    requests:
+      cpu: 40m
+      memory: 1.5Gi
+    limits:
+      memory: 1.5Gi
+  service:
+    enabled: true
+    port: 1433
 
 engine:
   enabled: true
