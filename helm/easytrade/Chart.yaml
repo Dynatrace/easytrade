@@ -27,10 +27,6 @@ dependencies:
     version: "0.1.0"
     condition: calculationservice.enabled
   - name: app
-    alias: connection-strings
-    repository: "file://./charts/app"
-    version: "0.1.0"
-  - name: app
     alias: contentcreator
     repository: "file://./charts/app"
     version: "0.1.0"
@@ -50,11 +46,6 @@ dependencies:
     repository: "file://./charts/app"
     version: "0.1.0"
     condition: engine.enabled
-  - name: app
-    alias: feature-flag-service-setup
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: feature-flag-service-setup.enabled
   - name: app
     alias: feature-flag-service
     repository: "file://./charts/app"

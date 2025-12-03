@@ -38,7 +38,7 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Values.global.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.env }}
           env:

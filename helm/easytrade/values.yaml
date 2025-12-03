@@ -1,3 +1,7 @@
+global:
+  image:
+    tag: latest
+
 accountservice:
   enabled: true
   image:
@@ -16,66 +20,90 @@ accountservice:
 
 aggregator-service:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/aggregator-service
 
 broker-service:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/broker-service
 
 calculationservice:
   enabled: true
-
-connection-strings:
-  enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/calculationservice
 
 contentcreator:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/contentcreator
 
 credit-card-order-service:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/credit-card-order-service
 
 db:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/db
 
 engine:
   enabled: true
-
-feature-flag-service-setup:
-  enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/engine
 
 feature-flag-service:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/feature-flag-service
 
 frontend:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/frontend
 
 frontendreverseproxy:
   enabled: true
-
-kustomization:
-  enabled: true
-
-labels-and-envs:
-  enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/frontendreverseproxy
 
 loadgen:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loadgen
 
 loginservice:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loginservice
 
 manager:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/manager
 
 offerservice:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/offerservice
 
 pricing-service:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/pricing-service
 
 problem-operator:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/problem-operator
 
 rabbitmq:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/rabbitmq
 
 third-party-service:
   enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/third-party-service
