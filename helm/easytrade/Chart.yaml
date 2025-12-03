@@ -6,72 +6,117 @@ version: 0.1.0
 appVersion: "1.16.0"
 
 dependencies:
-  - name: accountservice
+  - name: app
+    alias: accountservice
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: accountservice.enabled
-  - name: aggregator-service
+  - name: app
+    alias: aggregator-service
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: aggregator-service.enabled
-  - name: broker-service
+  - name: app
+    alias: broker-service
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: broker-service.enabled
-  - name: calculationservice
+  - name: app
+    alias: calculationservice
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: calculationservice.enabled
-  - name: connection-strings
+  - name: app
+    alias: connection-strings
     repository: "file://./charts/app"
-    condition: connection-strings.enabled
-  - name: contentcreator
+    version: "0.1.0"
+  - name: app
+    alias: contentcreator
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: contentcreator.enabled
-  - name: credit-card-order-service
+  - name: app
+    alias: credit-card-order-service
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: credit-card-order-service.enabled
-  - name: db
+  - name: app
+    alias: db
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: db.enabled
-  - name: engine
+  - name: app
+    alias: engine
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: engine.enabled
-  - name: feature-flag-service-setup
+  - name: app
+    alias: feature-flag-service-setup
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: feature-flag-service-setup.enabled
-  - name: feature-flag-service
+  - name: app
+    alias: feature-flag-service
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: feature-flag-service.enabled
-  - name: frontend
+  - name: app
+    alias: frontend
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: frontend.enabled
-  - name: frontendreverseproxy
+  - name: app
+    alias: frontendreverseproxy
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: frontendreverseproxy.enabled
-  - name: kustomization
+  - name: app
+    alias: kustomization
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: kustomization.enabled
-  - name: labels-and-envs
+  - name: app
+    alias: labels-and-envs
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: labels-and-envs.enabled
-  - name: loadgen
+  - name: app
+    alias: loadgen
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: loadgen.enabled
-  - name: loginservice
+  - name: app
+    alias: loginservice
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: loginservice.enabled
-  - name: manager
+  - name: app
+    alias: manager
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: manager.enabled
-  - name: offerservice
+  - name: app
+    alias: offerservice
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: offerservice.enabled
-  - name: pricing-service
+  - name: app
+    alias: pricing-service
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: pricing-service.enabled
-  - name: problem-operator
+  - name: app
+    alias: problem-operator
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: problem-operator.enabled
-  - name: rabbitmq
+  - name: app
+    alias: rabbitmq
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: rabbitmq.enabled
-  - name: third-party-service
+  - name: app
+    alias: third-party-service
     repository: "file://./charts/app"
+    version: "0.1.0"
     condition: third-party-service.enabled
