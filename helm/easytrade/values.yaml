@@ -8,7 +8,7 @@ accountservice:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice
   env:
     MANAGER_HOSTANDPORT: "{{ .Release.Name }}-manager:8080"
-    PROXY_PREFIX: accountservice
+    PROXY_PREFIX: "accountservice"
   resources:
     requests:
       cpu: 30m
@@ -16,17 +16,50 @@ accountservice:
     limits:
       memory: 600Mi
   service:
+    enabled: true
     port: 8080
 
 aggregator-service:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/aggregator-service
+    env:
+      OFFER_SERVICE_PROTOCOL: "http"
+      OFFER_SERVICE_HOST: "{{ .Release.Name }}-offerservice"
+      OFFER_SERVICE_PORT: "8080"
+    resources:
+      requests:
+        cpu: 10m
+        memory: 30Mi
+      limits:
+        memory: 30Mi
 
 broker-service:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/broker-service
+  env:
+    ACCOUNTSERVICE_HOSTANDPORT: "{{ .Release.Name }}-accountservice:8080"
+    PRICINGSERVICE_HOSTANDPORT: "{{ .Release.Name }}-pricing-service:8080"
+    ENGINE_HOSTANDPORT: "{{ .Release.Name }}-engine:8080"
+    FEATURE_FLAG_SERVICE_PROTOCOL: http
+    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
+    FEATURE_FLAG_SERVICE_PORT: "8080"
+    PROXY_PREFIX: "broker-service"
+  envFromSecret:
+    MSSQL_CONNECTIONSTRING:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "DOTNET_CONNECTION_STRING"
+  resources:
+    requests:
+      cpu: 150m
+      memory: 350Mi
+    limits:
+      cpu: 600m
+      memory: 350Mi
+  service:
+    enabled: true
+    port: 8080
 
 calculationservice:
   enabled: true
