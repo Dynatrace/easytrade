@@ -7,7 +7,7 @@ accountservice:
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice
   env:
-    MANAGER_HOSTANDPORT: manager:8080
+    MANAGER_HOSTANDPORT: "{{ .Release.Name }}-manager:8080"
     PROXY_PREFIX: accountservice
   resources:
     requests:
