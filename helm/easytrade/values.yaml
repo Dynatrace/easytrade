@@ -83,6 +83,9 @@ contentcreator:
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/contentcreator
   envFromSecret:
+    SA_PASSWORD:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "SA_PASSWORD"
     MSSQL_CONNECTIONSTRING:
       name: "{{ .Release.Name }}-connection-strings"
       key: "JAVA_CONNECTION_STRING"
@@ -104,6 +107,9 @@ credit-card-order-service:
     WORK_RATE: "900"
     JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
   envFromSecret:
+    SA_PASSWORD:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "SA_PASSWORD"
     MSSQL_CONNECTIONSTRING:
       name: "{{ .Release.Name }}-connection-strings"
       key: "JAVA_CONNECTION_STRING"
