@@ -62,16 +62,6 @@ dependencies:
     version: "0.1.0"
     condition: frontendreverseproxy.enabled
   - name: app
-    alias: kustomization
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: kustomization.enabled
-  - name: app
-    alias: labels-and-envs
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: labels-and-envs.enabled
-  - name: app
     alias: loadgen
     repository: "file://./charts/app"
     version: "0.1.0"
