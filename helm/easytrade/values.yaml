@@ -207,11 +207,35 @@ loadgen:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loadgen
+  env:
+    EASYTRADE_URL: "http://{{ .Release.Name }}-frontendreverseproxy"
+    RARE_VISITS_INTERVAL_MINUTES: "60"
+  resources:
+    requests:
+      cpu: "1"
+      memory: 256Mi
+    limits:
+      memory: 2Gi
 
 loginservice:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loginservice
+  env:
+    PROXY_PREFIX: "{{ .Release.Name }}-loginservice"
+  envFromSecret:
+    MSSQL_CONNECTIONSTRING:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "DOTNET_CONNECTION_STRING"
+  resources:
+    requests:
+      cpu: 20m
+      memory: 450Mi
+    limits:
+      memory: 450Mi
+  service:
+    enabled: true
+    port: 8080
 
 manager:
   enabled: true
