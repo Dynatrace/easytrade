@@ -1,11 +1,12 @@
-{{- if eq .Values.workloadType "deployment" }}
+{{- if eq .Values.workloadType "statefulset" }}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "app.fullname" . }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
 spec:
+  serviceName: {{ include "app.fullname" . }}
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
@@ -73,8 +74,12 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
+          {{- if and .Values.persistence.enabled .Values.persistence.mountPath }}
+            - name: data
+              mountPath: {{ .Values.persistence.mountPath }}
+          {{- end }}
+          {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
       {{- with .Values.volumes }}
@@ -93,4 +98,24 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+  {{- if and .Values.persistence.enabled .Values.persistence.mountPath }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        {{- with .Values.persistence.annotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      spec:
+        accessModes:
+          {{- range .Values.persistence.accessModes }}
+          - {{ . }}
+          {{- end }}
+        {{- with .Values.persistence.storageClassName }}
+        storageClassName: {{ . }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size }}
+  {{- end }}
 {{- end }}

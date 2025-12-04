@@ -119,6 +119,7 @@ credit-card-order-service:
 
 db:
   enabled: true
+  workloadType: statefulset
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/db
   envFromSecret:
@@ -134,6 +135,10 @@ db:
   service:
     enabled: true
     port: 1433
+  persistence:
+    enabled: true
+    mountPath: /var/opt/mssql
+    size: 10Gi
 
 engine:
   enabled: true
