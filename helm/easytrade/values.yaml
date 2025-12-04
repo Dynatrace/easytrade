@@ -14,6 +14,7 @@ accountservice:
       cpu: 30m
       memory: 600Mi
     limits:
+      cpu: 200m
       memory: 600Mi
   service:
     enabled: true
@@ -32,6 +33,7 @@ aggregator-service:
       cpu: 10m
       memory: 30Mi
     limits:
+      cpu: 200m
       memory: 30Mi
 
 broker-service:
@@ -76,6 +78,7 @@ calculationservice:
       cpu: 10m
       memory: 25Mi
     limits:
+      cpu: 100m
       memory: 25Mi
 
 contentcreator:
@@ -91,6 +94,7 @@ contentcreator:
       cpu: 10m
       memory: 400Mi
     limits:
+      cpu: 200m
       memory: 400Mi
 
 credit-card-order-service:
@@ -112,6 +116,7 @@ credit-card-order-service:
       cpu: 20m
       memory: 650Mi
     limits:
+      cpu: 500m
       memory: 650Mi
   service:
     enabled: true
@@ -128,9 +133,10 @@ db:
       key: "SA_PASSWORD"
   resources:
     requests:
-      cpu: 40m
+      cpu: 500m
       memory: 1.5Gi
     limits:
+      cpu: "2"
       memory: 1.5Gi
   service:
     enabled: true
@@ -152,6 +158,7 @@ engine:
       cpu: 10m
       memory: 450Mi
     limits:
+      cpu: 200m
       memory: 450Mi
   service:
     enabled: true
@@ -170,6 +177,7 @@ feature-flag-service:
       cpu: 30m
       memory: 600Mi
     limits:
+      cpu: 200m
       memory: 600Mi
   service:
     enabled: true
@@ -184,6 +192,7 @@ frontend:
       cpu: 10m
       memory: 75Mi
     limits:
+      cpu: 100m
       memory: 75Mi
   service:
     enabled: true
@@ -198,6 +207,7 @@ frontendreverseproxy:
       cpu: 50m
       memory: 100Mi
     limits:
+      cpu: 200m
       memory: 100Mi
   service:
     enabled: true
@@ -215,6 +225,7 @@ loadgen:
       cpu: "1"
       memory: 256Mi
     limits:
+      cpu: "2"
       memory: 2Gi
 
 loginservice:
@@ -232,6 +243,7 @@ loginservice:
       cpu: 20m
       memory: 450Mi
     limits:
+      cpu: 1
       memory: 450Mi
   service:
     enabled: true
