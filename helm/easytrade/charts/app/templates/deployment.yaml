@@ -41,12 +41,6 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Values.global.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-          {{- with .Values.env }}
-            {{- range $key, $value := . }}
-            - name: {{ $key }}
-              value: {{ tpl ($value | toString) $ | quote }}
-            {{- end }}
-          {{- end }}
           {{- with .Values.envFromSecret }}
             {{- range $key, $secretKeyRef := . }}
             - name: {{ $key }}
@@ -54,6 +48,12 @@ spec:
                 secretKeyRef:
                   name: {{ tpl ($secretKeyRef.name | toString) $ }}
                   key: {{ $secretKeyRef.key }}
+            {{- end }}
+          {{- end }}
+          {{- with .Values.env }}
+            {{- range $key, $value := . }}
+            - name: {{ $key }}
+              value: {{ tpl ($value | toString) $ | quote }}
             {{- end }}
           {{- end }}
           ports:
