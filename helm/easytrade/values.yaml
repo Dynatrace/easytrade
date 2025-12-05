@@ -1,4 +1,6 @@
 global:
+  dynatrace:
+    version: 1.1.1
   image:
     tag: latest
 
