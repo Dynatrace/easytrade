@@ -28,14 +28,14 @@ spec:
       image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Values.global.image.tag }}"
       imagePullPolicy: {{ .Values.image.pullPolicy }}
       env:
-      - name: DT_RELEASE_PRODUCT
-        valueFrom:
-          fieldRef:
-            fieldPath: metadata.labels['app.kubernetes.io/part-of']
-      - name: DT_RELEASE_VERSION
-        valueFrom:
-          fieldRef:
-            fieldPath: metadata.labels['app.kubernetes.io/version']
+        - name: DT_RELEASE_PRODUCT
+          valueFrom:
+            fieldRef:
+              fieldPath: "metadata.labels['app.kubernetes.io/part-of']"
+        - name: DT_RELEASE_VERSION
+          valueFrom:
+            fieldRef:
+              fieldPath: "metadata.labels['app.kubernetes.io/version']"
       {{- with .Values.envFromSecret }}
         {{- range $key, $secretKeyRef := . }}
         - name: {{ $key }}
