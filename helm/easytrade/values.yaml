@@ -202,6 +202,18 @@ frontendreverseproxy:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/frontendreverseproxy
+  env:
+    ACCOUNT_SERVICE_URL: "http://{{ .Release.Name }}-accountservice:8080"
+    BROKER_SERVICE_URL: "http://{{ .Release.Name }}-broker-service:8080"
+    CREDIT_CARD_ORDER_SERVICE_URL: "http://{{ .Release.Name }}-credit-card-order-service:8080"
+    ENGINE_URL: "http://{{ .Release.Name }}-engine:8080"
+    FEATURE_FLAG_SERVICE_URL: "http://{{ .Release.Name }}-feature-flag-service:8080"
+    FRONTEND_URL: "http://{{ .Release.Name }}-frontend:3000"
+    LOGIN_SERVICE_URL: "http://{{ .Release.Name }}-loginservice:8080"
+    MANAGER_URL: "http://{{ .Release.Name }}-manager:8080"
+    OFFER_SERVICE_URL: "http://{{ .Release.Name }}-offerservice:8080"
+    PRICING_SERVICE_URL: "http://{{ .Release.Name }}-pricing-service:8080"
+    THIRD_PARTY_SERVICE_URL: "http://{{ .Release.Name }}-third-party-service:8080"
   resources:
     requests:
       cpu: 50m
@@ -350,8 +362,52 @@ rabbitmq:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/rabbitmq
+  env:
+    RABBITMQ_USER: userxxx
+    RABBITMQ_PASSWORD: passxxx
+    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_PORT: "5672"
+    RABBITMQ_QUEUE: Trade_Data_Raw
+  resources:
+    requests:
+      cpu: 10m
+      memory: 175Mi
+    limits:
+      cpu: 200m
+      memory: 175Mi
+  service:
+    enabled: true
+    ports:
+      - port: 5672
+        targetPort: 5672
+        protocol: TCP
+        name: listener
+      - port: 15672
+        targetPort: 15672
+        protocol: TCP
+        name: ui
 
 third-party-service:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/third-party-service
+  env:
+    CREDIT_CARD_ORDER_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-credit-card-order-service:8080"
+    PROXY_PREFIX: "third-party-service"
+    COURIER_DELAY: "400"
+    COURIER_RATE: "900"
+    MANUFACTURE_DELAY: "500"
+    MANUFACTURE_RATE: "900"
+    FEATURE_FLAG_SERVICE_PROTOCOL: http
+    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
+    FEATURE_FLAG_SERVICE_PORT: "8080"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 450Mi
+    limits:
+      cpu: 200m
+      memory: 450Mi
+  service:
+    enabled: true
+    port: 8080
