@@ -233,7 +233,7 @@ loginservice:
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loginservice
   env:
-    PROXY_PREFIX: "{{ .Release.Name }}-loginservice"
+    PROXY_PREFIX: "loginservice"
   envFromSecret:
     MSSQL_CONNECTIONSTRING:
       name: "{{ .Release.Name }}-connection-strings"
@@ -253,16 +253,71 @@ manager:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/manager
+  env:
+    PROXY_PREFIX: "manager"
+  envFromSecret:
+    MSSQL_CONNECTIONSTRING:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "DOTNET_CONNECTION_STRING"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 600Mi
+    limits:
+      cpu: 500m
+      memory: 600Mi
+  service:
+    enabled: true
+    port: 8080
 
 offerservice:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/offerservice
+  env:
+    LOGIN_SERVICE_PORT: "8080"
+    LOGIN_SERVICE_BASE_URL: "{{ .Release.Name }}-loginservice"
+    MANAGER_BASE_URL: "{{ .Release.Name }}-manager"
+    MANAGER_PORT: "8080"
+    FEATURE_FLAG_SERVICE_PROTOCOL: http
+    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
+    FEATURE_FLAG_SERVICE_PORT: "8080"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 150Mi
+    limits:
+      cpu: 200m
+      memory: 150Mi
+  service:
+    enabled: true
+    port: 8080
 
 pricing-service:
   enabled: true
   image:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/pricing-service
+  env:
+    PROXY_PREFIX: "pricing-service"
+    RABBITMQ_USER: userxxx
+    RABBITMQ_PASSWORD: passxxx
+    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_PORT: "5672"
+    RABBITMQ_QUEUE: Trade_Data_Raw
+  envFromSecret:
+    MSSQL_CONNECTIONSTRING:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "GO_CONNECTION_STRING"
+  resources:
+    requests:
+      cpu: 20m
+      memory: 80Mi
+    limits:
+      cpu: 200m
+      memory: 80Mi
+  service:
+    enabled: true
+    port: 8080
 
 problem-operator:
   enabled: true
