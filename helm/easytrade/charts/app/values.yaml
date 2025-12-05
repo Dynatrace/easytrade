@@ -74,6 +74,16 @@ service:
   type: ClusterIP
   # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
   port: 80
+  # Define multiple ports (optional, takes precedence over 'port' if defined)
+  # ports:
+  #   - port: 80
+  #     targetPort: http
+  #     protocol: TCP
+  #     name: http
+  #   - port: 443
+  #     targetPort: https
+  #     protocol: TCP
+  #     name: https
 
 # This block is for setting up environment variables more information can be found here: https://kubernetes.io/docs/tasks/inject-data-application/environment-variable-expose-pod-information/
 env: {}

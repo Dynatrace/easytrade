@@ -44,9 +44,17 @@ spec:
         {{- end }}
       {{- end }}
       ports:
+      {{- if .Values.service.ports }}
+        {{- range .Values.service.ports }}
+        - name: {{ .name }}
+          containerPort: {{ .containerPort | default .targetPort }}
+          protocol: {{ .protocol | default "TCP" }}
+        {{- end }}
+      {{- else }}
         - name: http
           containerPort: {{ .Values.service.port }}
           protocol: TCP
+      {{- end }}
       {{- with .Values.livenessProbe }}
       livenessProbe:
         {{- toYaml . | nindent 8 }}
