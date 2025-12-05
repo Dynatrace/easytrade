@@ -34,6 +34,21 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template.
   name: ""
 
+# RBAC configuration
+rbac:
+  # Specifies whether RBAC resources should be created
+  create: false
+  # Rules for the Role
+  rules: []
+  # Example:
+  # rules:
+  #   - apiGroups: [""]
+  #     resources: ["services", "pods", "events"]
+  #     verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+  #   - apiGroups: ["apps"]
+  #     resources: ["deployments", "replicasets"]
+  #     verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+
 # This is for setting Kubernetes Annotations to a Pod.
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 podAnnotations: {}
