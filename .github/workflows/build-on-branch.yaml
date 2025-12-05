@@ -21,27 +21,33 @@ env:
   HELM_CHART_PATH: helm/easytrade
 
 jobs:
-  snyk:
-    uses: ./.github/workflows/snyk.yaml
-    permissions:
-      security-events: write
-      contents: read
-      actions: read
-    secrets:
-      SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
+  # snyk:
+  #   uses: ./.github/workflows/snyk.yaml
+  #   permissions:
+  #     security-events: write
+  #     contents: read
+  #     actions: read
+  #   secrets:
+  #     SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
 
-  build-easytrade:
+  # build-easytrade:
+  #   runs-on: ubuntu-24.04
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+
+  #     - name: Build easytrade without pushing to docker repository
+  #       uses: hiberbee/github-action-skaffold@1.27.0
+  #       with:
+  #         command: build
+  #         push: false
+  #         skaffold-version: ${{ env.SKAFFOLD_VERSION }}
+
+  build-helm-chart:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Build easytrade without pushing to docker repository
-        uses: hiberbee/github-action-skaffold@1.27.0
-        with:
-          command: build
-          push: false
-          skaffold-version: ${{ env.SKAFFOLD_VERSION }}
 
       - name: Set up Helm
         uses: azure/setup-helm@v4
