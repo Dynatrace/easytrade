@@ -9,6 +9,7 @@ on:
       - kubernetes-manifests/**
       - skaffold.yaml
       - src/**
+      - helm/**
 
   workflow_call:
     secrets:
