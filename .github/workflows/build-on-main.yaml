@@ -134,8 +134,8 @@ jobs:
 
       - name: Enable test environment
         run: |
-          kubectl -n ${{ env.NAMESPACE }} set env deployment/credit-card-order-service WORK_DELAY=10 WORK_RATE=10
-          kubectl -n ${{ env.NAMESPACE }} set env deployment/third-party-service COURIER_DELAY=10 COURIER_RATE=10 MANUFACTURE_DELAY=10 MANUFACTURE_RATE=10
+          kubectl -n ${{ env.NAMESPACE }} set env deployment/easytrade-credit-card-order-service WORK_DELAY=10 WORK_RATE=10
+          kubectl -n ${{ env.NAMESPACE }} set env deployment/easytrade-third-party-service COURIER_DELAY=10 COURIER_RATE=10 MANUFACTURE_DELAY=10 MANUFACTURE_RATE=10
 
       - name: Wait 3 minutes
         run: sleep 3m
@@ -163,4 +163,4 @@ jobs:
 
       - name: Disable test environment
         run: |
-          kubectl -n ${{ env.NAMESPACE }} rollout undo deployment/credit-card-order-service deployment/third-party-service
+          kubectl -n ${{ env.NAMESPACE }} rollout undo deployment/easytrade-credit-card-order-service deployment/easytrade-third-party-service
