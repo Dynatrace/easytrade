@@ -33,6 +33,7 @@ env:
   NAMESPACE: easytrade
   SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   SKAFFOLD_VERSION: 2.13.2
+  HELM_CHART_PATH: helm/easytrade
 
 jobs:
   snyk:
@@ -73,6 +74,15 @@ jobs:
           tag: latest
           push: true
           skaffold-version: ${{ env.SKAFFOLD_VERSION }}
+
+      - name: Build and push Helm chart
+        uses: ./.github/actions/build-push-helm
+        with:
+          chart-path: ${{ env.HELM_CHART_PATH }}
+          push: true
+          registry-url: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
+          version: 1.2.${{ github.run_number }}
+          credentials: ${{ secrets.GAR_CREDENTIALS }}
 
   deploy-easytrade:
     runs-on: ubuntu-24.04
