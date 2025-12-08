@@ -116,7 +116,7 @@ jobs:
           command: deploy
           tag: ${{ env.COMMIT_SHA_SHORT }}
           namespace: ${{ env.NAMESPACE }}
-          profile: aws-staging
+          profile: aws-staging-helm
 
           working-directory: ${{ github.workspace }}/easytrade
 
