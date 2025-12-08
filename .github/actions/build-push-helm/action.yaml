@@ -9,7 +9,7 @@ inputs:
     required: false
     default: 'false'
   registry-login-url:
-    description: GRegistry login URL (e.g., oci://europe-docker.pkg.dev/project/helm-charts)
+    description: Google Registry login URL (e.g., oci://europe-docker.pkg.dev/project/helm-charts)
     required: false
     default: "europe-docker.pkg.dev"
   registry-url:
