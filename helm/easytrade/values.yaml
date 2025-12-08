@@ -3,6 +3,8 @@ global:
     version: 1.1.1
   image:
     tag: latest
+  podLabels: {}
+  env: {}
 
 accountservice:
   enabled: true
@@ -225,7 +227,11 @@ frontendreverseproxy:
       memory: 100Mi
   service:
     enabled: true
-    port: 80
+    ports:
+      - port: 80
+        targetPort: 80
+        protocol: TCP
+        name: http
 
 loadgen:
   enabled: true

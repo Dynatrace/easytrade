@@ -6,6 +6,9 @@ metadata:
   {{- end }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
+    {{- with .Values.global.podLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
     {{- with .Values.podLabels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
@@ -43,6 +46,12 @@ spec:
             secretKeyRef:
               name: {{ tpl ($secretKeyRef.name | toString) $ }}
               key: {{ $secretKeyRef.key }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.global.env }}
+        {{- range $key, $value := . }}
+        - name: {{ $key }}
+          value: {{ tpl ($value | toString) $ | quote }}
         {{- end }}
       {{- end }}
       {{- with .Values.env }}
