@@ -39,6 +39,9 @@ helm.sh/chart: {{ include "app.chart" . }}
 app.kubernetes.io/version: {{ .Values.global.dynatrace.version | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 app.kubernetes.io/part-of: easytrade
+{{- with .Values.global.labels }}
+{{ toYaml . }}
+{{- end }}
 {{- end }}
 
 {{/*

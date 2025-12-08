@@ -6,9 +6,6 @@ metadata:
   {{- end }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
-    {{- with .Values.global.podLabels }}
-    {{- toYaml . | nindent 4 }}
-    {{- end }}
     {{- with .Values.podLabels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
