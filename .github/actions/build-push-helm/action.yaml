@@ -50,6 +50,9 @@ runs:
         else
           VERSION="0.0.0-${GITHUB_SHA::8}"
         fi
+        # Set default image.tag version in values.yaml
+        cd ${{ inputs.chart-path }}
+        yq -i ".global.image.tag = \"$VERSION\"" values.yaml
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         
     - name: Update Helm dependencies
@@ -65,7 +68,8 @@ runs:
       shell: bash
       run: |
         helm package ${{ inputs.chart-path }} \
-          --version ${{ steps.set-version.outputs.version }}
+          --version ${{ steps.set-version.outputs.version }} \
+          --app-version ${{ steps.set-version.outputs.version }}
         
         CHART_NAME=$(ls -1 *.tgz | head -n1)
         echo "chart-name=$CHART_NAME" >> $GITHUB_OUTPUT

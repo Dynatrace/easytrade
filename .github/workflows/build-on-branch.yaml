@@ -56,4 +56,6 @@ jobs:
         uses: ./.github/actions/build-push-helm
         with:
           chart-path: ${{ env.HELM_CHART_PATH }}
-          push: false
+          push: true
+          registry-url: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
+          credentials: ${{ secrets.GAR_CREDENTIALS }}
