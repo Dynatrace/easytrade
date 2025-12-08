@@ -1,41 +1,45 @@
-name: 'Build and Push Helm Chart'
-description: 'Lint, build, and optionally push Helm chart to Google Artifact Registry'
+name: Build and Push Helm Chart
+description: Lint, build, and optionally push Helm chart to Google Artifact Registry
 inputs:
   chart-path:
-    description: 'Path to the Helm chart directory'
+    description: Path to the Helm chart directory
     required: true
   push:
-    description: 'Whether to push the chart to registry'
+    description: Whether to push the chart to registry
     required: false
     default: 'false'
+  registry-login-rl:
+    description: GRegistry login URL (e.g., oci://europe-docker.pkg.dev/project/helm-charts)
+    required: false
+    default: "https://europe-docker.pkg.dev"
   registry-url:
-    description: 'Google Artifact Registry URL (e.g., oci://europe-docker.pkg.dev/project/helm-charts)'
+    description: Google Artifact Registry URL (e.g., oci://europe-docker.pkg.dev/project/helm-charts)
     required: false
   credentials:
-    description: 'Base64 encoded Google service account JSON credentials'
+    description: Base64 encoded Google service account JSON credentials
     required: false
   version:
-    description: 'Chart version (defaults to 0.0.0-{sha})'
+    description: Chart version (defaults to 0.0.0-{sha})
     required: false
   app-version:
-    description: 'App version (defaults to git sha)'
+    description: App version (defaults to git sha)
     required: false
 
 outputs:
   chart-name:
-    description: 'Name of the packaged chart file'
+    description: Name of the packaged chart file
     value: ${{ steps.package.outputs.chart-name }}
   chart-version:
-    description: 'Version of the packaged chart'
+    description: Version of the packaged chart
     value: ${{ steps.set-version.outputs.version }}
 
 runs:
-  using: 'composite'
+  using: composite
   steps:
     - name: Set up Helm
       uses: azure/setup-helm@v4
       with:
-        version: 'latest'
+        version: latest
 
     - name: Set version
       id: set-version
@@ -44,17 +48,10 @@ runs:
         if [ -n "${{ inputs.version }}" ]; then
           VERSION="${{ inputs.version }}"
         else
-          VERSION="0.0.0-${{ github.sha }}"
+          VERSION="0.0.0-${GITHUB_SHA::8}"
         fi
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         
-        if [ -n "${{ inputs.app-version }}" ]; then
-          APP_VERSION="${{ inputs.app-version }}"
-        else
-          APP_VERSION="${{ github.sha }}"
-        fi
-        echo "app-version=$APP_VERSION" >> $GITHUB_OUTPUT
-
     - name: Update Helm dependencies
       shell: bash
       run: helm dependency update ${{ inputs.chart-path }}
@@ -68,27 +65,28 @@ runs:
       shell: bash
       run: |
         helm package ${{ inputs.chart-path }} \
-          --version ${{ steps.set-version.outputs.version }} \
-          --app-version ${{ steps.set-version.outputs.app-version }}
+          --version ${{ steps.set-version.outputs.version }}
         
         CHART_NAME=$(ls -1 *.tgz | head -n1)
         echo "chart-name=$CHART_NAME" >> $GITHUB_OUTPUT
 
     - name: Authenticate to Google Artifact Registry
-      if: inputs.push == 'true'
+      if: inputs.push == true
       shell: bash
       run: |
         echo "${{ inputs.credentials }}" | base64 -d > /tmp/gcloud-key.json
-        cat /tmp/gcloud-key.json | helm registry login -u _json_key --password-stdin https://europe-docker.pkg.dev
+        cat /tmp/gcloud-key.json | \
+          helm registry login -u _json_key \
+          --password-stdin ${{ inputs.registry-login-rl }}
 
     - name: Push Helm chart
-      if: inputs.push == 'true'
+      if: inputs.push == true
       shell: bash
       run: |
         helm push ${{ steps.package.outputs.chart-name }} ${{ inputs.registry-url }}
 
     - name: Cleanup credentials
-      if: always() && inputs.push == 'true'
+      if: always() && inputs.push == true
       shell: bash
       run: |
         rm -f /tmp/gcloud-key.json
