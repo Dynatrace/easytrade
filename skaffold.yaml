@@ -63,6 +63,19 @@ profiles:
       kustomize:
         paths:
           - ../easytrade-infrastructure/kubernetes-manifests/aws-live
+  - name: aws-live-helm
+    deploy:
+      helm:
+        releases:
+          - name: easytrade
+            chartPath: helm/easytrade
+            namespace: easytrade
+            createNamespace: true
+            valuesFiles:
+              - ../easytrade-infrastructure/helm-values/aws-base.yaml
+              - ../easytrade-infrastructure/helm-values/aws-live.yaml
+            setValueTemplates:
+              global.image.tag: "{{.IMAGE_TAG}}"
   - name: aws-live-ld
     deploy:
       kubectl: {}
@@ -70,6 +83,19 @@ profiles:
       kustomize:
         paths:
           - ../easytrade-infrastructure/kubernetes-manifests/aws-live-ld
+  - name: aws-live-ld-helm
+    deploy:
+      helm:
+        releases:
+          - name: easytrade
+            chartPath: helm/easytrade
+            namespace: easytrade
+            createNamespace: true
+            valuesFiles:
+              - ../easytrade-infrastructure/helm-values/aws-base.yaml
+              - ../easytrade-infrastructure/helm-values/aws-live-ld.yaml
+            setValueTemplates:
+              global.image.tag: "{{.IMAGE_TAG}}"
   - name: aws-staging
     deploy:
       kubectl: {}
@@ -77,6 +103,19 @@ profiles:
       kustomize:
         paths:
           - ../easytrade-infrastructure/kubernetes-manifests/aws-staging
+  - name: aws-staging-helm
+    deploy:
+      helm:
+        releases:
+          - name: easytrade
+            chartPath: helm/easytrade
+            namespace: easytrade
+            createNamespace: true
+            valuesFiles:
+              - ../easytrade-infrastructure/helm-values/aws-base.yaml
+              - ../easytrade-infrastructure/helm-values/aws-staging.yaml
+            setValueTemplates:
+              global.image.tag: "{{.IMAGE_TAG}}"
   - name: aws-staging-ld
     deploy:
       kubectl: {}
@@ -84,6 +123,19 @@ profiles:
       kustomize:
         paths:
           - ../easytrade-infrastructure/kubernetes-manifests/aws-staging-ld
+  - name: aws-staging-ld-helm
+    deploy:
+      helm:
+        releases:
+          - name: easytrade
+            chartPath: helm/easytrade
+            namespace: easytrade
+            createNamespace: true
+            valuesFiles:
+              - ../easytrade-infrastructure/helm-values/aws-base.yaml
+              - ../easytrade-infrastructure/helm-values/aws-staging-ld.yaml
+            setValueTemplates:
+              global.image.tag: "{{.IMAGE_TAG}}"
   - name: aws-playground
     deploy:
       kubectl: {}
@@ -91,6 +143,19 @@ profiles:
       kustomize:
         paths:
           - ../easytrade-infrastructure/kubernetes-manifests/aws-playground
+  - name: aws-playground-helm
+    deploy:
+      helm:
+        releases:
+          - name: easytrade
+            chartPath: helm/easytrade
+            namespace: easytrade
+            createNamespace: true
+            valuesFiles:
+              - ../easytrade-infrastructure/helm-values/aws-base.yaml
+              - ../easytrade-infrastructure/helm-values/aws-playground.yaml
+            setValueTemplates:
+              global.image.tag: "{{.IMAGE_TAG}}"
   - name: aws-playground-staging
     deploy:
       kubectl: {}
@@ -98,6 +163,19 @@ profiles:
       kustomize:
         paths:
           - ../easytrade-infrastructure/kubernetes-manifests/aws-playground-staging
+  - name: aws-playground-staging-helm
+    deploy:
+      helm:
+        releases:
+          - name: easytrade
+            chartPath: helm/easytrade
+            namespace: easytrade
+            createNamespace: true
+            valuesFiles:
+              - ../easytrade-infrastructure/helm-values/aws-base.yaml
+              - ../easytrade-infrastructure/helm-values/aws-playground-staging.yaml
+            setValueTemplates:
+              global.image.tag: "{{.IMAGE_TAG}}"
   - name: azure-playground-dev
     deploy:
       kubectl: {}
@@ -105,3 +183,16 @@ profiles:
       kustomize:
         paths:
           - ../easytrade-infrastructure/kubernetes-manifests/azure-playground-dev
+  - name: azure-playground-dev-helm
+    deploy:
+      helm:
+        releases:
+          - name: easytrade
+            chartPath: helm/easytrade
+            namespace: easytrade
+            createNamespace: true
+            valuesFiles:
+              - ../easytrade-infrastructure/helm-values/aws-base.yaml
+              - ../easytrade-infrastructure/helm-values/azure-playground-dev.yaml
+            setValueTemplates:
+              global.image.tag: "{{.IMAGE_TAG}}"
