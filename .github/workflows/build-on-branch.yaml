@@ -50,13 +50,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Helm
-        uses: azure/setup-helm@v4
+      - name: Build Helm chart
+        uses: ./.github/actions/build-push-helm
         with:
-          version: 'latest'
-
-      - name: Lint and build Helm chart
-        run: |
-          helm dependency update ${{ env.HELM_CHART_PATH }}
-          helm lint ${{ env.HELM_CHART_PATH }}
-          helm package ${{ env.HELM_CHART_PATH }}
+          chart-path: ${{ env.HELM_CHART_PATH }}
+          push: false
