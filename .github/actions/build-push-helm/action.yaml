@@ -71,7 +71,7 @@ runs:
         echo "chart-name=$CHART_NAME" >> $GITHUB_OUTPUT
 
     - name: Authenticate to Google Artifact Registry
-      if: inputs.push == true
+      if: inputs.push == 'true'
       shell: bash
       run: |
         echo "${{ inputs.credentials }}" | base64 -d > /tmp/gcloud-key.json
@@ -80,13 +80,13 @@ runs:
           --password-stdin ${{ inputs.registry-login-rl }}
 
     - name: Push Helm chart
-      if: inputs.push == true
+      if: inputs.push == 'true'
       shell: bash
       run: |
         helm push ${{ steps.package.outputs.chart-name }} ${{ inputs.registry-url }}
 
     - name: Cleanup credentials
-      if: always() && inputs.push == true
+      if: always() && inputs.push == 'true'
       shell: bash
       run: |
         rm -f /tmp/gcloud-key.json
