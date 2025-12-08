@@ -11,7 +11,7 @@ inputs:
   registry-login-url:
     description: GRegistry login URL (e.g., oci://europe-docker.pkg.dev/project/helm-charts)
     required: false
-    default: "https://europe-docker.pkg.dev"
+    default: "europe-docker.pkg.dev"
   registry-url:
     description: Google Artifact Registry URL (e.g., oci://europe-docker.pkg.dev/project/helm-charts)
     required: false
