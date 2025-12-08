@@ -8,7 +8,7 @@ inputs:
     description: Whether to push the chart to registry
     required: false
     default: 'false'
-  registry-login-rl:
+  registry-login-url:
     description: GRegistry login URL (e.g., oci://europe-docker.pkg.dev/project/helm-charts)
     required: false
     default: "https://europe-docker.pkg.dev"
@@ -74,10 +74,9 @@ runs:
       if: inputs.push == 'true'
       shell: bash
       run: |
-        echo "${{ inputs.credentials }}" | base64 -d > /tmp/gcloud-key.json
-        cat /tmp/gcloud-key.json | \
-          helm registry login -u _json_key \
-          --password-stdin ${{ inputs.registry-login-rl }}
+        echo "${{ inputs.credentials }}" | \
+          helm registry login -u _json_key_base64 \
+          --password-stdin ${{ inputs.registry-login-url }}
 
     - name: Push Helm chart
       if: inputs.push == 'true'
