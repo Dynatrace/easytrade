@@ -2,14 +2,20 @@ global:
   dynatrace:
     version: 1.1.1
   image:
+    # Base repository for all images. Individual services can override the repository if needed.
+    baseRepository: "europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade"
     tag: latest
+  # Global labels to be added to all resources
   labels: {}
+  # Environment variables to be added to all pods
   env: {}
 
 accountservice:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice
+  # Example of overriding the image repository for a specific service
+  # image:
+  #   repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice
+  #   tag: latest
   env:
     MANAGER_HOSTANDPORT: "{{ .Release.Name }}-manager:8080"
     PROXY_PREFIX: "accountservice"
@@ -26,8 +32,6 @@ accountservice:
 
 aggregator-service:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/aggregator-service
   env:
     OFFER_SERVICE_PROTOCOL: "http"
     OFFER_SERVICE_HOST: "{{ .Release.Name }}-offerservice"
@@ -42,8 +46,6 @@ aggregator-service:
 
 broker-service:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/broker-service
   env:
     ACCOUNTSERVICE_HOSTANDPORT: "{{ .Release.Name }}-accountservice:8080"
     PRICINGSERVICE_HOSTANDPORT: "{{ .Release.Name }}-pricing-service:8080"
@@ -69,8 +71,6 @@ broker-service:
 
 calculationservice:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/calculationservice
   env:
     RABBITMQ_USER: userxxx
     RABBITMQ_PASSWORD: passxxx
@@ -87,8 +87,6 @@ calculationservice:
 
 contentcreator:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/contentcreator
   envFromSecret:
     MSSQL_CONNECTIONSTRING:
       name: "{{ .Release.Name }}-connection-strings"
@@ -103,8 +101,6 @@ contentcreator:
 
 credit-card-order-service:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/credit-card-order-service
   env:
     PROXY_PREFIX: "credit-card-order-service"
     THIRD_PARTY_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-third-party-service:8080"
@@ -129,8 +125,6 @@ credit-card-order-service:
 db:
   enabled: true
   workloadType: statefulset
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/db
   envFromSecret:
     SA_PASSWORD:
       name: "{{ .Release.Name }}-connection-strings"
@@ -152,8 +146,6 @@ db:
 
 engine:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/engine
   env:
     BROKER_HOSTANDPORT: "{{ .Release.Name }}-broker-service:8080"
     PROXY_PREFIX: "engine"
@@ -170,8 +162,6 @@ engine:
 
 feature-flag-service:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/feature-flag-service
   env:
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
@@ -189,8 +179,6 @@ feature-flag-service:
 
 frontend:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/frontend
   resources:
     requests:
       cpu: 10m
@@ -204,8 +192,6 @@ frontend:
 
 frontendreverseproxy:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/frontendreverseproxy
   env:
     ACCOUNT_SERVICE_URL: "http://{{ .Release.Name }}-accountservice:8080"
     BROKER_SERVICE_URL: "http://{{ .Release.Name }}-broker-service:8080"
@@ -235,8 +221,6 @@ frontendreverseproxy:
 
 loadgen:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loadgen
   env:
     EASYTRADE_URL: "http://{{ .Release.Name }}-frontendreverseproxy"
     RARE_VISITS_INTERVAL_MINUTES: "60"
@@ -250,8 +234,6 @@ loadgen:
 
 loginservice:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/loginservice
   env:
     PROXY_PREFIX: "loginservice"
   envFromSecret:
@@ -271,8 +253,6 @@ loginservice:
 
 manager:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/manager
   env:
     PROXY_PREFIX: "manager"
   envFromSecret:
@@ -292,8 +272,6 @@ manager:
 
 offerservice:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/offerservice
   env:
     LOGIN_SERVICE_PORT: "8080"
     LOGIN_SERVICE_BASE_URL: "{{ .Release.Name }}-loginservice"
@@ -341,8 +319,6 @@ pricing-service:
 
 problem-operator:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/problem-operator
   rbac:
     create: true
     rules:
@@ -368,8 +344,6 @@ problem-operator:
 
 rabbitmq:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/rabbitmq
   env:
     RABBITMQ_USER: userxxx
     RABBITMQ_PASSWORD: passxxx
@@ -397,8 +371,6 @@ rabbitmq:
 
 third-party-service:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/third-party-service
   env:
     CREDIT_CARD_ORDER_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-credit-card-order-service:8080"
     PROXY_PREFIX: "third-party-service"

@@ -25,7 +25,11 @@ spec:
       securityContext:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Values.global.image.tag }}"
+      {{- $repository := .Values.image.repository }}
+      {{- if and .Values.global.image.baseRepository (not .Values.image.repository) }}
+        {{- $repository = printf "%s/%s" .Values.global.image.baseRepository .Chart.Name }}
+      {{- end }}
+      image: "{{ $repository }}:{{ .Values.image.tag | default .Values.global.image.tag }}"
       imagePullPolicy: {{ .Values.image.pullPolicy }}
       env:
         - name: DT_RELEASE_PRODUCT
