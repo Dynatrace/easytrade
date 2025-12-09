@@ -47,44 +47,44 @@ jobs:
     secrets:
       SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
 
-  # build-easytrade:
-  #   runs-on: ubuntu-24.04
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
+  build-easytrade:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  #     - name: Retrieve gar credentials
-  #       run: |
-  #         echo "${{ secrets.GAR_CREDENTIALS }}" | docker login -u _json_key_base64 --password-stdin "${{ env.GAR_ADDRESS }}"
+      - name: Retrieve gar credentials
+        run: |
+          echo "${{ secrets.GAR_CREDENTIALS }}" | docker login -u _json_key_base64 --password-stdin "${{ env.GAR_ADDRESS }}"
 
-  #     - name: Set application version
-  #       uses: ./.github/actions/set-version
-  #       with:
-  #         version: 1.2.${{ github.run_number }}
+      - name: Set application version
+        uses: ./.github/actions/set-version
+        with:
+          version: 1.2.${{ github.run_number }}
 
-  #     - name: "Build easytrade and push it to Docker registry with commit tag"
-  #       uses: hiberbee/github-action-skaffold@1.27.0
-  #       with:
-  #         command: build
-  #         push: true
-  #         skaffold-version: ${{ env.SKAFFOLD_VERSION }}
+      - name: "Build easytrade and push it to Docker registry with commit tag"
+        uses: hiberbee/github-action-skaffold@1.27.0
+        with:
+          command: build
+          push: true
+          skaffold-version: ${{ env.SKAFFOLD_VERSION }}
 
-  #     - name: "Build easytrade and push it to Docker registry with latest tag"
-  #       uses: hiberbee/github-action-skaffold@1.27.0
-  #       with:
-  #         command: build
-  #         tag: latest
-  #         push: true
-  #         skaffold-version: ${{ env.SKAFFOLD_VERSION }}
+      - name: "Build easytrade and push it to Docker registry with latest tag"
+        uses: hiberbee/github-action-skaffold@1.27.0
+        with:
+          command: build
+          tag: latest
+          push: true
+          skaffold-version: ${{ env.SKAFFOLD_VERSION }}
 
-  #     - name: Build and push Helm chart
-  #       uses: ./.github/actions/build-push-helm
-  #       with:
-  #         chart-path: ${{ env.HELM_CHART_PATH }}
-  #         push: true
-  #         registry-url: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
-  #         version: 1.2.${{ github.run_number }}
-  #         credentials: ${{ secrets.GAR_CREDENTIALS }}
+      - name: Build and push Helm chart
+        uses: ./.github/actions/build-push-helm
+        with:
+          chart-path: ${{ env.HELM_CHART_PATH }}
+          push: true
+          registry-url: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
+          version: 1.2.${{ github.run_number }}
+          credentials: ${{ secrets.GAR_CREDENTIALS }}
 
   deploy-easytrade:
     runs-on: ubuntu-24.04
@@ -109,11 +109,7 @@ jobs:
           ref: add-helm
 
       - name: Export short commit SHA
-        # run: echo "COMMIT_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
-        run: echo "COMMIT_SHA_SHORT=e7d07f0" >> $GITHUB_ENV
-
-      - name: debug
-        run: tree
+        run: echo "COMMIT_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
 
       - name: Deploy easytrade
         uses: hiberbee/github-action-skaffold@1.27.0
