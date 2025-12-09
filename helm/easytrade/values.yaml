@@ -139,10 +139,11 @@ db:
   service:
     enabled: true
     port: 1433
-  persistence:
-    enabled: true
-    mountPath: /var/opt/mssql
-    size: 10Gi
+  # Enabling persistence will create a PersistentVolumeClaim for the database data
+  # persistence:
+  #   enabled: true
+  #   mountPath: /var/opt/mssql
+  #   size: 10Gi
 
 engine:
   enabled: true
