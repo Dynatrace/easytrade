@@ -105,7 +105,6 @@ jobs:
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           repository: dynatrace/easytrade-infrastructure
-          sparse-checkout: kubernetes-manifests
           path: easytrade-infrastructure
           ref: add-helm
 
