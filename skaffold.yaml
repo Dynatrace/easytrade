@@ -109,7 +109,7 @@ profiles:
         releases:
           - name: easytrade
             chartPath: helm/easytrade
-            namespace: easytrade
+            namespace: easytrade-helm
             createNamespace: true
             valuesFiles:
               - ../easytrade-infrastructure/helm-values/aws-base.yaml
