@@ -8,6 +8,7 @@ on:
       - kubernetes-manifests/**
       - skaffold.yaml
       - src/**
+  workflow_dispatch:
 
   workflow_call:
     secrets:
