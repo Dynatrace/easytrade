@@ -88,7 +88,7 @@ jobs:
 
   deploy-easytrade:
     runs-on: ubuntu-24.04
-    # needs: build-easytrade
+    needs: build-easytrade
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
