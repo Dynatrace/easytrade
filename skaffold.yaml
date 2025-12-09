@@ -51,10 +51,6 @@ deploy:
   statusCheckDeadlineSeconds: 300
   tolerateFailuresUntilDeadline: true
   kubectl: {}
-manifests:
-  kustomize:
-    paths:
-      - ./kubernetes-manifests/base
 profiles:
   - name: aws-live
     deploy:
