@@ -50,16 +50,9 @@ build:
 deploy:
   statusCheckDeadlineSeconds: 300
   tolerateFailuresUntilDeadline: true
-  kubectl: {}
+  helm: {}
 profiles:
   - name: aws-live
-    deploy:
-      kubectl: {}
-    manifests:
-      kustomize:
-        paths:
-          - ../easytrade-infrastructure/kubernetes-manifests/aws-live
-  - name: aws-live-helm
     deploy:
       helm:
         releases:
@@ -74,13 +67,6 @@ profiles:
               global.image.tag: "{{.IMAGE_TAG}}"
   - name: aws-live-ld
     deploy:
-      kubectl: {}
-    manifests:
-      kustomize:
-        paths:
-          - ../easytrade-infrastructure/kubernetes-manifests/aws-live-ld
-  - name: aws-live-ld-helm
-    deploy:
       helm:
         releases:
           - name: easytrade
@@ -93,13 +79,6 @@ profiles:
             setValueTemplates:
               global.image.tag: "{{.IMAGE_TAG}}"
   - name: aws-staging
-    deploy:
-      kubectl: {}
-    manifests:
-      kustomize:
-        paths:
-          - ../easytrade-infrastructure/kubernetes-manifests/aws-staging
-  - name: aws-staging-helm
     deploy:
       helm:
         releases:
@@ -114,13 +93,6 @@ profiles:
               global.image.tag: "{{.IMAGE_TAG}}"
   - name: aws-staging-ld
     deploy:
-      kubectl: {}
-    manifests:
-      kustomize:
-        paths:
-          - ../easytrade-infrastructure/kubernetes-manifests/aws-staging-ld
-  - name: aws-staging-ld-helm
-    deploy:
       helm:
         releases:
           - name: easytrade
@@ -133,13 +105,6 @@ profiles:
             setValueTemplates:
               global.image.tag: "{{.IMAGE_TAG}}"
   - name: aws-playground
-    deploy:
-      kubectl: {}
-    manifests:
-      kustomize:
-        paths:
-          - ../easytrade-infrastructure/kubernetes-manifests/aws-playground
-  - name: aws-playground-helm
     deploy:
       helm:
         releases:
@@ -154,13 +119,6 @@ profiles:
               global.image.tag: "{{.IMAGE_TAG}}"
   - name: aws-playground-staging
     deploy:
-      kubectl: {}
-    manifests:
-      kustomize:
-        paths:
-          - ../easytrade-infrastructure/kubernetes-manifests/aws-playground-staging
-  - name: aws-playground-staging-helm
-    deploy:
       helm:
         releases:
           - name: easytrade
@@ -173,13 +131,6 @@ profiles:
             setValueTemplates:
               global.image.tag: "{{.IMAGE_TAG}}"
   - name: azure-playground-dev
-    deploy:
-      kubectl: {}
-    manifests:
-      kustomize:
-        paths:
-          - ../easytrade-infrastructure/kubernetes-manifests/azure-playground-dev
-  - name: azure-playground-dev-helm
     deploy:
       helm:
         releases:
