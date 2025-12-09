@@ -9,6 +9,7 @@ on:
       - skaffold.yaml
       - src/**
       - helm/**
+  workflow_dispatch:
 
   workflow_call:
     secrets:
