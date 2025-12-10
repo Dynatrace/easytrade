@@ -106,7 +106,6 @@ jobs:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           repository: dynatrace/easytrade-infrastructure
           path: easytrade-infrastructure
-          ref: add-helm
 
       - name: Export short commit SHA
         run: echo "COMMIT_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
