@@ -32,7 +32,7 @@ on:
 
 env:
   GAR_ADDRESS: europe-docker.pkg.dev
-  NAMESPACE: easytrade-helm
+  NAMESPACE: easytrade
   SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   SKAFFOLD_VERSION: 2.13.2
   HELM_CHART_PATH: helm/easytrade
