@@ -19,12 +19,6 @@ List of helm charts:
 ```bash
 # Add the repository (if using OCI registry)
 helm pull oci://europe-docker.pkg.dev/dynatrace-demoability/helm/easytrade --version <version>
-
-# Install from local chart
-helm install easytrade ./helm/easytrade -n easytrade --create-namespace
-
-# Install with custom values
-helm install easytrade ./helm/easytrade -n easytrade --create-namespace -f custom-values.yaml
 ```
 
 ## Configuration
