@@ -9,7 +9,7 @@ inputs:
 outputs:
   version:
     description: "Calculated semantic version"
-    value: ${{ steps.version.outputs.version }}
+    value: ${{ steps.version.outputs.semVer }}
   is-release:
     description: "Whether this is a release build (true/false)"
     value: ${{ steps.check-release.outputs.is-release }}
@@ -17,11 +17,16 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Git Version
-      id: version
-      uses: codacy/git-version@2.8.6
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v4.2.0
       with:
-        release-branch: ${{ inputs.release-branch }}
+        versionSpec: '6.x'
+
+    - name: Determine Version
+      id: version
+      uses: gittools/actions/gitversion/execute@v4.2.0
+      with:
+        useConfigFile: false
 
     - name: Check if release
       id: check-release
@@ -39,7 +44,7 @@ runs:
     - name: Show version
       shell: bash
       run: |
-        echo "Version: ${{ steps.version.outputs.version }}"
+        echo "Version: ${{ steps.version.outputs.semVer }}"
         echo "Is Release: ${{ steps.check-release.outputs.is-release }}"
-        echo "### Version: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "### Version: ${{ steps.version.outputs.semVer }}" >> $GITHUB_STEP_SUMMARY
         echo "**Is Release:** ${{ steps.check-release.outputs.is-release }}" >> $GITHUB_STEP_SUMMARY
