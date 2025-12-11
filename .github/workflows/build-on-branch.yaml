@@ -16,7 +16,7 @@ on:
         required: true
 
 env:
-  CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker-test/easytrade
+  CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
 
 jobs:
   snyk:
