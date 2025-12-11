@@ -31,6 +31,11 @@ jobs:
   calc-version:
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
       - name: Calculate version
         uses: ./.github/actions/calc-version
         with:
@@ -41,7 +46,7 @@ jobs:
     needs: calc-version
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build easytrade without pushing to docker repository
         uses: ./.github/actions/build-push-images
