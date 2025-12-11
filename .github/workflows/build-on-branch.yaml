@@ -16,7 +16,7 @@ on:
         required: true
 
 env:
-  CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
+  CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker-test/easytrade
 
 jobs:
   snyk:
@@ -31,7 +31,7 @@ jobs:
   calc-version:
     uses: ./.github/workflows/calc-version.yaml
     with:
-      release-branch: main
+      release-branch: ci-v2
 
   build-easytrade:
     runs-on: ubuntu-24.04
@@ -44,5 +44,13 @@ jobs:
         uses: ./.github/actions/build-push-images
         with:
           push: false
+          tag: ${{ needs.calc-version.outputs.version }}
+          registry: ${{ env.CONTAINER_REGISTRY }}
+
+      - name: Push images on release
+        if: needs.calc-version.outputs.is-release == 'true'
+        uses: ./.github/actions/build-push-images
+        with:
+          push: true
           tag: ${{ needs.calc-version.outputs.version }}
           registry: ${{ env.CONTAINER_REGISTRY }}
