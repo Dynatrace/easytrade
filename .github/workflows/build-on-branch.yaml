@@ -29,9 +29,12 @@ jobs:
       SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
 
   calc-version:
-    uses: ./.github/workflows/calc-version.yaml
-    with:
-      release-branch: main
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Calculate version
+        uses: ./.github/actions/calc-version
+        with:
+          release-branch: main
 
   build-easytrade:
     runs-on: ubuntu-24.04
@@ -40,7 +43,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build and push images
+      - name: Build easytrade without pushing to docker repository
         uses: ./.github/actions/build-push-images
         with:
           push: false

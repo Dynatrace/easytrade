@@ -1,21 +1,21 @@
-name: 'Calculate Version'
-description: 'Calculate semantic version from git history and determine if it is a release'
+name: "Calculate Version"
+description: "Calculate semantic version from git history and determine if it is a release"
 inputs:
   release-branch:
-    description: 'Branch name that triggers releases'
+    description: "Branch name that triggers releases"
     required: false
-    default: 'main'
+    default: "main"
 
 outputs:
   version:
-    description: 'Calculated semantic version'
+    description: "Calculated semantic version"
     value: ${{ steps.version.outputs.version }}
   is-release:
-    description: 'Whether this is a release build (true/false)'
+    description: "Whether this is a release build (true/false)"
     value: ${{ steps.check-release.outputs.is-release }}
 
 runs:
-  using: 'composite'
+  using: composite
   steps:
     - name: Git Version
       id: version
