@@ -15,7 +15,7 @@ inputs:
   compose-file:
     description: "Path to docker compose file"
     required: false
-    default: "compose.yaml"
+    default: "compose.build.yaml"
 
 outputs:
   images:
