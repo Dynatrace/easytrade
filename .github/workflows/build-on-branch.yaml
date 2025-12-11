@@ -29,18 +29,9 @@ jobs:
       SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
 
   calc-version:
-    runs-on: ubuntu-24.04
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Calculate version
-        id: version
-        uses: ./.github/actions/calc-version
-        with:
-          release-branch: main
+    uses: ./.github/workflows/calc-version.yaml
+    with:
+      release-branch: main
 
   build-easytrade:
     runs-on: ubuntu-24.04
