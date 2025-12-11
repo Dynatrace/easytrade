@@ -30,8 +30,6 @@ jobs:
 
   calc-version:
     uses: ./.github/workflows/calc-version.yaml
-    with:
-      release-branch: ci-v2
 
   build-easytrade:
     runs-on: ubuntu-24.04
