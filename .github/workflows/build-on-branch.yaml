@@ -37,6 +37,7 @@ jobs:
           fetch-depth: 0
 
       - name: Calculate version
+        id: version
         uses: ./.github/actions/calc-version
         with:
           release-branch: main
