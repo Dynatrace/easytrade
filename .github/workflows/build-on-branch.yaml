@@ -43,14 +43,6 @@ jobs:
       - name: Build easytrade without pushing to docker repository
         uses: ./.github/actions/build-push-images
         with:
-          push: false
-          tag: ${{ needs.calc-version.outputs.version }}
-          registry: ${{ env.CONTAINER_REGISTRY }}
-
-      - name: Push images on release
-        if: needs.calc-version.outputs.is-release == 'true'
-        uses: ./.github/actions/build-push-images
-        with:
-          push: true
+          push: ${{ needs.calc-version.outputs.is-release}}
           tag: ${{ needs.calc-version.outputs.version }}
           registry: ${{ env.CONTAINER_REGISTRY }}
