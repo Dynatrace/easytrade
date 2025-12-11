@@ -52,5 +52,5 @@ jobs:
         uses: ./.github/actions/build-push-images
         with:
           push: false
-          tag: ${{ steps.calc-version.outputs.version }}
+          tag: ${{ needs.calc-version.outputs.version }}
           registry: ${{ env.CONTAINER_REGISTRY }}
