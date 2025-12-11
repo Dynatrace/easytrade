@@ -35,9 +35,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Build easytrade without pushing to docker repository
-        uses: hiberbee/github-action-skaffold@1.27.0
+      - name: Build and push images
+        uses: ./.github/actions/build-push-images
         with:
-          command: build
-          push: false
-          skaffold-version: ${{ env.SKAFFOLD_VERSION }}
+          push: 'true'
+          tag: 'v1.0.0'
+          registry: 'europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade'
