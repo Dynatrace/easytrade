@@ -1,0 +1,45 @@
+name: 'Calculate Version'
+description: 'Calculate semantic version from git history and determine if it is a release'
+inputs:
+  release-branch:
+    description: 'Branch name that triggers releases'
+    required: false
+    default: 'main'
+
+outputs:
+  version:
+    description: 'Calculated semantic version'
+    value: ${{ steps.version.outputs.version }}
+  is-release:
+    description: 'Whether this is a release build (true/false)'
+    value: ${{ steps.check-release.outputs.is-release }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Git Version
+      id: version
+      uses: codacy/git-version@2.8.6
+      with:
+        release-branch: ${{ inputs.release-branch }}
+
+    - name: Check if release
+      id: check-release
+      shell: bash
+      run: |
+        CURRENT_BRANCH="${GITHUB_REF#refs/heads/}"
+        if [ "$CURRENT_BRANCH" = "${{ inputs.release-branch }}" ]; then
+          echo "is-release=true" >> $GITHUB_OUTPUT
+          echo "This is a release build from ${{ inputs.release-branch }}"
+        else
+          echo "is-release=false" >> $GITHUB_OUTPUT
+          echo "This is not a release build (current branch: $CURRENT_BRANCH)"
+        fi
+
+    - name: Show version
+      shell: bash
+      run: |
+        echo "Version: ${{ steps.version.outputs.version }}"
+        echo "Is Release: ${{ steps.check-release.outputs.is-release }}"
+        echo "### Version: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Is Release:** ${{ steps.check-release.outputs.is-release }}" >> $GITHUB_STEP_SUMMARY
