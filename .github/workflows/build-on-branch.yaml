@@ -9,15 +9,19 @@ on:
       - kubernetes-manifests/**
       - skaffold.yaml
       - src/**
+      - helm/**
 
   workflow_call:
     secrets:
       SNYK_API_TOKEN:
         required: true
+      GAR_CREDENTIALS:
+        required: true
 
 env:
   SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   SKAFFOLD_VERSION: 2.13.2
+  HELM_CHART_PATH: helm/easytrade
 
 jobs:
   snyk:
@@ -41,3 +45,15 @@ jobs:
           command: build
           push: false
           skaffold-version: ${{ env.SKAFFOLD_VERSION }}
+
+  build-helm-chart:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Helm chart
+        uses: ./.github/actions/build-push-helm
+        with:
+          chart-path: ${{ env.HELM_CHART_PATH }}
+          push: false

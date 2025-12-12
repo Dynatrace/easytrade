@@ -8,6 +8,7 @@ on:
       - kubernetes-manifests/**
       - skaffold.yaml
       - src/**
+      - helm/**
   workflow_dispatch:
 
   workflow_call:
@@ -34,6 +35,7 @@ env:
   NAMESPACE: easytrade
   SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   SKAFFOLD_VERSION: 2.13.2
+  HELM_CHART_PATH: helm/easytrade
 
 jobs:
   snyk:
@@ -75,6 +77,15 @@ jobs:
           push: true
           skaffold-version: ${{ env.SKAFFOLD_VERSION }}
 
+      - name: Build and push Helm chart
+        uses: ./.github/actions/build-push-helm
+        with:
+          chart-path: ${{ env.HELM_CHART_PATH }}
+          push: true
+          registry-url: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
+          version: 1.2.${{ github.run_number }}
+          credentials: ${{ secrets.GAR_CREDENTIALS }}
+
   deploy-easytrade:
     runs-on: ubuntu-24.04
     needs: build-easytrade
@@ -94,7 +105,6 @@ jobs:
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           repository: dynatrace/easytrade-infrastructure
-          sparse-checkout: kubernetes-manifests
           path: easytrade-infrastructure
 
       - name: Export short commit SHA
@@ -124,8 +134,8 @@ jobs:
 
       - name: Enable test environment
         run: |
-          kubectl -n ${{ env.NAMESPACE }} set env deployment/credit-card-order-service WORK_DELAY=10 WORK_RATE=10
-          kubectl -n ${{ env.NAMESPACE }} set env deployment/third-party-service COURIER_DELAY=10 COURIER_RATE=10 MANUFACTURE_DELAY=10 MANUFACTURE_RATE=10
+          kubectl -n ${{ env.NAMESPACE }} set env deployment/easytrade-credit-card-order-service WORK_DELAY=10 WORK_RATE=10
+          kubectl -n ${{ env.NAMESPACE }} set env deployment/easytrade-third-party-service COURIER_DELAY=10 COURIER_RATE=10 MANUFACTURE_DELAY=10 MANUFACTURE_RATE=10
 
       - name: Wait 3 minutes
         run: sleep 3m
@@ -153,4 +163,4 @@ jobs:
 
       - name: Disable test environment
         run: |
-          kubectl -n ${{ env.NAMESPACE }} rollout undo deployment/credit-card-order-service deployment/third-party-service
+          kubectl -n ${{ env.NAMESPACE }} rollout undo deployment/easytrade-credit-card-order-service deployment/easytrade-third-party-service
