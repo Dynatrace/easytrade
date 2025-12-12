@@ -22,7 +22,7 @@ runs:
       shell: bash
       run: |
         RESPONSE=$(./.github/actions/scripts/curl-on-cluster.sh ${{ inputs.namespace }} \
-          -sLX GET 'credit-card-order-service:8080/v1/orders/${{ inputs.user_id }}/status/latest' \
+          -sLX GET 'easytrade-credit-card-order-service:8080/v1/orders/${{ inputs.user_id }}/status/latest' \
           -H 'accept: application/json')
         echo "Response: [${RESPONSE}]"
 

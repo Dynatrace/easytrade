@@ -8,6 +8,7 @@ on:
       - kubernetes-manifests/**
       - skaffold.yaml
       - src/**
+      - helm/**
   workflow_dispatch:
 
   workflow_call:
@@ -33,6 +34,8 @@ env:
   GAR_ADDRESS: europe-docker.pkg.dev
   NAMESPACE: easytrade
   CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
+  HELM_REGISTRY: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
+  HELM_CHART_PATH: helm/easytrade
 
 jobs:
   snyk:
@@ -66,9 +69,18 @@ jobs:
       - name: Build easytrade without pushing to docker repository
         uses: ./.github/actions/build-push-images
         with:
-          push: ${{ needs.calc-version.outputs.is-release}}
+          push: ${{ needs.calc-version.outputs.is-release }}
           tag: ${{ needs.calc-version.outputs.version }}
           registry: ${{ env.CONTAINER_REGISTRY }}
+
+      - name: Build and push Helm chart
+        uses: ./.github/actions/build-push-helm
+        with:
+          chart-path: ${{ env.HELM_CHART_PATH }}
+          push: ${{ needs.calc-version.outputs.is-release }}
+          registry-url: ${{ env.HELM_REGISTRY }}
+          version: ${{ needs.calc-version.outputs.version }}
+          credentials: ${{ secrets.GAR_CREDENTIALS }}
 
   deploy-easytrade:
     runs-on: ubuntu-24.04
@@ -89,11 +101,7 @@ jobs:
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           repository: dynatrace/easytrade-infrastructure
-          sparse-checkout: kubernetes-manifests
           path: easytrade-infrastructure
-
-      - name: Export short commit SHA
-        run: echo "COMMIT_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
 
       # Deploy todo
 
@@ -111,8 +119,8 @@ jobs:
 
       - name: Enable test environment
         run: |
-          kubectl -n ${{ env.NAMESPACE }} set env deployment/credit-card-order-service WORK_DELAY=10 WORK_RATE=10
-          kubectl -n ${{ env.NAMESPACE }} set env deployment/third-party-service COURIER_DELAY=10 COURIER_RATE=10 MANUFACTURE_DELAY=10 MANUFACTURE_RATE=10
+          kubectl -n ${{ env.NAMESPACE }} set env deployment/easytrade-credit-card-order-service WORK_DELAY=10 WORK_RATE=10
+          kubectl -n ${{ env.NAMESPACE }} set env deployment/easytrade-third-party-service COURIER_DELAY=10 COURIER_RATE=10 MANUFACTURE_DELAY=10 MANUFACTURE_RATE=10
 
       - name: Wait 3 minutes
         run: sleep 3m
@@ -140,4 +148,4 @@ jobs:
 
       - name: Disable test environment
         run: |
-          kubectl -n ${{ env.NAMESPACE }} rollout undo deployment/credit-card-order-service deployment/third-party-service
+          kubectl -n ${{ env.NAMESPACE }} rollout undo deployment/easytrade-credit-card-order-service deployment/easytrade-third-party-service

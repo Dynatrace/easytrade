@@ -1,0 +1,394 @@
+global:
+  dynatrace:
+    version: 1.1.1
+  image:
+    # Base repository for all images. Individual services can override the repository if needed.
+    baseRepository: "europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade"
+    tag: latest
+  # Global labels to be added to all resources
+  labels: {}
+  # Environment variables to be added to all pods
+  env: {}
+
+accountservice:
+  enabled: true
+  # Example of overriding the image repository for a specific service
+  # image:
+  #   repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice
+  #   tag: latest
+  env:
+    MANAGER_HOSTANDPORT: "{{ .Release.Name }}-manager:8080"
+    PROXY_PREFIX: "accountservice"
+  resources:
+    requests:
+      cpu: 30m
+      memory: 600Mi
+    limits:
+      cpu: 200m
+      memory: 600Mi
+  service:
+    enabled: true
+    port: 8080
+
+aggregator-service:
+  enabled: true
+  env:
+    OFFER_SERVICE_PROTOCOL: "http"
+    OFFER_SERVICE_HOST: "{{ .Release.Name }}-offerservice"
+    OFFER_SERVICE_PORT: "8080"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 30Mi
+    limits:
+      cpu: 200m
+      memory: 30Mi
+
+broker-service:
+  enabled: true
+  env:
+    ACCOUNTSERVICE_HOSTANDPORT: "{{ .Release.Name }}-accountservice:8080"
+    PRICINGSERVICE_HOSTANDPORT: "{{ .Release.Name }}-pricing-service:8080"
+    ENGINE_HOSTANDPORT: "{{ .Release.Name }}-engine:8080"
+    FEATURE_FLAG_SERVICE_PROTOCOL: http
+    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
+    FEATURE_FLAG_SERVICE_PORT: "8080"
+    PROXY_PREFIX: "broker-service"
+  envFromSecret:
+    MSSQL_CONNECTIONSTRING:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "DOTNET_CONNECTION_STRING"
+  resources:
+    requests:
+      cpu: 150m
+      memory: 350Mi
+    limits:
+      cpu: 600m
+      memory: 350Mi
+  service:
+    enabled: true
+    port: 8080
+
+calculationservice:
+  enabled: true
+  env:
+    RABBITMQ_USER: userxxx
+    RABBITMQ_PASSWORD: passxxx
+    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_PORT: "5672"
+    RABBITMQ_QUEUE: Trade_Data_Raw
+  resources:
+    requests:
+      cpu: 10m
+      memory: 25Mi
+    limits:
+      cpu: 100m
+      memory: 25Mi
+
+contentcreator:
+  enabled: true
+  envFromSecret:
+    MSSQL_CONNECTIONSTRING:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "JAVA_CONNECTION_STRING"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 400Mi
+    limits:
+      cpu: 200m
+      memory: 400Mi
+
+credit-card-order-service:
+  enabled: true
+  env:
+    PROXY_PREFIX: "credit-card-order-service"
+    THIRD_PARTY_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-third-party-service:8080"
+    WORK_DELAY: "300"
+    WORK_RATE: "900"
+    JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
+  envFromSecret:
+    MSSQL_CONNECTIONSTRING:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "JAVA_CONNECTION_STRING"
+  resources:
+    requests:
+      cpu: 20m
+      memory: 650Mi
+    limits:
+      cpu: 500m
+      memory: 650Mi
+  service:
+    enabled: true
+    port: 8080
+
+db:
+  enabled: true
+  workloadType: statefulset
+  envFromSecret:
+    SA_PASSWORD:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "SA_PASSWORD"
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1.5Gi
+    limits:
+      cpu: "2"
+      memory: 1.5Gi
+  service:
+    enabled: true
+    port: 1433
+  # Enabling persistence will create a PersistentVolumeClaim for the database data
+  # persistence:
+  #   enabled: true
+  #   mountPath: /var/opt/mssql
+  #   size: 10Gi
+
+engine:
+  enabled: true
+  env:
+    BROKER_HOSTANDPORT: "{{ .Release.Name }}-broker-service:8080"
+    PROXY_PREFIX: "engine"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 450Mi
+    limits:
+      cpu: 200m
+      memory: 450Mi
+  service:
+    enabled: true
+    port: 8080
+
+feature-flag-service:
+  enabled: true
+  env:
+    FEATURE_FLAG_SERVICE_PROTOCOL: http
+    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
+    FEATURE_FLAG_SERVICE_PORT: "8080"
+  resources:
+    requests:
+      cpu: 30m
+      memory: 600Mi
+    limits:
+      cpu: 200m
+      memory: 600Mi
+  service:
+    enabled: true
+    port: 8080
+
+frontend:
+  enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 75Mi
+    limits:
+      cpu: 100m
+      memory: 75Mi
+  service:
+    enabled: true
+    port: 3000
+
+frontendreverseproxy:
+  enabled: true
+  env:
+    ACCOUNT_SERVICE_URL: "http://{{ .Release.Name }}-accountservice:8080"
+    BROKER_SERVICE_URL: "http://{{ .Release.Name }}-broker-service:8080"
+    CREDIT_CARD_ORDER_SERVICE_URL: "http://{{ .Release.Name }}-credit-card-order-service:8080"
+    ENGINE_URL: "http://{{ .Release.Name }}-engine:8080"
+    FEATURE_FLAG_SERVICE_URL: "http://{{ .Release.Name }}-feature-flag-service:8080"
+    FRONTEND_URL: "http://{{ .Release.Name }}-frontend:3000"
+    LOGIN_SERVICE_URL: "http://{{ .Release.Name }}-loginservice:8080"
+    MANAGER_URL: "http://{{ .Release.Name }}-manager:8080"
+    OFFER_SERVICE_URL: "http://{{ .Release.Name }}-offerservice:8080"
+    PRICING_SERVICE_URL: "http://{{ .Release.Name }}-pricing-service:8080"
+    THIRD_PARTY_SERVICE_URL: "http://{{ .Release.Name }}-third-party-service:8080"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 200m
+      memory: 100Mi
+  service:
+    enabled: true
+    ports:
+      - port: 80
+        targetPort: 80
+        protocol: TCP
+        name: http
+
+loadgen:
+  enabled: true
+  env:
+    EASYTRADE_URL: "http://{{ .Release.Name }}-frontendreverseproxy"
+    RARE_VISITS_INTERVAL_MINUTES: "60"
+  resources:
+    requests:
+      cpu: "1"
+      memory: 256Mi
+    limits:
+      cpu: "2"
+      memory: 2Gi
+
+loginservice:
+  enabled: true
+  env:
+    PROXY_PREFIX: "loginservice"
+  envFromSecret:
+    MSSQL_CONNECTIONSTRING:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "DOTNET_CONNECTION_STRING"
+  resources:
+    requests:
+      cpu: 20m
+      memory: 450Mi
+    limits:
+      cpu: 1
+      memory: 450Mi
+  service:
+    enabled: true
+    port: 8080
+
+manager:
+  enabled: true
+  env:
+    PROXY_PREFIX: "manager"
+  envFromSecret:
+    MSSQL_CONNECTIONSTRING:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "DOTNET_CONNECTION_STRING"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 600Mi
+    limits:
+      cpu: 500m
+      memory: 600Mi
+  service:
+    enabled: true
+    port: 8080
+
+offerservice:
+  enabled: true
+  env:
+    LOGIN_SERVICE_PORT: "8080"
+    LOGIN_SERVICE_BASE_URL: "{{ .Release.Name }}-loginservice"
+    MANAGER_BASE_URL: "{{ .Release.Name }}-manager"
+    MANAGER_PORT: "8080"
+    FEATURE_FLAG_SERVICE_PROTOCOL: http
+    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
+    FEATURE_FLAG_SERVICE_PORT: "8080"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 150Mi
+    limits:
+      cpu: 200m
+      memory: 150Mi
+  service:
+    enabled: true
+    port: 8080
+
+pricing-service:
+  enabled: true
+  image:
+    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/pricing-service
+  env:
+    PROXY_PREFIX: "pricing-service"
+    RABBITMQ_USER: userxxx
+    RABBITMQ_PASSWORD: passxxx
+    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_PORT: "5672"
+    RABBITMQ_QUEUE: Trade_Data_Raw
+  envFromSecret:
+    MSSQL_CONNECTIONSTRING:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "GO_CONNECTION_STRING"
+  resources:
+    requests:
+      cpu: 20m
+      memory: 80Mi
+    limits:
+      cpu: 200m
+      memory: 80Mi
+  service:
+    enabled: true
+    port: 8080
+
+problem-operator:
+  enabled: true
+  rbac:
+    create: true
+    rules:
+      - apiGroups: [""]
+        resources: ["services", "pods", "events"]
+        verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+      - apiGroups: ["apps"]
+        resources: ["deployments", "replicasets"]
+        verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+  env:
+    POD_NAMESPACE: "{{ .Release.Namespace }}"
+    HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT: "300m"
+    FEATURE_FLAG_SERVICE_PROTOCOL: http
+    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
+    FEATURE_FLAG_SERVICE_PORT: "8080"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 15Mi
+    limits:
+      cpu: 100m
+      memory: 15Mi
+
+rabbitmq:
+  enabled: true
+  env:
+    RABBITMQ_USER: userxxx
+    RABBITMQ_PASSWORD: passxxx
+    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_PORT: "5672"
+    RABBITMQ_QUEUE: Trade_Data_Raw
+  resources:
+    requests:
+      cpu: 10m
+      memory: 175Mi
+    limits:
+      cpu: 200m
+      memory: 175Mi
+  service:
+    enabled: true
+    ports:
+      - port: 5672
+        targetPort: 5672
+        protocol: TCP
+        name: listener
+      - port: 15672
+        targetPort: 15672
+        protocol: TCP
+        name: ui
+
+third-party-service:
+  enabled: true
+  env:
+    CREDIT_CARD_ORDER_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-credit-card-order-service:8080"
+    PROXY_PREFIX: "third-party-service"
+    COURIER_DELAY: "400"
+    COURIER_RATE: "900"
+    MANUFACTURE_DELAY: "500"
+    MANUFACTURE_RATE: "900"
+    FEATURE_FLAG_SERVICE_PROTOCOL: http
+    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
+    FEATURE_FLAG_SERVICE_PORT: "8080"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 450Mi
+    limits:
+      cpu: 200m
+      memory: 450Mi
+  service:
+    enabled: true
+    port: 8080

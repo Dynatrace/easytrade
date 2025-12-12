@@ -24,7 +24,7 @@ runs:
         }'
 
         RESPONSE=$(./.github/actions/scripts/curl-on-cluster.sh ${{ inputs.namespace }} \
-          -sLX POST 'credit-card-order-service:8080/v1/orders' \
+          -sLX POST 'easytrade-credit-card-order-service:8080/v1/orders' \
           -H 'accept: application/json' \
           -H 'Content-Type: application/json' \
           -d "${BODY}")

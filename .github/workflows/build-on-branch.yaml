@@ -9,6 +9,7 @@ on:
       - kubernetes-manifests/**
       - skaffold.yaml
       - src/**
+      - helm/**
 
   workflow_call:
     secrets:
@@ -17,6 +18,7 @@ on:
 
 env:
   CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
+  HELM_CHART_PATH: helm/easytrade
 
 jobs:
   snyk:
@@ -44,3 +46,16 @@ jobs:
           push: ${{ needs.calc-version.outputs.is-release}}
           tag: ${{ needs.calc-version.outputs.version }}
           registry: ${{ env.CONTAINER_REGISTRY }}
+          command: build
+
+  build-helm-chart:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Helm chart
+        uses: ./.github/actions/build-push-helm
+        with:
+          chart-path: ${{ env.HELM_CHART_PATH }}
+          push: false
