@@ -14,7 +14,8 @@ on:
       run-tests:
         description: "Whether to run integration tests after deployment"
         required: false
-        default: "true"
+        type: boolean
+        default: true
 
   workflow_call:
     secrets:
