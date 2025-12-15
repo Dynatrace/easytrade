@@ -63,7 +63,7 @@ runs:
       shell: bash
       env:
         REGISTRY: ${{ inputs.registry }}
-        TAG: ${{ inputs.tag }}
+        TAG: latest
       run: |
         echo "Pushing images to registry..."
         docker compose -f ${{ inputs.compose-file }} push

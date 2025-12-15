@@ -73,7 +73,7 @@ jobs:
         uses: ./.github/actions/build-push-images
         with:
           push: true
-          push-latest: false
+          push-latest: true
           tag: ${{ env.VERSION }}
           registry: ${{ env.CONTAINER_REGISTRY }}
 
