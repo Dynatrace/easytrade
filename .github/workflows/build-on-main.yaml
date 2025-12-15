@@ -42,7 +42,7 @@ env:
   CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   HELM_REGISTRY: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
   HELM_CHART_PATH: helm/easytrade
-  VERSION: 1.2.${{ github.run_number }}-dev
+  VERSION: 1.2.${{ github.run_number }}
 
 jobs:
   snyk:
@@ -101,7 +101,6 @@ jobs:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           repository: dynatrace/easytrade-infrastructure
           path: easytrade-infrastructure
-          ref: add-helm-deploy
 
       - name: Deploy easytrade
         shell: bash
@@ -109,7 +108,7 @@ jobs:
           HELM_CHART_VERSION: ${{ env.VERSION }}
           BASE_VALUES_FILE: "./helm-values/aws-base.yaml"
           OVERRIDES_VALUES_FILE: "./helm-values/aws-staging.yaml"
-          DRY_RUN: "true"
+          DRY_RUN: "false"
           DEBUG_MODE: "false"
         run: ./deploy.sh
         working-directory: ${{ github.workspace }}/easytrade-infrastructure
