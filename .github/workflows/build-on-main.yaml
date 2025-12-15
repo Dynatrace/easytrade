@@ -42,7 +42,7 @@ env:
   CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   HELM_REGISTRY: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
   HELM_CHART_PATH: helm/easytrade
-  VERSION: 1.2.0-dev
+  VERSION: 1.2.${{ github.run_number }}-dev
 
 jobs:
   snyk:
