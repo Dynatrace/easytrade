@@ -10,6 +10,11 @@ on:
       - src/**
       - helm/**
   workflow_dispatch:
+    inputs:
+      run-tests:
+        description: "Whether to run integration tests after deployment"
+        required: false
+        default: "true"
 
   workflow_call:
     secrets:
@@ -33,9 +38,10 @@ on:
 env:
   GAR_ADDRESS: europe-docker.pkg.dev
   NAMESPACE: easytrade
-  SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
-  SKAFFOLD_VERSION: 2.13.2
+  CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
+  HELM_REGISTRY: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
   HELM_CHART_PATH: helm/easytrade
+  VERSION: 1.2.0-dev
 
 jobs:
   snyk:
@@ -51,7 +57,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Retrieve gar credentials
         run: |
@@ -60,22 +66,15 @@ jobs:
       - name: Set application version
         uses: ./.github/actions/set-version
         with:
-          version: 1.2.${{ github.run_number }}
+          version: ${{ env.VERSION }}
 
-      - name: "Build easytrade and push it to Docker registry with commit tag"
-        uses: hiberbee/github-action-skaffold@1.27.0
+      - name: Build and push easytrade to docker repository
+        uses: ./.github/actions/build-push-images
         with:
-          command: build
           push: true
-          skaffold-version: ${{ env.SKAFFOLD_VERSION }}
-
-      - name: "Build easytrade and push it to Docker registry with latest tag"
-        uses: hiberbee/github-action-skaffold@1.27.0
-        with:
-          command: build
-          tag: latest
-          push: true
-          skaffold-version: ${{ env.SKAFFOLD_VERSION }}
+          push-latest: false
+          tag: ${{ env.VERSION }}
+          registry: ${{ env.CONTAINER_REGISTRY }}
 
       - name: Build and push Helm chart
         uses: ./.github/actions/build-push-helm
@@ -83,49 +82,43 @@ jobs:
           chart-path: ${{ env.HELM_CHART_PATH }}
           push: true
           registry-url: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
-          version: 1.2.${{ github.run_number }}
+          version: ${{ env.VERSION }}
           credentials: ${{ secrets.GAR_CREDENTIALS }}
 
   deploy-easytrade:
     runs-on: ubuntu-24.04
     needs: build-easytrade
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          path: easytrade
-
       - name: Retrieve kubeconfig
         run: |
           mkdir ~/.kube
           echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
 
       - name: Checkout infrastructure repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           repository: dynatrace/easytrade-infrastructure
           path: easytrade-infrastructure
-
-      - name: Export short commit SHA
-        run: echo "COMMIT_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-7)" >> $GITHUB_ENV
+          ref: add-helm-deploy
 
       - name: Deploy easytrade
-        uses: hiberbee/github-action-skaffold@1.27.0
-        with:
-          command: deploy
-          tag: ${{ env.COMMIT_SHA_SHORT }}
-          namespace: ${{ env.NAMESPACE }}
-          profile: aws-staging
-
-          working-directory: ${{ github.workspace }}/easytrade
+        shell: bash
+        env:
+          HELM_CHART_VERSION: ${{ env.VERSION }}
+          BASE_VALUES_FILE: "./helm-values/aws-base.yaml"
+          OVERRIDES_VALUES_FILE: "./helm-values/aws-staging.yaml"
+          DRY_RUN: "true"
+        run: ./deploy.sh
+        working-directory: ${{ github.workspace }}/easytrade-infrastructure
 
   run-tests:
+    if: ${{ inputs.run-tests == 'true' }}
     runs-on: ubuntu-24.04
     needs: deploy-easytrade
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Retrieve kubeconfig
         run: |

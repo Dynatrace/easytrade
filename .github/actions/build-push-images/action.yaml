@@ -8,6 +8,10 @@ inputs:
   tag:
     description: "Tag for all Docker images"
     required: true
+  push-latest:
+    description: "Whether to also push images with 'latest' tag"
+    required: false
+    default: "false"
   registry:
     description: "Docker registry URL"
     required: false
@@ -52,4 +56,15 @@ runs:
       run: |
         echo "Pushing images to registry..."
         docker compose -f ${{ inputs.compose-file }} push
-        echo "Successfully pushed all images"
+        echo "Successfully pushed all images with tag: $TAG"
+
+    - name: Push Docker images with latest tag
+      if: inputs.push == 'true' && inputs.push-latest == 'true'
+      shell: bash
+      env:
+        REGISTRY: ${{ inputs.registry }}
+        TAG: ${{ inputs.tag }}
+      run: |
+        echo "Pushing images to registry..."
+        docker compose -f ${{ inputs.compose-file }} push
+        echo "Successfully pushed all images with tag: $TAG"
