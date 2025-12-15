@@ -19,8 +19,7 @@ on:
         required: true
 
 env:
-  SKAFFOLD_DEFAULT_REPO: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
-  SKAFFOLD_VERSION: 2.13.2
+  CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   HELM_CHART_PATH: helm/easytrade
 
 jobs:
@@ -37,14 +36,14 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build easytrade without pushing to docker repository
-        uses: hiberbee/github-action-skaffold@1.27.0
+        uses: ./.github/actions/build-push-images
         with:
-          command: build
           push: false
-          skaffold-version: ${{ env.SKAFFOLD_VERSION }}
+          tag: dev
+          registry: ${{ env.CONTAINER_REGISTRY }}
 
   build-helm-chart:
     runs-on: ubuntu-24.04
