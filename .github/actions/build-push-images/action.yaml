@@ -66,5 +66,6 @@ runs:
         TAG: latest
       run: |
         echo "Pushing images to registry..."
+        docker compose -f ${{ inputs.compose-file }} build
         docker compose -f ${{ inputs.compose-file }} push
         echo "Successfully pushed all images with tag: $TAG"
