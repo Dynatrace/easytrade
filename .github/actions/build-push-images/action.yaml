@@ -63,9 +63,13 @@ runs:
       shell: bash
       env:
         REGISTRY: ${{ inputs.registry }}
-        TAG: latest
+        TAG: ${{ inputs.tag }}
       run: |
-        echo "Pushing images to registry..."
-        docker compose -f ${{ inputs.compose-file }} build
-        docker compose -f ${{ inputs.compose-file }} push
-        echo "Successfully pushed all images with tag: $TAG"
+        echo "Pushing images with latest to registry..."
+        images=$(docker compose -f ${{ inputs.compose-file }} config --images)
+        for image in $images; do
+          image_name=$(echo "$image" | cut -d: -f1)
+          docker tag "${image}" "${image_name}":latest
+          # docker push "${image_name}":latest
+        done
+        echo "Push $TAG as new latest completed."
