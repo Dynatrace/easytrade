@@ -1,0 +1,70 @@
+name: "Build and Push Docker Images"
+description: "Build Docker images using docker compose and optionally push to registry"
+inputs:
+  push:
+    description: "Whether to push images to registry"
+    required: false
+    default: "false"
+  tag:
+    description: "Tag for all Docker images"
+    required: true
+  push-latest:
+    description: "Whether to also push images with 'latest' tag"
+    required: false
+    default: "false"
+  registry:
+    description: "Docker registry URL"
+    required: false
+    default: "europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade"
+  compose-file:
+    description: "Path to docker compose file"
+    required: false
+    default: "compose.build.yaml"
+
+outputs:
+  images:
+    description: "List of built images"
+    value: ${{ steps.build.outputs.images }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build Docker images
+      id: build
+      shell: bash
+      env:
+        REGISTRY: ${{ inputs.registry }}
+        TAG: ${{ inputs.tag }}
+      run: |
+        echo "Building images with tag: $TAG"
+        docker compose -f ${{ inputs.compose-file }} build
+
+        # List built images
+        IMAGES=$(docker compose -f ${{ inputs.compose-file }} config --services | tr '\n' ',' | sed 's/,$//')
+        echo "images=$IMAGES" >> $GITHUB_OUTPUT
+        echo "Built images: $IMAGES"
+
+    - name: Push Docker images
+      if: inputs.push == 'true'
+      shell: bash
+      env:
+        REGISTRY: ${{ inputs.registry }}
+        TAG: ${{ inputs.tag }}
+      run: |
+        echo "Pushing images to registry..."
+        docker compose -f ${{ inputs.compose-file }} push
+        echo "Successfully pushed all images with tag: $TAG"
+
+    - name: Push Docker images with latest tag
+      if: inputs.push == 'true' && inputs.push-latest == 'true'
+      shell: bash
+      env:
+        REGISTRY: ${{ inputs.registry }}
+        TAG: latest
+      run: |
+        echo "Pushing images to registry..."
+        docker compose -f ${{ inputs.compose-file }} push
+        echo "Successfully pushed all images with tag: $TAG"
