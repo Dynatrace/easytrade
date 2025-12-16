@@ -4,92 +4,92 @@ services:
     build:
       context: src/accountservice
 
-  aggregator-service:
-    image: ${REGISTRY}/aggregator-service:${TAG}
-    build:
-      context: src/aggregator-service
+  # aggregator-service:
+  #   image: ${REGISTRY}/aggregator-service:${TAG}
+  #   build:
+  #     context: src/aggregator-service
 
-  broker-service:
-    image: ${REGISTRY}/broker-service:${TAG}
-    build:
-      context: src/broker-service
+  # broker-service:
+  #   image: ${REGISTRY}/broker-service:${TAG}
+  #   build:
+  #     context: src/broker-service
 
-  calculationservice:
-    image: ${REGISTRY}/calculationservice:${TAG}
-    build:
-      context: src/calculationservice
+  # calculationservice:
+  #   image: ${REGISTRY}/calculationservice:${TAG}
+  #   build:
+  #     context: src/calculationservice
 
-  contentcreator:
-    image: ${REGISTRY}/contentcreator:${TAG}
-    build:
-      context: src/contentcreator
+  # contentcreator:
+  #   image: ${REGISTRY}/contentcreator:${TAG}
+  #   build:
+  #     context: src/contentcreator
 
-  credit-card-order-service:
-    image: ${REGISTRY}/credit-card-order-service:${TAG}
-    build:
-      context: src/credit-card-order-service
+  # credit-card-order-service:
+  #   image: ${REGISTRY}/credit-card-order-service:${TAG}
+  #   build:
+  #     context: src/credit-card-order-service
 
-  db:
-    image: ${REGISTRY}/db:${TAG}
-    build:
-      context: src/db
+  # db:
+  #   image: ${REGISTRY}/db:${TAG}
+  #   build:
+  #     context: src/db
 
-  engine:
-    image: ${REGISTRY}/engine:${TAG}
-    build:
-      context: src/engine
+  # engine:
+  #   image: ${REGISTRY}/engine:${TAG}
+  #   build:
+  #     context: src/engine
 
-  feature-flag-service:
-    image: ${REGISTRY}/feature-flag-service:${TAG}
-    build:
-      context: src/feature-flag-service
+  # feature-flag-service:
+  #   image: ${REGISTRY}/feature-flag-service:${TAG}
+  #   build:
+  #     context: src/feature-flag-service
 
-  frontend:
-    image: ${REGISTRY}/frontend:${TAG}
-    build:
-      context: src/frontend
+  # frontend:
+  #   image: ${REGISTRY}/frontend:${TAG}
+  #   build:
+  #     context: src/frontend
 
-  frontendreverseproxy:
-    image: ${REGISTRY}/frontendreverseproxy:${TAG}
-    build:
-      context: src/frontendreverseproxy
+  # frontendreverseproxy:
+  #   image: ${REGISTRY}/frontendreverseproxy:${TAG}
+  #   build:
+  #     context: src/frontendreverseproxy
 
-  loadgen:
-    image: ${REGISTRY}/loadgen:${TAG}
-    build:
-      context: src/loadgen
+  # loadgen:
+  #   image: ${REGISTRY}/loadgen:${TAG}
+  #   build:
+  #     context: src/loadgen
 
-  loginservice:
-    image: ${REGISTRY}/loginservice:${TAG}
-    build:
-      context: src/loginservice
+  # loginservice:
+  #   image: ${REGISTRY}/loginservice:${TAG}
+  #   build:
+  #     context: src/loginservice
 
-  manager:
-    image: ${REGISTRY}/manager:${TAG}
-    build:
-      context: src/manager/easyTradeManager
+  # manager:
+  #   image: ${REGISTRY}/manager:${TAG}
+  #   build:
+  #     context: src/manager/easyTradeManager
 
-  offerservice:
-    image: ${REGISTRY}/offerservice:${TAG}
-    build:
-      context: src/offerservice
+  # offerservice:
+  #   image: ${REGISTRY}/offerservice:${TAG}
+  #   build:
+  #     context: src/offerservice
 
-  pricing-service:
-    image: ${REGISTRY}/pricing-service:${TAG}
-    build:
-      context: src/pricing-service
+  # pricing-service:
+  #   image: ${REGISTRY}/pricing-service:${TAG}
+  #   build:
+  #     context: src/pricing-service
 
-  problem-operator:
-    image: ${REGISTRY}/problem-operator:${TAG}
-    build:
-      context: src/problem-operator
+  # problem-operator:
+  #   image: ${REGISTRY}/problem-operator:${TAG}
+  #   build:
+  #     context: src/problem-operator
 
-  rabbitmq:
-    image: ${REGISTRY}/rabbitmq:${TAG}
-    build:
-      context: src/rabbitmq
+  # rabbitmq:
+  #   image: ${REGISTRY}/rabbitmq:${TAG}
+  #   build:
+  #     context: src/rabbitmq
 
-  third-party-service:
-    image: ${REGISTRY}/third-party-service:${TAG}
-    build:
-      context: src/third-party-service
+  # third-party-service:
+  #   image: ${REGISTRY}/third-party-service:${TAG}
+  #   build:
+  #     context: src/third-party-service
