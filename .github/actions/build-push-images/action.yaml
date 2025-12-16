@@ -47,16 +47,16 @@ runs:
         echo "images=$IMAGES" >> $GITHUB_OUTPUT
         echo "Built images: $IMAGES"
 
-    - name: Push Docker images
-      if: inputs.push == 'true'
-      shell: bash
-      env:
-        REGISTRY: ${{ inputs.registry }}
-        TAG: ${{ inputs.tag }}
-      run: |
-        echo "Pushing images to registry..."
-        docker compose -f ${{ inputs.compose-file }} push
-        echo "Successfully pushed all images with tag: $TAG"
+    # - name: Push Docker images
+    #   if: inputs.push == 'true'
+    #   shell: bash
+    #   env:
+    #     REGISTRY: ${{ inputs.registry }}
+    #     TAG: ${{ inputs.tag }}
+    #   run: |
+    #     echo "Pushing images to registry..."
+    #     docker compose -f ${{ inputs.compose-file }} push
+    #     echo "Successfully pushed all images with tag: $TAG"
 
     - name: Push Docker images with latest tag
       if: inputs.push == 'true' && inputs.push-latest == 'true'
