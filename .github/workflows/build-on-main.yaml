@@ -77,84 +77,84 @@ jobs:
           tag: ${{ env.VERSION }}
           registry: ${{ env.CONTAINER_REGISTRY }}
 
-      # - name: Build and push Helm chart
-      #   uses: ./.github/actions/build-push-helm
-      #   with:
-      #     chart-path: ${{ env.HELM_CHART_PATH }}
-      #     push: true
-      #     registry-url: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
-      #     version: ${{ env.VERSION }}
-      #     credentials: ${{ secrets.GAR_CREDENTIALS }}
+      - name: Build and push Helm chart
+        uses: ./.github/actions/build-push-helm
+        with:
+          chart-path: ${{ env.HELM_CHART_PATH }}
+          push: true
+          registry-url: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
+          version: ${{ env.VERSION }}
+          credentials: ${{ secrets.GAR_CREDENTIALS }}
 
-  # deploy-easytrade:
-  #   runs-on: ubuntu-24.04
-  #   needs: build-easytrade
-  #   steps:
-  #     - name: Retrieve kubeconfig
-  #       run: |
-  #         mkdir ~/.kube
-  #         echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+  deploy-easytrade:
+    runs-on: ubuntu-24.04
+    needs: build-easytrade
+    steps:
+      - name: Retrieve kubeconfig
+        run: |
+          mkdir ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
 
-  #     - name: Checkout infrastructure repo
-  #       uses: actions/checkout@v6
-  #       with:
-  #         ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
-  #         repository: dynatrace/easytrade-infrastructure
-  #         path: easytrade-infrastructure
+      - name: Checkout infrastructure repo
+        uses: actions/checkout@v6
+        with:
+          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          repository: dynatrace/easytrade-infrastructure
+          path: easytrade-infrastructure
 
-  #     - name: Deploy easytrade
-  #       shell: bash
-  #       env:
-  #         HELM_CHART_VERSION: ${{ env.VERSION }}
-  #         BASE_VALUES_FILE: "./helm-values/aws-base.yaml"
-  #         OVERRIDES_VALUES_FILE: "./helm-values/aws-staging.yaml"
-  #         DRY_RUN: "false"
-  #         DEBUG_MODE: "false"
-  #       run: ./deploy.sh
-  #       working-directory: ${{ github.workspace }}/easytrade-infrastructure
+      - name: Deploy easytrade
+        shell: bash
+        env:
+          HELM_CHART_VERSION: ${{ env.VERSION }}
+          BASE_VALUES_FILE: "./helm-values/aws-base.yaml"
+          OVERRIDES_VALUES_FILE: "./helm-values/aws-staging.yaml"
+          DRY_RUN: "false"
+          DEBUG_MODE: "false"
+        run: ./deploy.sh
+        working-directory: ${{ github.workspace }}/easytrade-infrastructure
 
-  # run-tests:
-  #   if: ${{ inputs.run-tests == 'true' }}
-  #   runs-on: ubuntu-24.04
-  #   needs: deploy-easytrade
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v6
+  run-tests:
+    if: ${{ inputs.run-tests == 'true' }}
+    runs-on: ubuntu-24.04
+    needs: deploy-easytrade
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
-  #     - name: Retrieve kubeconfig
-  #       run: |
-  #         mkdir ~/.kube
-  #         echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+      - name: Retrieve kubeconfig
+        run: |
+          mkdir ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
 
-  #     - name: Enable test environment
-  #       run: |
-  #         kubectl -n ${{ env.NAMESPACE }} set env deployment/easytrade-credit-card-order-service WORK_DELAY=10 WORK_RATE=10
-  #         kubectl -n ${{ env.NAMESPACE }} set env deployment/easytrade-third-party-service COURIER_DELAY=10 COURIER_RATE=10 MANUFACTURE_DELAY=10 MANUFACTURE_RATE=10
+      - name: Enable test environment
+        run: |
+          kubectl -n ${{ env.NAMESPACE }} set env deployment/easytrade-credit-card-order-service WORK_DELAY=10 WORK_RATE=10
+          kubectl -n ${{ env.NAMESPACE }} set env deployment/easytrade-third-party-service COURIER_DELAY=10 COURIER_RATE=10 MANUFACTURE_DELAY=10 MANUFACTURE_RATE=10
 
-  #     - name: Wait 3 minutes
-  #       run: sleep 3m
+      - name: Wait 3 minutes
+        run: sleep 3m
 
-  #     - name: Order credit card
-  #       uses: ./.github/actions/order-credit-card
-  #       with:
-  #         namespace: ${{ env.NAMESPACE }}
+      - name: Order credit card
+        uses: ./.github/actions/order-credit-card
+        with:
+          namespace: ${{ env.NAMESPACE }}
 
-  #     - name: Wait 12 minutes
-  #       run: sleep 12m
+      - name: Wait 12 minutes
+        run: sleep 12m
 
-  #     - name: Check credit card order
-  #       uses: ./.github/actions/check-credit-card-order
-  #       with:
-  #         namespace: ${{ env.NAMESPACE }}
+      - name: Check credit card order
+        uses: ./.github/actions/check-credit-card-order
+        with:
+          namespace: ${{ env.NAMESPACE }}
 
-  #     - name: Run validation
-  #       uses: ./.github/actions/run-validation
-  #       with:
-  #         client_id: ${{ secrets.OQR_CLIENT_ID }}
-  #         client_secret: ${{ secrets.OQR_CLIENT_SECRET }}
-  #         sso_url: ${{ secrets.SSO_URL }}
-  #         tenant_url: ${{ secrets.OQR_URL }}
+      - name: Run validation
+        uses: ./.github/actions/run-validation
+        with:
+          client_id: ${{ secrets.OQR_CLIENT_ID }}
+          client_secret: ${{ secrets.OQR_CLIENT_SECRET }}
+          sso_url: ${{ secrets.SSO_URL }}
+          tenant_url: ${{ secrets.OQR_URL }}
 
-  #     - name: Disable test environment
-  #       run: |
-  #         kubectl -n ${{ env.NAMESPACE }} rollout undo deployment/easytrade-credit-card-order-service deployment/easytrade-third-party-service
+      - name: Disable test environment
+        run: |
+          kubectl -n ${{ env.NAMESPACE }} rollout undo deployment/easytrade-credit-card-order-service deployment/easytrade-third-party-service
