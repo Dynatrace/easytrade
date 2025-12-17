@@ -26,7 +26,7 @@ jobs:
   deploy-easytrade:
     needs: calc-version
     runs-on: ubuntu-24.04
-    environment: ${{ github.event.inputs.environment || 'demo-staging' }}
+    environment: ${{ github.event.inputs.environment || 'demo-staging' }} # Runs to 'demo-staging' if not specified in workflow_dispatch
     permissions:
       contents: read
       deployments: write
@@ -55,7 +55,7 @@ jobs:
         working-directory: ${{ github.workspace }}/easytrade-infrastructure
 
   run-tests:
-    if: ${{ inputs.run-tests == 'true' }}
+    if: ${{ inputs.run-tests || true }} # Run tests by default, unless explicitly disabled in workflow_dispatch
     runs-on: ubuntu-24.04
     needs: deploy-easytrade
     steps:
