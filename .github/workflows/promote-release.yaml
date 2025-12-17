@@ -54,7 +54,7 @@ jobs:
 
       - name: Trigger deploy workflow
         uses: actions/github-script@v8
-        if: ${{ inputs['trigger-deploy'] }}
+        if: ${{ inputs.trigger-deploy }}
         with:
           script: |
             const workflowName = '${{ inputs.deploy-workflow-name }}';
