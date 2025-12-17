@@ -29,6 +29,6 @@ jobs:
 
       - name: Calculate version
         id: version
-        uses: dczupryn-dt/ci-cd-templates/.github/actions/calc-version@main
+        uses: ./.github/actions/calc-version
         with:
           release-branch: ${{ inputs.release-branch }}
