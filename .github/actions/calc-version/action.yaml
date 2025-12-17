@@ -1,0 +1,85 @@
+
+name: "Calculate Version"
+description: "Calculate semantic version from git history and determine if it is a release"
+inputs:
+  release-branch:
+    description: "Branch name that triggers releases"
+    required: false
+    default: "main"
+
+outputs:
+  version:
+    description: "Calculated semantic version"
+    value: ${{ steps.final-version.outputs.version }}
+  is-release:
+    description: "Whether this is a release build (true/false)"
+    value: ${{ steps.check-release.outputs.is-release }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v4.2.0
+      with:
+        versionSpec: '6.x'
+
+    - name: Create GitVersion config
+      shell: bash
+      run: |
+        CONFIG_FILE="/tmp/GitVersion.yml"
+        cat > "$CONFIG_FILE" << 'EOF'
+        assembly-informational-format: "{MajorMinorPatch}-{PreReleaseLabel}-{ShortSha}"
+        label: "{BranchName:l}"
+        branches:
+          main:
+            label: main
+          pull-request:
+            label: pr{Number}
+        EOF
+        echo "GITVERSION_CONFIG=$CONFIG_FILE" >> $GITHUB_ENV
+        echo "Created GitVersion config:"
+        cat "$CONFIG_FILE"
+
+    - name: Determine Version
+      id: version
+      uses: gittools/actions/gitversion/execute@v4.2.0
+      with:
+        configFilePath: ${{ env.GITVERSION_CONFIG }}
+
+    - name: Check if release
+      id: check-release
+      shell: bash
+      run: |
+        CURRENT_BRANCH="${GITHUB_REF#refs/heads/}"
+        if [ "$CURRENT_BRANCH" = "${{ inputs.release-branch }}" ]; then
+          echo "is-release=true" >> $GITHUB_OUTPUT
+          echo "This is a release build from ${{ inputs.release-branch }}"
+        else
+          echo "is-release=false" >> $GITHUB_OUTPUT
+          echo "This is not a release build (current branch: $CURRENT_BRANCH)"
+        fi
+
+    - name: Set final version
+      id: final-version
+      shell: bash
+      run: |
+        if [ "${{ steps.check-release.outputs.is-release }}" = "true" ]; then
+          # If on release branch, use major.minor.patch to create new release
+          VERSION="${{ steps.version.outputs.majorMinorPatch }}"
+        elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+          # If on tag, return that tag as current version
+          VERSION="${{ steps.version.outputs.majorMinorPatch }}"
+        else
+          # For other branches, use informational version
+          VERSION="${{ steps.version.outputs.informationalVersion }}"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Final version: $VERSION"
+
+    - name: Show version
+      shell: bash
+      run: |
+        echo "Version: ${{ steps.final-version.outputs.version }}"
+        echo "Is Release: ${{ steps.check-release.outputs.is-release }}"
+        echo "### Version: ${{ steps.final-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Is Release:** ${{ steps.check-release.outputs.is-release }}" >> $GITHUB_STEP_SUMMARY
