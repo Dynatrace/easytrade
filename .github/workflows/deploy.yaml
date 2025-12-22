@@ -20,7 +20,7 @@ on:
 
 jobs:
   calc-version:
-    uses: ./.github/workflows/reusable/calc-version.yaml
+    uses: ./.github/workflows/reusable-calc-version.yaml
 
   deploy-easytrade:
     needs: calc-version
