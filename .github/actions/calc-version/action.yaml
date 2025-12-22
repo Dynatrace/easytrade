@@ -1,4 +1,3 @@
-
 name: "Calculate Version"
 description: "Calculate semantic version from git history and determine if it is a release"
 inputs:
@@ -14,6 +13,9 @@ outputs:
   is-release:
     description: "Whether this is a release build (true/false)"
     value: ${{ steps.check-release.outputs.is-release }}
+  already-released:
+    description: "Whether this version has already been released (true/false). If true, further build/publish steps can be skipped."
+    value: ${{ steps.check-tag.outputs.already-released }}
 
 runs:
   using: composite
@@ -21,7 +23,7 @@ runs:
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v4.2.0
       with:
-        versionSpec: '6.x'
+        versionSpec: "6.x"
 
     - name: Create GitVersion config
       shell: bash
@@ -30,9 +32,14 @@ runs:
         cat > "$CONFIG_FILE" << 'EOF'
         assembly-informational-format: "{MajorMinorPatch}-{PreReleaseLabel}-{ShortSha}"
         label: "{BranchName:l}"
+        major-version-bump-message: '\+semver:\s?(breaking|major)'
+        minor-version-bump-message: '\+semver:\s?(feature|minor)'
+        patch-version-bump-message: '.*'
+        no-bump-message: '\+semver:\s?(none|skip)'
         branches:
           main:
             label: main
+            increment: None
           pull-request:
             label: pr{Number}
         EOF
@@ -76,10 +83,25 @@ runs:
         echo "version=$VERSION" >> $GITHUB_OUTPUT
         echo "Final version: $VERSION"
 
+    - name: Check if version already released
+      id: check-tag
+      shell: bash
+      run: |
+        VERSION="${{ steps.final-version.outputs.version }}"
+        if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+          echo "already-released=true" >> $GITHUB_OUTPUT
+          echo "Version $VERSION has already been released. Build will be skipped."
+        else
+          echo "already-released=false" >> $GITHUB_OUTPUT
+          echo "Version $VERSION has not been released yet."
+        fi
+
     - name: Show version
       shell: bash
       run: |
         echo "Version: ${{ steps.final-version.outputs.version }}"
-        echo "Is Release: ${{ steps.check-release.outputs.is-release }}"
+        echo "Is release: ${{ steps.check-release.outputs.is-release }}"
+        echo "Version already released: ${{ steps.check-tag.outputs.already-released }}"
         echo "### Version: ${{ steps.final-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
-        echo "**Is Release:** ${{ steps.check-release.outputs.is-release }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Is release:** ${{ steps.check-release.outputs.is-release }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Version already released:** ${{ steps.check-tag.outputs.already-released }}" >> $GITHUB_STEP_SUMMARY

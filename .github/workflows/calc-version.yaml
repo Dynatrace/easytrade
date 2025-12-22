@@ -3,17 +3,20 @@ on:
   workflow_call:
     inputs:
       release-branch:
-        description: 'Branch name that triggers releases'
+        description: "Branch name that triggers releases"
         required: false
         type: string
-        default: 'main'
+        default: "main"
     outputs:
       version:
-        description: 'Calculated semantic version'
+        description: "Calculated semantic version"
         value: ${{ jobs.calc-version.outputs.version }}
       is-release:
-        description: 'Whether this is a release build'
+        description: "Whether this is a release build"
         value: ${{ jobs.calc-version.outputs.is-release }}
+      already-released:
+        description: "Whether this version has already been released. If true, further build/publish steps can be skipped."
+        value: ${{ jobs.calc-version.outputs.already-released }}
 
 jobs:
   calc-version:
@@ -21,6 +24,7 @@ jobs:
     outputs:
       version: ${{ steps.version.outputs.version }}
       is-release: ${{ steps.version.outputs.is-release }}
+      already-released: ${{ steps.version.outputs.already-released }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
@@ -29,6 +33,6 @@ jobs:
 
       - name: Calculate version
         id: version
-        uses: ./.github/actions/calc-version
+        uses: Dynatrace/easytrade-infrastructure/.github/actions/calc-version@actions
         with:
           release-branch: ${{ inputs.release-branch }}
