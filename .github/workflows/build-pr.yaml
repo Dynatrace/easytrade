@@ -24,7 +24,7 @@ jobs:
       SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
 
   calc-version:
-    uses: ./.github/workflows/reusable-calc-version.yaml
+    uses: Dynatrace/easytrade-infrastructure/.github/workflows/calc-version.yaml@actions
 
   build-easytrade:
     runs-on: ubuntu-24.04
