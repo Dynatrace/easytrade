@@ -26,17 +26,16 @@ inputs:
   artifact-name:
     description: "Name of the uploaded artifact"
     required: false
-
 outputs:
   images:
     description: "List of built images"
     value: ${{ steps.build.outputs.images }}
   artifact-dir:
     description: "Directory containing build artifacts"
-    value: ${{ steps.build.outputs.artifact-dir }}
+    value: ${{ steps.artifacts.outputs.artifact-dir }}
   artifact-name:
     description: "Name of the uploaded artifact"
-    value: "build-artifact"
+    value: ${{ inputs.artifact-name }}
 
 runs:
   using: composite
@@ -88,7 +87,7 @@ runs:
 
     - name: Prepare build artifacts
       if: inputs.artifact-dir
-      id: build
+      id: artifacts
       shell: bash
       env:
         TAG: ${{ inputs.tag }}
