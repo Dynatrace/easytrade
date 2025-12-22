@@ -46,7 +46,7 @@ env:
 
 jobs:
   snyk:
-    uses: ./.github/workflows/snyk.yaml
+    uses: ./.github/workflows/reusable/snyk.yaml
     permissions:
       security-events: write
       contents: read
@@ -55,7 +55,7 @@ jobs:
       SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
 
   calc-version:
-    uses: Dynatrace/easytrade-infrastructure/.github/workflows/calc-version.yaml@actions
+    uses: ./.github/workflows/reusable/calc-version.yaml
 
   build-push-easytrade:
     if: needs.calc-version.outputs.already-released == 'false'
@@ -104,7 +104,7 @@ jobs:
     permissions:
       contents: write
       actions: write
-    uses: Dynatrace/easytrade-infrastructure/.github/workflows/promote-release.yaml@actions
+    uses: ./.github/workflows/reusable/promote-release.yaml
     with:
       version: ${{ needs.calc-version.outputs.version }}
       trigger-deploy: true

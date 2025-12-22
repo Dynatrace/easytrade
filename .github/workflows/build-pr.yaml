@@ -15,7 +15,7 @@ env:
 
 jobs:
   snyk:
-    uses: ./.github/workflows/snyk.yaml
+    uses: ./.github/workflows/reusable/snyk.yaml
     permissions:
       security-events: write
       contents: read
@@ -24,7 +24,7 @@ jobs:
       SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
 
   calc-version:
-    uses: Dynatrace/easytrade-infrastructure/.github/workflows/calc-version.yaml@actions
+    uses: ./.github/workflows/reusable/calc-version.yaml
 
   build-easytrade:
     runs-on: ubuntu-24.04
@@ -45,7 +45,7 @@ jobs:
     needs: calc-version
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build Helm chart
         uses: ./.github/actions/build-push-helm

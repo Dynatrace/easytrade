@@ -33,6 +33,6 @@ jobs:
 
       - name: Calculate version
         id: version
-        uses: Dynatrace/easytrade-infrastructure/.github/actions/calc-version@actions
+        uses: ./.github/actions/calc-version
         with:
           release-branch: ${{ inputs.release-branch }}
