@@ -10,12 +10,6 @@ on:
       - src/**
       - helm/**
   workflow_dispatch:
-    inputs:
-      run-tests:
-        description: "Run integration tests after deployment?"
-        required: false
-        type: boolean
-        default: true
 
   workflow_call:
     secrets:
