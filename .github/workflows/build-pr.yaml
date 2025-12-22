@@ -24,7 +24,7 @@ jobs:
       SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
 
   calc-version:
-    uses: ./.github/workflows/calc-version.yaml
+    uses: Dynatrace/easytrade-infrastructure/.github/workflows/calc-version.yaml@actions
 
   build-easytrade:
     runs-on: ubuntu-24.04
@@ -36,7 +36,7 @@ jobs:
       - name: Build easytrade without pushing to docker repository
         uses: ./.github/actions/build-push-images
         with:
-          push: ${{ needs.calc-version.outputs.is-release }}
+          push: false
           tag: ${{ needs.calc-version.outputs.version }}
           registry: ${{ env.CONTAINER_REGISTRY }}
 
@@ -51,5 +51,5 @@ jobs:
         uses: ./.github/actions/build-push-helm
         with:
           chart-path: ${{ env.HELM_CHART_PATH }}
-          push: ${{ needs.calc-version.outputs.is-release }}
+          push: false
           version: ${{ needs.calc-version.outputs.version }}
