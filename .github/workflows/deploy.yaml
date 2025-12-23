@@ -48,8 +48,8 @@ jobs:
           HELM_CHART_VERSION: ${{ needs.calc-version.outputs.version }}
           BASE_VALUES_FILE: "./helm-values/aws-base.yaml"
           OVERRIDES_VALUES_FILE: "./helm-values/aws-staging.yaml"
-          DRY_RUN: "true"
-          DEBUG_MODE: "true"
+          DRY_RUN: "false"
+          DEBUG_MODE: "false"
         run: ./deploy.sh
         working-directory: ${{ github.workspace }}/easytrade-infrastructure
 
