@@ -19,6 +19,9 @@ on:
         options:
           - demo-staging
 
+env:
+  NAMESPACE: easytrade
+
 jobs:
   calc-version:
     uses: ./.github/workflows/reusable-calc-version.yaml
