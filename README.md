@@ -1,5 +1,7 @@
 # EasyTrade
 
+## New fature
+
 A project consisting of many small services that connect to each other.  
 It is made like a stock broking application - it allows it's users to buy&sell some stocks/instruments.  
 Of course it is all fake data and the price has a 24 hour cycle...
