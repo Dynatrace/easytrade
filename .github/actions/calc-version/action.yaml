@@ -1,0 +1,107 @@
+name: "Calculate Version"
+description: "Calculate semantic version from git history and determine if it is a release"
+inputs:
+  release-branch:
+    description: "Branch name that triggers releases"
+    required: false
+    default: "main"
+
+outputs:
+  version:
+    description: "Calculated semantic version"
+    value: ${{ steps.final-version.outputs.version }}
+  is-release:
+    description: "Whether this is a release build (true/false)"
+    value: ${{ steps.check-release.outputs.is-release }}
+  already-released:
+    description: "Whether this version has already been released (true/false). If true, further build/publish steps can be skipped."
+    value: ${{ steps.check-tag.outputs.already-released }}
+
+runs:
+  using: composite
+  steps:
+    - name: Install GitVersion
+      uses: gittools/actions/gitversion/setup@v4.2.0
+      with:
+        versionSpec: "6.x"
+
+    - name: Create GitVersion config
+      shell: bash
+      run: |
+        CONFIG_FILE="/tmp/GitVersion.yml"
+        cat > "$CONFIG_FILE" << 'EOF'
+        assembly-informational-format: "{MajorMinorPatch}-{PreReleaseLabel}-{ShortSha}"
+        label: "{BranchName:l}"
+        major-version-bump-message: '\+semver:\s?(breaking|major)'
+        minor-version-bump-message: '\+semver:\s?(feature|minor)'
+        patch-version-bump-message: '.*'
+        no-bump-message: '\+semver:\s?(none|skip)'
+        branches:
+          main:
+            label: main
+            increment: None
+          pull-request:
+            label: pr{Number}
+        EOF
+        echo "GITVERSION_CONFIG=$CONFIG_FILE" >> $GITHUB_ENV
+        echo "Created GitVersion config:"
+        cat "$CONFIG_FILE"
+
+    - name: Determine Version
+      id: version
+      uses: gittools/actions/gitversion/execute@v4.2.0
+      with:
+        configFilePath: ${{ env.GITVERSION_CONFIG }}
+
+    - name: Check if release
+      id: check-release
+      shell: bash
+      run: |
+        CURRENT_BRANCH="${GITHUB_REF#refs/heads/}"
+        if [ "$CURRENT_BRANCH" = "${{ inputs.release-branch }}" ]; then
+          echo "is-release=true" >> $GITHUB_OUTPUT
+          echo "This is a release build from ${{ inputs.release-branch }}"
+        else
+          echo "is-release=false" >> $GITHUB_OUTPUT
+          echo "This is not a release build (current branch: $CURRENT_BRANCH)"
+        fi
+
+    - name: Set final version
+      id: final-version
+      shell: bash
+      run: |
+        if [ "${{ steps.check-release.outputs.is-release }}" = "true" ]; then
+          # If on release branch, use major.minor.patch to create new release
+          VERSION="${{ steps.version.outputs.majorMinorPatch }}"
+        elif [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+          # If on tag, return that tag as current version
+          VERSION="${{ steps.version.outputs.majorMinorPatch }}"
+        else
+          # For other branches, use informational version
+          VERSION="${{ steps.version.outputs.informationalVersion }}"
+        fi
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Final version: $VERSION"
+
+    - name: Check if version already released
+      id: check-tag
+      shell: bash
+      run: |
+        VERSION="${{ steps.final-version.outputs.version }}"
+        if git rev-parse "v$VERSION" >/dev/null 2>&1; then
+          echo "already-released=true" >> $GITHUB_OUTPUT
+          echo "Version $VERSION has already been released. Build will be skipped."
+        else
+          echo "already-released=false" >> $GITHUB_OUTPUT
+          echo "Version $VERSION has not been released yet."
+        fi
+
+    - name: Show version
+      shell: bash
+      run: |
+        echo "Version: ${{ steps.final-version.outputs.version }}"
+        echo "Is release: ${{ steps.check-release.outputs.is-release }}"
+        echo "Version already released: ${{ steps.check-tag.outputs.already-released }}"
+        echo "### Version: ${{ steps.final-version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Is release:** ${{ steps.check-release.outputs.is-release }}" >> $GITHUB_STEP_SUMMARY
+        echo "**Version already released:** ${{ steps.check-tag.outputs.already-released }}" >> $GITHUB_STEP_SUMMARY

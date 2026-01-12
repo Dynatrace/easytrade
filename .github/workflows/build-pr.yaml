@@ -1,21 +1,12 @@
-name: Build easytrade on branch
-on:
-  push:
-    branches:
-      - "**"
-      - "!main"
-    paths:
-      - .github/**
-      - kubernetes-manifests/**
-      - skaffold.yaml
-      - src/**
-      - helm/**
+name: Build easytrade on PR
 
+on:
+  pull_request:
+    branches:
+      - main
   workflow_call:
     secrets:
       SNYK_API_TOKEN:
-        required: true
-      GAR_CREDENTIALS:
         required: true
 
 env:
@@ -24,7 +15,7 @@ env:
 
 jobs:
   snyk:
-    uses: ./.github/workflows/snyk.yaml
+    uses: ./.github/workflows/reusable-snyk.yaml
     permissions:
       security-events: write
       contents: read
@@ -32,8 +23,12 @@ jobs:
     secrets:
       SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
 
+  calc-version:
+    uses: ./.github/workflows/reusable-calc-version.yaml
+
   build-easytrade:
     runs-on: ubuntu-24.04
+    needs: calc-version
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -42,17 +37,19 @@ jobs:
         uses: ./.github/actions/build-push-images
         with:
           push: false
-          tag: dev
+          tag: ${{ needs.calc-version.outputs.version }}
           registry: ${{ env.CONTAINER_REGISTRY }}
 
   build-helm-chart:
     runs-on: ubuntu-24.04
+    needs: calc-version
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Build Helm chart
         uses: ./.github/actions/build-push-helm
         with:
           chart-path: ${{ env.HELM_CHART_PATH }}
           push: false
+          version: ${{ needs.calc-version.outputs.version }}

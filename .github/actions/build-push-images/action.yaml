@@ -20,11 +20,22 @@ inputs:
     description: "Path to docker compose file"
     required: false
     default: "compose.build.yaml"
-
+  artifact-dir:
+    description: "Directory to store build artifacts"
+    required: false
+  artifact-name:
+    description: "Name of the uploaded artifact"
+    required: false
 outputs:
   images:
     description: "List of built images"
     value: ${{ steps.build.outputs.images }}
+  artifact-dir:
+    description: "Directory containing build artifacts"
+    value: ${{ steps.artifacts.outputs.artifact-dir }}
+  artifact-name:
+    description: "Name of the uploaded artifact"
+    value: ${{ inputs.artifact-name }}
 
 runs:
   using: composite
@@ -73,3 +84,24 @@ runs:
           docker push "${image_name}":latest
         done
         echo "Push $TAG as new latest completed."
+
+    - name: Prepare build artifacts
+      if: inputs.artifact-dir
+      id: artifacts
+      shell: bash
+      env:
+        TAG: ${{ inputs.tag }}
+        REGISTRY: ${{ inputs.registry }}
+        ARTIFACT_DIR: ${{ inputs.artifact-dir }}
+      run: |
+        mkdir -p $ARTIFACT_DIR
+        envsubst < compose.yaml > $ARTIFACT_DIR/compose.yaml
+        echo "artifact-dir=$ARTIFACT_DIR" >> $GITHUB_OUTPUT
+
+    - name: Upload build artifacts
+      if: inputs.artifact-dir
+      uses: actions/upload-artifact@v6
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ inputs.artifact-dir }}
+        if-no-files-found: error
