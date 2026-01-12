@@ -36,7 +36,6 @@ env:
   CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   HELM_REGISTRY: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
   HELM_CHART_PATH: helm/easytrade
-  ARTIFACT_DIR: ./release-artifacts/
 
 jobs:
   snyk:
@@ -80,6 +79,8 @@ jobs:
           push-latest: ${{ needs.calc-version.outputs.is-release }}
           tag: ${{ needs.calc-version.outputs.version }}
           registry: ${{ env.CONTAINER_REGISTRY }}
+          artifact-name: docker-compose
+          artifact-dir: ./build-artifacts/
 
       - name: Build and push Helm chart
         uses: ./.github/actions/build-push-helm
