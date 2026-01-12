@@ -16,7 +16,7 @@
   "dependencies": {
     "@openfeature/server-sdk": "^1.20.0",
     "axios": "^1.8.4",
-    "body-parser": "^2.2.0",
+    "body-parser": "^2.2.1",
     "express": "^5.1.0",
     "fast-xml-parser": "^5.3.1",
     "path-to-regexp": "^8.3.0",
