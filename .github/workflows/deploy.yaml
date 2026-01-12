@@ -1,4 +1,4 @@
-name: Deploy easytrade on tag
+name: Deploy easytrade
 on:
   push:
     tags:
@@ -15,6 +15,7 @@ on:
         description: 'The environment to deploy to'
         type: choice
         required: true
+        default: demo-staging
         options:
           - demo-staging
 
