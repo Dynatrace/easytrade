@@ -3,6 +3,8 @@ import { Request, Response } from "express"
 import { logger } from "../../logger"
 import { delay } from "../../utils"
 
+type Params = { platform: string }
+
 export class ErgoAggregatorSlowdownPlugin implements IPlugin {
     private delayMs: number
     private affectedPlatforms: string[]
@@ -15,7 +17,7 @@ export class ErgoAggregatorSlowdownPlugin implements IPlugin {
     }
 
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    async run(req: Request, res: Response): Promise<void> {
+    async run(req: Request<Params>, res: Response): Promise<void> {
         const platformName = req.params.platform
         logger.info(
             `[${this.pluginName}] is enabled, checking if platform [${platformName}] is affected`
