@@ -332,6 +332,7 @@ problem-operator:
   env:
     POD_NAMESPACE: "{{ .Release.Namespace }}"
     HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT: "300m"
+    HIGH_CPU_USAGE_BROKER_SERVICE_NAME: "{{ .Release.Name }}-broker-service"
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
