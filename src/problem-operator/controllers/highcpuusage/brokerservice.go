@@ -16,19 +16,45 @@ import (
 )
 
 const (
-	brokerService = "broker-service"
-	highCpuUsage  = "high_cpu_usage"
+	brokerServiceDefault = "broker-service"
+	brokerServiceEnv     = "HIGH_CPU_USAGE_BROKER_SERVICE_NAME"
+
+	highCpuUsageDefault = "high_cpu_usage"
+	highCpuUsageEnv     = "HIGH_CPU_USAGE_FLAG_NAME"
 
 	cpuLimitValueDefault = "300m"
 	cpuLimitValueEnv     = "HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT"
 )
 
 type BrokerController struct {
-	logger *zap.SugaredLogger
+	logger        *zap.SugaredLogger
+	brokerService string
+	highCpuUsage  string
+	cpuLimitValue string
 }
 
 func NewBrokerController(l *zap.SugaredLogger) *BrokerController {
-	return &BrokerController{logger: l}
+	brokerService := os.Getenv(brokerServiceEnv)
+	if brokerService == "" {
+		brokerService = brokerServiceDefault
+	}
+
+	highCpuUsage := os.Getenv(highCpuUsageEnv)
+	if highCpuUsage == "" {
+		highCpuUsage = highCpuUsageDefault
+	}
+
+	cpuLimitValue := os.Getenv(cpuLimitValueEnv)
+	if cpuLimitValue == "" {
+		cpuLimitValue = cpuLimitValueDefault
+	}
+
+	return &BrokerController{
+		logger:        l,
+		brokerService: brokerService,
+		highCpuUsage:  highCpuUsage,
+		cpuLimitValue: cpuLimitValue,
+	}
 }
 
 func (c *BrokerController) ApplyChange(
@@ -42,12 +68,7 @@ func (c *BrokerController) ApplyChange(
 		return fmt.Errorf("unable to cast %s object to appsv1.Deployment: %w", obj.GetName(), controllers.ErrObjectCast)
 	}
 
-	cpuLimitStr, found := os.LookupEnv(cpuLimitValueEnv)
-	if !found {
-		cpuLimitStr = cpuLimitValueDefault
-	}
-
-	cpuLimit, err := resource.ParseQuantity(cpuLimitStr)
+	cpuLimit, err := resource.ParseQuantity(c.cpuLimitValue)
 	if err != nil {
 		return fmt.Errorf("can't use %s as resource quantity: %w", cpuLimit.String(), err)
 	}
@@ -112,7 +133,7 @@ func (c *BrokerController) GetResource(
 	namespace string,
 	client kubernetes.Interface,
 ) (operator.Object, error) {
-	deployment, err := client.AppsV1().Deployments(namespace).Get(ctx, brokerService, metav1.GetOptions{})
+	deployment, err := client.AppsV1().Deployments(namespace).Get(ctx, c.brokerService, metav1.GetOptions{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to get the deployment: %w", err)
 	}
@@ -123,5 +144,5 @@ func (c *BrokerController) GetResource(
 }
 
 func (c *BrokerController) GetFlagName() string {
-	return highCpuUsage
+	return c.highCpuUsage
 }
