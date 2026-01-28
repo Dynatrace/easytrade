@@ -74,7 +74,7 @@ calculationservice:
   env:
     RABBITMQ_USER: userxxx
     RABBITMQ_PASSWORD: passxxx
-    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
     RABBITMQ_PORT: "5672"
     RABBITMQ_QUEUE: Trade_Data_Raw
   resources:
@@ -300,7 +300,7 @@ pricing-service:
     PROXY_PREFIX: "pricing-service"
     RABBITMQ_USER: userxxx
     RABBITMQ_PASSWORD: passxxx
-    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
     RABBITMQ_PORT: "5672"
     RABBITMQ_QUEUE: Trade_Data_Raw
   envFromSecret:
@@ -349,7 +349,7 @@ rabbitmq:
   env:
     RABBITMQ_USER: userxxx
     RABBITMQ_PASSWORD: passxxx
-    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
     RABBITMQ_PORT: "5672"
     RABBITMQ_QUEUE: Trade_Data_Raw
   resources:
