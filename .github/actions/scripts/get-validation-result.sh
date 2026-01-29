@@ -13,12 +13,17 @@ getValidationResult() {
         --header "Accept: application/json" \
         --header "Authorization: Bearer ${ACCESS_TOKEN}" \
         --data-raw "${BODY}")
-    RESULT=$(echo $RESPONSE | jq -re '.result.records[0].result')
+    # Ensure that all validations have passed
+    RESULT=$(echo $RESPONSE | jq 'all(.[]; .result == "pass")')
 
     echo Found result [${RESULT}] for job [JOB_ID::${JOB_ID}]
-    if [[ "$RESULT" == "pass" ]]; then
+    if [[ "$RESULT" == "true" ]]; then
         return 0
     fi
+
+    # On fail, list failed validations
+    FAILED_VALIDATIONS=$(echo $RESPONSE | jq -c '[.[] | select(.result != "pass") | .name]')
+    echo "Failed validations: ${FAILED_VALIDATIONS}"
 
     return 1
 }
