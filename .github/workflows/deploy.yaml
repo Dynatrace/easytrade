@@ -102,6 +102,7 @@ jobs:
           tenant_url: ${{ secrets.OQR_URL }}
 
       - name: Disable test environment
+        if: always()
         run: |
           kubectl -n ${{ env.NAMESPACE }} rollout undo \
             deployment/easytrade-credit-card-order-service \
