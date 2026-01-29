@@ -85,8 +85,8 @@ jobs:
         with:
           namespace: ${{ env.NAMESPACE }}
 
-      - name: Wait 12 minutes
-        run: sleep 12m
+      - name: Wait 15 minutes
+        run: sleep 15m
 
       - name: Check credit card order
         uses: ./.github/actions/check-credit-card-order
