@@ -32,9 +32,9 @@ runs:
         tenant_url: ${{ inputs.tenant_url }}
         bizevent_body: |
           {
-            "timeframe.from": "now-15m",
+            "timeframe.from": "now-30m",
             "timeframe.to": "now",
-            "srg.variable.timeframe": 15,
+            "srg.variable.timeframe": 30,
             "event.provider": "Github Actions",
             "event.type": "demoability.validation.trigger",
             "tags.application": "easytrade-k8s",
@@ -46,5 +46,5 @@ runs:
         access_token: ${{ steps.get-access-token.outputs.token }}
         tenant_url: ${{ inputs.tenant_url }}
         event_type: demoability.validation.result
-        timeframe: 5m
+        timeframe: 30m
         job_id: ${{ github.run_number }}-${{ github.sha }}
