@@ -14,6 +14,7 @@ getValidationResult() {
         --header "Authorization: Bearer ${ACCESS_TOKEN}" \
         --data-raw "${BODY}")
     # Ensure that all validations have passed
+    echo "DQL Response: ${RESPONSE}"
     RESULT=$(echo $RESPONSE | jq 'all(.[]; .result == "pass")')
 
     echo Found result [${RESULT}] for job [JOB_ID::${JOB_ID}]
