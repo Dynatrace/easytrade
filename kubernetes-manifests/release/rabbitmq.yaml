@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: rabbitmq
-          image: ghcr.io/ArctiqDynatraceDemo/easytrade/rabbitmq:fa6ccf2
+          image: ghcr.io/arctiqdynatracedemo/easytrade/rabbitmq:fa6ccf2
           ports:
             - containerPort: 5672
             - containerPort: 15672

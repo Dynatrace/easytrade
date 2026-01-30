@@ -43,7 +43,7 @@ spec:
       serviceAccountName: problem-operator-service-account
       containers:
         - name: problem-operator
-          image: ghcr.io/ArctiqDynatraceDemo/easytrade/problem-operator:fa6ccf2
+          image: ghcr.io/arctiqdynatracedemo/easytrade/problem-operator:fa6ccf2
           env:
             - name: POD_NAMESPACE
               valueFrom:

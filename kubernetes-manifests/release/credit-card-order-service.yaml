@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: credit-card-order-service
-          image: ghcr.io/ArctiqDynatraceDemo/easytrade/credit-card-order-service:fa6ccf2
+          image: ghcr.io/arctiqdynatracedemo/easytrade/credit-card-order-service:fa6ccf2
           ports:
             - containerPort: 8080
           envFrom:

@@ -34,8 +34,8 @@ on:
 env:
   GAR_ADDRESS: europe-docker.pkg.dev
   NAMESPACE: easytrade
-  CONTAINER_REGISTRY: ghcr.io/ArctiqDynatraceDemo/easytrade
-  HELM_REGISTRY: oci://ghcr.io/ArctiqDynatraceDemo/easytrade/helm
+  CONTAINER_REGISTRY: ghcr.io/arctiqdynatracedemo/easytrade
+  HELM_REGISTRY: oci://ghcr.io/arctiqdynatracedemo/easytrade/helm
   HELM_CHART_PATH: helm/easytrade
 
 jobs:

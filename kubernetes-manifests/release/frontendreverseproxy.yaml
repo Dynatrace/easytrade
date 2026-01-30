@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: frontendreverseproxy
-          image: ghcr.io/ArctiqDynatraceDemo/easytrade/frontendreverseproxy:fa6ccf2
+          image: ghcr.io/arctiqdynatracedemo/easytrade/frontendreverseproxy:fa6ccf2
           ports:
             - containerPort: 80
           env: []

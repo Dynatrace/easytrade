@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: manager
-          image: ghcr.io/ArctiqDynatraceDemo/easytrade/manager:fa6ccf2
+          image: ghcr.io/arctiqdynatracedemo/easytrade/manager:fa6ccf2
           ports:
             - containerPort: 8080
           env:

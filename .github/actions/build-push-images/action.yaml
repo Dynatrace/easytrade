@@ -15,7 +15,7 @@ inputs:
   registry:
     description: "Docker registry URL"
     required: false
-    default: "ghcr.io/ArctiqDynatraceDemo/easytrade"
+    default: "ghcr.io/arctiqdynatracedemo/easytrade"
   compose-file:
     description: "Path to docker compose file"
     required: false

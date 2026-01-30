@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: contentcreator
-          image: ghcr.io/ArctiqDynatraceDemo/easytrade/contentcreator:fa6ccf2
+          image: ghcr.io/arctiqdynatracedemo/easytrade/contentcreator:fa6ccf2
           env:
             - name: MSSQL_CONNECTIONSTRING
               valueFrom:

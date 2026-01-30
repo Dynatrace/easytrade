@@ -17,12 +17,12 @@ jobs:
       - name: Set application version [dev]
         run: |
           cd deployments/dev
-          kustomize edit set image 'ghcr.io/ArctiqDynatraceDemo/easytrade/(.*):${{ github.sha }}'
+          kustomize edit set image 'ghcr.io/arctiqdynatracedemo/easytrade/(.*):${{ github.sha }}'
           cd -
       - name: Set application version [prod]
         if: ${{ github.event_name  == 'push' }}
         run: |
           VERSION=$(cat .release-please-manifest.json | jq --raw-output '.["."]')
           cd deployments/prod
-          kustomize edit set image "ghcr.io/ArctiqDynatraceDemo/easytrade/(.*):$VERSION"
+          kustomize edit set image "ghcr.io/arctiqdynatracedemo/easytrade/(.*):$VERSION"
           cd -

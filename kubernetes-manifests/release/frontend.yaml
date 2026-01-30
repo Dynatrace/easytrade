@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ghcr.io/ArctiqDynatraceDemo/easytrade/frontend:fa6ccf2
+          image: ghcr.io/arctiqdynatracedemo/easytrade/frontend:fa6ccf2
           ports:
             - containerPort: 3000
           env: []

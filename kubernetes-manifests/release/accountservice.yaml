@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: accountservice
-          image: ghcr.io/ArctiqDynatraceDemo/easytrade/accountservice:fa6ccf2
+          image: ghcr.io/arctiqdynatracedemo/easytrade/accountservice:fa6ccf2
           ports:
             - containerPort: 8080
           env:

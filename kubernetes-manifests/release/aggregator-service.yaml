@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: aggregator-service
-          image: ghcr.io/ArctiqDynatraceDemo/easytrade/aggregator-service:fa6ccf2
+          image: ghcr.io/arctiqdynatracedemo/easytrade/aggregator-service:fa6ccf2
           env: []
           envFrom:
             - configMapRef:

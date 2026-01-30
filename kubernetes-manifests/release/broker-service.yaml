@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: broker-service
-          image: ghcr.io/ArctiqDynatraceDemo/easytrade/broker-service:fa6ccf2
+          image: ghcr.io/arctiqdynatracedemo/easytrade/broker-service:fa6ccf2
           ports:
             - containerPort: 8080
           env:
