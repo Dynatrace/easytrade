@@ -48,13 +48,8 @@ jobs:
     secrets:
       SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
 
-  calc-version:
-    uses: ./.github/workflows/reusable-calc-version.yaml
-
   build-push-easytrade:
-    if: needs.calc-version.outputs.already-released == 'false'
     runs-on: ubuntu-24.04
-    needs: calc-version
     outputs:
       artifact-dir: ${{ steps.build-and-push.outputs.artifact-dir }}
       artifact-name: ${{ steps.build-and-push.outputs.artifact-name }}
@@ -70,7 +65,6 @@ jobs:
         uses: ./.github/actions/build-push-images
         with:
           push: true
-          push-latest: ${{ needs.calc-version.outputs.is-release }}
           tag: ${{ github.sha }}
           registry: ${{ env.CONTAINER_REGISTRY }}
           artifact-name: docker-compose
