@@ -1,0 +1,6 @@
+resources:
+  - ../../kubernetes-manifests/release
+
+images:
+- name: ghcr.io/ArctiqDynatraceDemo/easytrade/(.*)
+  newTag: test123

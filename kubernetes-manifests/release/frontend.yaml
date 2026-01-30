@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/frontend:fa6ccf2
+          image: ghcr.io/ArctiqDynatraceDemo/easytrade/frontend:fa6ccf2
           ports:
             - containerPort: 3000
           env: []

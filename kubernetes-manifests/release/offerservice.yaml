@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: offerservice
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/offerservice:fa6ccf2
+          image: ghcr.io/ArctiqDynatraceDemo/easytrade/offerservice:fa6ccf2
           ports:
             - containerPort: 8080
           env: []

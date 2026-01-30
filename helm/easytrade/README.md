@@ -28,7 +28,7 @@ The following table lists the configurable global parameters and their default v
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `global.image.baseRepository` | Base Docker registry URL for all services | `"europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade"` |
+| `global.image.baseRepository` | Base Docker registry URL for all services | `"ghcr.io/ArctiqDynatraceDemo/easytrade"` |
 | `global.image.tag` | Default image tag for all services | `latest` |
 | `global.labels` | Additional labels to add to all resources | `{}` |
 | `global.env` | Environment variables to add to all pods | `{}` |

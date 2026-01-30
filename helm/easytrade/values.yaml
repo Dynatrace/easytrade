@@ -3,7 +3,7 @@ global:
     version: 1.1.1
   image:
     # Base repository for all images. Individual services can override the repository if needed.
-    baseRepository: "europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade"
+    baseRepository: "ghcr.io/ArctiqDynatraceDemo/easytrade"
     tag: latest
   # Global labels to be added to all resources
   labels: {}
@@ -14,7 +14,7 @@ accountservice:
   enabled: true
   # Example of overriding the image repository for a specific service
   # image:
-  #   repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice
+  #   repository: ghcr.io/ArctiqDynatraceDemo/easytrade/accountservice
   #   tag: latest
   env:
     MANAGER_HOSTANDPORT: "{{ .Release.Name }}-manager:8080"
@@ -295,7 +295,7 @@ offerservice:
 pricing-service:
   enabled: true
   image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/pricing-service
+    repository: ghcr.io/ArctiqDynatraceDemo/easytrade/pricing-service
   env:
     PROXY_PREFIX: "pricing-service"
     RABBITMQ_USER: userxxx

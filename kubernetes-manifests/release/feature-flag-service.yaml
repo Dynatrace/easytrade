@@ -13,7 +13,7 @@ spec:
     spec:
       containers:
         - name: feature-flag-service
-          image: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/feature-flag-service:fa6ccf2
+          image: ghcr.io/ArctiqDynatraceDemo/easytrade/feature-flag-service:fa6ccf2
           ports:
             - containerPort: 8080
           env: []
