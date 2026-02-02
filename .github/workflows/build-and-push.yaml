@@ -10,6 +10,7 @@ on:
       - "main"
     paths:
       - src/**
+      - ".github/**"
   workflow_dispatch:
 
   workflow_call:
@@ -30,6 +31,11 @@ on:
         required: true
       SSO_URL:
         required: true
+
+
+permissions:
+  contents: read
+  packages: write
 
 env:
   GAR_ADDRESS: europe-docker.pkg.dev
