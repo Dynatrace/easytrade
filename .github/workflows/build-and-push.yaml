@@ -13,26 +13,6 @@ on:
       - ".github/**"
   workflow_dispatch:
 
-  workflow_call:
-    secrets:
-      GAR_CREDENTIALS:
-        required: true
-      KUBECONFIG:
-        required: true
-      OQR_CLIENT_ID:
-        required: true
-      OQR_CLIENT_SECRET:
-        required: true
-      OQR_URL:
-        required: true
-      SNYK_API_TOKEN:
-        required: true
-      SSH_PRIVATE_KEY:
-        required: true
-      SSO_URL:
-        required: true
-
-
 permissions:
   contents: read
   packages: write
@@ -40,38 +20,64 @@ permissions:
 env:
   GAR_ADDRESS: europe-docker.pkg.dev
   NAMESPACE: easytrade
-  CONTAINER_REGISTRY: ghcr.io/arctiqdynatracedemo/easytrade
+  REGISTRY: ghcr.io/arctiqdynatracedemo/easytrade
+  PACKAGE_BASE: arctiqdynatracedemo/easytrade
   HELM_REGISTRY: oci://ghcr.io/arctiqdynatracedemo/easytrade/helm
   HELM_CHART_PATH: helm/easytrade
+  TAG: ${{ github.sha }}
 
 jobs:
-  snyk:
-    uses: ./.github/workflows/reusable-snyk.yaml
-    permissions:
-      security-events: write
-      contents: read
-      actions: read
-    secrets:
-      SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
-
-  build-push-easytrade:
+  retrieve-images:
     runs-on: ubuntu-24.04
     outputs:
-      artifact-dir: ${{ steps.build-and-push.outputs.artifact-dir }}
-      artifact-name: ${{ steps.build-and-push.outputs.artifact-name }}
+      images: ${{ steps.retrieve-images.outputs.images }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+      - id: retrieve-images
+        run: | 
+          IMAGES=$(docker compose -f compose.build.yaml config --services | tr '\n' ',' | sed 's/,$//' | jq -R 'split(",")')
+          echo "images=$IMAGES" >> "$GITHUB_OUTPUT"
 
+  build-push-easytrade:
+    runs-on: ubuntu-24.04
+    needs: retrieve-images
+    strategy:
+      matrix:
+        image: ${{ fromJSON(needs.retrieve-images.outputs.images) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
       - name: Log in to registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Build Docker images
+        id: build
+        shell: bash
+        run: |
+          echo "Building image ${{ matrix.image }} with tag: $TAG"
+          docker compose -f compose.build.yaml build ${{ matrix.image }}
+      - name: Push Docker images
+        shell: bash
+        run: |
+          echo "Pushing images to registry..."
+          docker compose -f compose.build.yaml push ${{ matrix.image }}
+          echo "Successfully pushed all images with tag: $TAG"
 
-      - name: Build and push easytrade to docker repository
-        id: build-and-push
-        uses: ./.github/actions/build-push-images
+  octopus:
+    runs-on: ubuntu-24.04
+    needs: [build-push-easytrade, retrieve-images]
+    env:
+      OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY  }}
+      OCTOPUS_URL: ${{ secrets.OCTOPUS_URL }}
+      OCTOPUS_SPACE: 'Default'
+    steps:
+      - name: Create a release in Octopus Deploy 🐙
+        id: octopus_release 
+        uses: OctopusDeploy/create-release-action@v4
         with:
-          push: true
-          tag: ${{ github.sha }}
-          registry: ${{ env.CONTAINER_REGISTRY }}
-          artifact-name: docker-compose
-          artifact-dir: ./build-artifacts/
+          project: 'test'
+          git_ref: ${{ github.head_ref || github.ref }}
+          git_commit: ${{ github.event.after || github.event.pull_request.head.sha }}
+          package_version: ${{ env.TAG }}

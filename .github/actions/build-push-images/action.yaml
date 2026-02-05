@@ -20,12 +20,9 @@ inputs:
     description: "Path to docker compose file"
     required: false
     default: "compose.build.yaml"
-  artifact-dir:
-    description: "Directory to store build artifacts"
-    required: false
-  artifact-name:
-    description: "Name of the uploaded artifact"
-    required: false
+  image:
+    description: image to build
+    required: true
 outputs:
   images:
     description: "List of built images"
@@ -50,13 +47,8 @@ runs:
         REGISTRY: ${{ inputs.registry }}
         TAG: ${{ inputs.tag }}
       run: |
-        echo "Building images with tag: $TAG"
-        docker compose -f ${{ inputs.compose-file }} build
-
-        # List built images
-        IMAGES=$(docker compose -f ${{ inputs.compose-file }} config --services | tr '\n' ',' | sed 's/,$//')
-        echo "images=$IMAGES" >> $GITHUB_OUTPUT
-        echo "Built images: $IMAGES"
+        echo "Building image ${{ inputs.image }} with tag: $TAG"
+        docker compose -f ${{ inputs.compose-file }} build ${{ inputs.image }}
 
     - name: Push Docker images
       if: inputs.push == 'true'
@@ -66,42 +58,5 @@ runs:
         TAG: ${{ inputs.tag }}
       run: |
         echo "Pushing images to registry..."
-        docker compose -f ${{ inputs.compose-file }} push
+        docker compose -f ${{ inputs.compose-file }} push ${{ inputs.image }}
         echo "Successfully pushed all images with tag: $TAG"
-
-    - name: Push Docker images with latest tag
-      if: inputs.push == 'true' && inputs.push-latest == 'true'
-      shell: bash
-      env:
-        REGISTRY: ${{ inputs.registry }}
-        TAG: ${{ inputs.tag }}
-      run: |
-        echo "Pushing images with latest to registry..."
-        images=$(docker compose -f ${{ inputs.compose-file }} config --images)
-        for image in $images; do
-          image_name=$(echo "$image" | cut -d: -f1)
-          docker tag "${image}" "${image_name}":latest
-          docker push "${image_name}":latest
-        done
-        echo "Push $TAG as new latest completed."
-
-    - name: Prepare build artifacts
-      if: inputs.artifact-dir
-      id: artifacts
-      shell: bash
-      env:
-        TAG: ${{ inputs.tag }}
-        REGISTRY: ${{ inputs.registry }}
-        ARTIFACT_DIR: ${{ inputs.artifact-dir }}
-      run: |
-        mkdir -p $ARTIFACT_DIR
-        envsubst < compose.yaml > $ARTIFACT_DIR/compose.yaml
-        echo "artifact-dir=$ARTIFACT_DIR" >> $GITHUB_OUTPUT
-
-    - name: Upload build artifacts
-      if: inputs.artifact-dir
-      uses: actions/upload-artifact@v6
-      with:
-        name: ${{ inputs.artifact-name }}
-        path: ${{ inputs.artifact-dir }}
-        if-no-files-found: error
