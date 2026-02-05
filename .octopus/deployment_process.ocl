@@ -53,6 +53,160 @@ step "update-argo-cd-application-image-tags" {
                 SelectionMode = "immediate"
             }
         }
+
+        packages "easytrade_loginservice" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/loginservice"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_pricing-service" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/pricing-service"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_rabbitmq" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/rabbitmq"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_third-party-service" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/third-party-service"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_feature-flag-service" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/feature-flag-service"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_frontendreverseproxy" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/frontendreverseproxy"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_offerservice" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/offerservice"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_problem-operator" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/problem-operator"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_accountservice" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/accountservice"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_aggregator-service" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/aggregator-service"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_broker-service" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/broker-service"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_db" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/db"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_frontend" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/frontend"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_manager" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/manager"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
     }
 }
 
