@@ -30,9 +30,9 @@ step "github-report-deployment-arctiqdynatracedemo" {
         properties = {
             GitHubOwner = "ArctiqDynatraceDemo"
             GitHubRepoName = "easytrade"
-            GitHubUserName = "Simon-Boyer"
+            GitHubUserName = "#{gh_deployment_username}"
             Octopus.Action.Template.Id = "ActionTemplates-2"
-            Octopus.Action.Template.Version = "1"
+            Octopus.Action.Template.Version = "2"
         }
         worker_pool = "hosted-windows"
     }
