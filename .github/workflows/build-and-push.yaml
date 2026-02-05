@@ -36,7 +36,8 @@ jobs:
         uses: actions/checkout@v6
       - id: retrieve-images
         run: | 
-          IMAGES=$(docker compose -f compose.build.yaml config --services | tr '\n' ',' | sed 's/,$//' | jq -R 'split(",")')
+          IMAGES=$(docker compose -f compose.build.yaml config --services | tr '\n' ',' | sed 's/,$//' | jq -c -R 'split(",")')
+          echo "images=$IMAGES"
           echo "images=$IMAGES" >> "$GITHUB_OUTPUT"
 
   build-push-easytrade:
