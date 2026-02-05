@@ -20,6 +20,39 @@ step "update-argo-cd-application-image-tags" {
                 SelectionMode = "immediate"
             }
         }
+
+        packages "easytrade_calculationservice" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/calculationservice"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_contentcreator" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/contentcreator"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+
+        packages "easytrade_engine" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/engine"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
     }
 }
 
