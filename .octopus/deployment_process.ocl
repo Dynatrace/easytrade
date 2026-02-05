@@ -29,6 +29,7 @@ step "github-report-deployment-arctiqdynatracedemo" {
     action {
         properties = {
             GitHubOwner = "ArctiqDynatraceDemo"
+            GitHubPassword = "#{gh_deployment_token}"
             GitHubRepoName = "easytrade"
             GitHubUserName = "#{gh_deployment_username}"
             Octopus.Action.Template.Id = "ActionTemplates-2"
