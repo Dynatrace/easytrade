@@ -1,0 +1,24 @@
+step "update-argo-cd-application-image-tags" {
+    name = "Update Argo CD Application Image Tags"
+
+    action {
+        action_type = "Octopus.ArgoCDUpdateImageTags"
+        properties = {
+            Octopus.Action.ArgoCD.CommitMessageSummary = "Octopus Deploy updated image versions"
+            Octopus.Action.ArgoCD.CommitMethod = "DirectCommit"
+        }
+        worker_pool = "hosted-windows"
+        worker_pool_variable = ""
+
+        packages "easytrade_credit-card-order-service" {
+            acquisition_location = "NotAcquired"
+            feed = "github-packages"
+            package_id = "arctiqdynatracedemo/easytrade/credit-card-order-service"
+            properties = {
+                Extract = "False"
+                Purpose = "DockerImageReference"
+                SelectionMode = "immediate"
+            }
+        }
+    }
+}
