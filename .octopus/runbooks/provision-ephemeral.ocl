@@ -20,6 +20,7 @@ process {
                     GH_TOKEN=$(get_octopusvariable "GH_API_SECRET")
                     
                     ENVIRONMENT=$(get_octopusvariable "Octopus.Environment.Slug")
+                    RELEASE_ID=$(get_octopusvariable "Octopus.Release.Git.Ref")
                     
                     KUSTOMIZE_FILE=$(cat <<EOF | base64 -w0
                     apiVersion: kustomize.config.k8s.io/v1beta1
@@ -32,41 +33,41 @@ process {
                     
                     images:
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/accountservice"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/aggregator-service"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/broker-service"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/calculationservice"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/credit-card-order-service"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/db"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/engine"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/feature-flag-service"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/frontend"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/frontendreverseproxy"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/loadgen"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/loginservice"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/manager"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/offerservice"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/pricing-service"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/problem-operator"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/rabbitmq"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/third-party-service"
-                        newTag: "latest"
+                        newTag: "$RELEASE_ID"
                     EOF
                     )
                     
