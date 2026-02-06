@@ -16,13 +16,16 @@ process {
         action {
             action_type = "Octopus.Script"
             properties = {
-                Octopus.Action.RunOnServer = "true"
-                Octopus.Action.Script.ScriptBody = <<-EOT
-                    Write-Host 'Hello, World!
-                    Replace this step with your own runbook steps.'
-                    EOT
+                Octopus.Action.Script.ScriptBody = "echo test"
                 Octopus.Action.Script.ScriptSource = "Inline"
-                Octopus.Action.Script.Syntax = "PowerShell"
+                Octopus.Action.Script.Syntax = "Bash"
+                OctopusUseBundledTooling = "False"
+            }
+            worker_pool = "hosted-ubuntu"
+
+            container {
+                feed = "dockerhub"
+                image = "maniator/gh:v2.86.0"
             }
         }
     }
