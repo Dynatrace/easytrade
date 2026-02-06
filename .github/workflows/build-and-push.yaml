@@ -78,7 +78,7 @@ jobs:
         id: octopus_release 
         uses: OctopusDeploy/create-release-action@v4
         with:
-          project: 'test'
+          project: 'easytrade'
           git_ref: ${{ github.head_ref || github.ref }}
           git_commit: ${{ github.event.after || github.event.pull_request.head.sha }}
           package_version: ${{ env.TAG }}

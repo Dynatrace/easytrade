@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: feature-flag-service-setup
-data:
-  FEATURE_FLAG_SERVICE_PROTOCOL: http
-  FEATURE_FLAG_SERVICE_BASE_URL: feature-flag-service
-  FEATURE_FLAG_SERVICE_PORT: "8080"
