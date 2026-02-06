@@ -209,19 +209,3 @@ step "update-argo-cd-application-image-tags" {
         }
     }
 }
-
-step "github-report-deployment-arctiqdynatracedemo" {
-    name = "GitHub - Report Deployment ArctiqDynatraceDemo"
-
-    action {
-        properties = {
-            GitHubOwner = "ArctiqDynatraceDemo"
-            GitHubPassword = "#{gh_deployment_token}"
-            GitHubRepoName = "easytrade"
-            GitHubUserName = "#{gh_deployment_username}"
-            Octopus.Action.Template.Id = "ActionTemplates-2"
-            Octopus.Action.Template.Version = "2"
-        }
-        worker_pool = "hosted-windows"
-    }
-}
