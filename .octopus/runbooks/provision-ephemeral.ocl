@@ -16,7 +16,15 @@ process {
         action {
             action_type = "Octopus.Script"
             properties = {
-                Octopus.Action.Script.ScriptBody = "echo test"
+                Octopus.Action.Script.ScriptBody = <<-EOT
+                    export GH_TOKEN=$(get_octopusvariable "GH_API_SECRET")
+                    KUSTOMIZE_FILE=$(cat <<EOF | base64
+                    This is line one.
+                    This is line two.
+                    This is line three.
+                    EOF
+                    )
+                    EOT
                 Octopus.Action.Script.ScriptSource = "Inline"
                 Octopus.Action.Script.Syntax = "Bash"
                 OctopusUseBundledTooling = "False"
