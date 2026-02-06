@@ -97,4 +97,17 @@ process {
             worker_pool = "hosted-ubuntu"
         }
     }
+
+    step "wait" {
+        name = "Wait"
+
+        action {
+            properties = {
+                Octopus.Action.Template.Id = "ActionTemplates-61"
+                Octopus.Action.Template.Version = "2"
+                Seconds = "120"
+            }
+            worker_pool = "hosted-ubuntu"
+        }
+    }
 }
