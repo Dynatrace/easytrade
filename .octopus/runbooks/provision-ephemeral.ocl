@@ -19,54 +19,54 @@ process {
                 Octopus.Action.Script.ScriptBody = <<-EOT
                     export GH_TOKEN=$(get_octopusvariable "GH_API_SECRET")
                     
-                    RELEASE_ID=$(get_octopusvariable "Octopus.Release.Id")
+                    ENVIRONMENT=$(get_octopusvariable "Octopus.Environment.Slug")
                     
                     KUSTOMIZE_FILE=$(cat <<EOF | base64
                     apiVersion: kustomize.config.k8s.io/v1beta1
                     kind: Kustomization
                     
-                    namespace: easytrade-preview-$RELEASE_ID
+                    namespace: easytrade-$ENVIRONMENT
                     
                     resources:
                     - ../../base
                     
                     images:
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/accountservice"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/aggregator-service"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/broker-service"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/calculationservice"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/credit-card-order-service"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/db"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/engine"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/feature-flag-service"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/frontend"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/frontendreverseproxy"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/loadgen"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/loginservice"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/manager"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/offerservice"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/pricing-service"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/problem-operator"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/rabbitmq"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                       - name: "ghcr.io/arctiqdynatracedemo/easytrade/third-party-service"
-                        newTag: "$RELEASE_ID"
+                        newTag: "latest"
                     EOF
                     )
                     
@@ -74,8 +74,8 @@ process {
                       --method PUT \
                       -H "Accept: application/vnd.github+json" \
                       -H "X-GitHub-Api-Version: 2022-11-28" \
-                      /repos/ArctiqDynatraceDemo/gitops/contents/easytrade/ephemerals/$RELEASE_ID/kustomization.yml \
-                       -f "message=Deploying preview environment for $RELEASE_ID" -f 'committer[name]=Octopus deploy' -f 'committer[email]=octopus@arctiq.com' -f "content=$KUSTOMIZE_FILE"
+                      /repos/ArctiqDynatraceDemo/gitops/contents/easytrade/ephemerals/$ENVIRONMENT/kustomization.yml \
+                       -f "message=Deploying preview environment for $ENVIRONMENT" -f 'committer[name]=Octopus deploy' -f 'committer[email]=octopus@arctiq.com' -f "content=$KUSTOMIZE_FILE"
                     EOT
                 Octopus.Action.Script.ScriptSource = "Inline"
                 Octopus.Action.Script.Syntax = "Bash"
