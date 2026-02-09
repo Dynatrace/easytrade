@@ -74,19 +74,19 @@ jobs:
           docker push ${{ env.REGISTRY }}/${{ matrix.image }}
           echo "Successfully pushed all images with tag: $TAG"
 
-  octopus:
-    runs-on: ubuntu-24.04
-    needs: [build-push-easytrade, retrieve-images]
-    env:
-      OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY  }}
-      OCTOPUS_URL: ${{ secrets.OCTOPUS_URL }}
-      OCTOPUS_SPACE: 'Default'
-    steps:
-      - name: Create a release in Octopus Deploy 🐙
-        id: octopus_release 
-        uses: OctopusDeploy/create-release-action@v4
-        with:
-          project: 'easytrade'
-          git_ref: ${{ github.head_ref || github.ref }}
-          git_commit: ${{ github.event.after || github.event.pull_request.head.sha }}
-          package_version: ${{ env.TAG }}
+  # octopus:
+  #   runs-on: ubuntu-24.04
+  #   needs: [build-push-easytrade, retrieve-images]
+  #   env:
+  #     OCTOPUS_API_KEY: ${{ secrets.OCTOPUS_API_KEY  }}
+  #     OCTOPUS_URL: ${{ secrets.OCTOPUS_URL }}
+  #     OCTOPUS_SPACE: 'Default'
+  #   steps:
+  #     - name: Create a release in Octopus Deploy 🐙
+  #       id: octopus_release 
+  #       uses: OctopusDeploy/create-release-action@v4
+  #       with:
+  #         project: 'easytrade'
+  #         git_ref: ${{ github.head_ref || github.ref }}
+  #         git_commit: ${{ github.event.after || github.event.pull_request.head.sha }}
+  #         package_version: ${{ env.TAG }}
