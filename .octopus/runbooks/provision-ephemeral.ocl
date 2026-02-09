@@ -11,19 +11,104 @@ run_retention_policy {
 
 process {
     step "hello-world" {
-        name = "Hello, World!"
+        name = "create kustomize"
 
-        action {
+        action "create-kustomize" {
             action_type = "Octopus.Script"
             properties = {
-                Octopus.Action.RunOnServer = "true"
                 Octopus.Action.Script.ScriptBody = <<-EOT
-                    Write-Host 'Hello, World!
-                    Replace this step with your own runbook steps.'
+                    GH_TOKEN=$(get_octopusvariable "GH_API_SECRET")
+                    
+                    ENVIRONMENT=$(get_octopusvariable "Octopus.Environment.Slug")
+                    RELEASE_ID=$(get_octopusvariable "Octopus.Release.Git.Ref")
+                    
+                    KUSTOMIZE_FILE=$(cat <<EOF | base64 -w0
+                    apiVersion: kustomize.config.k8s.io/v1beta1
+                    kind: Kustomization
+                    
+                    namespace: easytrade-$ENVIRONMENT
+                    
+                    resources:
+                    - ../../base
+                    
+                    images:
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/accountservice"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/aggregator-service"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/broker-service"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/calculationservice"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/credit-card-order-service"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/db"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/engine"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/feature-flag-service"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/frontend"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/frontendreverseproxy"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/loadgen"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/loginservice"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/manager"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/offerservice"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/pricing-service"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/problem-operator"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/rabbitmq"
+                        newTag: "$RELEASE_ID"
+                      - name: "ghcr.io/arctiqdynatracedemo/easytrade/third-party-service"
+                        newTag: "$RELEASE_ID"
+                    EOF
+                    )
+                    
+                    JSON=$(cat <<EOF
+                    {
+                      "message": "Deploying preview environment for $ENVIRONMENT",
+                      "committer": {
+                        "name": "Octopus Deploy",
+                        "email": "octopus@arctiq.com"
+                      },
+                      "content": "$KUSTOMIZE_FILE"
+                    }
+                    EOF
+                    )
+                    
+                    curl -L \
+                      -X PUT \
+                      -H "Accept: application/vnd.github+json" \
+                      -H "Authorization: Bearer $GH_TOKEN" \
+                      -H "X-GitHub-Api-Version: 2022-11-28" \
+                      https://api.github.com/repos/ArctiqDynatraceDemo/gitops/contents/easytrade/ephemerals/$ENVIRONMENT/kustomization.yml \
+                      -d "$JSON"
                     EOT
                 Octopus.Action.Script.ScriptSource = "Inline"
-                Octopus.Action.Script.Syntax = "PowerShell"
+                Octopus.Action.Script.Syntax = "Bash"
+                OctopusUseBundledTooling = "False"
             }
+            worker_pool = "hosted-ubuntu"
+        }
+    }
+
+    step "wait" {
+        name = "Wait"
+
+        action {
+            properties = {
+                Octopus.Action.Template.Id = "ActionTemplates-61"
+                Octopus.Action.Template.Version = "2"
+                Seconds = "120"
+            }
+            worker_pool = "hosted-ubuntu"
         }
     }
 }
