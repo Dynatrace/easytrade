@@ -29,7 +29,7 @@
     "@tanstack/react-query-devtools": "^5.51.11",
     "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
-    "axios": "^1.8.2",
+    "axios": "^1.13.5",
     "fast-xml-parser": "^5.3.4",
     "luxon": "^3.4.4",
     "react": "^18.3.1",
