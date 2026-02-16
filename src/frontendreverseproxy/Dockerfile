@@ -17,6 +17,7 @@ ENV LOGIN_SERVICE_URL=http://loginservice:8080 \
     CREDIT_CARD_ORDER_SERVICE_URL=http://credit-card-order-service:8080 \
     THIRD_PARTY_SERVICE_URL=http://third-party-service:8080 \
     FEATURE_FLAG_SERVICE_URL=http://feature-flag-service:8080 \
-    FRONTEND_URL=http://frontend:3000/
+    FRONTEND_URL=http://frontend:3000/ \
+    FRONTEND_REVERSE_PROXY_PORT=80
 
 CMD ["nginx", "-g", "daemon off;"]
