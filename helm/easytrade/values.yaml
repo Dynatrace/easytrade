@@ -194,6 +194,7 @@ frontend:
 frontendreverseproxy:
   enabled: true
   env:
+    FRONTEND_REVERSE_PROXY_PORT: "8080"
     ACCOUNT_SERVICE_URL: "http://{{ .Release.Name }}-accountservice:8080"
     BROKER_SERVICE_URL: "http://{{ .Release.Name }}-broker-service:8080"
     CREDIT_CARD_ORDER_SERVICE_URL: "http://{{ .Release.Name }}-credit-card-order-service:8080"
@@ -215,15 +216,15 @@ frontendreverseproxy:
   service:
     enabled: true
     ports:
-      - port: 80
-        targetPort: 80
+      - port: 8080
+        targetPort: 8080
         protocol: TCP
         name: http
 
 loadgen:
   enabled: true
   env:
-    EASYTRADE_URL: "http://{{ .Release.Name }}-frontendreverseproxy"
+    EASYTRADE_URL: "http://{{ .Release.Name }}-frontendreverseproxy:8080"
     RARE_VISITS_INTERVAL_MINUTES: "60"
   resources:
     requests:
