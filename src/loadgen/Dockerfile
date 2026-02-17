@@ -17,6 +17,7 @@ RUN apt update \
     && apt upgrade -y \
     && apt install -y ${CHROME_LIBS} \
     && apt install dumb-init \
+    && apt install curl \
     && rm -rf /var/lib/apt/lists/*
 
 COPY ["package.json", "package-lock.json", "./"]
