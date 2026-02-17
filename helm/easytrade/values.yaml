@@ -213,6 +213,13 @@ frontendreverseproxy:
     limits:
       cpu: 200m
       memory: 100Mi
+  service:
+    enabled: true
+    ports:
+      - port: 8080
+        targetPort: 8080
+        protocol: TCP
+        name: http
 
 loadgen:
   enabled: true
