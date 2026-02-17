@@ -216,11 +216,6 @@ frontendreverseproxy:
   service:
     enabled: true
     port: 8080
-  externalService:
-    enabled: false
-    annotations: {}
-    type: LoadBalancer
-    port: 443
 
 loadgen:
   enabled: true
