@@ -87,9 +87,11 @@ service:
   #     protocol: TCP
   #     name: https
 
-# This is for setting up an additional service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
+# This is for setting up an additional service. Useful if one service can be LoadBalancer and the other one is only for internal communication.
 secondaryService:
   enabled: false
+  # This sets the name suffix for the secondary service. The full name will be <release-name>-<chart-name>-<nameSuffix>.
+  nameSuffix: internal
   # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
   type: ClusterIP
   # Annotations to add to the service
