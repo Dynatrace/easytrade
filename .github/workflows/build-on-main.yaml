@@ -102,6 +102,6 @@ jobs:
     uses: ./.github/workflows/reusable-promote-release.yaml
     with:
       version: ${{ needs.calc-version.outputs.version }}
-      trigger-deploy: true
+      trigger-deploy: false
       artifact-name: ${{ needs.build-push-easytrade.outputs.artifact-name }}
       artifact-dir: ${{ needs.build-push-easytrade.outputs.artifact-dir }}
