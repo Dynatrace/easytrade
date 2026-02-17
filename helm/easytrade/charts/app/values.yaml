@@ -87,28 +87,6 @@ service:
   #     protocol: TCP
   #     name: https
 
-# This is for setting up an additional service. Useful if one service can be LoadBalancer and the other one is only for internal communication.
-secondaryService:
-  enabled: false
-  # This sets the name suffix for the secondary service. The full name will be <release-name>-<chart-name>-<nameSuffix>.
-  nameSuffix: internal
-  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-  type: ClusterIP
-  # Annotations to add to the service
-  annotations: {}
-  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  port: 80
-  # Define multiple ports (optional, takes precedence over 'port' if defined)
-  # ports:
-  #   - port: 80
-  #     targetPort: http
-  #     protocol: TCP
-  #     name: http
-  #   - port: 443
-  #     targetPort: https
-  #     protocol: TCP
-  #     name: https
-
 # This block is for setting up environment variables more information can be found here: https://kubernetes.io/docs/tasks/inject-data-application/environment-variable-expose-pod-information/
 env: {}
 # env:

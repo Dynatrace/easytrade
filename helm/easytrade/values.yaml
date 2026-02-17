@@ -213,14 +213,11 @@ frontendreverseproxy:
     limits:
       cpu: 200m
       memory: 100Mi
-  secondaryService:
-    enabled: true
-    port: 8080
 
 loadgen:
   enabled: true
   env:
-    EASYTRADE_URL: "http://{{ .Release.Name }}-frontendreverseproxy-internal:8080"
+    EASYTRADE_URL: "http://{{ .Release.Name }}-frontendreverseproxy:8080"
     RARE_VISITS_INTERVAL_MINUTES: "60"
   resources:
     requests:
