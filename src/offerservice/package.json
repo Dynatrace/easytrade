@@ -18,7 +18,7 @@
     "axios": "^1.13.5",
     "body-parser": "^2.2.0",
     "express": "^5.1.0",
-    "fast-xml-parser": "^5.3.4",
+    "fast-xml-parser": "^5.3.6",
     "path-to-regexp": "^8.3.0",
     "winston": "^3.18.3"
   },
