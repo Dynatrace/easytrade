@@ -52,9 +52,13 @@ rbac:
 # This is for setting Kubernetes Annotations to a Pod.
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 podAnnotations: {}
+
 # This is for setting Kubernetes Labels to a Pod.
 # For more information checkout: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
 podLabels: {}
+
+# This is for setting Kubernetes Labels to a workload (Deployment or StatefulSet).
+workloadLabels: {}
 
 podSecurityContext: {}
   # fsGroup: 2000
