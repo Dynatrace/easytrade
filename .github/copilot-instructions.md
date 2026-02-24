@@ -25,14 +25,28 @@ in(affected_entity_ids, "<entity-id>") OR matchesValue(affected_entity_ids, "<en
 
 ### Metrics
 
-You can then investigate metrics via the DQL command
+> **Important DQL rules for metrics:**
+> - Always use `timeseries` to query metrics. **Never use `fetch <metric-key>`** — metric keys like `dt.service.request.response_time` are not valid data objects for `fetch` and will produce a parse error.
+> - When specifying absolute timestamps, they **must be quoted strings**: `from:"2026-02-23T02:00:00Z"`. Unquoted ISO timestamps will produce a parse error.
+> - Relative time expressions do not need quotes: `from: now()-14d`.
+
+Query metrics for all EasyTrade services using the namespace filter:
 
 ```dql
-timeseries {
-  avg(<metric-key>)
-},
-from: now() -14d, to: now(),
-filter: { matchesValue(k8s.deployment.name, "*<service-name>*") }
+timeseries from:"<ISO-timestamp>", to:"<ISO-timestamp>", by:{dt.entity.service}, interval:1m,
+  avg_response_time = avg(dt.service.request.response_time),
+  filter: k8s.namespace.name == "easytrade"
+| lookup [fetch dt.entity.service | fields id, entity.name], sourceField:dt.entity.service, lookupField:id, prefix:"svc."
+| fieldsRename service = svc.entity.name
+| fieldsRemove svc.id
+```
+
+For a relative time window and a single service:
+
+```dql
+timeseries avg(<metric-key>),
+from: now()-14d, to: now(),
+filter: { dt.entity.service == "<service-id>" }
 ```
 
 Additionally, you should add a filter like this: `| filter dt.entity.service == "<service-id>"` to focus on a specific service.
@@ -85,3 +99,17 @@ Filter error logs with
 ```
 
 You can furthermore narrow down logs for a specific service by adding a filter like this: `| filter contains(k8s.deployment.name, "<service-name>")`.
+
+### Problem Investigation Workflow
+
+Every problem investigation **must** include:
+
+1. **A supporting metric chart** — always execute a `timeseries` DQL query that covers the problem's time window (use `event.start` and `event.end` from the problem record, plus a 30-minute buffer on each side). At minimum, plot `avg(dt.service.request.response_time)` or `sum(dt.service.request.failure_count)` for the affected service(s).
+
+2. **A written summary** directly after the chart, following this format:
+
+   > **Analysis — \<short incident title\> (\<time range\> UTC)**
+   >
+   > **Problem detected:** \<problem-id\> — \<event.description\>, confirmed by Dynatrace's investigation. Duration: \<duration in human-readable form\> (\<event.start time\> UTC), \<affected_users_count\> users affected.
+   >
+   > _Then explain: what the chart shows, when the onset was, what the peak looked like, when recovery occurred, and which service(s) were most impacted._
