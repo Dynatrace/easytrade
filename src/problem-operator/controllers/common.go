@@ -14,7 +14,7 @@ import (
 
 const (
 	revisionAnnotation = "deployment.kubernetes.io/revision"
-	appLabelPrefix     = "app="
+	appLabel           = "app.kubernetes.io/name=broker-service"
 )
 
 var (
@@ -43,7 +43,7 @@ func RollbackDeployment(
 
 	replicaSetClient := client.AppsV1().ReplicaSets(namespace)
 
-	replicaSets, err := replicaSetClient.List(ctx, metav1.ListOptions{LabelSelector: appLabelPrefix + deployment.Name})
+	replicaSets, err := replicaSetClient.List(ctx, metav1.ListOptions{LabelSelector: appLabel})
 	if err != nil {
 		return fmt.Errorf("can't fetch %s deployment's replicasets: %w", deployment.GetName(), err)
 	}
