@@ -14,7 +14,7 @@ import (
 
 const (
 	revisionAnnotation = "deployment.kubernetes.io/revision"
-	appLabelPrefix     = "app.kubernetes.io/name="
+	appLabelPrefix     = "app="
 )
 
 var (
