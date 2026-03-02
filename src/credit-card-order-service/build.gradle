@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.7'
+    id 'org.springframework.boot' version '4.0.3'
     id 'io.spring.dependency-management' version '1.1.7'
     id 'com.github.ben-manes.versions' version '0.53.0'
 }
@@ -16,24 +16,20 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.14.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.14.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-params:5.14.1'
-    testImplementation 'org.mockito:mockito-core:5.20.0'
-    testImplementation 'org.mockito:mockito-junit-jupiter:5.20.0'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.1'
-    testRuntimeOnly 'org.junit.platform:junit-platform-commons:1.14.1'
-    testRuntimeOnly 'org.junit.platform:junit-platform-engine:1.14.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:6.0.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:6.0.3'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-params:6.0.3'
+    testImplementation 'org.mockito:mockito-core:5.22.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.22.0'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:6.0.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-commons:6.0.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-engine:6.0.3'
     
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.14'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
 
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1'
-    // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-xml
-    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.20.1'
 
     implementation 'com.microsoft.sqlserver:mssql-jdbc:12.10.2.jre11'
 
@@ -44,16 +40,25 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
 
     //open feature
-    implementation 'dev.openfeature:sdk:1.18.2'
+    implementation 'dev.openfeature:sdk:1.20.1'
 
     // -- not direct dependencies but need bumps to patch vulns
     // -- can be removed once the parent packages upgrade
 
     // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
-    implementation 'org.apache.commons:commons-lang3:3.19.0'
+    implementation 'org.apache.commons:commons-lang3:3.20.0'
 
     // https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core
-    implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.47'
+    implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.18'
+
+    // Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-core
+    implementation 'tools.jackson.core:jackson-core:3.1.0'
+
+    // Source: https://mvnrepository.com/artifact/tools.jackson.dataformat/jackson-dataformat-xml
+    implementation 'tools.jackson.dataformat:jackson-dataformat-xml:3.1.0'
+
+	// Source: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.21.1'
 }
 
 test {
