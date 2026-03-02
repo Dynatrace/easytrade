@@ -1,20 +1,21 @@
 package com.dynatrace.easytrade.creditcardorderservice;
 
-import jakarta.servlet.DispatcherType;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.filter.ForwardedHeaderFilter;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import jakarta.servlet.DispatcherType;
 
 @SpringBootApplication
 @EnableScheduling
@@ -27,7 +28,7 @@ public class Application {
     }
 
     @Bean
-    @ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
+    @ConditionalOnMissingBean(ForwardedHeaderFilter.class)
     @ConditionalOnProperty(value = "server.forward-headers-strategy", havingValue = "framework")
     public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
         ForwardedHeaderFilter filter = new ForwardedHeaderFilter();

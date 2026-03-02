@@ -4,8 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
@@ -27,7 +27,7 @@ public class EngineApplication {
 	}
 
 	@Bean
-    @ConditionalOnMissingFilterBean(ForwardedHeaderFilter.class)
+    @ConditionalOnMissingBean(ForwardedHeaderFilter.class)
     @ConditionalOnProperty(value = "server.forward-headers-strategy", havingValue = "framework")
     public FilterRegistrationBean<ForwardedHeaderFilter> forwardedHeaderFilter() {
         ForwardedHeaderFilter filter = new ForwardedHeaderFilter();
