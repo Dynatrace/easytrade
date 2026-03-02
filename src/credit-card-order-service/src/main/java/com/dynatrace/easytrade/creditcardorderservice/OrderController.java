@@ -1,6 +1,34 @@
 package com.dynatrace.easytrade.creditcardorderservice;
 
-import com.dynatrace.easytrade.creditcardorderservice.models.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.dynatrace.easytrade.creditcardorderservice.models.CreditCardOrderRequest;
+import com.dynatrace.easytrade.creditcardorderservice.models.CreditCardOrderResponse;
+import com.dynatrace.easytrade.creditcardorderservice.models.CreditCardOrderStatus;
+import com.dynatrace.easytrade.creditcardorderservice.models.CreditCardOrderStatusHistory;
+import com.dynatrace.easytrade.creditcardorderservice.models.CreditCardRequest;
+import com.dynatrace.easytrade.creditcardorderservice.models.ErrorRequest;
+import com.dynatrace.easytrade.creditcardorderservice.models.ShippingAddressResponse;
+import com.dynatrace.easytrade.creditcardorderservice.models.ShippingIdRequest;
+import com.dynatrace.easytrade.creditcardorderservice.models.StandardResponse;
+import com.dynatrace.easytrade.creditcardorderservice.models.StatusRequest;
+import com.dynatrace.easytrade.creditcardorderservice.models.StatusType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
@@ -11,14 +39,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import java.util.Optional;
-import java.util.List;
-import java.sql.*;
 
 @RestController
 @RequestMapping(value="/v1/orders", 
@@ -45,7 +65,6 @@ public class OrderController {
     private final OpenFeatureAPI openFeatureAPI;
 
     public OrderController(DatabaseHelper dbHelper, OpenFeatureAPI openFeatureAPI) {
-
         this.dbHelper = dbHelper;
         this.openFeatureAPI = openFeatureAPI;
     }
@@ -54,6 +73,7 @@ public class OrderController {
     @Operation(summary = "Order a credit card")
     public ResponseEntity<StandardResponse> createCreditCardOrder(@RequestBody CreditCardOrderRequest request) {
         logger.info("Starting to create a credit card order for data: " + request);
+        
         try (Connection conn = dbHelper.getConnection()) {
             Integer orderCount = dbHelper.getOrderCountForAccountId(conn, request.accountId());
 
@@ -117,7 +137,7 @@ public class OrderController {
 
             Optional<CreditCardOrderStatus> status = dbHelper.getLastOrderStatusForAccountId(conn, accountId);
             return status
-                    .map(s -> buildResponseEntity(HttpStatus.OK, "Status found successfully.", status))
+                    .map(s -> buildResponseEntity(HttpStatus.OK, "Status found successfully.", s))
                     .orElse(buildResponseEntity(HttpStatus.NOT_FOUND,
                             "Status for the given account id does not exist!"));
         } catch (SQLException e) {
