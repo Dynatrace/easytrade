@@ -1,0 +1,60 @@
+name: Enriched Pull Request SDLC Event
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  send-enriched-pr:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Determine Stage
+        run: |
+          if [[ "${{ github.base_ref }}" == "main" ]]; then
+            echo "STAGE=prod" >> $GITHUB_ENV
+          elif [[ "${{ github.base_ref }}" == "preprod" ]]; then
+            echo "STAGE=preprod" >> $GITHUB_ENV
+          else
+            echo "STAGE=dev" >> $GITHUB_ENV
+          fi
+
+      - name: Get Changed Files
+        run: |
+          curl -s \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files \
+            | jq -r '[.[].filename]' > files.json
+
+      - name: Send Enriched Event
+        run: |
+          FILES=$(cat files.json)
+
+          curl -X POST "https://<YOUR-ENV-ID>.live.dynatrace.com/platform/ingest/custom/events.sdlc" \
+          -H "Authorization: Api-Token ${{ secrets.DT_TOKEN }}" \
+          -H "Content-Type: application/json" \
+          -d "{
+            \"event.kind\": \"SDLC_EVENT\",
+            \"event.provider\": \"github.com\",
+            \"event.category\": \"task\",
+            \"event.type\": \"change\",
+            \"event.status\": \"finished\",
+            \"task.outcome\": \"success\",
+            \"task.id\": \"${{ github.event.pull_request.id }}\",
+            \"task.title\": \"[Change Request] ${{ github.event.pull_request.title }}\",
+            \"task.labels\": [
+              \"application:EasyTrade\",
+              \"stage:${STAGE}\"
+            ],
+            \"vcs.change.id\": \"${{ github.event.pull_request.number }}\",
+            \"vcs.change.title\": \"${{ github.event.pull_request.title }}\",
+            \"vcs.change.url.full\": \"${{ github.event.pull_request.html_url }}\",
+            \"vcs.change.state\": \"closed\",
+            \"vcs.ref.head.name\": \"${{ github.head_ref }}\",
+            \"vcs.ref.head.revision\": \"${{ github.sha }}\",
+            \"vcs.ref.base.name\": \"${{ github.base_ref }}\",
+            \"vcs.repository.name\": \"${{ github.repository }}\",
+            \"files.changed\": ${FILES}
+          }"
