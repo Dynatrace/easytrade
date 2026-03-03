@@ -1,0 +1,17 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run a test command
+        run: echo "Pipeline is running successfully 🚀"
