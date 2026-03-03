@@ -31,30 +31,41 @@ jobs:
       - name: Send Enriched Event
         run: |
           FILES=$(cat files.json)
+      
+          START_TIME="${{ github.event.pull_request.created_at }}"
+          END_TIME="${{ github.event.pull_request.merged_at }}"
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          REPO_URL="https://github.com/${{ github.repository }}"
+      
+          curl -X POST "https://esa3431h.sprint.dynatracelabs.com/platform/ingest/custom/events.sdlc/github" \
+            -H "Authorization: Api-Token ${{ secrets.DT_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"event.kind\": \"SDLC_EVENT\",
+              \"event.provider\": \"github.com\",
+              \"event.category\": \"task\",
+              \"event.type\": \"change\",
+              \"event.status\": \"finished\",
+              \"task.outcome\": \"success\",
+              \"task.id\": \"${{ github.event.pull_request.id }}\",
+              \"task.title\": \"[Change Request] ${{ github.event.pull_request.title }}\",
+              \"task.labels\": [
+                \"application:EasyTrade\",
+                \"stage:${STAGE}\"
+              ],
+              \"vcs.change.id\": \"${{ github.event.pull_request.number }}\",
+              \"vcs.change.title\": \"${{ github.event.pull_request.title }}\",
+              \"vcs.change.url.full\": \"${{ github.event.pull_request.html_url }}\",
+              \"vcs.change.state\": \"closed\",
+              \"vcs.repository.name\": \"${{ github.repository }}\",
+              \"vcs.repository.url.full\": \"${REPO_URL}\",
+              \"vcs.ref.head.name\": \"${{ github.head_ref }}\",
+              \"vcs.ref.head.revision\": \"${{ github.sha }}\",
+              \"vcs.ref.base.name\": \"${{ github.base_ref }}\",
+              \"vcs.ref.base.revision\": \"${BASE_SHA}\",
+              \"start_time\": \"${START_TIME}\",
+              \"end_time\": \"${END_TIME}\",
+              \"files.changed\": ${FILES}
+            }")
 
-           curl -X POST "https://esa3431h.sprint.dynatracelabs.com/platform/ingest/custom/events.sdlc/github" \
-          -H "Authorization: Api-Token ${{ secrets.DT_API_TOKEN }}" \
-          -H "Content-Type: application/json" \
-          -d "{
-            \"event.kind\": \"SDLC_EVENT\",
-            \"event.provider\": \"github.com\",
-            \"event.category\": \"task\",
-            \"event.type\": \"change\",
-            \"event.status\": \"finished\",
-            \"task.outcome\": \"success\",
-            \"task.id\": \"${{ github.event.pull_request.id }}\",
-            \"task.title\": \"[Change Request] ${{ github.event.pull_request.title }}\",
-            \"task.labels\": [
-              \"application:EasyTrade\",
-              \"stage:${STAGE}\"
-            ],
-            \"vcs.change.id\": \"${{ github.event.pull_request.number }}\",
-            \"vcs.change.title\": \"${{ github.event.pull_request.title }}\",
-            \"vcs.change.url.full\": \"${{ github.event.pull_request.html_url }}\",
-            \"vcs.change.state\": \"closed\",
-            \"vcs.ref.head.name\": \"${{ github.head_ref }}\",
-            \"vcs.ref.head.revision\": \"${{ github.sha }}\",
-            \"vcs.ref.base.name\": \"${{ github.base_ref }}\",
-            \"vcs.repository.name\": \"${{ github.repository }}\",
-            \"files.changed\": ${FILES}
-          }"
+
