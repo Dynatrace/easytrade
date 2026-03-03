@@ -48,7 +48,7 @@ jobs:
               \"event.status\": \"finished\",
               \"task.outcome\": \"success\",
               \"task.id\": \"${{ github.event.pull_request.id }}\",
-              \"task.title\": \"[Change Request] ${{ github.event.pull_request.title }}\",
+              \"task.title\": \"[Change Request] Enriched ${{ github.event.pull_request.title }}\",
               \"task.labels\": [
                 \"application:EasyTrade\",
                 \"stage:${STAGE}\"
