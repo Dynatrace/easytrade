@@ -66,6 +66,6 @@ jobs:
               \"start_time\": \"${START_TIME}\",
               \"end_time\": \"${END_TIME}\",
               \"files.changed\": ${FILES}
-            }")
+            }"
 
 
