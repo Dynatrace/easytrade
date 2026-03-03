@@ -32,7 +32,7 @@ jobs:
         run: |
           FILES=$(cat files.json)
 
-           curl -X POST "esa3431h.sprint.dynatracelabs.com/platform/ingest/custom/events.sdlc/github" \
+           curl -X POST "https://esa3431h.sprint.dynatracelabs.com/platform/ingest/custom/events.sdlc/github" \
           -H "Authorization: Api-Token ${{ secrets.DT_API_TOKEN }}" \
           -H "Content-Type: application/json" \
           -d "{
