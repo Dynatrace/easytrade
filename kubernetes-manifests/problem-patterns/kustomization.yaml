@@ -1,7 +1,0 @@
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - db-not-responding-cronjob.yaml
-  - ergo-aggregator-slowdown-cronjob.yaml
-  - factory-crisis-cronjob.yaml
-  - high-cpu-usage-cronjob.yaml
