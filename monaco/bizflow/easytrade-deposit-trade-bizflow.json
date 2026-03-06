@@ -75,8 +75,14 @@
   ],
   "correlationID": "accountId",
   "kpi": "amount",
+  "kpiLabel": "Revenue",
   "kpiEvent": {
     "name": "com.easytrade.withdraw",
     "provider": "www.easytrade.com"
-  }
+  },
+  "analysisType": "conversion",
+  "analysisCustomLabel": "Conversions",
+  "isSmartscapeTopologyEnabled": true,
+  "isDefaultQueryLimitIgnored": false,
+  "priority": "medium"
 }
