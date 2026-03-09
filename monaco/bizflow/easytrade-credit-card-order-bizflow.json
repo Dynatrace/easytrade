@@ -88,5 +88,9 @@
     "provider": "www.easytrade.com"
   },
   "kpiUnit": "$",
-  "analysisType": "conversion"
+  "analysisType": "conversion",
+  "analysisCustomLabel": "Conversions",
+  "isSmartscapeTopologyEnabled": true,
+  "isDefaultQueryLimitIgnored": false,
+  "priority": "medium"
 }
