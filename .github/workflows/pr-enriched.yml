@@ -45,7 +45,7 @@ jobs:
               \"task.labels\": [
                 \"application:EasyTrade\",
                 \"stage:${STAGE}\",
-                \"EAMS_ID:123456\",
+                \"EAMS_ID:123456\"
               ],
               \"vcs.change.id\": \"${{ github.event.pull_request.number }}\",
               \"vcs.change.title\": \"${{ github.event.pull_request.title }}\",
@@ -58,7 +58,7 @@ jobs:
               \"vcs.ref.base.name\": \"${{ github.base_ref }}\",
               \"vcs.ref.base.revision\": \"${BASE_SHA}\",
               \"start_time\": \"${START_TIME}\",
-              \"end_time\": \"${END_TIME}\",
+              \"end_time\": \"${END_TIME}\"
             }]"
 
 
