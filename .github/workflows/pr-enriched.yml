@@ -21,13 +21,6 @@ jobs:
             echo "STAGE=dev" >> $GITHUB_ENV
           fi
 
-      - name: Get Changed Files
-        run: |
-          curl -s \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files \
-            | jq -r '[.[].filename]' > files.json
-
       - name: Send Enriched Event
         run: |
           FILES=$(cat files.json)
@@ -51,7 +44,8 @@ jobs:
               \"task.title\": \"[Change Request] Enriched ${{ github.event.pull_request.title }}\",
               \"task.labels\": [
                 \"application:EasyTrade\",
-                \"stage:${STAGE}\"
+                \"stage:${STAGE}\",
+                \"EAMS_ID:123456\",
               ],
               \"vcs.change.id\": \"${{ github.event.pull_request.number }}\",
               \"vcs.change.title\": \"${{ github.event.pull_request.title }}\",
@@ -65,7 +59,6 @@ jobs:
               \"vcs.ref.base.revision\": \"${BASE_SHA}\",
               \"start_time\": \"${START_TIME}\",
               \"end_time\": \"${END_TIME}\",
-              \"files.changed\": ${FILES}
             }"
 
 
