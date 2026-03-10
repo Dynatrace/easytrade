@@ -23,7 +23,6 @@ jobs:
 
       - name: Send Enriched Event
         run: |
-          FILES=$(cat files.json)
       
           START_TIME="${{ github.event.pull_request.created_at }}"
           END_TIME="${{ github.event.pull_request.merged_at }}"
