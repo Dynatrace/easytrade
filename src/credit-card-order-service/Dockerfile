@@ -12,6 +12,12 @@ RUN ./gradlew test bootJar
 
 FROM eclipse-temurin:21.0.8_9-jre-alpine-3.22@sha256:990397e0495ac088ab6ee3d949a2e97b715a134d8b96c561c5d130b3786a489d
 
+ARG GIT_COMMIT=unspecified
+ENV DT_LIVEDEBUGGER_COMMIT=$GIT_COMMIT
+
+ARG GIT_ORIGIN=unspecified
+ENV DT_LIVEDEBUGGER_REMOTE_ORIGIN=$GIT_ORIGIN
+
 RUN addgroup --system --gid 3369 easytrade \
     && adduser --system --ingroup easytrade --uid 3369 easytrade
 USER easytrade:easytrade
