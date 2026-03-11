@@ -51,7 +51,7 @@ runs:
         TAG: ${{ inputs.tag }}
       run: |
         echo "Building images with tag: $TAG"
-        docker compose -f ${{ inputs.compose-file }} build
+        docker compose -f ${{ inputs.compose-file }} build --build-arg GIT_COMMIT="$(git rev-parse HEAD)" --build-arg GIT_ORIGIN="$(git config --get remote.origin.url)"
 
         # List built images
         IMAGES=$(docker compose -f ${{ inputs.compose-file }} config --services | tr '\n' ',' | sed 's/,$//')
