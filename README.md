@@ -73,28 +73,21 @@ You should be able to access the app at `localhost:80` or simply `localhost`.
 
 To deploy Easytrade in kubernetes you need to have:
 
-- `kubectl` tool installed
-  - here's a [guide](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) on how to get it
+- `helm`
+  - install [guide](https://helm.sh/docs/intro/install/)
+- `kubectl`
+  - install [guide](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 - `kubeconfig` to access the cluster you want to deploy it on
   - more info on it [here](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/)
 
 ```bash
-# first create the namespace for it
-kubectl create namespace easytrade
+# create namespace and deploy easytrade
+helm install easytrade oci://europe-docker.pkg.dev/dynatrace-demoability/helm/easytrade --create-namespace --namespace easytrade
 
-# then use the manifests to deploy
-kubectl -n easytrade apply -f ./kubernetes-manifests/release
+# uninstall easytrade
+helm uninstall easytrade -n easytrade
 
-# Optional: if you want the problem patterns to be automatically
-# enabled once a day, deploy these manifests too
-kubectl -n easytrade apply -f ./kubernetes-manifests/problem-patterns
-
-# to get the ip of reverse proxy
-# look for EXTERNAL-IP of frontendreverseproxy
-# it may take some time before it gets assigned
-kubectl -n easytrade get svc
-
-# to delete the deployment
+# delete namespace
 kubectl delete namespace easytrade
 ```
 
