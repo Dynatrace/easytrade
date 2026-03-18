@@ -44,7 +44,7 @@ jobs:
               \"task.title\": \"[Change Request] Enriched ${{ github.event.pull_request.title }}\",
               \"task.labels\": [
                 \"application:EasyTrade\",
-                \"app:EasyTradee\",
+                \"app:EasyTrade\",
                 \"stage:${STAGE}\",
                 \"EAMS_ID:PDP373\"
               ],
