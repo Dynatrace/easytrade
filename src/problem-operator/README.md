@@ -4,7 +4,7 @@ Kubernetes operator for easyTrade that automatically makes changes to the deploy
 
 ## Technologies used
 
-- Golang 1.23
+- Golang 1.26
 - [Go client for Kubernetes](https://github.com/kubernetes/client-go)
 
 ## Local build instructions

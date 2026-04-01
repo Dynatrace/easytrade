@@ -4,7 +4,7 @@ A go service that provides information about instrument prices. Pricing is conne
 
 ## Technologies used
 
-- Go 1.23
+- Go 1.26
 - Docker
 - MSSql
 
