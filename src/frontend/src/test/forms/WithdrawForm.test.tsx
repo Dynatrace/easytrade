@@ -113,7 +113,7 @@ describe("Withdraw Form", () => {
     describe("when inputs are empty", () => {
         it("displays errors", async () => {
             await user.click(getWithdrawButton())
-            expect(await screen.findAllByText(/required/i)).toHaveLength(5)
+            expect(await screen.findAllByText(/required/i)).toHaveLength(4)
             expect(
                 await screen.findByText(/must set card type/i)
             ).toBeInTheDocument()

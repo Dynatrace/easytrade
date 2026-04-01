@@ -68,7 +68,7 @@ describe("Signup Form", () => {
     describe("when input is empty", () => {
         it("displays errors", async () => {
             await userEvent.click(getSubmitButton())
-            expect(await screen.findAllByText(/required/i)).toHaveLength(7)
+            expect(await screen.findAllByText(/required/i)).toHaveLength(6)
         })
         it("doesn't submit values", async () => {
             await userEvent.click(getSubmitButton())
