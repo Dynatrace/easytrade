@@ -9,13 +9,13 @@ type TransactionsPieChartProps = {
 }
 
 type CustomLabelProps = {
-    cx: number
-    cy: number
-    midAngle: number
-    innerRadius: number
-    outerRadius: number
-    percent: number
-    value: number
+    cx?: number
+    cy?: number
+    midAngle?: number
+    innerRadius?: number
+    outerRadius?: number
+    percent?: number
+    value?: number
 }
 
 const RADIAN = Math.PI / 180
@@ -27,6 +27,16 @@ function CustomLabel({
     outerRadius,
     percent,
 }: CustomLabelProps) {
+    if (
+        cx === undefined ||
+        cy === undefined ||
+        midAngle === undefined ||
+        innerRadius === undefined ||
+        outerRadius === undefined ||
+        percent === undefined
+    ) {
+        return null
+    }
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5
     const x = cx + radius * Math.cos(-midAngle * RADIAN)
     const y = cy + radius * Math.sin(-midAngle * RADIAN)
