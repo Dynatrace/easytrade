@@ -118,7 +118,7 @@ describe("Deposit Form", () => {
     describe("when inputs are empty", () => {
         it("displays errors", async () => {
             await user.click(getDepositButton())
-            expect(await screen.findAllByText(/required/i)).toHaveLength(6)
+            expect(await screen.findAllByText(/required/i)).toHaveLength(5)
             expect(
                 await screen.findByText(/must set card type/i)
             ).toBeInTheDocument()

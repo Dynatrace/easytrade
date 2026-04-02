@@ -1,6 +1,6 @@
 import React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { UseFormSetValue, useForm } from "react-hook-form"
+import { Resolver, UseFormSetValue, useForm } from "react-hook-form"
 import { FormContainer } from "react-hook-form-mui"
 import { z } from "zod"
 import { NumberFormField } from "../../NumberFormField"
@@ -93,7 +93,7 @@ export default function BuyForm() {
             time: 1,
             total: 0,
         },
-        resolver: zodResolver(formSchema),
+        resolver: zodResolver(formSchema) as Resolver<FormData>,
         resetOptions: { keepDefaultValues: true },
     })
     const { setError, setSuccess, resetStatus, statusContext } =

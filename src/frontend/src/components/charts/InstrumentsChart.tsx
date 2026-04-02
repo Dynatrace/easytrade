@@ -7,7 +7,7 @@ import {
     Legend,
     ResponsiveContainer,
     Tooltip,
-    TooltipProps,
+    TooltipContentProps,
     XAxis,
     YAxis,
 } from "recharts"
@@ -20,7 +20,7 @@ type InstrumentsChartProps = {
     instruments: Instrument[]
 }
 
-function CustomTooltip({ active, payload }: TooltipProps<number, string>) {
+function CustomTooltip({ active, payload }: TooltipContentProps) {
     const { formatCurrency } = useFormatter()
 
     if (active && payload && payload.length) {

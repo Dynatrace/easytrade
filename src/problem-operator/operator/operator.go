@@ -99,6 +99,10 @@ func (o *Operator) RegisterController(c Controller) {
 func (o *Operator) updateState(ctx context.Context) error {
 	o.logger.Infow("Updating state...", "namespace", o.namespace)
 
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+
 	var aggregateErr error
 
 	ctx, cancel := context.WithTimeout(ctx, o.interval)

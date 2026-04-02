@@ -9,7 +9,7 @@ import {
     YAxis,
     Brush,
     Rectangle,
-    TooltipProps,
+    TooltipContentProps,
 } from "recharts"
 import { Box, Typography } from "@mui/material"
 import { Price } from "../../api/price/types"
@@ -61,7 +61,7 @@ function CustomTooltip({
     active,
     payload,
     label,
-}: TooltipProps<number, string>) {
+}: TooltipContentProps) {
     if (active && payload && payload.length > 0) {
         /* eslint-disable */
         const [openPrice, closePrice] = payload[0]?.payload?.openClosePriceRange
