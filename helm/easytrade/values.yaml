@@ -107,6 +107,9 @@ credit-card-order-service:
     WORK_DELAY: "300"
     WORK_RATE: "900"
     JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
+    FEATURE_FLAG_SERVICE_PROTOCOL: http
+    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
+    FEATURE_FLAG_SERVICE_PORT: "8080"
   envFromSecret:
     MSSQL_CONNECTIONSTRING:
       name: "{{ .Release.Name }}-connection-strings"
