@@ -42,7 +42,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: 1.24
+          go-version-file: "src/pricing-service/go.mod"
 
       - name: Restore .NET projects
         run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
