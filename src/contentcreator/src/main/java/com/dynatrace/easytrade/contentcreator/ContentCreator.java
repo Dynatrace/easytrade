@@ -3,7 +3,6 @@ package com.dynatrace.easytrade.contentcreator;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +17,7 @@ import static com.dynatrace.easytrade.contentcreator.Constants.MAX_ACCOUNT_COUNT
 import static com.dynatrace.easytrade.contentcreator.Constants.MAX_BALANCE_COUNT;
 import static com.dynatrace.easytrade.contentcreator.Constants.MAX_TRADES_COUNT;
 import static com.dynatrace.easytrade.contentcreator.Constants.MINUTES_IN_DAY;
+import static com.dynatrace.easytrade.contentcreator.Constants.MINUTES_IN_HALF_DAY;
 import com.dynatrace.easytrade.contentcreator.SQLQueryProvider.Conditions;
 import com.dynatrace.easytrade.contentcreator.SQLQueryProvider.Queries;
 import com.dynatrace.easytrade.contentcreator.models.Instruments;
@@ -53,63 +53,82 @@ public class ContentCreator {
         }
 
         LOGGER.info("Initializing pricing data.");
-        Calendar cal = initializePricingData(generator, connector);
+        Calendar cal = Calendar.getInstance();
+        initializePricingData(generator, connector, cal);
 
         LOGGER.info("Generating constant pricing data");
         generatePricingData(generator, connector, cal);
     }
 
     /***
-     * Ensures the pricing table always has valid data before the steady-state loop
-     * starts.
+     * Ensures the pricing table always has valid, current data before the
+     * steady-state loop starts, without ever leaving the table in an empty or
+     * partially-populated state.
      *
-     * If the table is already populated (e.g. the db seed or a previous run left
-     * rows behind) the expensive 24h backfill is skipped – we just catch up any
-     * minutes that may have elapsed while the JVM was starting up.
+     * Steps:
+     *  1. Generate and insert one candle per instrument for the current minute so
+     *     every instrument has a fresh, real data point immediately.
+     *  2. Delete any rows whose timestamp predates startupTime (removes the flat
+     *     seed rows inserted by the DB init script).
+     *  3. Start a daemon thread that back-fills the previous 12 h of history in the
+     *     background while the main loop is already running.
      *
-     * If the table is empty the full 24h backfill is performed WITHOUT wiping the
-     * table first, so there is never a window where the table has zero rows.
-     *
-     * @param generator An instance of generator
-     * @param connector An instance of database connector
-     * @return The last date for which pricing data was generated
+     * @param generator An instance of the price generator
+     * @param connector An instance of the database connector
+     * @param cal       The current minute; created in main and used by the steady-state loop after this method returns
      */
-    private static Calendar initializePricingData(PricingDataGenerator generator, SQLDatabaseConnector connector) {
+    private static void initializePricingData(PricingDataGenerator generator, SQLDatabaseConnector connector,
+            Calendar cal) {
+        // Step 1 – insert one fresh candle per instrument so all instruments have a
+        // valid, current price point from this moment on.
+        LOGGER.info("Inserting initial pricing data for current minute.");
+        var initialPricing = generateAllPricingForGivenDate(cal.getTime(), generator);
+        connector.insertBatchData(SQLTables.PRICING, Collections.unmodifiableList(initialPricing), BATCH_SIZE);
+
+        // Step 2 – remove rows that predate startup (the flat seed rows from the DB
+        // init script). We just inserted fresh rows above so the table is never empty.
+        LOGGER.info("Removing seed rows inserted before startup time [{}].", cal.getTime());
+        connector.deleteFromTableBeforeDate(SQLTables.PRICING, cal.getTime());
+
+        // Step 3 – back-fill 12 h of history on a background daemon thread so the
+        // main loop is not delayed.
+        Thread backfillThread = new Thread(() -> runBackfill(generator, connector, cal.getTime(), MINUTES_IN_HALF_DAY));
+        backfillThread.setDaemon(true);
+        backfillThread.setName("pricing-backfill");
+        backfillThread.start();
+    }
+
+    /***
+     * Back-fills 12 h of pricing history working backwards minute-by-minute from
+     * the given anchor point. Runs on a background thread; inserts are batched and
+     * the thread does not sleep between batches, so the fill completes as fast as
+     * the database allows.
+     *
+     * @param generator  An instance of the price generator
+     * @param connector  An instance of the database connector
+     * @param anchorTime The point in time to start going backwards from (normally
+     *                   the minute at which the main loop started)
+     * @param minutes    Number of minutes of history to back-fill
+     */
+    private static void runBackfill(PricingDataGenerator generator, SQLDatabaseConnector connector, Date anchorTime,
+            int minutes) {
+        LOGGER.info("Backfill thread started: filling {} minutes of history.", minutes);
         Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.DATE, -1);
-
-        int existingRows = connector.getTableCount(SQLTables.PRICING);
-        if (existingRows <= 0) {
-            LOGGER.info("Pricing table is empty - generating data for the last 24h.");
-
-            var pricingList = Arrays.stream(Instruments.values())
-                    .map(i -> generator.generateMassivePricingData(cal.getTime(), MINUTES_IN_DAY, i))
-                    .flatMap(Collection::stream).collect(Collectors.toList());
-
-            LOGGER.info("Inserting data for the last day.");
-            connector.insertBatchData(SQLTables.PRICING, Collections.unmodifiableList(pricingList), BATCH_SIZE);
-        } else {
-            LOGGER.info("Pricing table already has [{}] rows - skipping full backfill.", existingRows);
-        }
-
-        cal.add(Calendar.DATE, 1);
+        cal.setTime(anchorTime);
         cal.add(Calendar.MINUTE, -1);
 
-        LOGGER.info("Inserting extra data if needed - because of time spent in this method.");
-        Calendar calCurrent = Calendar.getInstance();
-        while (calCurrent.get(Calendar.MINUTE) != cal.get(Calendar.MINUTE)) {
-            cal.add(Calendar.MINUTE, 1);
+        for (int i = 0; i < minutes; i++) {
             var pricingList = generateAllPricingForGivenDate(cal.getTime(), generator);
             connector.insertBatchData(SQLTables.PRICING, Collections.unmodifiableList(pricingList), BATCH_SIZE);
+            cal.add(Calendar.MINUTE, -1);
         }
-
-        return cal;
+        LOGGER.info("Backfill thread finished.");
     }
 
     /***
      * Generate pricing data for all instruments each minute and remove old data
      * each 24h
-     * 
+     *
      * @param generator An instance of generator
      * @param connector An instance of database connector
      * @param cal       The last date for which pricing data was generated
