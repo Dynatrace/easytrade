@@ -1,6 +1,6 @@
 module dynatrace.com/easytrade/problem-operator
 
-go 1.26.1
+go 1.26.2
 
 require (
 	go.uber.org/zap v1.27.1
