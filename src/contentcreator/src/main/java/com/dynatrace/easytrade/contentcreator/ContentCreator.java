@@ -1,19 +1,29 @@
 package com.dynatrace.easytrade.contentcreator;
 
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.dynatrace.easytrade.contentcreator.Constants.BATCH_SIZE;
+import static com.dynatrace.easytrade.contentcreator.Constants.CLEANUP_RATIO;
+import static com.dynatrace.easytrade.contentcreator.Constants.MAX_ACCOUNT_COUNT;
+import static com.dynatrace.easytrade.contentcreator.Constants.MAX_BALANCE_COUNT;
+import static com.dynatrace.easytrade.contentcreator.Constants.MAX_TRADES_COUNT;
+import static com.dynatrace.easytrade.contentcreator.Constants.MINUTES_IN_DAY;
 import com.dynatrace.easytrade.contentcreator.SQLQueryProvider.Conditions;
 import com.dynatrace.easytrade.contentcreator.SQLQueryProvider.Queries;
 import com.dynatrace.easytrade.contentcreator.models.Instruments;
 import com.dynatrace.easytrade.contentcreator.models.Pricing;
 import com.dynatrace.easytrade.contentcreator.models.SQLTables;
 import com.microsoft.sqlserver.jdbc.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.dynatrace.easytrade.contentcreator.Constants.*;
 
 public class ContentCreator {
     private static final Logger LOGGER = LoggerFactory.getLogger(ContentCreator.class);
@@ -50,26 +60,37 @@ public class ContentCreator {
     }
 
     /***
-     * Clears all pricing data and generates 24h of data for all instruments
-     * 
+     * Ensures the pricing table always has valid data before the steady-state loop
+     * starts.
+     *
+     * If the table is already populated (e.g. the db seed or a previous run left
+     * rows behind) the expensive 24h backfill is skipped – we just catch up any
+     * minutes that may have elapsed while the JVM was starting up.
+     *
+     * If the table is empty the full 24h backfill is performed WITHOUT wiping the
+     * table first, so there is never a window where the table has zero rows.
+     *
      * @param generator An instance of generator
      * @param connector An instance of database connector
      * @return The last date for which pricing data was generated
      */
     private static Calendar initializePricingData(PricingDataGenerator generator, SQLDatabaseConnector connector) {
-        LOGGER.info("Clearing all data in pricing table");
-        connector.deleteFromTable(SQLTables.PRICING);
-
-        LOGGER.info("Generating data for the last 24h.");
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1);
 
-        var pricingList = Arrays.stream(Instruments.values())
-                .map(i -> generator.generateMassivePricingData(cal.getTime(), MINUTES_IN_DAY, i))
-                .flatMap(Collection::stream).collect(Collectors.toList());
+        int existingRows = connector.getTableCount(SQLTables.PRICING);
+        if (existingRows <= 0) {
+            LOGGER.info("Pricing table is empty - generating data for the last 24h.");
 
-        LOGGER.info("Inserting data for the last day.");
-        connector.insertBatchData(SQLTables.PRICING, Collections.unmodifiableList(pricingList), BATCH_SIZE);
+            var pricingList = Arrays.stream(Instruments.values())
+                    .map(i -> generator.generateMassivePricingData(cal.getTime(), MINUTES_IN_DAY, i))
+                    .flatMap(Collection::stream).collect(Collectors.toList());
+
+            LOGGER.info("Inserting data for the last day.");
+            connector.insertBatchData(SQLTables.PRICING, Collections.unmodifiableList(pricingList), BATCH_SIZE);
+        } else {
+            LOGGER.info("Pricing table already has [{}] rows - skipping full backfill.", existingRows);
+        }
 
         cal.add(Calendar.DATE, 1);
         cal.add(Calendar.MINUTE, -1);
@@ -78,7 +99,7 @@ public class ContentCreator {
         Calendar calCurrent = Calendar.getInstance();
         while (calCurrent.get(Calendar.MINUTE) != cal.get(Calendar.MINUTE)) {
             cal.add(Calendar.MINUTE, 1);
-            pricingList = generateAllPricingForGivenDate(cal.getTime(), generator);
+            var pricingList = generateAllPricingForGivenDate(cal.getTime(), generator);
             connector.insertBatchData(SQLTables.PRICING, Collections.unmodifiableList(pricingList), BATCH_SIZE);
         }
 
