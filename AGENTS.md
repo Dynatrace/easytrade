@@ -63,4 +63,11 @@ Both Go service Dockerfiles use the same base image, so one pull is sufficient f
 
 ### Verifying fixes
 
-Re-run `snyk test --json --all-projects` from the repository root. All projects should exit `0` with zero vulnerabilities before committing.
+For each updated service, run the local build to confirm nothing is broken:
+
+- **Java / Gradle:** `./gradlew build` in the service directory
+- **Node.js / npm:** `npm run build` in the service directory
+- **Go:** `go build .` in the service directory
+- **C# / .NET:** `dotnet build` in the service directory
+
+Then re-run `snyk test --json --all-projects` from the repository root. All projects should exit `0` with zero vulnerabilities before committing.
