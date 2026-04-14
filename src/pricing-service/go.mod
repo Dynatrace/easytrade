@@ -1,6 +1,6 @@
 module dynatrace.com/easytrade/pricing-service
 
-go 1.26.1
+go 1.26.2
 
 godebug x509negativeserial=1
 
