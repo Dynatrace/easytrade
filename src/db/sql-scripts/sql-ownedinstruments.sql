@@ -11,7 +11,15 @@ CREATE TABLE [dbo].[Ownedinstruments](
     CONSTRAINT [FK_Ownedinstruments_Instruments] FOREIGN KEY ([InstrumentId]) REFERENCES [Instruments]([Id])
 )
 GO
+-- INTERNAL accounts start with 0; PRESET accounts get a random quantity in [1, 10]
 INSERT INTO [dbo].[Ownedinstruments] ([AccountId], [InstrumentId], [Quantity], [LastModificationDate])
-SELECT a.[Id], i.[Id], 0, SYSDATETIMEOFFSET()
+SELECT
+    a.[Id],
+    i.[Id],
+    CASE
+        WHEN a.[Origin] = 'INTERNAL' THEN 0
+        ELSE (a.[Id] + i.[Id]) % 10 + 1
+    END,
+    SYSDATETIMEOFFSET()
 FROM [dbo].[Accounts] a
 CROSS JOIN [dbo].[Instruments] i;
