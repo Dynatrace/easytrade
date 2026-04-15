@@ -10,6 +10,7 @@ RUN mkdir -p /my-app
 WORKDIR /my-app
 
 COPY ./sql-scripts/ /my-app
+COPY ./debug/ /my-app/debug
 
 EXPOSE 1433
 
