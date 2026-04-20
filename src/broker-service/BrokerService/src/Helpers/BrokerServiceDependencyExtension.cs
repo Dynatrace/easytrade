@@ -9,6 +9,7 @@ using EasyTrade.BrokerService.Entities.Products.Repository;
 using EasyTrade.BrokerService.Entities.Trades.Notification;
 using EasyTrade.BrokerService.Entities.Trades.Repository;
 using EasyTrade.BrokerService.Entities.Trades.Service;
+using EasyTrade.BrokerService.Middleware.CreditCardValidation;
 using EasyTrade.BrokerService.ProblemPatterns.OpenFeature;
 using EasyTrade.BrokerService.ProblemPatterns.OpenFeature.Providers;
 using EasyTrade.BrokerService.ProblemPatterns.OpenFeature.Providers.FeatureFlagService;
@@ -32,7 +33,8 @@ public static class BrokerServiceDependencyExtension
             .AddPriceDependency()
             .AddProductDependency()
             .AddTradesDependency()
-            .AddProblemPatternsDependency();
+            .AddProblemPatternsDependency()
+            .AddMiddlewareDependency();
         return services;
     }
 
@@ -76,4 +78,9 @@ public static class BrokerServiceDependencyExtension
             .AddInitAction<IPluginManager>(async (service) => await service.InitializeAsync());
         return services;
     }
+
+    private static IServiceCollection AddMiddlewareDependency(this IServiceCollection services) =>
+        services
+            .AddSingleton<IMainframeServiceConnector, MainframeServiceConnector>()
+            .AddSingleton<CreditCardValidationMiddleware>();
 }

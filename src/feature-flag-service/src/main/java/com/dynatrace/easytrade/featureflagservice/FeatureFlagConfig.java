@@ -23,6 +23,8 @@ public class FeatureFlagConfig {
         private String enableCreditCardMeltdown;
         @Value("${app.flags.enableHighCpuUsage}")
         private String enableHighCpuUsage;
+        @Value("${app.flags.enableCreditCardValidation}")
+        private String enableCreditCardValidation;
 
         @Bean
         public Map<String, Flag> flagRegistry() {
@@ -59,6 +61,12 @@ public class FeatureFlagConfig {
                                 new Flag("high_cpu_usage", Boolean.parseBoolean(enableHighCpuUsage),
                                                 "K8s: high CPU usage",
                                                 "Causes a slowdown of broker-service response time and increases CPU usage during that time. If the app is deployed on K8s, a CPU resource limit is also applied.",
+                                                isModifiable, "problem_pattern"),
+                                "credit_card_validation",
+                                new Flag("credit_card_validation",
+                                                Boolean.parseBoolean(enableCreditCardValidation),
+                                                "Credit card validation",
+                                                "When enabled, credit card numbers are validated via the mainframe before deposit/withdraw operations are processed. Requires MAINFRAME_SERVICE_URL to be configured in broker-service.",
                                                 isModifiable, "problem_pattern"));
                 return Stream
                                 .of(configFlags, problemPatterns)

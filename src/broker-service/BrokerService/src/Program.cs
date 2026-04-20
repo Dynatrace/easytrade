@@ -2,6 +2,7 @@ using System.Reflection;
 using EasyTrade.BrokerService;
 using EasyTrade.BrokerService.Helpers;
 using EasyTrade.BrokerService.Helpers.Logging;
+using EasyTrade.BrokerService.Middleware.CreditCardValidation;
 using EasyTrade.BrokerService.ProblemPatterns.HighCpuUsage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -78,6 +79,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.UseMiddleware<HighCpuUsageMiddleware>();
+app.UseMiddleware<CreditCardValidationMiddleware>();
 
 app.MapControllers();
 
