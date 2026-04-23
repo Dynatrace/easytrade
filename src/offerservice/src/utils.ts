@@ -12,3 +12,16 @@ export function sampleArray<T>(array: T[], size: number): T[] {
     result.length = size
     return result
 }
+
+export function toXml(tag: string, value: unknown): string {
+    if (Array.isArray(value)) {
+        return value.map((item) => toXml(tag, item)).join("")
+    }
+    if (value !== null && typeof value === "object") {
+        const inner = Object.entries(value as Record<string, unknown>)
+            .map(([k, v]) => toXml(k, v))
+            .join("")
+        return `<${tag}>${inner}</${tag}>`
+    }
+    return `<${tag}>${value}</${tag}>`
+}

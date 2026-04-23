@@ -17,6 +17,8 @@
         public const int InvalidTradeId = -1;
         public const string DbNotResponding = "db_not_responding";
         public const string HighCpuUsage = "high_cpu_usage";
+        public const string CreditCardValidation = "credit_card_validation";
+        public const string MainframeServiceUrl = "MAINFRAME_SERVICE_URL";
         public const string BuildVersion = "BuildVersion";
         public const string BuildDate = "BuildDate";
         public const string BuildCommit = "BuildCommit";

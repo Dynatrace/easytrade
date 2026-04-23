@@ -1,0 +1,56 @@
+### Variables
+@baseUrl = http://localhost:8087
+
+### -----------------------------------------------------------------------
+### Offers
+### -----------------------------------------------------------------------
+
+### Get offers for a platform (JSON)
+GET {{baseUrl}}/api/offers/CryptoTrading.com
+
+### Get offers for a platform (XML)
+GET {{baseUrl}}/api/offers/CryptoTrading.com
+Accept: application/xml
+
+### Get offers filtered by product type
+GET {{baseUrl}}/api/offers/CryptoTrading.com?productFilter=["Crypto","ETF"]
+
+### Get offers filtered by max yearly fee
+GET {{baseUrl}}/api/offers/CryptoTrading.com?maxYearlyFeeFilter=25
+
+### Get offers with both filters combined
+GET {{baseUrl}}/api/offers/CryptoTrading.com?productFilter=["Crypto"]&maxYearlyFeeFilter=50
+
+### Get offers with both filters combined (XML)
+GET {{baseUrl}}/api/offers/tradeCom.co.uk?productFilter=["Share","ETF"]&maxYearlyFeeFilter=50
+Accept: application/xml
+
+### -----------------------------------------------------------------------
+### Signup
+### -----------------------------------------------------------------------
+
+### Sign up a new user
+POST {{baseUrl}}/api/signup
+Content-Type: application/json
+
+{
+    "packageId": 1,
+    "firstName": "John",
+    "lastName": "Doe",
+    "username": "johndoe",
+    "email": "john.doe@example.com",
+    "hashedPassword": "password123",
+    "address": "Fantasy Lane 34 Chicago USA",
+    "origin": "offerservice"
+}
+
+### -----------------------------------------------------------------------
+### Version
+### -----------------------------------------------------------------------
+
+### Get version (plain text)
+GET {{baseUrl}}/api/version
+
+### Get version (JSON)
+GET {{baseUrl}}/api/version
+Accept: application/json

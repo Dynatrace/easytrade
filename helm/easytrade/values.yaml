@@ -232,10 +232,10 @@ loadgen:
   resources:
     requests:
       cpu: "1"
-      memory: 256Mi
+      memory: 1Gi
     limits:
-      cpu: "2"
-      memory: 2Gi
+      cpu: "3"
+      memory: 3Gi
 
 loginservice:
   enabled: true
