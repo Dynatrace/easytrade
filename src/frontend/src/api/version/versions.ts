@@ -9,7 +9,6 @@ import {
     buildDate as frontendBuildDate,
     buildCommit as frontendBuildCommit,
 } from "../../../package.json"
-import { isAxiosError } from "axios"
 
 const services: ServiceVersionUrl[] = [
     {
@@ -57,7 +56,7 @@ async function getServiceVersion(
     serviceVersionUrl: ServiceVersionUrl
 ): Promise<ServiceVersion> {
     try {
-        const { data } = await backends.versions.getVersion(
+        const data = await backends.versions.getVersion(
             serviceVersionUrl.versionUrl
         )
         return {
@@ -66,7 +65,7 @@ async function getServiceVersion(
             data: data,
         }
     } catch (error) {
-        console.log("error: ", isAxiosError(error) ? error.message : error)
+        console.log("error: ", error)
         return {
             success: false,
             serviceName: serviceVersionUrl.serviceName,

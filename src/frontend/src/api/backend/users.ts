@@ -1,4 +1,3 @@
-import axios, { AxiosInstance } from "axios"
 import { XMLBuilder, XMLParser } from "fast-xml-parser"
 
 export type PresetUser = {
@@ -67,34 +66,18 @@ export type MessageResponse<T> = {
 }
 
 export class UserBackend {
-    private readonly accountAgent: AxiosInstance
-    private readonly loginAgent: AxiosInstance
-    private readonly brokerAgent: AxiosInstance
+    private readonly accountServiceUrl: string
+    private readonly loginServiceUrl: string
+    private readonly brokerServiceUrl: string
 
     constructor(
         accountServiceUrl: string,
         loginServiceUrl: string,
         brokerServiceUrl: string
     ) {
-        this.accountAgent = axios.create({
-            baseURL: accountServiceUrl,
-            headers: {
-                Accept: "application/json",
-            },
-        })
-        this.loginAgent = axios.create({
-            baseURL: loginServiceUrl,
-            headers: {
-                "Content-Type": "application/xml",
-                Accept: "application/xml",
-            },
-        })
-        this.brokerAgent = axios.create({
-            baseURL: brokerServiceUrl,
-            headers: {
-                Accept: "application/json",
-            },
-        })
+        this.accountServiceUrl = accountServiceUrl
+        this.loginServiceUrl = loginServiceUrl
+        this.brokerServiceUrl = brokerServiceUrl
     }
 
     async loginXml(
@@ -102,47 +85,81 @@ export class UserBackend {
         xmlParser: XMLParser,
         username: string,
         password: string
-    ) {
-        const response = await this.loginAgent.post(
-            "/Login",
-            xmlBuilder.build({ LoginRequest: { username, password } })
-        )
-        return xmlParser.parse(response.data) as IdResponse<LoginResponse>
+    ): Promise<IdResponse<LoginResponse>> {
+        const response = await fetch(`${this.loginServiceUrl}/Login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/xml",
+                Accept: "application/xml",
+            },
+            body: xmlBuilder.build({ LoginRequest: { username, password } }),
+        })
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return xmlParser.parse(await response.text()) as IdResponse<LoginResponse>
     }
 
     async logoutXml(
         xmlBuilder: XMLBuilder,
         xmlParser: XMLParser,
         accountId: number
-    ) {
-        const response = await this.loginAgent.post(
-            "/Logout",
-            xmlBuilder.build({ LogoutRequest: { accountId } })
-        )
-        return xmlParser.parse(response.data) as MessageResponse<LogoutResponse>
+    ): Promise<MessageResponse<LogoutResponse>> {
+        const response = await fetch(`${this.loginServiceUrl}/Logout`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/xml",
+                Accept: "application/xml",
+            },
+            body: xmlBuilder.build({ LogoutRequest: { accountId } }),
+        })
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return xmlParser.parse(
+            await response.text()
+        ) as MessageResponse<LogoutResponse>
     }
 
     async signupXml(
         xmlBuilder: XMLBuilder,
         xmlParser: XMLParser,
         request: SignupRequest
-    ) {
-        const response = await this.loginAgent.post(
-            "/Signup",
-            xmlBuilder.build({ SignupRequest: request })
+    ): Promise<IdResponse<SignupResponse>> {
+        const response = await fetch(`${this.loginServiceUrl}/Signup`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/xml",
+                Accept: "application/xml",
+            },
+            body: xmlBuilder.build({ SignupRequest: request }),
+        })
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return xmlParser.parse(
+            await response.text()
+        ) as IdResponse<SignupResponse>
+    }
+
+    async getData(accountId: string): Promise<UserResponse> {
+        const response = await fetch(
+            `${this.accountServiceUrl}/accounts/${accountId}`,
+            { headers: { Accept: "application/json" } }
         )
-        return xmlParser.parse(response.data) as IdResponse<SignupResponse>
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return response.json() as Promise<UserResponse>
     }
 
-    getData(accountId: string) {
-        return this.accountAgent.get<UserResponse>(`/accounts/${accountId}`)
+    async getBalance(accountId: string): Promise<BalanceResponse> {
+        const response = await fetch(
+            `${this.brokerServiceUrl}/balance/${accountId}`,
+            { headers: { Accept: "application/json" } }
+        )
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return response.json() as Promise<BalanceResponse>
     }
 
-    getBalance(accountId: string) {
-        return this.brokerAgent.get<BalanceResponse>(`/balance/${accountId}`)
-    }
-
-    getPreset() {
-        return this.accountAgent.get<PresetUsersResponse>("/accounts/presets")
+    async getPreset(): Promise<PresetUsersResponse> {
+        const response = await fetch(
+            `${this.accountServiceUrl}/accounts/presets`,
+            { headers: { Accept: "application/json" } }
+        )
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return response.json() as Promise<PresetUsersResponse>
     }
 }

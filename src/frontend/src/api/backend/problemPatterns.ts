@@ -1,5 +1,3 @@
-import axios, { AxiosInstance } from "axios"
-
 export type FeatureFlag = {
     id: string
     enabled: boolean
@@ -14,26 +12,36 @@ export type FlagResponseContainer = {
 }
 
 export class ProblemPatternBackend {
-    private readonly agent: AxiosInstance
+    private readonly baseUrl: string
+    private readonly headers: Record<string, string>
 
     constructor(baseUrl: string) {
-        this.agent = axios.create({
-            baseURL: baseUrl,
-            headers: {
-                Accept: "application/json",
-            },
-        })
+        this.baseUrl = baseUrl
+        this.headers = {
+            Accept: "application/json",
+        }
     }
 
-    getAll() {
-        return this.agent.get<FlagResponseContainer>("/flags", {
-            params: {
-                tag: "problem_pattern",
-            },
-        })
+    async getAll(): Promise<FlagResponseContainer> {
+        const response = await fetch(
+            `${this.baseUrl}/flags?tag=problem_pattern`,
+            { headers: this.headers }
+        )
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return response.json() as Promise<FlagResponseContainer>
     }
 
-    setProblemPatternEnabled(flagId: string, enabled: boolean) {
-        return this.agent.put(`/flags/${flagId}`, { enabled })
+    async setProblemPatternEnabled(
+        flagId: string,
+        enabled: boolean
+    ): Promise<unknown> {
+        const response = await fetch(`${this.baseUrl}/flags/${flagId}`, {
+            method: "PUT",
+            headers: { ...this.headers, "Content-Type": "application/json" },
+            body: JSON.stringify({ enabled }),
+        })
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        const text = await response.text()
+        return text ? JSON.parse(text) : undefined
     }
 }

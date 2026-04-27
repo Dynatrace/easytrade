@@ -1,4 +1,3 @@
-import axios, { AxiosInstance } from "axios"
 import { XMLParser } from "fast-xml-parser"
 
 export type DepositRequest = {
@@ -76,72 +75,91 @@ export type CreditCardResponseXml<
 }
 
 export class CreditCardBackend {
-    private readonly brokerAgent: AxiosInstance
-    private readonly creditCardAgent: AxiosInstance
+    private readonly brokerUrl: string
+    private readonly creditCardServiceUrl: string
+    private readonly jsonHeaders: Record<string, string>
 
     constructor(brokerUrl: string, creditCardServiceUrl: string) {
-        this.brokerAgent = axios.create({
-            baseURL: brokerUrl,
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        })
-        this.creditCardAgent = axios.create({
-            baseURL: creditCardServiceUrl,
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        })
+        this.brokerUrl = brokerUrl
+        this.creditCardServiceUrl = creditCardServiceUrl
+        this.jsonHeaders = {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        }
     }
 
-    deposit(request: DepositRequest) {
-        return this.brokerAgent.post<DepositRequest>(
-            `/balance/${request.accountId}/deposit`,
-            request
-        )
-    }
-
-    withdraw(request: WithdrawRequest) {
-        return this.brokerAgent.post<WithdrawRequest>(
-            `/balance/${request.accountId}/withdraw`,
-            request
-        )
-    }
-
-    orderCard(request: CreditCardOrderRequest) {
-        return this.creditCardAgent.post<CreditCardOrderResponse>(
-            "orders",
-            request
-        )
-    }
-
-    async getOrderStatusXml(xmlParser: XMLParser, accountId: number) {
-        const response = await this.creditCardAgent.get(
-            `/orders/${accountId}/status/latest`,
+    async deposit(request: DepositRequest): Promise<void> {
+        const response = await fetch(
+            `${this.brokerUrl}/balance/${request.accountId}/deposit`,
             {
-                validateStatus: (status) => status < 400 || status === 404,
+                method: "POST",
+                headers: this.jsonHeaders,
+                body: JSON.stringify(request),
+            }
+        )
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    }
+
+    async withdraw(request: WithdrawRequest): Promise<void> {
+        const response = await fetch(
+            `${this.brokerUrl}/balance/${request.accountId}/withdraw`,
+            {
+                method: "POST",
+                headers: this.jsonHeaders,
+                body: JSON.stringify(request),
+            }
+        )
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    }
+
+    async orderCard(
+        request: CreditCardOrderRequest
+    ): Promise<CreditCardOrderResponse> {
+        const response = await fetch(`${this.creditCardServiceUrl}/orders`, {
+            method: "POST",
+            headers: this.jsonHeaders,
+            body: JSON.stringify(request),
+        })
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return response.json() as Promise<CreditCardOrderResponse>
+    }
+
+    async getOrderStatusXml(
+        xmlParser: XMLParser,
+        accountId: number
+    ): Promise<CreditCardResponseXml<CardStatusResult>> {
+        const response = await fetch(
+            `${this.creditCardServiceUrl}/orders/${accountId}/status/latest`,
+            {
                 headers: {
                     "Content-Type": "application/xml",
                     Accept: "application/xml",
                 },
             }
         )
+        if (!response.ok && response.status !== 404)
+            throw new Error(`HTTP ${response.status}`)
         return xmlParser.parse(
-            response.data
+            await response.text()
         ) as CreditCardResponseXml<CardStatusResult>
     }
 
-    getOrderStatusHistory(accountId: number) {
-        return this.creditCardAgent.get<CreditCardResponse<CardStatusHistory>>(
-            `orders/${accountId}/status`
+    async getOrderStatusHistory(
+        accountId: number
+    ): Promise<CreditCardResponse<CardStatusHistory>> {
+        const response = await fetch(
+            `${this.creditCardServiceUrl}/orders/${accountId}/status`,
+            { headers: this.jsonHeaders }
         )
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return response.json() as Promise<CreditCardResponse<CardStatusHistory>>
     }
 
-    deleteCardAndOrder(accountId: number) {
-        return this.creditCardAgent.delete<CreditCardResponse<never>>(
-            `orders/${accountId}`
+    async deleteCardAndOrder(accountId: number): Promise<void> {
+        const response = await fetch(
+            `${this.creditCardServiceUrl}/orders/${accountId}`,
+            { method: "DELETE", headers: this.jsonHeaders }
         )
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
     }
 }

@@ -1,5 +1,3 @@
-import axios, { AxiosInstance } from "axios"
-
 export type FeatureFlag = {
     id: string
     enabled: boolean
@@ -13,22 +11,21 @@ export type FlagResponseContainer = {
 }
 
 export class ConfigBackend {
-    private readonly agent: AxiosInstance
+    private readonly baseUrl: string
+    private readonly headers: Record<string, string>
 
     constructor(baseUrl: string) {
-        this.agent = axios.create({
-            baseURL: baseUrl,
-            headers: {
-                Accept: "application/json",
-            },
-        })
+        this.baseUrl = baseUrl
+        this.headers = {
+            Accept: "application/json",
+        }
     }
 
-    getAll() {
-        return this.agent.get<FlagResponseContainer>("/flags", {
-            params: {
-                tag: "config",
-            },
+    async getAll(): Promise<FlagResponseContainer> {
+        const response = await fetch(`${this.baseUrl}/flags?tag=config`, {
+            headers: this.headers,
         })
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return response.json() as Promise<FlagResponseContainer>
     }
 }

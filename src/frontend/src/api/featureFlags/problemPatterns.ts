@@ -20,7 +20,7 @@ function featureFlagMapper({
 export async function getFeatureFlags(): Promise<FeatureFlag[]> {
     console.log(`getting feature flag list from API`)
     try {
-        const { data } = await backends.problemPatterns.getAll()
+        const data = await backends.problemPatterns.getAll()
         console.log(data)
         return data.results.map(featureFlagMapper)
     } catch (error) {
@@ -39,7 +39,7 @@ export async function handleFlagToggle(
         })}]`
     )
     try {
-        const { data } =
+        const data =
             await backends.problemPatterns.setProblemPatternEnabled(
                 flagId,
                 enabled
