@@ -4,7 +4,7 @@ import { ConfigFlag, Config, ConfigFlagIds, ConfigDefaults } from "./types"
 async function getRawConfigFlags(): Promise<ConfigFlag[]> {
     console.log(`getting config flags from API`)
     try {
-        const { data } = await backends.config.getAll()
+        const data = await backends.config.getAll()
         console.log(data)
         return data.results.map(({ name, enabled, id }) => ({
             name,

@@ -1,4 +1,3 @@
-import axios from "axios"
 import { Transaction } from "./types"
 import { backends } from "../backend"
 import { Transaction as RawTransaction } from "../backend/transactions"
@@ -11,15 +10,11 @@ export async function getTransactions(
     console.log(`[getTransactions] API call with userId [${userId}]`)
 
     try {
-        const { data } = await backends.transactions.getAll(userId, records)
+        const data = await backends.transactions.getAll(userId, records)
         console.log("transaction data: ", data)
         return data.results.map(mapRawTransaction)
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.log("Axios error message: ", error.message)
-        } else {
-            console.log("Unexpected error: ", error)
-        }
+        console.log("error: ", error)
         return []
     }
 }

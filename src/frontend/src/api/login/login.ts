@@ -1,4 +1,3 @@
-import axios from "axios"
 import { LoginResponse, LogoutResponse } from "./types"
 import { backends } from "../backend"
 import { XMLBuilder, XMLParser } from "fast-xml-parser"
@@ -19,11 +18,7 @@ export async function login(
         )
         return data.IdResponse
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Axios error message: ", error.message)
-        } else {
-            console.error("Unexpected error: ", error)
-        }
+        console.error("error: ", error)
         return { error: "Login or password invalid" }
     }
 }
@@ -38,11 +33,7 @@ export async function logout(userId: string): Promise<LogoutResponse> {
         )
         return data.MessageResponse
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Axios error message: ", error.message)
-        } else {
-            console.error("Unexpected error: ", error)
-        }
+        console.error("error: ", error)
         return {
             error: "There was a problem with logging out",
         }

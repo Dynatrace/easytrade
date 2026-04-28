@@ -1,4 +1,3 @@
-import axios from "axios"
 import { HandlerResponse } from "./types"
 import { backends } from "../backend"
 import { BizEvents } from "../bizEvents"
@@ -27,11 +26,7 @@ export async function quickBuy(
         BizEvents.buyFinish()
         return {}
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Axios error message: ", error.message)
-        } else {
-            console.error("Unexpected error: ", error)
-        }
+        console.error("error: ", error)
         const msg = "There was an error when creating transaction."
         BizEvents.buyError(msg)
         return { error: msg }
@@ -62,11 +57,7 @@ export async function quickSell(
         BizEvents.sellFinish()
         return {}
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Axios error message: ", error.message)
-        } else {
-            console.error("Unexpected error: ", error)
-        }
+        console.error("error: ", error)
         const msg = "There was an error when creating transaction."
         BizEvents.sellError(msg)
         return { error: msg }
@@ -100,11 +91,7 @@ export async function buy(
         })
         return {}
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Axios error message: ", error.message)
-        } else {
-            console.error("Unexpected error: ", error)
-        }
+        console.error("error: ", error)
         return { error: "There was an error when creating transaction." }
     }
 }
@@ -136,11 +123,7 @@ export async function sell(
         })
         return {}
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Axios error message: ", error.message)
-        } else {
-            console.error("Unexpected error: ", error)
-        }
+        console.error("error: ", error)
         return { error: "There was an error when creating transaction." }
     }
 }

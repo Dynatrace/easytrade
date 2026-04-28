@@ -1,4 +1,3 @@
-import axios, { AxiosInstance } from "axios"
 import { Instrument } from "../instrument/types"
 
 type InstrumentResponse = {
@@ -6,19 +5,23 @@ type InstrumentResponse = {
 }
 
 export class InstrumentBackend {
-    private readonly agent: AxiosInstance
+    private readonly baseUrl: string
+    private readonly headers: Record<string, string>
 
     constructor(baseUrl: string) {
-        this.agent = axios.create({
-            baseURL: baseUrl,
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        })
+        this.baseUrl = baseUrl
+        this.headers = {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        }
     }
 
-    getInstruments(id?: string) {
-        return this.agent.get<InstrumentResponse>(`/instrument?accountId=${id}`)
+    async getInstruments(id?: string): Promise<InstrumentResponse> {
+        const response = await fetch(
+            `${this.baseUrl}/instrument?accountId=${id}`,
+            { headers: this.headers }
+        )
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return response.json() as Promise<InstrumentResponse>
     }
 }

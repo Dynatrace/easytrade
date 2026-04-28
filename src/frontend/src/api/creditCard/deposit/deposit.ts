@@ -1,4 +1,3 @@
-import axios from "axios"
 import { DepositRequest, DepositResponse } from "./types"
 import { backends } from "../../backend"
 import { BizEvents } from "../../bizEvents"
@@ -13,11 +12,7 @@ export async function deposit(
         BizEvents.depositFinish()
         return {}
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.log("Axios error message: ", error.message)
-        } else {
-            console.log("Unexpected error: ", error)
-        }
+        console.log("error: ", error)
         const msg = "There was an error processing the deposit"
         BizEvents.depositError(msg)
         return { error: msg }

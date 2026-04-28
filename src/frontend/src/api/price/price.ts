@@ -1,4 +1,3 @@
-import axios from "axios"
 import { Price } from "./types"
 import { backends } from "../backend"
 import { XMLParser } from "fast-xml-parser"
@@ -16,14 +15,11 @@ export async function getLatestPrices(): Promise<Price[]> {
             })
         )
     } catch (error) {
-        if (axios.isAxiosError(error)) {
-            console.error("Axios error message: ", error.message)
-        } else {
-            console.error("Unexpected error: ", error)
-        }
+        console.error("error: ", error)
         return []
     }
 }
+
 export async function getPricesForInstrument(
     instrumentId: string
 ): Promise<Price[]> {
@@ -44,12 +40,7 @@ export async function getPricesForInstrument(
             })
         )
     } catch (error) {
-        console.log(error)
-        if (axios.isAxiosError(error)) {
-            console.error("Axios error message: ", error.message)
-        } else {
-            console.error("Unexpected error: ", error)
-        }
+        console.error("error: ", error)
         return []
     }
 }

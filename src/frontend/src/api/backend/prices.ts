@@ -1,4 +1,3 @@
-import axios, { AxiosInstance } from "axios"
 import { XMLParser } from "fast-xml-parser"
 
 export type Price = {
@@ -20,30 +19,34 @@ type PriceResponseXml = {
 }
 
 export class PriceBackend {
-    private readonly agent: AxiosInstance
-
-    private readonly parser: XMLParser
+    private readonly baseUrl: string
+    private readonly headers: Record<string, string>
 
     constructor(baseUrl: string) {
-        this.agent = axios.create({
-            baseURL: baseUrl,
-            headers: {
-                Accept: "application/xml",
-                "Content-Type": "application/xml",
-            },
+        this.baseUrl = baseUrl
+        this.headers = {
+            Accept: "application/xml",
+            "Content-Type": "application/xml",
+        }
+    }
+
+    async getLatestXml(xmlParser: XMLParser): Promise<PriceResponseXml> {
+        const response = await fetch(`${this.baseUrl}/prices/latest`, {
+            headers: this.headers,
         })
-        this.parser = new XMLParser()
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return xmlParser.parse(await response.text()) as PriceResponseXml
     }
 
-    async getLatestXml(xmlParser: XMLParser) {
-        const response = await this.agent.get("/prices/latest")
-        return xmlParser.parse(response.data) as PriceResponseXml
-    }
-
-    async getForInstrumentXml(xmlParser: XMLParser, instrumentId: string) {
-        const response = await this.agent.get(
-            `/prices/instrument/${instrumentId}?records=1440`
+    async getForInstrumentXml(
+        xmlParser: XMLParser,
+        instrumentId: string
+    ): Promise<PriceResponseXml> {
+        const response = await fetch(
+            `${this.baseUrl}/prices/instrument/${instrumentId}?records=1440`,
+            { headers: this.headers }
         )
-        return xmlParser.parse(response.data) as PriceResponseXml
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return xmlParser.parse(await response.text()) as PriceResponseXml
     }
 }

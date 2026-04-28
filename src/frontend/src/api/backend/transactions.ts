@@ -1,5 +1,3 @@
-import axios, { AxiosInstance } from "axios"
-
 export type Transaction = {
     instrumentId: string
     direction: string
@@ -31,34 +29,59 @@ type LongTransactionRequest = {
 }
 
 export class TransactionBackend {
-    private readonly agent: AxiosInstance
+    private readonly baseUrl: string
+    private readonly headers: Record<string, string>
 
     constructor(baseUrl: string) {
-        this.agent = axios.create({
-            baseURL: baseUrl,
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-            },
-        })
+        this.baseUrl = baseUrl
+        this.headers = {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        }
     }
 
-    getAll(accountId: string, limit: number) {
-        return this.agent.get<TransactionResult>(
-            `/trade/${accountId}?count=${limit}&onlyLong=true`
+    async getAll(accountId: string, limit: number): Promise<TransactionResult> {
+        const response = await fetch(
+            `${this.baseUrl}/trade/${accountId}?count=${limit}&onlyLong=true`,
+            { headers: this.headers }
         )
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        return response.json() as Promise<TransactionResult>
     }
 
-    quickBuy(request: QuickTransactionRequest) {
-        return this.agent.post<string | null>("/trade/buy", request)
+    async quickBuy(request: QuickTransactionRequest): Promise<void> {
+        const response = await fetch(`${this.baseUrl}/trade/buy`, {
+            method: "POST",
+            headers: this.headers,
+            body: JSON.stringify(request),
+        })
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
     }
-    quickSell(request: QuickTransactionRequest) {
-        return this.agent.post<string | null>("/trade/sell", request)
+
+    async quickSell(request: QuickTransactionRequest): Promise<void> {
+        const response = await fetch(`${this.baseUrl}/trade/sell`, {
+            method: "POST",
+            headers: this.headers,
+            body: JSON.stringify(request),
+        })
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
     }
-    buy(request: LongTransactionRequest) {
-        return this.agent.post<string | null>("/trade/long/buy", request)
+
+    async buy(request: LongTransactionRequest): Promise<void> {
+        const response = await fetch(`${this.baseUrl}/trade/long/buy`, {
+            method: "POST",
+            headers: this.headers,
+            body: JSON.stringify(request),
+        })
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
     }
-    sell(request: LongTransactionRequest) {
-        return this.agent.post<string | null>("/trade/long/sell", request)
+
+    async sell(request: LongTransactionRequest): Promise<void> {
+        const response = await fetch(`${this.baseUrl}/trade/long/sell`, {
+            method: "POST",
+            headers: this.headers,
+            body: JSON.stringify(request),
+        })
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
     }
 }

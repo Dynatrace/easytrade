@@ -56,7 +56,7 @@ export async function orderCreditCard(
         `calling [credit-card-order] API with data [${JSON.stringify(request)}]`
     )
     try {
-        const { data: response } = await backends.creditCards.orderCard(request)
+        const response = await backends.creditCards.orderCard(request)
         if (response.results === undefined) {
             throw new Error("Results not included in the response")
         }
@@ -106,7 +106,7 @@ export async function getOrderStatusHistory(
         `calling [credit-card-order-status-history] API for user ${userId}`
     )
     try {
-        const { data } = await backends.creditCards.getOrderStatusHistory(
+        const data = await backends.creditCards.getOrderStatusHistory(
             Number(userId)
         )
         console.log(`order status history for user [${userId}]`, data)
