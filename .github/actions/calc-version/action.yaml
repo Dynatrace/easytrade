@@ -49,7 +49,7 @@ runs:
 
     - name: Determine Version
       id: version
-      uses: gittools/actions/gitversion/execute@v4.2.0
+      uses: gittools/actions/gitversion/execute@v4.5.0
       with:
         configFilePath: ${{ env.GITVERSION_CONFIG }}
 
