@@ -49,6 +49,9 @@ dependencies {
     // https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core
     implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.22'
 
+	// Source: https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-websocket
+	implementation 'org.apache.tomcat.embed:tomcat-embed-websocket:11.0.22'
+
 	// Source: https://mvnrepository.com/artifact/tools.jackson.core/jackson-core
     implementation 'tools.jackson.core:jackson-core:3.1.1'
 
