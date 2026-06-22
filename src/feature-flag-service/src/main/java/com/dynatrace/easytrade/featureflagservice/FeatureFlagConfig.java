@@ -1,11 +1,12 @@
 package com.dynatrace.easytrade.featureflagservice;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.*;
-import java.util.stream.*;
 
 @Configuration
 public class FeatureFlagConfig {
