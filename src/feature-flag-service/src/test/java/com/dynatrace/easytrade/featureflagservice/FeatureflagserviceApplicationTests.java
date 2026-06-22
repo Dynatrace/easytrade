@@ -1,18 +1,17 @@
 package com.dynatrace.easytrade.featureflagservice;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -38,6 +37,7 @@ class FeatureflagserviceApplicationTests {
 					new Flag("FLAG_2", false, "TEST FLAG 2", "This is a test flag 2", true, "problem_pattern"),
 					"FLAG_3", new Flag("FLAG_3", true, "TEST FLAG 3", "This is a test flag 3", false, "config")));
 
+	@SuppressWarnings("unused")
 	@BeforeEach
 	void setUp() {
 		flagService = new FlagService(mockFlags);

@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 public class VersionController {
     private static final Gson gson = new Gson();
 
-    private Version version;
+    private final Version version;
 
     public VersionController(
             @Value("${build.version}") String buildVersion,
@@ -29,11 +29,9 @@ public class VersionController {
     @GetMapping(produces = { "text/plain", "application/json" })
     public ResponseEntity<String> getVersion(
             @Parameter(hidden = true) @RequestHeader(HttpHeaders.ACCEPT) String accept) {
-        switch (accept) {
-            case "application/json":
-                return ResponseEntity.ok(gson.toJson(version));
-            default:
-                return ResponseEntity.ok(version.toString());
-        }
+        return switch (accept) {
+            case "application/json" -> ResponseEntity.ok(gson.toJson(version));
+            default -> ResponseEntity.ok(version.toString());
+        };
     }
 }

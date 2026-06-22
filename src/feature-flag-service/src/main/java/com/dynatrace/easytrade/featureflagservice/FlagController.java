@@ -70,7 +70,7 @@ public class FlagController {
 		try {
 			Optional<Flag> flag = flagService.updateFlag(flagId, enabled.enabled());
 			return flag.map(f -> ResponseEntity.ok(gson.toJson(f))).orElseGet(() -> ResponseEntity.notFound().build());
-		} catch (Exception e) {
+		} catch (NonModifiableFlagException e) {
 			return ResponseEntity.badRequest()
 					.body(String.format("{\"message\": \"%s\"}", e.getMessage()));
 		}
