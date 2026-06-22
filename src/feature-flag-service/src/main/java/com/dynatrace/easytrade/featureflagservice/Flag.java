@@ -1,5 +1,7 @@
 package com.dynatrace.easytrade.featureflagservice;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -10,6 +12,7 @@ public class Flag {
 	private boolean enabled;
 	private final String name;
 	private final String description;
+	@Getter(onMethod_ = @JsonProperty("isModifiable"))
 	private final boolean isModifiable;
 	private final String tag;
 
