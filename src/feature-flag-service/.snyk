@@ -2,12 +2,12 @@
 version: v1.25.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
-  'snyk:lic:maven:ch.qos.logback:logback-classic:(EPL-1.0_OR_LGPL-2.1)':
+  'snyk:lic:maven:ch.qos.logback:logback-classic:(EPL-2.0_OR_LGPL-2.1)':
     - '*':
         reason: licence issue reviewed
         expires: 2030-01-01T00:00:00.000Z
         created: 2024-07-19T14:22:30.593Z
-  'snyk:lic:maven:ch.qos.logback:logback-core:(EPL-1.0_OR_LGPL-2.1)':
+  'snyk:lic:maven:ch.qos.logback:logback-core:(EPL-2.0_OR_LGPL-2.1)':
     - '*':
         reason: licence issue reviewed
         expires: 2030-01-01T00:00:00.000Z
