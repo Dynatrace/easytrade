@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"dynatrace.com/easytrade/pricing-service/services"
 	"dynatrace.com/easytrade/pricing-service/utils"
@@ -11,6 +12,8 @@ import (
 
 	log "github.com/sirupsen/logrus"
 )
+
+var latestPricesCache = services.NewTTLCache[[]price](5 * time.Second)
 
 // @Summary		Get instrument prices
 // @Description	Get current price of each instrument
@@ -23,9 +26,16 @@ import (
 func GetCurrentPrices(ctx *gin.Context) {
 	log.Info("Getting current prices")
 
-	var priceList []price
+	if cached, ok := latestPricesCache.Get(); ok {
+		log.Debug("Returning cached prices")
+		negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: cached})
+		return
+	}
 
+	var priceList []price
 	services.DB.Where("Timestamp = (?)", services.DB.Table("Pricing").Select("max(Timestamp)")).Find(&priceList)
+
+	latestPricesCache.Set(priceList)
 
 	negotiateResponse(ctx, http.StatusOK, &pricesResult{
 		Results: priceList,

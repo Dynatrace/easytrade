@@ -44,5 +44,13 @@ func ConnectToDB() {
 		log.Fatal(dbConnError)
 	}
 
+	sqlDB, err := DB.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	sqlDB.SetMaxOpenConns(20)
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetConnMaxLifetime(30 * time.Minute)
+
 	log.Info("Connected to the database")
 }

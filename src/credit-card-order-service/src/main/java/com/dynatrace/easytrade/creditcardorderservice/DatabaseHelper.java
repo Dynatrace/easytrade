@@ -1,6 +1,8 @@
 package com.dynatrace.easytrade.creditcardorderservice;
 
 import com.dynatrace.easytrade.creditcardorderservice.models.*;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.sql.*;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -13,6 +15,18 @@ import org.slf4j.LoggerFactory;
 import java.util.Optional;
 
 public class DatabaseHelper {
+    private final HikariDataSource dataSource;
+
+    public DatabaseHelper() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(System.getenv("MSSQL_CONNECTIONSTRING"));
+        config.setMinimumIdle(5);
+        config.setMaximumPoolSize(20);
+        config.setConnectionTimeout(30_000);
+        config.setIdleTimeout(600_000);
+        config.setMaxLifetime(1_800_000);
+        this.dataSource = new HikariDataSource(config);
+    }
     private final String INSERT_ORDER_QUERY = "INSERT INTO [dbo].[CreditCardOrders] ([Id], [AccountId], [Email], [Name], [ShippingAddress], [CardLevel]) VALUES (?, ?, ?, ?, ?, ?)";
     private final String INSERT_STATUS_QUERY = "INSERT INTO [dbo].[CreditCardOrderStatus] ([CreditCardOrderId], [Timestamp], [Status], [Details]) VALUES (?, ?, ?, ?)";
     private final String INSERT_CREDIT_CARD_QUERY = "INSERT INTO [dbo].[CreditCards] ([CreditCardOrderId], [Level], [Number], [Cvs], [ValidDate]) VALUES (?, ?, ?, ?, ?)";
@@ -200,7 +214,7 @@ public class DatabaseHelper {
     }
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(System.getenv("MSSQL_CONNECTIONSTRING"));
+        return dataSource.getConnection();
     }
 
     public Optional<CreditCardOrderStatus> getLastOrderStatusForAccountId(Connection conn, Integer accountId)
