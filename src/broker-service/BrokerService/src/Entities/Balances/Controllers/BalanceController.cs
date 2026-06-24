@@ -2,6 +2,7 @@ using EasyTrade.BrokerService.Entities.Balances.DTO;
 using EasyTrade.BrokerService.Entities.Balances.Service;
 using EasyTrade.BrokerService.ExceptionHandling;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Text.RegularExpressions;
 
 namespace EasyTrade.BrokerService.Entities.Balances.Controllers;
@@ -37,6 +38,8 @@ public class BalanceController(IBalanceService balanceService) : ControllerBase
     [ProducesResponseType(typeof(Balance), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status429TooManyRequests)]
+    [EnableRateLimiting("bitcoin-deposit")]
     [HttpPost("{accountId:int}/deposit/bitcoin")]
     public async Task<IActionResult> DepositBitcoin(int accountId, BitcoinDepositDTO bitcoinDepositDTO)
     {

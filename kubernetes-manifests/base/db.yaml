@@ -21,10 +21,11 @@ spec:
               value: "yourStrong(!)Password"
           resources:
             requests:
-              cpu: 40m
-              memory: 1.5Gi
+              cpu: 500m
+              memory: 3Gi
             limits:
-              memory: 1.5Gi
+              cpu: "2"
+              memory: 3Gi
 ---
 apiVersion: v1
 kind: Service

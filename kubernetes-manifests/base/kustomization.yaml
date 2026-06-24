@@ -22,6 +22,7 @@ resources:
   - third-party-service.yaml
   - loadgen.yaml
   - problem-operator.yaml
+  - hpa.yaml
 patches:
   - path: labels-and-envs.yaml
     target:

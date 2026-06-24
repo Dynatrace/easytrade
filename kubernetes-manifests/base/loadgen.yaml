@@ -21,6 +21,8 @@ spec:
               value: "http://frontendreverseproxy-easytrade"
             - name: RARE_VISITS_INTERVAL_MINUTES
               value: "60"
+            - name: BITCOIN_DEPOSIT_AND_BUY_SUCCESS_WEIGHT
+              value: "1"
           resources:
             requests:
               cpu: "1"

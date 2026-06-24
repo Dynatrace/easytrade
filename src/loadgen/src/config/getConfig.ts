@@ -100,6 +100,10 @@ export function getConfig(): Config {
                 "SELL_AND_WITHDRAW_SUCCESS_WEIGHT",
                 1
             ),
+            bitcoin_deposit_and_buy_success: EnvConfig.ensureNumber(
+                "BITCOIN_DEPOSIT_AND_BUY_SUCCESS_WEIGHT",
+                1
+            ),
         },
     }
 }

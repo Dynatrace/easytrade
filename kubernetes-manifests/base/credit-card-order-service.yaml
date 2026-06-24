@@ -37,10 +37,11 @@ spec:
               value: "-XX:-OmitStackTraceInFastThrow"     
           resources:
             requests:
-              cpu: 20m
+              cpu: 100m
               memory: 600Mi
             limits:
-              memory: 600Mi
+              cpu: 500m
+              memory: 768Mi
 ---
 apiVersion: v1
 kind: Service

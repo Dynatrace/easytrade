@@ -54,6 +54,22 @@ export const selectors = {
         "deposit-button",
         '//form//button[@type="submit"]'
     ),
+    depositPage_creditCardTab: new XpathSelector(
+        "credit-card-tab",
+        '//button[@role="tab"][contains(text(), "Credit Card")]'
+    ),
+    depositPage_bitcoinTab: new XpathSelector(
+        "bitcoin-tab",
+        '//button[@role="tab"][contains(text(), "Bitcoin")]'
+    ),
+    depositPage_btcAmount: new XpathSelector(
+        "btc-amount-input",
+        '//input[@id="btcAmount"]'
+    ),
+    depositPage_walletAddress: new XpathSelector(
+        "wallet-address-input",
+        '//input[@id="walletAddress"]'
+    ),
     depositPage_cardholderName: new XpathSelector(
         "name-input",
         '//input[@id="cardholderName"]'

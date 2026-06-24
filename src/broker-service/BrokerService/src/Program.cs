@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Threading.RateLimiting;
 using EasyTrade.BrokerService;
 using EasyTrade.BrokerService.Helpers;
 using EasyTrade.BrokerService.Helpers.Logging;
@@ -43,6 +44,24 @@ builder.Logging.AddCustomLogger(options =>
 builder.Services.AddBrokerServiceDependencyGroup();
 builder.Services.AddTransient<HighCpuUsageMiddleware>();
 
+// Rate limiting: cap Bitcoin deposits at 10 req/min per IP to prevent abuse
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy("bitcoin-deposit", context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = 10,
+                Window = TimeSpan.FromMinutes(1),
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                QueueLimit = 0,
+            }
+        )
+    );
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+});
+
 // Add HTTP client used to connect to other services
 builder.Services.AddHttpClient();
 
@@ -76,6 +95,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseRateLimiter();
 
 app.UseMiddleware<HighCpuUsageMiddleware>();
 

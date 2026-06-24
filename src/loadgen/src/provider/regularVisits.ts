@@ -2,6 +2,7 @@ import { IVisit, randomBetween } from "@demoability/loadgen-core"
 import { Config } from "../config"
 import { getRandomUser } from "../user"
 import {
+    BitcoinDepositAndBuyVisit,
     DepositAndBuyVisit,
     DepositAndLongBuyVisit,
     LongSellVisit,
@@ -113,6 +114,18 @@ export function getRegularProviderFunction(
                     user,
                     assetSellRatio,
                     withdrawMinValue
+                )
+            }
+            case "bitcoin_deposit_and_buy_success": {
+                // BTC amount: 0.001–0.05 BTC (~$65–$3,250 USD at mock rate)
+                const btcAmount = parseFloat(
+                    (randomBetween(0.001, 0.05)).toFixed(4)
+                )
+                return new BitcoinDepositAndBuyVisit(
+                    "bitcoin_deposit_and_buy_success",
+                    easytradeUrl,
+                    user,
+                    btcAmount
                 )
             }
         }

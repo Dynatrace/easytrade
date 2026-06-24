@@ -7,5 +7,6 @@ export type RegularVisits =
     | "long_sell_error"
     | "deposit_and_buy_success"
     | "sell_and_withdraw_success"
+    | "bitcoin_deposit_and_buy_success"
 export type RareVisits = "order_credit_card"
 export type VisitName = RegularVisits | RareVisits

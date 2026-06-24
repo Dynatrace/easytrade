@@ -15,3 +15,4 @@ export {
 } from "./longSell"
 export { OrderCreditCardVisit } from "./orderCreditCard"
 export { SellAndWithdrawVisit } from "./sellAndWithdraw"
+export { BitcoinDepositAndBuyVisit } from "./bitcoinDepositAndBuy"
