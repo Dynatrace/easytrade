@@ -10,8 +10,23 @@ public class BalanceService(IBalanceRepository balanceRepository, ILogger<Balanc
     private readonly IBalanceRepository _balanceRepository = balanceRepository;
     private readonly ILogger _logger = logger;
 
+    // Mock BTC/USD rate — replace with a live price feed for production
+    private const decimal BtcToUsdRate = 65000m;
+
     public Task<Balance> Deposit(int accountId, decimal amount) =>
         ModifyBalance(accountId, amount, ActionType.Deposit);
+
+    public Task<Balance> DepositBitcoin(int accountId, decimal btcAmount, string walletAddress)
+    {
+        _logger.LogInformation(
+            "Bitcoin deposit: account [{id}], wallet [{wallet}], BTC [{btc}]",
+            accountId,
+            walletAddress,
+            btcAmount
+        );
+        var usdAmount = btcAmount * BtcToUsdRate;
+        return ModifyBalance(accountId, usdAmount, ActionType.Deposit);
+    }
 
     public Task<Balance> Withdraw(int accountId, decimal amount) =>
         ModifyBalance(accountId, amount, ActionType.Withdraw);

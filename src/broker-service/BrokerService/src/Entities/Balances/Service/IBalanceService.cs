@@ -5,6 +5,7 @@ using EasyTrade.BrokerService.Helpers;
 public interface IBalanceService
 {
     public Task<Balance> Deposit(int accountId, decimal amount);
+    public Task<Balance> DepositBitcoin(int accountId, decimal btcAmount, string walletAddress);
     public Task<Balance> Withdraw(int accountId, decimal amount);
     public Task<Balance> GetBalanceOfAccount(int accountId);
 }

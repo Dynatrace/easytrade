@@ -1,4 +1,4 @@
-import { DepositRequest, WithdrawRequest } from "../api/backend/creditCard"
+import { BitcoinDepositRequest, DepositRequest, WithdrawRequest } from "../api/backend/creditCard"
 import { QuickTransactionRequest } from "../api/backend/transactions"
 
 export class BizEvents {
@@ -32,6 +32,23 @@ export class BizEvents {
 
     static depositError(message: string): void {
         this.sendBizEvent("com.easytrade.deposit.error", {
+            status: "error",
+            message,
+        })
+    }
+
+    static bitcoinDepositStart(body: BitcoinDepositRequest): void {
+        this.sendBizEvent("com.easytrade.bitcoin.deposit.start", body)
+    }
+
+    static bitcoinDepositFinish(): void {
+        this.sendBizEvent("com.easytrade.bitcoin.deposit.finish", {
+            status: "finished",
+        })
+    }
+
+    static bitcoinDepositError(message: string): void {
+        this.sendBizEvent("com.easytrade.bitcoin.deposit.error", {
             status: "error",
             message,
         })

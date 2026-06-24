@@ -12,6 +12,12 @@ export type DepositRequest = {
     cvv: string
 }
 
+export type BitcoinDepositRequest = {
+    accountId: number
+    btcAmount: number
+    walletAddress: string
+}
+
 export type WithdrawRequest = {
     accountId: number
     amount: number
@@ -99,6 +105,13 @@ export class CreditCardBackend {
     deposit(request: DepositRequest) {
         return this.brokerAgent.post<DepositRequest>(
             `/balance/${request.accountId}/deposit`,
+            request
+        )
+    }
+
+    depositBitcoin(request: BitcoinDepositRequest) {
+        return this.brokerAgent.post(
+            `/balance/${request.accountId}/deposit/bitcoin`,
             request
         )
     }
