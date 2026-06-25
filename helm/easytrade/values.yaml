@@ -170,6 +170,7 @@ feature-flag-service:
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
+    ENABLE_CREDIT_CARD_MELTDOWN: "false"
   resources:
     requests:
       cpu: 30m

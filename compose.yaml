@@ -150,6 +150,7 @@ services:
     image: ${REGISTRY}/feature-flag-service:${TAG}
     environment:
       PROXY_PREFIX: feature-flag-service
+      ENABLE_CREDIT_CARD_MELTDOWN: "false"
 
   accountservice:
     <<: *default-service
