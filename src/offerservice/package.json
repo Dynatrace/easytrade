@@ -16,8 +16,16 @@
   "dependencies": {
     "@openfeature/server-sdk": "^1.21.0",
     "express": "^5.2.1",
-    "path-to-regexp": "^8.4.1",
+    "path-to-regexp": "^8.4.2",
     "winston": "^3.19.0"
+  },
+  "overrides": {
+    "axios": "1.18.1",
+    "body-parser": "2.3.0",
+    "fast-xml-parser": "5.9.3",
+    "follow-redirects": "1.16.0",
+    "form-data": "4.0.6",
+    "qs": "6.15.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
