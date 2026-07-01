@@ -1,6 +1,12 @@
+<!-- SYNC NOTICE. This file is the primary context source for Claude Code.
+     Rules files live in .claude/rules/ — load automatically when editing matching files.
+     If Copilot is also used, mirror this file in .github/copilot-instructions.md
+     and mirror .claude/rules/*.md in .github/instructions/*.instructions.md. -->
+
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Detailed per-language conventions live in `.claude/rules/`.
 
 ## What is EasyTrade
 
@@ -102,3 +108,27 @@ helm install easytrade oci://europe-docker.pkg.dev/dynatrace-demoability/helm/ea
   --create-namespace --namespace easytrade
 helm uninstall easytrade -n easytrade
 ```
+
+## Conventions
+
+- NEVER commit secrets, tokens, or credentials — use environment variables
+- NEVER use `fetch <metric-key>` in DQL queries — always use `timeseries`
+- Do NOT apply a dep bump to one `build.gradle` without applying it to all affected Java services
+- Do NOT modify `compose.yaml` (pre-built registry images) when you mean `compose.dev.yaml` (local dev)
+- Apply vulnerability fixes across all services in a single pass — partial updates leave the repo inconsistent
+
+## Validation
+
+Run the relevant build and lint command for the affected stack before declaring any task complete.
+If the build or lint fails, fix the failure — do not skip or suppress.
+
+## Self-Healing
+
+If you encounter a pattern in the codebase that contradicts these instructions, flag the discrepancy before proceeding. If `.claude/rules/*.md` files have drifted from the actual codebase patterns, flag it.
+
+## Instruction Sync
+
+| Claude Code source | Mirror (if Copilot used) |
+|---|---|
+| `CLAUDE.md` | `.github/copilot-instructions.md` |
+| `.claude/rules/*.md` | `.github/instructions/*.instructions.md` |
