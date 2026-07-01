@@ -1,0 +1,104 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## What is EasyTrade
+
+Fake stock-broking demo application for Dynatrace showcases. 19 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`frontendreverseproxy`) on port 80. A RabbitMQ queue (`Trade_Data_Raw`) carries trade data from `pricing-service` to `calculationservice`.
+
+All services share one MSSQL database (`db`, port 1433). Connection string format differs by tech stack — see `compose.yaml` for the three variants (Java/JDBC, .NET, Go/sqlserver).
+
+## Tech stacks
+
+| Stack | Services |
+|---|---|
+| Java 21 / Spring Boot / Gradle | `accountservice`, `contentcreator`, `credit-card-order-service`, `engine`, `feature-flag-service`, `third-party-service` |
+| Go + Go Modules | `aggregator-service`, `pricing-service`, `problem-operator` |
+| TypeScript / Node.js / npm | `frontend` (React + Vite), `loadgen`, `offerservice` (Express) |
+| C# / .NET 8 | `broker-service`, `loginservice`, `manager` |
+| Config only | `calculationservice` (C++, Dockerfile-only), `frontendreverseproxy` (nginx), `rabbitmq`, `db` (MSSQL) |
+
+## Build & test per stack
+
+**Java (run from service directory):**
+```bash
+./gradlew build        # compile + test
+./gradlew test         # tests only
+./gradlew test --tests "com.dynatrace.easytrade.SomeTest"  # single test
+```
+
+**Go (run from service directory):**
+```bash
+go build .
+go test ./...
+go test ./path/to/pkg -run TestName
+```
+
+**TypeScript/Node.js (run from service directory):**
+```bash
+npm install
+npm run build   # tsc / vite build
+npm test        # vitest (frontend) or jest
+npm run lint    # eslint
+```
+
+**C# / .NET (run from `src/<service>/<ServiceName>/`):**
+```bash
+dotnet build
+dotnet test                        # runs xunit tests in test/ project
+dotnet test --filter "FullyQualifiedName~SomeTest"
+```
+
+## Running locally
+
+Use `compose.dev.yaml` via the helper script:
+```bash
+./runDev.sh start       # proxy + contentcreator + engine (minimal)
+./runDev.sh start-all   # all services
+./runDev.sh build [service...]  # rebuild images
+./runDev.sh stop
+```
+
+Or directly:
+```bash
+docker compose -f compose.dev.yaml up -d
+docker compose up          # uses pre-built images from registry (compose.yaml)
+```
+
+App available at `http://localhost`. Dev credentials: `demouser/demopass`, `james_norton/pass_james_123`.
+
+## Dependency management & vulnerability fixes
+
+All Java services share the same `build.gradle` structure. Transitive dep bumps go in a marked block:
+```groovy
+// -- not direct dependencies but need bumps to patch vulns
+// -- can be removed once the parent packages upgrade
+```
+Apply the same bump to **all** affected `build.gradle` files in one pass.
+
+For Go, stdlib vulns require bumping the `go` directive in `go.mod`, the builder image tag+digest in `Dockerfile`, then running `go mod tidy`.
+
+For Node, use `overrides` in `package.json` to pin transitive deps; run `npm install` after.
+
+## Feature flags / problem patterns
+
+Feature flags control four problem patterns (`DbNotResponding`, `ErgoAggregatorSlowdown`, `FactoryCrisis`, `HighCpuUsage`). Toggle via:
+```bash
+curl -X PUT "http://localhost/feature-flag-service/v1/flags/{flagId}/" \
+  -H "accept: application/json" -d '{"enabled": true}'
+```
+Swagger: `http://localhost/feature-flag-service/swagger-ui/index.html`
+
+## Dynatrace / Observability
+
+Services are deployed on Kubernetes (namespace `easytrade`) and monitored by Dynatrace. See `AGENTS.md` for DQL query patterns, metric keys, and problem investigation workflow. Monaco configurations live in `./monaco/`.
+
+Key DQL rule: always use `timeseries` for metrics — never `fetch <metric-key>`.
+
+## Helm / Kubernetes
+
+```bash
+helm install easytrade oci://europe-docker.pkg.dev/dynatrace-demoability/helm/easytrade \
+  --create-namespace --namespace easytrade
+helm uninstall easytrade -n easytrade
+```
