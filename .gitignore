@@ -1,2 +1,5 @@
 .vscode/*
 !.vscode/mcp.json
+
+### Go binaries ###
+src/feature-flag-service/feature-flag-service
