@@ -11,10 +11,19 @@ RUN go mod tidy \
 
 COPY [".", "."]
 
+ARG BUILD_VERSION=dev
+ARG BUILD_DATE=unknown
+ARG BUILD_COMMIT=unknown
+
 RUN go install github.com/swaggo/swag/cmd/swag@v1.16.3 \
     && swag init \
     && go test ./... \
-    && go build -ldflags '-linkmode=external' -o feature-flag-service
+    && go build \
+        -ldflags "-linkmode=external \
+                  -X dynatrace.com/easytrade/feature-flag-service/version.BuildVersion=${BUILD_VERSION} \
+                  -X dynatrace.com/easytrade/feature-flag-service/version.BuildDate=${BUILD_DATE} \
+                  -X dynatrace.com/easytrade/feature-flag-service/version.BuildCommit=${BUILD_COMMIT}" \
+        -o feature-flag-service .
 
 FROM alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
 

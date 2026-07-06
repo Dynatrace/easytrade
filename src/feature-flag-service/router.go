@@ -13,6 +13,7 @@ import (
 func CreateRouter(svc *flag.Service) *gin.Engine {
 	r := gin.New()
 	r.Use(cors.Default())
+	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
 	h := flag.NewHandler(svc)
