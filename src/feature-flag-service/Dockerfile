@@ -1,22 +1,31 @@
-FROM eclipse-temurin:21.0.8_9-jdk-alpine-3.22@sha256:89517925fa675c6c4b770bee7c44d38a7763212741b0d6fca5a5103caab21a97 AS build
+FROM golang:1.26.4-alpine3.24@sha256:3ad57304ad93bbec8548a0437ad9e06a455660655d9af011d58b993f6f615648 AS build
 
-WORKDIR /app
-# make gradlew download gradle files before copying source files to use caching
-COPY ["build.gradle", "settings.gradle", "gradlew", "./"]
-COPY ["gradle", "gradle"]
-RUN ./gradlew dependencies
+RUN apk add --no-cache gcc libc-dev git
 
-COPY ["src", "./src"]
+WORKDIR /build
 
-RUN ./gradlew test bootJar
+COPY ["go.mod", "go.sum", "./"]
 
-FROM eclipse-temurin:21.0.8_9-jre-alpine-3.22@sha256:990397e0495ac088ab6ee3d949a2e97b715a134d8b96c561c5d130b3786a489d
+RUN go mod tidy \
+    && go mod verify
 
-RUN addgroup --system --gid 3369 spring \
-    && adduser --system --ingroup spring --uid 3369 spring
-USER spring:spring
-WORKDIR /home/spring
+COPY [".", "."]
 
-COPY --from=build --chown=spring:spring ["/app/build/libs/*.jar", "app.jar"]
+RUN go install github.com/swaggo/swag/cmd/swag@v1.16.3 \
+    && swag init \
+    && go test ./... \
+    && go build -ldflags '-linkmode=external' -o feature-flag-service
 
-CMD ["java", "-jar", "app.jar"]
+FROM alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
+
+RUN apk upgrade --no-cache \
+    && addgroup --system --gid 3369 easytrade \
+    && adduser --system --ingroup easytrade --uid 3369 easytrade
+USER easytrade:easytrade
+WORKDIR /home/easytrade
+
+ENV GIN_MODE=release
+
+COPY --from=build --chown=easytrade:easytrade ["/build/feature-flag-service", "."]
+
+CMD ["./feature-flag-service"]

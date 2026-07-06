@@ -1,0 +1,123 @@
+basePath: /
+definitions:
+  flag.Flag:
+    properties:
+      description:
+        type: string
+      enabled:
+        type: boolean
+      id:
+        type: string
+      isModifiable:
+        type: boolean
+      name:
+        type: string
+      tag:
+        type: string
+    type: object
+  flag.FlagContainer:
+    properties:
+      results:
+        items:
+          $ref: '#/definitions/flag.Flag'
+        type: array
+    type: object
+  flag.FlagUpdateRequest:
+    properties:
+      enabled:
+        type: boolean
+    type: object
+  version.versionResponse:
+    properties:
+      buildCommit:
+        type: string
+      buildDate:
+        type: string
+      buildVersion:
+        type: string
+    type: object
+info:
+  contact: {}
+  title: Feature flags API
+  version: "1.0"
+paths:
+  /v1/flags:
+    get:
+      parameters:
+      - description: Filter by tag
+        in: query
+        name: tag
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/flag.FlagContainer'
+      summary: Get all flags with the defined tag
+      tags:
+      - flags
+  /v1/flags/{flagId}:
+    get:
+      parameters:
+      - description: Flag ID
+        in: path
+        name: flagId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/flag.Flag'
+        "404":
+          description: Not Found
+      summary: Get a flag by id
+      tags:
+      - flags
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Flag ID
+        in: path
+        name: flagId
+        required: true
+        type: string
+      - description: Update request
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/flag.FlagUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/flag.Flag'
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+      summary: Enable or disable flag
+      tags:
+      - flags
+  /version:
+    get:
+      produces:
+      - application/json
+      - text/plain
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/version.versionResponse'
+      summary: Get service version
+      tags:
+      - version
+swagger: "2.0"
