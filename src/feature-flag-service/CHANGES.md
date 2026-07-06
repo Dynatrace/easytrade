@@ -1,1 +1,0 @@
-brakuje logowania requestiow i sa niepodstawione placeholdery {{BUILD_VERSION}} na /version
