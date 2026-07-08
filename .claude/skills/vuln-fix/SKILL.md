@@ -4,11 +4,13 @@ description: >
   Dependency vulnerability fix workflow for EasyTrade across all four stacks — Java/Gradle,
   Go, Node.js/npm, and .NET — in a single consistent pass. Trigger phrases: "fix vulnerability",
   "patch CVE", "bump dependency", "fix vuln", "dependency security fix", "transitive dep bump".
+model: sonnet
+tools: Read, Edit, Bash, Grep, Glob
 ---
 
-# Vulnerability Fix Workflow
-
-EasyTrade is polyglot. A vuln often spans multiple services. Fix all affected services in one pass — partial fixes leave the repo inconsistent.
+You are fixing a dependency vulnerability across EasyTrade's polyglot stack. A vuln often
+spans multiple services — fix all affected services in one pass; partial fixes leave the
+repo inconsistent.
 
 ## Java / Gradle
 

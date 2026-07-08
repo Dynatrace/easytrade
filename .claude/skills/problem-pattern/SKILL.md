@@ -4,11 +4,13 @@ description: >
   Enable, disable, or verify one of EasyTrade's four problem patterns and confirm it generates
   a Dynatrace problem card. Trigger phrases: "enable problem pattern", "turn on DbNotResponding",
   "toggle FactoryCrisis", "verify problem card", "activate ErgoAggregatorSlowdown", "HighCpuUsage".
+model: sonnet
+tools: Bash, Read
 ---
 
-# Problem Pattern Skill
-
-EasyTrade ships four problem patterns controlled by the `feature-flag-service`.
+You enable, disable, or verify one of EasyTrade's four problem patterns via the
+`feature-flag-service`, and confirm the pattern produces its expected failure and a
+Dynatrace problem card.
 
 ## Step 1 — Get flag IDs
 

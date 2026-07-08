@@ -4,11 +4,12 @@ description: >
   Checklist for adding a new microservice to EasyTrade: Dockerfile, compose.dev.yaml entry,
   nginx proxy rule, DB migration script, and Helm values. Trigger phrases: "add a new service",
   "create new microservice", "new EasyTrade service", "add service to easytrade".
+model: sonnet
+tools: Read, Write, Edit, Bash, Grep, Glob
 ---
 
-# Add a New EasyTrade Service
-
-Work through each step in order. Do not skip steps — partial additions break the proxy routing or DB init.
+You are adding a new microservice to EasyTrade. Work through each step below in order —
+do not skip steps, since partial additions break the proxy routing or DB init.
 
 ## Step 1 — Dockerfile
 
