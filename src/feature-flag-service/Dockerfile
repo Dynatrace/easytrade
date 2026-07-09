@@ -6,7 +6,7 @@ WORKDIR /build
 
 COPY ["go.mod", "go.sum", "./"]
 
-RUN go mod tidy \
+RUN go mod download \
     && go mod verify
 
 COPY [".", "."]
