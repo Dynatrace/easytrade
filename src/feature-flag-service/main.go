@@ -1,9 +1,3 @@
-// Feature flags API
-//
-// @title       Feature flags API
-// @version     1.0
-// @BasePath    /
-
 package main
 
 import (

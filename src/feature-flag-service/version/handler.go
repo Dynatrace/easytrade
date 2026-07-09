@@ -14,12 +14,6 @@ type versionResponse struct {
 	BuildCommit  string `json:"buildCommit"`
 }
 
-// GetVersion godoc
-// @Summary  Get service version
-// @Tags     version
-// @Produce  json,text/plain
-// @Success  200 {object} versionResponse
-// @Router   /version [get]
 func GetVersion(ctx *gin.Context) {
 	accept := ctx.GetHeader("Accept")
 	switch accept {
