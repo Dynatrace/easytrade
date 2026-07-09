@@ -16,8 +16,8 @@ Toggle the EasyTrade problem pattern given in $ARGUMENTS (a pattern name, and op
 2. PUT the requested state for that flag ID:
    ```bash
    curl -X PUT "http://localhost/feature-flag-service/v1/flags/{flagId}/" \
-     -H "accept: application/json" \
-     -d '{"enabled": true}'   # or false to disable
+     -H "Content-type: application/json" \
+     -d '{"enabled": true}'    \ # or false to disable
    ```
 
 3. Confirm the change by re-fetching the flag list and checking the `enabled` field for the target flag.
@@ -30,5 +30,3 @@ Toggle the EasyTrade problem pattern given in $ARGUMENTS (a pattern name, and op
    | `ErgoAggregatorSlowdown` | 2 aggregators slow → stop sending; 40% traffic drop | 15–20 min |
    | `FactoryCrisis` | No new cards → third-party blocks credit card orders | On next order attempt |
    | `HighCpuUsage` | Broker-service slowdown + high CPU; K8s adds CPU limit | Immediately |
-
-Pre-built K8s cron jobs that enable patterns once daily live in `./kubernetes-manifests/problem-patterns/`.

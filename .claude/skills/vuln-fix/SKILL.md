@@ -44,7 +44,7 @@ stdlib or module vulns require three changes per service (`aggregator-service`, 
    ```
 2. Bump the builder image tag **and digest** in `Dockerfile`:
    ```dockerfile
-   FROM golang:1.26.4-alpine3.23@sha256:<new-digest> AS build
+   FROM golang:1.26.4-alpine3.24@sha256:<new-digest> AS build
    ```
 3. Run tidy:
    ```bash

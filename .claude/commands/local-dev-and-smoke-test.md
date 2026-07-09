@@ -39,11 +39,11 @@ Run each curl check against `http://localhost` and confirm HTTP 200 with valid J
    ```bash
    curl -sf http://localhost/engine/v2/instruments/ | jq 'length'
    ```
-4. Login with a known user — expect a non-null JWT string:
+4. Login with a known user — expect a non-null account ID integer:
    ```bash
-   curl -sf -X POST http://localhost/loginservice/v1/login/ \
+   curl -sf -X POST http://localhost/loginservice/api/login/ \
      -H "Content-Type: application/json" \
-     -d '{"username":"james_norton","password":"pass_james_123"}' | jq '.token'
+     -d '{"username":"james_norton","password":"pass_james_123"}' | jq '.id'
    ```
 5. Pricing service — current prices — expect a number > 0:
    ```bash
