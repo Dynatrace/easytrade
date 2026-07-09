@@ -287,11 +287,11 @@ offerservice:
     FEATURE_FLAG_SERVICE_PORT: "8080"
   resources:
     requests:
-      cpu: 50m
+      cpu: 100m
       memory: 150Mi
     limits:
-      cpu: 200m
-      memory: 150Mi
+      cpu: "1"
+      memory: 1Gi
   service:
     enabled: true
     port: 8080
