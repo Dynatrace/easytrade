@@ -1,10 +1,10 @@
 # easyTradeFeatureFlagService
 
-A java rest service with swagger. It allows to get and update feature flag data.
+A Go REST service with swagger. It allows to get and update feature flag data.
 
 ## Technologies used
 
-- Java
+- Golang
 - Docker
 
 ## Local build instructions
