@@ -42,11 +42,6 @@ dependencies:
     version: "0.1.0"
     condition: db.enabled
   - name: app
-    alias: engine
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: engine.enabled
-  - name: app
     alias: feature-flag-service
     repository: "file://./charts/app"
     version: "0.1.0"

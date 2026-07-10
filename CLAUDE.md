@@ -10,7 +10,7 @@ Detailed per-language conventions live in `.claude/rules/`.
 
 ## What is EasyTrade
 
-Fake stock-broking demo application for Dynatrace showcases. 19 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`frontendreverseproxy`) on port 80. A RabbitMQ queue (`Trade_Data_Raw`) carries trade data from `pricing-service` to `calculationservice`.
+Fake stock-broking demo application for Dynatrace showcases. 18 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`frontendreverseproxy`) on port 80. A RabbitMQ queue (`Trade_Data_Raw`) carries trade data from `pricing-service` to `calculationservice`.
 
 All services share one MSSQL database (`db`, port 1433). Connection string format differs by tech stack — see `compose.yaml` for the three variants (Java/JDBC, .NET, Go/sqlserver).
 
@@ -18,7 +18,7 @@ All services share one MSSQL database (`db`, port 1433). Connection string forma
 
 | Stack | Services |
 |---|---|
-| Java 21 / Spring Boot / Gradle | `accountservice`, `contentcreator`, `credit-card-order-service`, `engine`, `feature-flag-service`, `third-party-service` |
+| Java 21 / Spring Boot / Gradle | `accountservice`, `contentcreator`, `credit-card-order-service`, `feature-flag-service`, `third-party-service` |
 | Go + Go Modules | `aggregator-service`, `pricing-service`, `problem-operator` |
 | TypeScript / Node.js / npm | `frontend` (React + Vite), `loadgen`, `offerservice` (Express) |
 | C# / .NET 8 | `broker-service`, `loginservice`, `manager` |
@@ -59,7 +59,7 @@ dotnet test --filter "FullyQualifiedName~SomeTest"
 
 Use `compose.dev.yaml` via the helper script:
 ```bash
-./runDev.sh start       # proxy + contentcreator + engine (minimal)
+./runDev.sh start       # proxy + contentcreator (minimal)
 ./runDev.sh start-all   # all services
 ./runDev.sh build [service...]  # rebuild images
 ./runDev.sh stop
