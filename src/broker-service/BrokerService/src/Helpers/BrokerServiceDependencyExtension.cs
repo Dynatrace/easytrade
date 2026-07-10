@@ -8,6 +8,7 @@ using EasyTrade.BrokerService.Entities.Prices.ServiceConnector;
 using EasyTrade.BrokerService.Entities.Products.Repository;
 using EasyTrade.BrokerService.Entities.Trades.Notification;
 using EasyTrade.BrokerService.Entities.Trades.Repository;
+using EasyTrade.BrokerService.Entities.Trades.Scheduler;
 using EasyTrade.BrokerService.Entities.Trades.Service;
 using EasyTrade.BrokerService.Middleware.CreditCardValidation;
 using EasyTrade.BrokerService.ProblemPatterns.OpenFeature;
@@ -60,12 +61,22 @@ public static class BrokerServiceDependencyExtension
     private static IServiceCollection AddProductDependency(this IServiceCollection services) =>
         services.AddTransient<IProductRepository, ProductRepository>();
 
-    private static IServiceCollection AddTradesDependency(this IServiceCollection services) =>
+    private static IServiceCollection AddTradesDependency(this IServiceCollection services)
+    {
         services
             .AddTransient<ITradeRepository, TradeRepositoryWithDbNotResponding>()
             .AddTransient<ITradeService, TradeService>()
             .AddTransient<ILongTradeService, LongTradeService>()
             .AddTransient<ITradeNotificationService, TradeNotificationService>();
+
+        services.AddSingleton<LongTradeSchedulerService>();
+        services.AddSingleton<ILongTradeSchedulerService>(sp =>
+            sp.GetRequiredService<LongTradeSchedulerService>()
+        );
+        services.AddHostedService(sp => sp.GetRequiredService<LongTradeSchedulerService>());
+
+        return services;
+    }
 
     private static IServiceCollection AddProblemPatternsDependency(this IServiceCollection services)
     {
