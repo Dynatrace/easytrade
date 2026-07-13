@@ -46,7 +46,7 @@ Use DQL to confirm Dynatrace detected the problem (run after the expected lag ti
 
 ```dql
 fetch dt.davis.problems
-| filter contains(entity.name, "easytrade")
+| filter k8s.namespace.name == array("easytrade")
 ```
 
 Or check via Dynatrace UI: **Problems** → filter by `easytrade` namespace.
