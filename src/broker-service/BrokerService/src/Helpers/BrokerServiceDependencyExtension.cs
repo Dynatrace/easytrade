@@ -69,11 +69,7 @@ public static class BrokerServiceDependencyExtension
             .AddTransient<ILongTradeService, LongTradeService>()
             .AddTransient<ITradeNotificationService, TradeNotificationService>();
 
-        services.AddSingleton<LongTradeSchedulerService>();
-        services.AddSingleton<ILongTradeSchedulerService>(sp =>
-            sp.GetRequiredService<LongTradeSchedulerService>()
-        );
-        services.AddHostedService(sp => sp.GetRequiredService<LongTradeSchedulerService>());
+        services.AddHostedService<LongTradeSchedulerService>();
 
         return services;
     }
