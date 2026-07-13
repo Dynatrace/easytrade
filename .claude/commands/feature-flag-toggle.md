@@ -1,6 +1,6 @@
 ---
 description: Enable or disable an EasyTrade problem pattern via the feature-flag-service API
-argument-hint: [pattern-name] [enable|disable]
+argument-hint: "[pattern-name] [enable|disable]"
 ---
 
 Toggle the EasyTrade problem pattern given in $ARGUMENTS (a pattern name, and optionally
@@ -17,7 +17,8 @@ Toggle the EasyTrade problem pattern given in $ARGUMENTS (a pattern name, and op
    ```bash
    curl -X PUT "http://localhost/feature-flag-service/v1/flags/{flagId}/" \
      -H "Content-type: application/json" \
-     -d '{"enabled": true}'    \ # or false to disable
+     -H "Accept: application/json" \
+     -d '{"enabled": true}'     # or false to disable
    ```
 
 3. Confirm the change by re-fetching the flag list and checking the `enabled` field for the target flag.
