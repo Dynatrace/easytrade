@@ -24,6 +24,7 @@
     "typescript-eslint": "^8.20.0"
   },
   "overrides": {
+    "js-yaml": "4.3.0",
     "uuid": "14.0.0"
   }
 }
