@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package easytrade.dbadapter.trade;
+
+option csharp_namespace = "EasyTrade.DbAdapter.Trade.Grpc";
+option go_package = "github.com/dynatrace/easytrade/dbadapter/trade";
+option java_package = "com.dynatrace.easytrade.dbadapter.trade.grpc";
+option java_multiple_files = true;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+message TradeMessage {
+  int32 id = 1;
+  int32 account_id = 2;
+  int32 instrument_id = 3;
+  string direction = 4;
+  double quantity = 5;
+  double entry_price = 6;
+  google.protobuf.Timestamp timestamp_open = 7;
+  google.protobuf.Timestamp timestamp_close = 8;
+  bool trade_closed = 9;
+  bool transaction_happened = 10;
+  string status = 11;
+}
+
+message CreateTradeRequest {
+  int32 account_id = 1;
+  int32 instrument_id = 2;
+  string direction = 3;
+  double quantity = 4;
+  double entry_price = 5;
+  bool transaction_happened = 6;
+  string status = 7;
+}
+
+message UpdateTradeRequest {
+  int32 id = 1;
+  google.protobuf.Timestamp timestamp_close = 2;
+  bool trade_closed = 3;
+  string status = 4;
+}
+
+message GetAccountTradesRequest {
+  int32 account_id = 1;
+  bool only_open = 2;
+  bool only_long = 3;
+}
+
+message TradesResponse {
+  repeated TradeMessage trades = 1;
+  int32 total_count = 2;
+}
+
+service TradeService {
+  rpc CreateTrade(CreateTradeRequest) returns (TradeMessage) {}
+  rpc UpdateTrade(UpdateTradeRequest) returns (TradeMessage) {}
+
+  // Get all open trades (trade_closed = false)
+  rpc GetOpenTrades(google.protobuf.Empty) returns (TradesResponse) {}
+
+  // Get expired open trades (trade_closed = false AND timestamp_close < now)
+  rpc GetExpiredTrades(google.protobuf.Empty) returns (TradesResponse) {}
+
+  // Get all trades for a specific account with optional filters
+  rpc GetAccountTrades(GetAccountTradesRequest) returns (TradesResponse) {}
+
+  rpc DeleteTradesOlderThan(easytrade.dbadapter.common.DeleteBeforeRequest) returns (easytrade.dbadapter.common.DeleteResponse) {}
+}

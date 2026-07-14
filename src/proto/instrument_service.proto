@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package easytrade.dbadapter.instrument;
+
+option csharp_namespace = "EasyTrade.DbAdapter.Instrument.Grpc";
+option go_package = "github.com/dynatrace/easytrade/dbadapter/instrument";
+option java_package = "com.dynatrace.easytrade.dbadapter.instrument.grpc";
+option java_multiple_files = true;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+message InstrumentMessage {
+  int32 id = 1;
+  int32 product_id = 2;
+  string code = 3;
+  string name = 4;
+  string description = 5;
+}
+
+message OwnedInstrumentMessage {
+  int32 id = 1;
+  int32 account_id = 2;
+  int32 instrument_id = 3;
+  double quantity = 4;
+  google.protobuf.Timestamp last_modification_date = 5;
+}
+
+message GetInstrumentRequest {
+  int32 id = 1;
+}
+
+message GetInstrumentResponse {
+  bool found = 1;
+  InstrumentMessage instrument = 2;
+}
+
+message InstrumentsResponse {
+  repeated InstrumentMessage instruments = 1;
+}
+
+message GetOwnedInstrumentRequest {
+  int32 account_id = 1;
+  int32 instrument_id = 2;
+}
+
+message GetOwnedInstrumentResponse {
+  bool found = 1;
+  OwnedInstrumentMessage owned_instrument = 2;
+}
+
+message GetOwnedInstrumentsOfAccountRequest {
+  int32 account_id = 1;
+}
+
+message OwnedInstrumentsResponse {
+  repeated OwnedInstrumentMessage owned_instruments = 1;
+}
+
+message AddOwnedInstrumentRequest {
+  int32 account_id = 1;
+  int32 instrument_id = 2;
+  double quantity = 3;
+  google.protobuf.Timestamp last_modification_date = 4;
+}
+
+message UpdateOwnedInstrumentRequest {
+  int32 id = 1;
+  int32 account_id = 2;
+  int32 instrument_id = 3;
+  double quantity = 4;
+  google.protobuf.Timestamp last_modification_date = 5;
+}
+
+service InstrumentService {
+  // found = false when does not exist
+  rpc GetInstrumentById(GetInstrumentRequest) returns (GetInstrumentResponse) {}
+
+  rpc GetAllInstruments(google.protobuf.Empty) returns (InstrumentsResponse) {}
+
+  // Get an owned instrument for an account (found = false when the account does not own it)
+  rpc GetOwnedInstrument(GetOwnedInstrumentRequest) returns (GetOwnedInstrumentResponse) {}
+
+  // Get all owned instruments for an account
+  rpc GetOwnedInstruments(GetOwnedInstrumentsOfAccountRequest) returns (OwnedInstrumentsResponse) {}
+
+  // Create a new owned instrument row and return it (with the assigned id)
+  rpc AddOwnedInstrument(AddOwnedInstrumentRequest) returns (OwnedInstrumentMessage) {}
+  rpc UpdateOwnedInstrument(UpdateOwnedInstrumentRequest) returns (OwnedInstrumentMessage) {}
+}

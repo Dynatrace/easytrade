@@ -1,0 +1,74 @@
+syntax = "proto3";
+
+package easytrade.dbadapter.account;
+
+option csharp_namespace = "EasyTrade.DbAdapter.Account.Grpc";
+option go_package = "github.com/dynatrace/easytrade/dbadapter/account";
+option java_package = "com.dynatrace.easytrade.dbadapter.account.grpc";
+option java_multiple_files = true;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+message AccountMessage {
+  int32 id = 1;
+  int32 package_id = 2;
+  string first_name = 3;
+  string last_name = 4;
+  string username = 5;
+  string email = 6;
+  string hashed_password = 7;
+  string origin = 8;
+  google.protobuf.Timestamp creation_date = 9;
+  google.protobuf.Timestamp package_activation_date = 10;
+  bool account_active = 11;
+  string address = 12;
+}
+
+message CreateAccountRequest {
+  int32 package_id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string username = 4;
+  string email = 5;
+  string password = 6;  // hashed server-side
+  string origin = 7;
+  string address = 8;
+}
+
+message GetAccountByIdRequest {
+  int32 id = 1;
+}
+
+message GetAccountByUsernameRequest {
+  string username = 1;
+}
+
+message GetAccountResponse {
+  bool found = 1;
+  AccountMessage account = 2;
+}
+
+message AccountsResponse {
+  repeated AccountMessage accounts = 1;
+}
+
+message UpdateAccountRequest {
+  AccountMessage account = 1;
+}
+
+service AccountService {
+  rpc CreateAccount(CreateAccountRequest) returns (AccountMessage) {}
+
+  // found = false when does not exist
+  rpc GetAccountById(GetAccountByIdRequest) returns (GetAccountResponse) {}
+
+  rpc GetAccountByUsername(GetAccountByUsernameRequest) returns (GetAccountResponse) {}
+
+  rpc GetAccounts(google.protobuf.Empty) returns (AccountsResponse) {}
+
+  rpc UpdateAccount(UpdateAccountRequest) returns (google.protobuf.Empty) {}
+
+  rpc DeleteAccountsOlderThan(easytrade.dbadapter.common.DeleteBeforeRequest) returns (easytrade.dbadapter.common.DeleteResponse) {}
+}

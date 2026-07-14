@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package easytrade.dbadapter.common;
+
+option csharp_namespace = "EasyTrade.DbAdapter.Common.Grpc";
+option go_package = "github.com/dynatrace/easytrade/dbadapter/common";
+option java_package = "com.dynatrace.easytrade.dbadapter.common.grpc";
+option java_multiple_files = true;
+
+import "google/protobuf/timestamp.proto";
+
+message DeleteBeforeRequest {
+  google.protobuf.Timestamp before = 1;
+}
+
+message DeleteResponse {
+  int32 affected = 1;
+}

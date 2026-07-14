@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package easytrade.dbadapter.pricing;
+
+option csharp_namespace = "EasyTrade.DbAdapter.Pricing.Grpc";
+option go_package = "github.com/dynatrace/easytrade/dbadapter/pricing";
+option java_package = "com.dynatrace.easytrade.dbadapter.pricing.grpc";
+option java_multiple_files = true;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+message PriceMessage {
+  int32 id = 1;
+  int32 instrument_id = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  double open = 4;
+  double high = 5;
+  double low = 6;
+  double close = 7;
+}
+
+message PricesResponse {
+  repeated PriceMessage prices = 1;
+}
+
+message GetMostRecentPriceForInstrumentRequest {
+  int32 instrument_id = 1;
+}
+
+message GetPricesForInstrumentRequest {
+  int32 instrument_id = 1;
+  int32 limit = 2;  // 0 or omitted means unlimited
+}
+
+message PricingRow {
+  google.protobuf.Timestamp timestamp = 1;
+  int32 instrument_id = 2;
+  double open = 3;
+  double high = 4;
+  double low = 5;
+  double close = 6;
+}
+
+message InsertPricesBatchRequest {
+  repeated PricingRow rows = 1;
+}
+
+service PricingService {
+  rpc GetLatestPrices(google.protobuf.Empty) returns (PricesResponse) {}
+
+  rpc GetMostRecentPriceForInstrument(GetMostRecentPriceForInstrumentRequest) returns (PriceMessage) {}
+
+  // Supports optional limit (0 = no limit).
+  rpc GetPricesForInstrument(GetPricesForInstrumentRequest) returns (PricesResponse) {}
+
+  rpc InsertPricesBatch(InsertPricesBatchRequest) returns (google.protobuf.Empty) {}
+
+  rpc DeletePricesOlderThan(easytrade.dbadapter.common.DeleteBeforeRequest) returns (easytrade.dbadapter.common.DeleteResponse) {}
+}
