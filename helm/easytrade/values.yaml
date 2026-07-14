@@ -209,6 +209,7 @@ frontendreverseproxy:
     OFFER_SERVICE_URL: "http://{{ .Release.Name }}-offerservice:8080"
     PRICING_SERVICE_URL: "http://{{ .Release.Name }}-pricing-service:8080"
     THIRD_PARTY_SERVICE_URL: "http://{{ .Release.Name }}-third-party-service:8080"
+    USER_SERVICE_URL: "http://{{ .Release.Name }}-user-service:8080"
   resources:
     requests:
       cpu: 50m
@@ -390,6 +391,26 @@ third-party-service:
   resources:
     requests:
       cpu: 10m
+      memory: 450Mi
+    limits:
+      cpu: 200m
+      memory: 450Mi
+  service:
+    enabled: true
+    port: 8080
+
+user-service:
+  enabled: true
+  env:
+    MANAGER_HOSTANDPORT: "{{ .Release.Name }}-manager:8080"
+    PROXY_PREFIX: "user-service"
+  envFromSecret:
+    GO_CONNECTION_STRING:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "GO_CONNECTION_STRING"
+  resources:
+    requests:
+      cpu: 20m
       memory: 450Mi
     limits:
       cpu: 200m

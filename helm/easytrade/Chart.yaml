@@ -101,3 +101,8 @@ dependencies:
     repository: "file://./charts/app"
     version: "0.1.0"
     condition: third-party-service.enabled
+  - name: app
+    alias: user-service
+    repository: "file://./charts/app"
+    version: "0.1.0"
+    condition: user-service.enabled

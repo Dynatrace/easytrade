@@ -10,6 +10,7 @@ EXPOSE 80
 ENV LOGIN_SERVICE_URL=http://loginservice:8080 \
     BROKER_SERVICE_URL=http://broker-service:8080 \
     ACCOUNT_SERVICE_URL=http://accountservice:8080 \
+    USER_SERVICE_URL=http://user-service:8080 \
     PRICING_SERVICE_URL=http://pricing-service:8080 \
     OFFER_SERVICE_URL=http://offerservice:8080 \
     ENGINE_URL=http://engine:8080 \

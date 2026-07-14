@@ -93,3 +93,8 @@ services:
     image: ${REGISTRY}/third-party-service:${TAG}
     build:
       context: src/third-party-service
+
+  user-service:
+    image: ${REGISTRY}/user-service:${TAG}
+    build:
+      context: src/user-service

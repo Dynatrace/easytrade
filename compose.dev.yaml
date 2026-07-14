@@ -133,6 +133,7 @@ services:
       - engine
       - credit-card-order-service
       - third-party-service
+      - user-service
     ports:
       - 80:80
 
@@ -170,6 +171,19 @@ services:
     environment:
       MANAGER_HOSTANDPORT: manager:8080
       PROXY_PREFIX: accountservice
+
+  user-service:
+    <<: *default-service
+    build: src/user-service
+    depends_on:
+      - db
+      - manager
+    ports:
+      - 8095:8080
+    environment:
+      GO_CONNECTION_STRING: *go-connection-string
+      MANAGER_HOSTANDPORT: manager:8080
+      PROXY_PREFIX: user-service
 
   engine:
     <<: *default-service
