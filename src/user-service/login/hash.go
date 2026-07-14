@@ -1,9 +1,13 @@
 package login
 
-// HashPassword hashes a plaintext password for storage/comparison.
-// Ported from loginservice's Utils/HashUtil.cs (SHA-256, lowercase hex, no salt).
-//
-// TODO: not implemented yet - this is a scaffold-only stub.
+import (
+	"crypto/sha256"
+	"encoding/hex"
+)
+
+// HashPassword returns a SHA-256 lowercase hex digest of the plaintext password.
+// Matches the algorithm in loginservice's HashUtil.cs: SHA-256, no salt.
 func HashPassword(password string) string {
-	panic("not implemented")
+	sum := sha256.Sum256([]byte(password))
+	return hex.EncodeToString(sum[:])
 }
