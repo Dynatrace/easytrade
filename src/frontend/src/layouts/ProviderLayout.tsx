@@ -1,6 +1,6 @@
 import React from "react"
 import { CssBaseline } from "@mui/material"
-import { login, logout } from "../api/login/login"
+import { login } from "../api/login/login"
 import { getTransactions } from "../api/transaction/transactions"
 import { getBalance, getPresetUsers, getUser } from "../api/user/user"
 import { AuthProvider } from "../contexts/AuthContext"
@@ -36,7 +36,7 @@ export default function ProviderLayout() {
                 getVersions={getAllVersions}
             >
                 <ThemeProvider initialTheme={getPreferredTheme()}>
-                    <AuthProvider loginHandler={login} logoutHandler={logout}>
+                    <AuthProvider loginHandler={login}>
                         <NavigationProvider initialNavigationState={true}>
                             <CssBaseline />
                             <AppLayout />

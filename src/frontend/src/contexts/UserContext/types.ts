@@ -1,4 +1,4 @@
-import { LogoutHandler } from "../../api/login/types"
+import { LogoutHandler } from "../AuthContext/types"
 
 export type IUserContext = {
     userId: string

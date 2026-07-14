@@ -1,10 +1,8 @@
-import { LoginResponse, LogoutResponse } from "../backend/users"
+import { LoginResponse } from "../backend/users"
 
-export type { LoginResponse, LogoutResponse }
+export type { LoginResponse }
 
 export type LoginHandler = (
     login: string,
     password: string
 ) => Promise<LoginResponse>
-
-export type LogoutHandler = (userId: string) => Promise<LogoutResponse>

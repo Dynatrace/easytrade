@@ -17,8 +17,3 @@ export async function loginMock(
         ? { id: user.id.toString() }
         : { error: "Login or password invalid" }
 }
-
-// eslint-disable-next-line @typescript-eslint/require-await
-export async function logout() {
-    console.log("mock [logout] API call")
-}

@@ -1,4 +1,4 @@
-import { LoginResponse, LogoutResponse } from "./types"
+import { LoginResponse } from "./types"
 import { backends } from "../backend"
 import { XMLBuilder, XMLParser } from "fast-xml-parser"
 
@@ -20,22 +20,5 @@ export async function login(
     } catch (error) {
         console.error("error: ", error)
         return { error: "Login or password invalid" }
-    }
-}
-
-export async function logout(userId: string): Promise<LogoutResponse> {
-    console.log("[logout] API call")
-    try {
-        const data = await backends.users.logoutXml(
-            new XMLBuilder(),
-            new XMLParser(),
-            Number(userId)
-        )
-        return data.MessageResponse
-    } catch (error) {
-        console.error("error: ", error)
-        return {
-            error: "There was a problem with logging out",
-        }
     }
 }

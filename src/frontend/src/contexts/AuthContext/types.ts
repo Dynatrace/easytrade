@@ -1,7 +1,11 @@
 import { Dispatch, SetStateAction } from "react"
-import { LoginHandler, LogoutHandler } from "../../api/login/types"
+import { LoginHandler } from "../../api/login/types"
 
 type DefaultLoginHandler = (userId: string) => void
+
+// Logout has no backend call to make (there's no server-side session to invalidate),
+// so it's a synchronous, local-only state clear rather than an injectable API handler.
+type LogoutHandler = () => void
 
 type SetValue<T> = Dispatch<SetStateAction<T>>
 type RemoveValue = () => void
@@ -11,7 +15,6 @@ type StoreHandler = (
 
 type AuthProviderProps = {
     loginHandler: LoginHandler
-    logoutHandler: LogoutHandler
     initialId?: string
     storeHandler?: StoreHandler
 }
@@ -24,4 +27,4 @@ type IAuthContext = {
     defaultLoginHandler: DefaultLoginHandler
 }
 
-export type { IAuthContext, AuthProviderProps }
+export type { IAuthContext, AuthProviderProps, LogoutHandler }

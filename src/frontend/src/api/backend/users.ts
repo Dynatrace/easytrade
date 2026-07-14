@@ -36,11 +36,6 @@ export type LoginResponse = {
     error?: string
 }
 
-export type LogoutResponse = {
-    message?: string
-    error?: string
-}
-
 type SignupRequest = {
     packageId: number
     origin: string
@@ -59,10 +54,6 @@ type SignupResponse = {
 
 export type IdResponse<T> = {
     IdResponse: T
-}
-
-export type MessageResponse<T> = {
-    MessageResponse: T
 }
 
 export class UserBackend {
@@ -96,25 +87,6 @@ export class UserBackend {
         })
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
         return xmlParser.parse(await response.text()) as IdResponse<LoginResponse>
-    }
-
-    async logoutXml(
-        xmlBuilder: XMLBuilder,
-        xmlParser: XMLParser,
-        accountId: number
-    ): Promise<MessageResponse<LogoutResponse>> {
-        const response = await fetch(`${this.loginServiceUrl}/Logout`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/xml",
-                Accept: "application/xml",
-            },
-            body: xmlBuilder.build({ LogoutRequest: { accountId } }),
-        })
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
-        return xmlParser.parse(
-            await response.text()
-        ) as MessageResponse<LogoutResponse>
     }
 
     async signupXml(
