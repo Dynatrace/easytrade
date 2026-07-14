@@ -67,9 +67,8 @@ public static class BrokerServiceDependencyExtension
             .AddTransient<ITradeRepository, TradeRepositoryWithDbNotResponding>()
             .AddTransient<ITradeService, TradeService>()
             .AddTransient<ILongTradeService, LongTradeService>()
-            .AddTransient<ITradeNotificationService, TradeNotificationService>();
-
-        services.AddHostedService<LongTradeSchedulerService>();
+            .AddTransient<ITradeNotificationService, TradeNotificationService>()
+            .AddHostedService<LongTradeSchedulerService>();
 
         return services;
     }
