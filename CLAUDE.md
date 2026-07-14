@@ -101,8 +101,6 @@ Swagger: `http://localhost/feature-flag-service/swagger-ui/index.html`
 
 Services are deployed on Kubernetes (namespace `easytrade`) and monitored by Dynatrace. See `AGENTS.md` for DQL query patterns, metric keys, and problem investigation workflow. Monaco configurations live in `./monaco/`.
 
-Key DQL rule: use `timeseries` for metric queries — never `fetch <metric-key>`. `fetch` is valid for entity and problem records (e.g. `fetch dt.davis.problems`, `fetch dt.entity.service`).
-
 ## Helm / Kubernetes
 
 ```bash
