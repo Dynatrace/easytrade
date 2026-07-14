@@ -529,56 +529,6 @@ curl -X 'POST' \
 
 ---
 
-#### `GET` **/v1/trade/scheduler/start** `Start the long running transactions scheduler`
-
-The scheduler processes all long running transactions once a minute (see `/v1/trade/long/process` above) and starts automatically when the service boots.
-
-| http code | content-type | response                                                  |
-| --------- | ------------ | ---------------------------------------------------------- |
-| `200`     | `text/plain` | `Longrunningtransaction scheduler started.`                |
-
-##### Example cURL
-
-```bash
-curl -X 'GET' \
-'http://localhost/broker-service/v1/trade/scheduler/start' \
--H 'accept: text/plain'
-```
-
----
-
-#### `GET` **/v1/trade/scheduler/stop** `Stop the long running transactions scheduler`
-
-| http code | content-type | response                                                  |
-| --------- | ------------ | ---------------------------------------------------------- |
-| `200`     | `text/plain` | `Longrunningtransaction scheduler stopped.`                |
-
-##### Example cURL
-
-```bash
-curl -X 'GET' \
-'http://localhost/broker-service/v1/trade/scheduler/stop' \
--H 'accept: text/plain'
-```
-
----
-
-#### `GET` **/v1/trade/scheduler/status** `Get the status of the long running transactions scheduler`
-
-| http code | content-type | response                                                          |
-| --------- | ------------ | ------------------------------------------------------------------ |
-| `200`     | `text/plain` | `Longrunningtransaction scheduler is currently running.`           |
-
-##### Example cURL
-
-```bash
-curl -X 'GET' \
-'http://localhost/broker-service/v1/trade/scheduler/status' \
--H 'accept: text/plain'
-```
-
----
-
 #### `GET` **/v1/trade/{accountId}** `Get all trades for account`
 
 ##### Parameters
