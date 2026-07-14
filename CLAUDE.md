@@ -91,15 +91,15 @@ For Node, use `overrides` in `package.json` to pin transitive deps; run `npm ins
 Feature flags control four problem patterns (`DbNotResponding`, `ErgoAggregatorSlowdown`, `FactoryCrisis`, `HighCpuUsage`). Toggle via:
 ```bash
 curl -X PUT "http://localhost/feature-flag-service/v1/flags/{flagId}/" \
-  -H "accept: application/json" -d '{"enabled": true}'
+  -H "accept: application/json" \
+  -H "Content-Type: application/json" \
+  -d '{"enabled": true}'
 ```
 Swagger: `http://localhost/feature-flag-service/swagger-ui/index.html`
 
 ## Dynatrace / Observability
 
 Services are deployed on Kubernetes (namespace `easytrade`) and monitored by Dynatrace. See `AGENTS.md` for DQL query patterns, metric keys, and problem investigation workflow. Monaco configurations live in `./monaco/`.
-
-Key DQL rule: always use `timeseries` for metrics — never `fetch <metric-key>`.
 
 ## Helm / Kubernetes
 
@@ -112,7 +112,7 @@ helm uninstall easytrade -n easytrade
 ## Conventions
 
 - NEVER commit secrets, tokens, or credentials — use environment variables
-- NEVER use `fetch <metric-key>` in DQL queries — always use `timeseries`
+- NEVER use `fetch <metric-key>` for metric queries — use `timeseries` instead (`fetch` is valid for `dt.davis.problems`, `dt.entity.*` and other non-metric record types)
 - Do NOT apply a dep bump to one `build.gradle` without applying it to all affected Java services
 - Do NOT modify `compose.yaml` (pre-built registry images) when you mean `compose.dev.yaml` (local dev)
 - Apply vulnerability fixes across all services in a single pass — partial updates leave the repo inconsistent
