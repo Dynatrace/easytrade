@@ -3,7 +3,7 @@ syntax = "proto3";
 package easytrade.dbadapter.instrument;
 
 option csharp_namespace = "EasyTrade.DbAdapter.Instrument.Grpc";
-option go_package = "github.com/dynatrace/easytrade/dbadapter/instrument";
+option go_package = "github.com/dynatrace/easytrade/dbadapter/proto";
 option java_package = "com.dynatrace.easytrade.dbadapter.instrument.grpc";
 option java_multiple_files = true;
 

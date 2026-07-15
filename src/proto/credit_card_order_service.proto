@@ -3,7 +3,7 @@ syntax = "proto3";
 package easytrade.dbadapter.creditcardorder;
 
 option csharp_namespace = "EasyTrade.DbAdapter.CreditCardOrder.Grpc";
-option go_package = "github.com/dynatrace/easytrade/dbadapter/creditcardorder";
+option go_package = "github.com/dynatrace/easytrade/dbadapter/proto";
 option java_package = "com.dynatrace.easytrade.dbadapter.creditcardorder.grpc";
 option java_multiple_files = true;
 

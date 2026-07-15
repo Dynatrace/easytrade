@@ -3,7 +3,7 @@ syntax = "proto3";
 package easytrade.dbadapter.account;
 
 option csharp_namespace = "EasyTrade.DbAdapter.Account.Grpc";
-option go_package = "github.com/dynatrace/easytrade/dbadapter/account";
+option go_package = "github.com/dynatrace/easytrade/dbadapter/proto";
 option java_package = "com.dynatrace.easytrade.dbadapter.account.grpc";
 option java_multiple_files = true;
 
@@ -41,10 +41,6 @@ message GetAccountByIdRequest {
   int32 id = 1;
 }
 
-message GetAccountByUsernameRequest {
-  string username = 1;
-}
-
 message GetAccountResponse {
   bool found = 1;
   AccountMessage account = 2;
@@ -54,21 +50,13 @@ message AccountsResponse {
   repeated AccountMessage accounts = 1;
 }
 
-message UpdateAccountRequest {
-  AccountMessage account = 1;
-}
-
 service AccountService {
   rpc CreateAccount(CreateAccountRequest) returns (AccountMessage) {}
 
   // found = false when does not exist
   rpc GetAccountById(GetAccountByIdRequest) returns (GetAccountResponse) {}
 
-  rpc GetAccountByUsername(GetAccountByUsernameRequest) returns (GetAccountResponse) {}
-
   rpc GetAccounts(google.protobuf.Empty) returns (AccountsResponse) {}
-
-  rpc UpdateAccount(UpdateAccountRequest) returns (google.protobuf.Empty) {}
 
   rpc DeleteAccountsOlderThan(easytrade.dbadapter.common.DeleteBeforeRequest) returns (easytrade.dbadapter.common.DeleteResponse) {}
 }
