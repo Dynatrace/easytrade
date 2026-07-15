@@ -14,7 +14,7 @@ public class AccountServiceConnector(
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly ILogger _logger = logger;
 
-    private string AccountServiceUrl => $"http://{_configuration[Constants.AccountService]}/api/";
+    private string AccountServiceUrl => $"http://{_configuration[Constants.UserService]}/api/";
 
     public async Task<Account> GetAccountById(int id)
     {

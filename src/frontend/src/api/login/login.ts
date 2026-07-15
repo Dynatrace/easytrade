@@ -1,6 +1,5 @@
 import { LoginResponse } from "./types"
 import { backends } from "../backend"
-import { XMLBuilder, XMLParser } from "fast-xml-parser"
 
 export async function login(
     login: string,
@@ -10,13 +9,7 @@ export async function login(
         `[login] API call with [${JSON.stringify({ login, password })}]`
     )
     try {
-        const data = await backends.users.loginXml(
-            new XMLBuilder(),
-            new XMLParser(),
-            login,
-            password
-        )
-        return data.IdResponse
+        return await backends.users.login(login, password)
     } catch (error) {
         console.error("error: ", error)
         return { error: "Login or password invalid" }

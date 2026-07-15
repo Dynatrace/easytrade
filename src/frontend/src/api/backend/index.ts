@@ -14,8 +14,7 @@ export const backends = {
     ),
     config: new ConfigBackend(EnvProxy.getFeatureFlagServiceUrl()),
     users: new UserBackend(
-        EnvProxy.getAccountServiceUrl(),
-        EnvProxy.getLoginServiceUrl(),
+        EnvProxy.getUserServiceUrl(),
         EnvProxy.getBrokerServiceUrl()
     ),
     instruments: new InstrumentBackend(EnvProxy.getBrokerServiceUrl()),
