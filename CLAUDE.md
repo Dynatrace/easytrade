@@ -25,15 +25,6 @@ All services share one MSSQL database (`db`, port 1433). Connection string forma
 | Python / Poetry | `db/user-generator` (local utility script, not a service) |
 | Config only | `calculationservice` (C++, Dockerfile-only), `frontendreverseproxy` (nginx), `rabbitmq`, `db` (MSSQL) |
 
-## Service data flow
-
-```
-loadgen / aggregator-service
-  → (REST) → loginservice, accountservice, offerservice, broker-service
-  → broker-service → pricing-service → RabbitMQ (Trade_Data_Raw) → calculationservice
-  → All services → MSSQL (db, port 1433)
-```
-
 Key roles:
 - `aggregator-service`: generates synthetic traffic by calling other services over REST (50% JSON, 50% XML); no direct DB access
 - `pricing-service`: REST API (Gin + GORM) + RabbitMQ publisher; Swagger at `/pricing-service/swagger-ui/index.html`
