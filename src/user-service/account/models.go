@@ -24,6 +24,16 @@ func (a Account) IsPreset() bool {
 	return a.Origin == "PRESET"
 }
 
+func filterPresets(accounts []Account) []ShortAccount {
+	var presets []ShortAccount
+	for _, account := range accounts {
+		if account.IsPreset() {
+			presets = append(presets, account.ToShortAccount())
+		}
+	}
+	return presets
+}
+
 // ToShortAccount projects an Account down to its public-facing summary fields.
 func (a Account) ToShortAccount() ShortAccount {
 	return ShortAccount{

@@ -8,19 +8,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// TestGetAccount_NotImplemented_ReturnsStub is a placeholder covering the current stub behavior.
-// Replace with real request/response assertions once GetAccount is implemented.
-func TestGetAccount_NotImplemented_ReturnsStub(t *testing.T) {
+// TestGetAccount_InvalidId_ReturnsBadRequest checks that a non-numeric id is rejected.
+func TestGetAccount_InvalidId_ReturnsBadRequest(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	router := gin.New()
-	router.GET("/api/account/:id", GetAccount)
+	router.GET("/api/accounts/:id", GetAccount)
 
-	req := httptest.NewRequest(http.MethodGet, "/api/account/1", nil)
+	req := httptest.NewRequest(http.MethodGet, "/api/accounts/not-a-number", nil)
 	recorder := httptest.NewRecorder()
 
 	router.ServeHTTP(recorder, req)
 
-	if recorder.Code != http.StatusNotImplemented {
-		t.Fatalf("expected status %d, got %d", http.StatusNotImplemented, recorder.Code)
+	if recorder.Code != http.StatusBadRequest {
+		t.Fatalf("expected status %d, got %d", http.StatusBadRequest, recorder.Code)
 	}
 }
