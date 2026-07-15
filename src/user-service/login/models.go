@@ -34,18 +34,6 @@ func (Balance) TableName() string {
 	return "Balance"
 }
 
-// AccountRequest is the payload accepted by the ported /api/Accounts/CreateNewAccount endpoint.
-type AccountRequest struct {
-	PackageId      int    `json:"packageId"`
-	FirstName      string `json:"firstName"`
-	LastName       string `json:"lastName"`
-	Username       string `json:"username"`
-	Email          string `json:"email"`
-	HashedPassword string `json:"hashedPassword"`
-	Origin         string `json:"origin"`
-	Address        string `json:"address"`
-}
-
 // LoginRequest is the payload accepted by POST /api/Login.
 type LoginRequest struct {
 	Username string `json:"username" binding:"required"`
@@ -62,6 +50,22 @@ type SignupRequest struct {
 	Password  string `json:"password" binding:"required"`
 	Origin    string `json:"origin" binding:"required"`
 	Address   string `json:"address" binding:"required"`
+}
+
+func (sr *SignupRequest) ToAccount() *Account {
+	return &Account{
+		PackageId:             sr.PackageId,
+		FirstName:             sr.FirstName,
+		LastName:              sr.LastName,
+		Username:              sr.Username,
+		Email:                 sr.Email,
+		HashedPassword:        HashPassword(sr.Password),
+		Origin:                sr.Origin,
+		CreationDate:          time.Now(),
+		PackageActivationDate: time.Now(),
+		AccountActive:         true,
+		Address:               sr.Address,
+	}
 }
 
 // IdResponse wraps a created/looked-up account id.
