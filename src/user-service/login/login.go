@@ -1,11 +1,29 @@
 package login
 
 import (
+	db "dynatrace.com/easytrade/user-service/services"
 	"errors"
 	"gorm.io/gorm"
-	db "dynatrace.com/easytrade/user-service/services"
-	
 )
+
+func LoginUser(username, password string) (int, error) {
+	var account Account
+	result := db.DB.Where("Username = ?", username).First(&account)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return 0, errors.New("user not found")
+		}
+		return 0, result.Error
+	}
+
+	hashString := HashPassword(password)
+
+	if account.HashedPassword != hashString {
+		return 0, errors.New("invalid password")
+	}
+
+	return account.Id, nil
+}
 
 func SignupUser(user SignupRequest) (int, error) {
 	var existing Account
