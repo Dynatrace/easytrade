@@ -13,7 +13,7 @@ var (
 	log           = utils.GetSugar()
 )
 
-// GetAccount handles GET /api/account/:id (v1) and GET /api/accounts/:id (v2).
+// GetAccount handles GET /api/accounts/:id.
 func GetAccount(ctx *gin.Context) {
 	accountIdStr := ctx.Param("id")
 	log.Infow("GetAccount called", "accountId", accountIdStr)

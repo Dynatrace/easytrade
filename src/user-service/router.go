@@ -28,7 +28,7 @@ func Logger() gin.HandlerFunc {
 	}
 }
 
-// CreateRouter builds the gin engine and registers the routes ported from loginservice
+// CreateRouter builds the gin engine and registers the routes
 func CreateRouter() *gin.Engine {
 	router := gin.New()
 

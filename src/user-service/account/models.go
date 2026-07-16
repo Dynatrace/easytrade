@@ -2,8 +2,7 @@ package account
 
 import "time"
 
-// Account is the wire format returned by the manager service's Accounts API, ported from
-// accountservice's Account.java DTO (accountservice holds no DB of its own).
+// Account is the wire format returned by the manager service's Accounts API.
 type Account struct {
 	Id                    int       `json:"id"`
 	PackageId             int       `json:"packageId"`
@@ -45,7 +44,6 @@ func (a Account) ToShortAccount() ShortAccount {
 }
 
 // ShortAccount is the summary shape used by the /api/accounts/presets endpoint.
-// Ported from accountservice's ShortAccount.java.
 type ShortAccount struct {
 	Id        int    `json:"id"`
 	Username  string `json:"username"`
@@ -53,7 +51,7 @@ type ShortAccount struct {
 	LastName  string `json:"lastName"`
 }
 
-// AccountsContainer wraps a list of ShortAccount, ported from accountservice's AccountsContainer.java.
+// AccountsContainer wraps a list of ShortAccount.
 type AccountsContainer struct {
 	Results []ShortAccount `json:"results"`
 }

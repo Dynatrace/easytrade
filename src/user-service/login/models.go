@@ -2,8 +2,7 @@ package login
 
 import "time"
 
-// Account is the GORM model backing the shared "Accounts" table, ported from
-// loginservice's AccountsDbContext (easyTradeLoginService/Models/Account.cs).
+// Account is the GORM model backing the shared "Accounts" table.
 type Account struct {
 	Id                    int `gorm:"primaryKey"`
 	PackageId             int
@@ -23,8 +22,8 @@ func (Account) TableName() string {
 	return "Accounts"
 }
 
-// Balance is the GORM model backing the shared "Balance" table, ported from
-// loginservice's Balance.cs. AccountId is both the primary key and the (implicit) FK to Account.
+// Balance is the GORM model backing the shared "Balance" table.
+// AccountId is both the primary key and the (implicit) FK to Account.
 type Balance struct {
 	AccountId int     `gorm:"primaryKey"`
 	Value     float64 `gorm:"type:decimal(18,8)"`
@@ -34,13 +33,13 @@ func (Balance) TableName() string {
 	return "Balance"
 }
 
-// LoginRequest is the payload accepted by POST /api/Login.
+// LoginRequest is the payload accepted by POST /api/auth/login.
 type LoginRequest struct {
 	Username string `json:"username" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
-// SignupRequest is the payload accepted by POST /api/Signup.
+// SignupRequest is the payload accepted by POST /api/auth/signup.
 type SignupRequest struct {
 	PackageId int    `json:"packageId" binding:"required"`
 	FirstName string `json:"firstName" binding:"required"`

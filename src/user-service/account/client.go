@@ -10,8 +10,8 @@ import (
 	"bytes"
 )
 
-// ManagerClient is an HTTP client for the manager service's Accounts API, ported from
-// accountservice's use of java.net.http.HttpClient against MANAGER_HOSTANDPORT.
+// ManagerClient is an HTTP client for the manager service's Accounts API, reached via
+// MANAGER_HOSTANDPORT.
 type ManagerClient struct {
 	hostAndPort string
 	httpClient  *http.Client

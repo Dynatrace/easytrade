@@ -5,7 +5,6 @@ import (
 )
 
 // GetVersion returns build metadata, content-negotiated as text/plain or JSON.
-// Merges the /version behavior previously served separately by loginservice and accountservice.
 func GetVersion(ctx *gin.Context) {
 	v := version{BuildVersion, BuildDate, BuildCommit}
 	accept := ctx.NegotiateFormat("text/plain", "application/json")
