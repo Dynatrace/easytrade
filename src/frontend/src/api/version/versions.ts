@@ -11,10 +11,6 @@ import {
 } from "../../../package.json"
 
 const services: ServiceVersionUrl[] = [
-    {
-        serviceName: "Account Service",
-        versionUrl: "/accountservice/api/version",
-    },
     { serviceName: "Broker Service", versionUrl: "/broker-service/version" },
     {
         serviceName: "Credit Card Order Service",
@@ -25,7 +21,7 @@ const services: ServiceVersionUrl[] = [
         serviceName: "Feature Flag Service",
         versionUrl: "/feature-flag-service/version",
     },
-    { serviceName: "Login Service", versionUrl: "/loginservice/api/version" },
+    { serviceName: "User Service", versionUrl: "/user-service/api/version" },
     { serviceName: "Manager", versionUrl: "/manager/api/version" },
     { serviceName: "Offer Service", versionUrl: "/offerservice/api/version" },
     { serviceName: "Pricing Service", versionUrl: "/pricing-service/version" },

@@ -12,9 +12,9 @@ export const VERSIONS: ServiceVersion[] = [
     },
     {
         success: true,
-        serviceName: "Login Service",
+        serviceName: "User Service",
         data: {
-            buildVersion: "Mock Login Service version",
+            buildVersion: "Mock User Service version",
             buildDate: "Date",
             buildCommit: "Commit",
         },

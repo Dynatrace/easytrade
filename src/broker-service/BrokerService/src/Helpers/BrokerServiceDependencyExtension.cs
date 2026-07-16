@@ -39,7 +39,7 @@ public static class BrokerServiceDependencyExtension
     }
 
     private static IServiceCollection AddAccountDependency(this IServiceCollection services) =>
-        services.AddTransient<IAccountServiceConnector, AccountServiceConnector>();
+        services.AddTransient<IUserServiceConnector, UserServiceConnector>();
 
     private static IServiceCollection AddBalanceDependency(this IServiceCollection services) =>
         services

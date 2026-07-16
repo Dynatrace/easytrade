@@ -38,7 +38,7 @@ export const urls = {
     getPackages: () => `${config.managerUrl}/api/Packages/GetPackages`,
     getProducts: () => `${config.managerUrl}/api/Products/GetProducts`,
     createAccount: () =>
-        `${config.userServiceUrl}/api/accounts`,
+        `${config.userServiceUrl}/api/auth/signup`,
     getFeatureFlag: (flagId: string) =>
         `${config.featureFlagServiceUrl}/v1/flags/${flagId}`,
 } as const
