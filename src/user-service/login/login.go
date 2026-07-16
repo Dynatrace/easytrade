@@ -35,15 +35,20 @@ func SignupUser(user SignupRequest) (int, error) {
 		return 0, result.Error
 	}
 
-	account := user.ToAccount()
-	if err := db.DB.Create(&account).Error; err != nil {
+	var id int
+	err := db.DB.Transaction(func(tx *gorm.DB) error {
+		account := user.ToAccount()
+		if err := tx.Create(&account).Error; err != nil {
+			return err
+		}
+		id = account.Id
+
+		balance := Balance{AccountId: account.Id, Value: 0}
+		return tx.Create(&balance).Error
+	})
+	if err != nil {
 		return 0, err
 	}
 
-	balance := Balance{AccountId: account.Id, Value: 0}
-	if err := db.DB.Create(&balance).Error; err != nil {
-		return 0, err
-	}
-
-	return account.Id, nil
+	return id, nil
 }

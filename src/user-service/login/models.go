@@ -3,19 +3,21 @@ package login
 import "time"
 
 // Account is the GORM model backing the shared "Accounts" table.
+// Explicit column tags are required because GORM's default snake_case conversion
+// doesn't match the database's PascalCase column names.
 type Account struct {
-	Id                    int `gorm:"primaryKey"`
-	PackageId             int
-	FirstName             string
-	LastName              string
-	Username              string
-	Email                 string
-	HashedPassword        string
-	Origin                string
-	CreationDate          time.Time
-	PackageActivationDate time.Time
-	AccountActive         bool
-	Address               string
+	Id                    int       `gorm:"primaryKey;column:Id"`
+	PackageId             int       `gorm:"column:PackageId"`
+	FirstName             string    `gorm:"column:FirstName"`
+	LastName              string    `gorm:"column:LastName"`
+	Username              string    `gorm:"column:Username"`
+	Email                 string    `gorm:"column:Email"`
+	HashedPassword        string    `gorm:"column:HashedPassword"`
+	Origin                string    `gorm:"column:Origin"`
+	CreationDate          time.Time `gorm:"column:CreationDate"`
+	PackageActivationDate time.Time `gorm:"column:PackageActivationDate"`
+	AccountActive         bool      `gorm:"column:AccountActive"`
+	Address               string    `gorm:"column:Address"`
 }
 
 func (Account) TableName() string {
@@ -25,8 +27,8 @@ func (Account) TableName() string {
 // Balance is the GORM model backing the shared "Balance" table.
 // AccountId is both the primary key and the (implicit) FK to Account.
 type Balance struct {
-	AccountId int     `gorm:"primaryKey"`
-	Value     float64 `gorm:"type:decimal(18,8)"`
+	AccountId int     `gorm:"primaryKey;autoIncrement:false;column:AccountId"`
+	Value     float64 `gorm:"type:decimal(18,8);column:Value"`
 }
 
 func (Balance) TableName() string {
