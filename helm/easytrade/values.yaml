@@ -10,26 +10,6 @@ global:
   # Environment variables to be added to all pods
   env: {}
 
-accountservice:
-  enabled: true
-  # Example of overriding the image repository for a specific service
-  # image:
-  #   repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice
-  #   tag: latest
-  env:
-    MANAGER_HOSTANDPORT: "{{ .Release.Name }}-manager:8080"
-    PROXY_PREFIX: "accountservice"
-  resources:
-    requests:
-      cpu: 30m
-      memory: 600Mi
-    limits:
-      cpu: 200m
-      memory: 600Mi
-  service:
-    enabled: true
-    port: 8080
-
 aggregator-service:
   enabled: true
   env:
@@ -47,7 +27,7 @@ aggregator-service:
 broker-service:
   enabled: true
   env:
-    ACCOUNTSERVICE_HOSTANDPORT: "{{ .Release.Name }}-accountservice:8080"
+    USER_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-user-service:8080"
     PRICINGSERVICE_HOSTANDPORT: "{{ .Release.Name }}-pricing-service:8080"
     ENGINE_HOSTANDPORT: "{{ .Release.Name }}-engine:8080"
     FEATURE_FLAG_SERVICE_PROTOCOL: http
@@ -198,13 +178,11 @@ frontendreverseproxy:
   enabled: true
   env:
     FRONTEND_REVERSE_PROXY_PORT: "8080"
-    ACCOUNT_SERVICE_URL: "http://{{ .Release.Name }}-accountservice:8080"
     BROKER_SERVICE_URL: "http://{{ .Release.Name }}-broker-service:8080"
     CREDIT_CARD_ORDER_SERVICE_URL: "http://{{ .Release.Name }}-credit-card-order-service:8080"
     ENGINE_URL: "http://{{ .Release.Name }}-engine:8080"
     FEATURE_FLAG_SERVICE_URL: "http://{{ .Release.Name }}-feature-flag-service:8080"
     FRONTEND_URL: "http://{{ .Release.Name }}-frontend:3000"
-    LOGIN_SERVICE_URL: "http://{{ .Release.Name }}-loginservice:8080"
     MANAGER_URL: "http://{{ .Release.Name }}-manager:8080"
     OFFER_SERVICE_URL: "http://{{ .Release.Name }}-offerservice:8080"
     PRICING_SERVICE_URL: "http://{{ .Release.Name }}-pricing-service:8080"
@@ -238,25 +216,6 @@ loadgen:
       cpu: "3"
       memory: 3Gi
 
-loginservice:
-  enabled: true
-  env:
-    PROXY_PREFIX: "loginservice"
-  envFromSecret:
-    MSSQL_CONNECTIONSTRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "DOTNET_CONNECTION_STRING"
-  resources:
-    requests:
-      cpu: 20m
-      memory: 450Mi
-    limits:
-      cpu: 1
-      memory: 450Mi
-  service:
-    enabled: true
-    port: 8080
-
 manager:
   enabled: true
   env:
@@ -279,8 +238,8 @@ manager:
 offerservice:
   enabled: true
   env:
-    LOGIN_SERVICE_PORT: "8080"
-    LOGIN_SERVICE_BASE_URL: "{{ .Release.Name }}-loginservice"
+    USER_SERVICE_PORT: "8080"
+    USER_SERVICE_BASE_URL: "{{ .Release.Name }}-user-service"
     MANAGER_BASE_URL: "{{ .Release.Name }}-manager"
     MANAGER_PORT: "8080"
     FEATURE_FLAG_SERVICE_PROTOCOL: http

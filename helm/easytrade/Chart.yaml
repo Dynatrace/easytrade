@@ -7,11 +7,6 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: app
-    alias: accountservice
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: accountservice.enabled
-  - name: app
     alias: aggregator-service
     repository: "file://./charts/app"
     version: "0.1.0"
@@ -66,11 +61,6 @@ dependencies:
     repository: "file://./charts/app"
     version: "0.1.0"
     condition: loadgen.enabled
-  - name: app
-    alias: loginservice
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: loginservice.enabled
   - name: app
     alias: manager
     repository: "file://./charts/app"

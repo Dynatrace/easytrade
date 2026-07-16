@@ -99,25 +99,13 @@ services:
       # dockerfile: Dockerfile
     # depends_on:
     #   - broker-service
-    #   - loginservice
+    #   - user-service
     #   - pricing-service
-    #   - accountservice
     #   - credit-card-order-service
     ports:
       - 8092:3000
     volumes:
       - ./src/frontend/src:/app/src:ro
-
-  loginservice:
-    <<: *default-service
-    build: src/loginservice
-    environment:
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
-      PROXY_PREFIX: loginservice
-    depends_on:
-      - db
-    ports:
-      - 8086:8080
 
   frontendreverseproxy:
     <<: *default-service
@@ -125,7 +113,6 @@ services:
     depends_on:
       - broker-service
       - frontend
-      - loginservice
       - pricing-service
       - feature-flag-service
       - offerservice

@@ -10,7 +10,7 @@ Detailed per-language conventions live in `.claude/rules/`.
 
 ## What is EasyTrade
 
-Fake stock-broking demo application for Dynatrace showcases. 19 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`frontendreverseproxy`) on port 80. A RabbitMQ queue (`Trade_Data_Raw`) carries trade data from `pricing-service` to `calculationservice`.
+Fake stock-broking demo application for Dynatrace showcases. 18 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`frontendreverseproxy`) on port 80. A RabbitMQ queue (`Trade_Data_Raw`) carries trade data from `pricing-service` to `calculationservice`.
 
 All services share one MSSQL database (`db`, port 1433). Connection string format differs by tech stack — see `compose.yaml` for the three variants (Java/JDBC, .NET, Go/sqlserver).
 
@@ -18,10 +18,10 @@ All services share one MSSQL database (`db`, port 1433). Connection string forma
 
 | Stack | Services |
 |---|---|
-| Java 21 / Spring Boot / Gradle | `accountservice`, `contentcreator`, `credit-card-order-service`, `engine`, `feature-flag-service`, `third-party-service` |
-| Go + Go Modules | `aggregator-service`, `pricing-service`, `problem-operator` |
+| Java 21 / Spring Boot / Gradle | `contentcreator`, `credit-card-order-service`, `engine`, `feature-flag-service`, `third-party-service` |
+| Go + Go Modules | `aggregator-service`, `pricing-service`, `problem-operator`, `user-service` |
 | TypeScript / Node.js / npm | `frontend` (React + Vite), `loadgen`, `offerservice` (Express) |
-| C# / .NET 8 | `broker-service`, `loginservice`, `manager` |
+| C# / .NET 8 | `broker-service`, `manager` |
 | Config only | `calculationservice` (C++, Dockerfile-only), `frontendreverseproxy` (nginx), `rabbitmq`, `db` (MSSQL) |
 
 ## Build & test per stack

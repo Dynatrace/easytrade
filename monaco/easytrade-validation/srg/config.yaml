@@ -79,7 +79,6 @@ configs:
         managerPackageReferenceCount: 1100
         managerProductReferenceCount: 1100
         loginReferenceCount: 120
-        logoutReferenceCount: 120
         priceReferenceCount: 150
         managerAccountReferenceCount: 120
         latestPriceReferenceCount: 150
@@ -109,9 +108,6 @@ configs:
         queryLogin:
           type: file
           path: bizevents/login.dql
-        queryLogout:
-          type: file
-          path: bizevents/logout.dql
         queryLongTransaction:
           type: file
           path: bizevents/long-transaction.dql
