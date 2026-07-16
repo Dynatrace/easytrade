@@ -3,14 +3,15 @@ package account
 import (
 	"net/http"
 	"strconv"
+	"sync"
 
 	"dynatrace.com/easytrade/user-service/utils"
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	managerClient = NewManagerClient()
-	log           = utils.GetSugar()
+	getManagerClient = sync.OnceValue(NewManagerClient)
+	log              = utils.GetSugar()
 )
 
 // GetAccount handles GET /api/accounts/:id.
@@ -24,7 +25,7 @@ func GetAccount(ctx *gin.Context) {
 		return
 	}
 
-	managerAccount, err := managerClient.GetAccountById(id)
+	managerAccount, err := getManagerClient().GetAccountById(id)
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, "failed to get account from manager service: %v", err)
 		return
@@ -44,7 +45,7 @@ func GetPresets(ctx *gin.Context) {
 		limit, _ = strconv.Atoi(limitStr)
 	}
 
-	accounts, err := managerClient.GetAccounts()
+	accounts, err := getManagerClient().GetAccounts()
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, "failed to get accounts from manager service: %v", err)
 		return

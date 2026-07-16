@@ -26,17 +26,17 @@ func LoginUser(username, password string) (int, error) {
 }
 
 func SignupUser(user SignupRequest) (int, error) {
-	var existing Account
-	result := db.DB.Where("Username = ? OR Email = ?", user.Username, user.Email).First(&existing)
-	if result.Error == nil {
-		return 0, errors.New("user already exists")
-	}
-	if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return 0, result.Error
-	}
-
 	var id int
 	err := db.DB.Transaction(func(tx *gorm.DB) error {
+		var existing Account
+		result := tx.Where("Username = ? OR Email = ?", user.Username, user.Email).First(&existing)
+		if result.Error == nil {
+			return errors.New("user already exists")
+		}
+		if !errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return result.Error
+		}
+
 		account := user.ToAccount()
 		if err := tx.Create(&account).Error; err != nil {
 			return err
