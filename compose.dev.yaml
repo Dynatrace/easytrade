@@ -72,7 +72,6 @@ services:
     environment:
       USER_SERVICE_HOSTANDPORT: user-service:8080
       PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
-      ENGINE_HOSTANDPORT: engine:8080
       <<: *feature-flag-service-env
       PROXY_PREFIX: broker-service
       MSSQL_CONNECTIONSTRING: *dotnet-connection-string
@@ -116,7 +115,6 @@ services:
       - pricing-service
       - feature-flag-service
       - offerservice
-      - engine
       - credit-card-order-service
       - third-party-service
       - user-service
@@ -159,17 +157,6 @@ services:
       GO_CONNECTION_STRING: *go-connection-string
       MANAGER_HOSTANDPORT: manager:8080
       PROXY_PREFIX: user-service
-
-  engine:
-    <<: *default-service
-    build: src/engine
-    depends_on:
-      - broker-service
-    ports:
-      - 8090:8080
-    environment:
-      BROKER_HOSTANDPORT: broker-service:8080
-      PROXY_PREFIX: engine
 
   credit-card-order-service:
     <<: *default-service
