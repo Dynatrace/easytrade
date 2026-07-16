@@ -10,7 +10,7 @@ option java_multiple_files = true;
 import "google/protobuf/empty.proto";
 
 message ProductMessage {
-  int32 id = 1;
+  string id = 1;
   string name = 2;
   double ppt = 3;  // price per token
   string currency = 4;

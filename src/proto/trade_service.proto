@@ -12,9 +12,9 @@ import "google/protobuf/timestamp.proto";
 import "common.proto";
 
 message TradeMessage {
-  int32 id = 1;
-  int32 account_id = 2;
-  int32 instrument_id = 3;
+  string id = 1;
+  string account_id = 2;
+  string instrument_id = 3;
   string direction = 4;
   double quantity = 5;
   double entry_price = 6;
@@ -26,31 +26,33 @@ message TradeMessage {
 }
 
 message CreateTradeRequest {
-  int32 account_id = 1;
-  int32 instrument_id = 2;
+  string account_id = 1;
+  string instrument_id = 2;
   string direction = 3;
   double quantity = 4;
   double entry_price = 5;
-  bool transaction_happened = 6;
-  string status = 7;
+  google.protobuf.Timestamp timestamp_open = 6;
+  google.protobuf.Timestamp timestamp_close = 7;
+  bool trade_closed = 8;
+  bool transaction_happened = 9;
+  string status = 10;
 }
 
 message UpdateTradeRequest {
-  int32 id = 1;
+  string id = 1;
   google.protobuf.Timestamp timestamp_close = 2;
   bool trade_closed = 3;
   string status = 4;
 }
 
 message GetAccountTradesRequest {
-  int32 account_id = 1;
+  string account_id = 1;
   bool only_open = 2;
   bool only_long = 3;
 }
 
 message TradesResponse {
   repeated TradeMessage trades = 1;
-  int32 total_count = 2;
 }
 
 service TradeService {

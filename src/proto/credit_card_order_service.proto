@@ -12,7 +12,7 @@ import "google/protobuf/timestamp.proto";
 
 message CreditCardOrderMessage {
   string id = 1;
-  int32 account_id = 2;
+  string account_id = 2;
   string email = 3;
   string name = 4;
   string shipping_address = 5;
@@ -21,15 +21,16 @@ message CreditCardOrderMessage {
 }
 
 message CreateCreditCardOrderRequest {
-  int32 account_id = 1;
-  string email = 2;
-  string name = 3;
-  string shipping_address = 4;
-  string card_level = 5;
+  string id = 1;
+  string account_id = 2;
+  string email = 3;
+  string name = 4;
+  string shipping_address = 5;
+  string card_level = 6;
 }
 
 message GetOrderByAccountIdRequest {
-  int32 account_id = 1;
+  string account_id = 1;
 }
 
 message GetOrderByAccountIdResponse {
@@ -38,7 +39,7 @@ message GetOrderByAccountIdResponse {
 }
 
 message CreditCardOrderStatusMessage {
-  int32 id = 1;
+  string id = 1;
   string credit_card_order_id = 2;
   google.protobuf.Timestamp timestamp = 3;
   string status = 4;
@@ -55,6 +56,11 @@ message ShippingAddressMessage {
   string email = 3;
 }
 
+message GetShippingAddressResponse {
+  bool found = 1;
+  ShippingAddressMessage shipping_address = 2;
+}
+
 message GetCreditCardManufactureDataRequest {
   string order_id = 1;
 }
@@ -63,6 +69,11 @@ message CreditCardManufactureDataMessage {
   string order_id = 1;
   string name = 2;
   string card_level = 3;
+}
+
+message GetCreditCardManufactureDataResponse {
+  bool found = 1;
+  CreditCardManufactureDataMessage data = 2;
 }
 
 message GetOrderStatusListRequest {
@@ -74,15 +85,13 @@ message OrderStatusListResponse {
 }
 
 message GetLastOrderStatusByAccountIdRequest {
-  int32 account_id = 1;
+  string account_id = 1;
 }
 
 message GetLastOrderStatusByAccountIdResponse {
   bool found = 1;
   CreditCardOrderStatusMessage status = 2;
 }
-
-message GetOrdersWithStatusOrderCreatedRequest {}
 
 message OrdersResponse {
   repeated string order_ids = 1;
@@ -92,6 +101,7 @@ message InsertNewStatusRequest {
   string order_id = 1;
   string status = 2;
   string details = 3;
+  google.protobuf.Timestamp timestamp = 4;
 }
 
 message CreditCardMessage {
@@ -116,7 +126,7 @@ message UpdateOrderShippingIdRequest {
 }
 
 message DeleteOrdersRequest {
-  int32 account_id = 1;
+  string account_id = 1;
 }
 
 service CreditCardOrderService {
@@ -125,11 +135,11 @@ service CreditCardOrderService {
   // found = false when does not exist
   rpc GetOrderByAccountId(GetOrderByAccountIdRequest) returns (GetOrderByAccountIdResponse) {}
 
-  // Get shipping address by order ID -> empty if not found.
-  rpc GetShippingAddressByOrderId(GetShippingAddressRequest) returns (ShippingAddressMessage) {}
+  // found = false when does not exist
+  rpc GetShippingAddressByOrderId(GetShippingAddressRequest) returns (GetShippingAddressResponse) {}
 
-  // Get credit card manufacture data by order ID
-  rpc GetCreditCardManufactureData(GetCreditCardManufactureDataRequest) returns (CreditCardManufactureDataMessage) {}
+  // found = false when does not exist
+  rpc GetCreditCardManufactureData(GetCreditCardManufactureDataRequest) returns (GetCreditCardManufactureDataResponse) {}
 
   // Get all order statuses ordered by timestamp DESC
   rpc GetOrderStatusList(GetOrderStatusListRequest) returns (OrderStatusListResponse) {}
@@ -138,7 +148,7 @@ service CreditCardOrderService {
   rpc GetLastOrderStatusByAccountId(GetLastOrderStatusByAccountIdRequest) returns (GetLastOrderStatusByAccountIdResponse) {}
 
   // Get all orders with status ORDER_CREATED
-  rpc GetOrdersWithStatusOrderCreated(GetOrdersWithStatusOrderCreatedRequest) returns (OrdersResponse) {}
+  rpc GetOrdersWithStatusOrderCreated(google.protobuf.Empty) returns (OrdersResponse) {}
   rpc InsertNewStatus(InsertNewStatusRequest) returns (CreditCardOrderStatusMessage) {}
   rpc InsertNewCreditCard(InsertNewCreditCardRequest) returns (CreditCardMessage) {}
   rpc UpdateOrderShippingId(UpdateOrderShippingIdRequest) returns (CreditCardOrderMessage) {}

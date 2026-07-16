@@ -12,8 +12,8 @@ import "google/protobuf/timestamp.proto";
 import "common.proto";
 
 message PriceMessage {
-  int32 id = 1;
-  int32 instrument_id = 2;
+  string id = 1;
+  string instrument_id = 2;
   google.protobuf.Timestamp timestamp = 3;
   double open = 4;
   double high = 5;
@@ -26,17 +26,22 @@ message PricesResponse {
 }
 
 message GetMostRecentPriceForInstrumentRequest {
-  int32 instrument_id = 1;
+  string instrument_id = 1;
+}
+
+message GetMostRecentPriceForInstrumentResponse {
+  bool found = 1;
+  PriceMessage price = 2;
 }
 
 message GetPricesForInstrumentRequest {
-  int32 instrument_id = 1;
-  int32 limit = 2;  // 0 or omitted means unlimited
+  string instrument_id = 1;
+  optional int32 limit = 2;  // omitted means unlimited
 }
 
 message PricingRow {
   google.protobuf.Timestamp timestamp = 1;
-  int32 instrument_id = 2;
+  string instrument_id = 2;
   double open = 3;
   double high = 4;
   double low = 5;
@@ -50,9 +55,9 @@ message InsertPricesBatchRequest {
 service PricingService {
   rpc GetLatestPrices(google.protobuf.Empty) returns (PricesResponse) {}
 
-  rpc GetMostRecentPriceForInstrument(GetMostRecentPriceForInstrumentRequest) returns (PriceMessage) {}
+  rpc GetMostRecentPriceForInstrument(GetMostRecentPriceForInstrumentRequest) returns (GetMostRecentPriceForInstrumentResponse) {}
 
-  // Supports optional limit (0 = no limit).
+  // Supports optional limit (unset = no limit).
   rpc GetPricesForInstrument(GetPricesForInstrumentRequest) returns (PricesResponse) {}
 
   rpc InsertPricesBatch(InsertPricesBatchRequest) returns (google.protobuf.Empty) {}
