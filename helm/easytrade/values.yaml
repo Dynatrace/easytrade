@@ -49,7 +49,6 @@ broker-service:
   env:
     ACCOUNTSERVICE_HOSTANDPORT: "{{ .Release.Name }}-accountservice:8080"
     PRICINGSERVICE_HOSTANDPORT: "{{ .Release.Name }}-pricing-service:8080"
-    ENGINE_HOSTANDPORT: "{{ .Release.Name }}-engine:8080"
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
@@ -148,22 +147,6 @@ db:
   #   mountPath: /var/opt/mssql
   #   size: 10Gi
 
-engine:
-  enabled: true
-  env:
-    BROKER_HOSTANDPORT: "{{ .Release.Name }}-broker-service:8080"
-    PROXY_PREFIX: "engine"
-  resources:
-    requests:
-      cpu: 10m
-      memory: 450Mi
-    limits:
-      cpu: 200m
-      memory: 450Mi
-  service:
-    enabled: true
-    port: 8080
-
 feature-flag-service:
   enabled: true
   env:
@@ -201,7 +184,6 @@ frontendreverseproxy:
     ACCOUNT_SERVICE_URL: "http://{{ .Release.Name }}-accountservice:8080"
     BROKER_SERVICE_URL: "http://{{ .Release.Name }}-broker-service:8080"
     CREDIT_CARD_ORDER_SERVICE_URL: "http://{{ .Release.Name }}-credit-card-order-service:8080"
-    ENGINE_URL: "http://{{ .Release.Name }}-engine:8080"
     FEATURE_FLAG_SERVICE_URL: "http://{{ .Release.Name }}-feature-flag-service:8080"
     FRONTEND_URL: "http://{{ .Release.Name }}-frontend:3000"
     LOGIN_SERVICE_URL: "http://{{ .Release.Name }}-loginservice:8080"

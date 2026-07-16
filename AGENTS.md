@@ -2,11 +2,11 @@
 
 ## Repository structure
 
-`src/` contains 19 services grouped by technology:
+`src/` contains 18 services grouped by technology:
 
 | Technology                     | Services                                                                                                                 |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| Java 21 / Spring Boot / Gradle | `accountservice`, `contentcreator`, `credit-card-order-service`, `engine`, `feature-flag-service`, `third-party-service` |
+| Java 21 / Spring Boot / Gradle | `accountservice`, `contentcreator`, `credit-card-order-service`, `feature-flag-service`, `third-party-service`          |
 | Go / Go Modules                | `aggregator-service`, `pricing-service`, `problem-operator`                                                              |
 | TypeScript / Node.js / npm     | `frontend`, `loadgen`, `offerservice`                                                                                    |
 | C# / .NET 8 / NuGet            | `broker-service`, `loginservice`, `manager`                                                                              |

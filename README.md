@@ -25,7 +25,6 @@ EasyTrade consists of the following services/components:
 | [Content creator](src/contentcreator/README.md)                      | 80         | `---`                        |
 | [Credit card order service](src/credit-card-order-service/README.md) | 80         | `/credit-card-order-service` |
 | [Db](src/db/README.md)                                               | 80         | `---`                        |
-| [Engine](src/engine/README.md)                                       | 80         | `/engine`                    |
 | [Feature flag service](src/feature-flag-service/README.md)           | 80         | `/feature-flag-service`      |
 | [Frontend](src/frontend/README.md)                                   | 80         | `/`                          |
 | [Frontend reverse-proxy](src/frontendreverseproxy/README.md)         | 80         | `---`                        |

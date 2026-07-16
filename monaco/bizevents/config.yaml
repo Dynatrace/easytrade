@@ -189,15 +189,6 @@ configs:
       parameters: *javaCapture
     type: *bizevent_type
 
-  # === [JAVA] ENGINE ===
-  - id: easytrade_engine_trade-closed
-    config:
-      name: EasyTrade [engine | Java] - POST /api/trade/scheduler/notification
-      template: easytrade_engine_trade-closed.json
-      skip: false
-      parameters: *javaCapture
-    type: *bizevent_type
-
   # === [JAVA] FEATURE FLAG SERVICE ===
   - id: easytrade_feature-flag-service_get-flag
     config:
