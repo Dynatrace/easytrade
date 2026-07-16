@@ -7,7 +7,7 @@
         "dataSource": "request.path"
       },
       "type": "EQUALS",
-      "value": "/api/Login",
+      "value": "/api/auth/login",
       "caseSensitive": false
     },
     {
@@ -33,31 +33,24 @@
     },
     "data": [
       {
-        "name": "xml",
-        "source": {
-          "sourceType": "constant.string",
-          "source": "true"
-        }
-      },
-      {
         "name": "username",
         "source": {
           "sourceType": "request.body",
-          "path": "LoginRequest.username"
+          "path": "username"
         }
       },
       {
         "name": "password",
         "source": {
           "sourceType": "request.body",
-          "path": "LoginRequest.password"
+          "path": "password"
         }
       },
       {
         "name": "accountId",
         "source": {
           "sourceType": "response.body",
-          "path": "IdResponse.id"
+          "path": "id"
         }
       }
     ]

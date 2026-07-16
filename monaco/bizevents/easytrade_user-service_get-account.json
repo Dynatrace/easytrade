@@ -48,13 +48,6 @@
         }
       },
       {
-        "name": "preset",
-        "source": {
-          "sourceType": "response.body",
-          "path": "preset"
-        }
-      },
-      {
         "name": "packageId",
         "source": {
           "sourceType": "response.body",
