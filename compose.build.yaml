@@ -29,11 +29,6 @@ services:
     build:
       context: src/db
 
-  engine:
-    image: ${REGISTRY}/engine:${TAG}
-    build:
-      context: src/engine
-
   feature-flag-service:
     image: ${REGISTRY}/feature-flag-service:${TAG}
     build:

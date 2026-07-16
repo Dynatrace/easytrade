@@ -24,6 +24,13 @@ All services share one MSSQL database (`db`, port 1433). Connection string forma
 | C# / .NET 8 | `broker-service`, `manager` |
 | Config only | `calculationservice` (C++, Dockerfile-only), `frontendreverseproxy` (nginx), `rabbitmq`, `db` (MSSQL) |
 
+Key roles:
+- `aggregator-service`: generates synthetic traffic by calling other services over REST (50% JSON, 50% XML); no direct DB access
+- `pricing-service`: REST API (Gin + GORM) + RabbitMQ publisher; Swagger at `/pricing-service/swagger-ui/index.html`
+- `broker-service`: core trading engine (engine service was merged into it on branch `DREL-7889`); uses EF Core + feature-flag-driven middleware (`HighCpuUsageMiddleware`, `CreditCardValidationMiddleware`)
+- `problem-operator`: Kubernetes-only controller (`k8s.io/client-go`); watches feature flags and applies chaos patterns to the cluster — not present in `compose.yaml`
+- `calculationservice`: C++ binary built only in Dockerfile; consumes RabbitMQ queue
+
 ## Build & test per stack
 
 **Java (run from service directory):**
@@ -48,18 +55,21 @@ npm test        # vitest (frontend) or jest
 npm run lint    # eslint
 ```
 
-**C# / .NET (run from `src/<service>/<ServiceName>/`):**
+**C# / .NET:**
 ```bash
+# Run from the solution directory: src/<service>/<ServiceName>/
 dotnet build
 dotnet test                        # runs xunit tests in test/ project
 dotnet test --filter "FullyQualifiedName~SomeTest"
 ```
+Solution paths: `src/broker-service/BrokerService/`, `src/loginservice/`, `src/manager/easyTradeManager/`.
+Only `broker-service` has a test project; `loginservice` and `manager` have no unit tests.
 
 ## Running locally
 
 Use `compose.dev.yaml` via the helper script:
 ```bash
-./runDev.sh start       # proxy + contentcreator + engine (minimal)
+./runDev.sh start       # proxy + contentcreator (minimal)
 ./runDev.sh start-all   # all services
 ./runDev.sh build [service...]  # rebuild images
 ./runDev.sh stop
@@ -72,6 +82,8 @@ docker compose up          # uses pre-built images from registry (compose.yaml)
 ```
 
 App available at `http://localhost`. Dev credentials: `demouser/demopass`, `james_norton/pass_james_123`.
+
+Frontend dev server runs on port 3000 (`npm run dev` in `src/frontend/`). API calls go through nginx in production; in dev mode they must be routed manually or via the full compose stack.
 
 ## Dependency management & vulnerability fixes
 

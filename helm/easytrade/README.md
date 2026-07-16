@@ -69,7 +69,6 @@ The easytrade chart includes the following microservices:
 - `contentcreator` - Content creation service
 - `credit-card-order-service` - Credit card order processing
 - `db` - Microsoft SQL Server database (StatefulSet)
-- `engine` - Trading engine
 - `feature-flag-service` - Feature flag management
 - `frontend` - React frontend application
 - `frontendreverseproxy` - Nginx reverse proxy

@@ -11,7 +11,7 @@ fi
 
 case $1 in
     "start")
-        docker compose -f $COMPOSE_FILE up --detach frontendreverseproxy contentcreator engine
+        docker compose -f $COMPOSE_FILE up --detach frontendreverseproxy contentcreator
     ;;
     "stop")
         docker compose -f $COMPOSE_FILE down --remove-orphans
@@ -24,7 +24,7 @@ case $1 in
         docker compose -f $COMPOSE_FILE up --detach feature-flag-service
     ;;
     "start-load")
-        docker compose -f $COMPOSE_FILE up --detach frontendreverseproxy contentcreator engine loadgen
+        docker compose -f $COMPOSE_FILE up --detach frontendreverseproxy contentcreator loadgen
     ;;
     "start-all")
         docker compose -f $COMPOSE_FILE up --detach

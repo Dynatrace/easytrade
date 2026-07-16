@@ -16,7 +16,6 @@ const services: ServiceVersionUrl[] = [
         serviceName: "Credit Card Order Service",
         versionUrl: "/credit-card-order-service/version",
     },
-    { serviceName: "Engine", versionUrl: "/engine/api/version" },
     {
         serviceName: "Feature Flag Service",
         versionUrl: "/feature-flag-service/version",

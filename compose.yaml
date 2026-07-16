@@ -107,7 +107,6 @@ services:
       - pricing-service
       - feature-flag-service
       - offerservice
-      - engine
       - credit-card-order-service
       - third-party-service
     ports:
