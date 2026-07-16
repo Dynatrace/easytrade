@@ -16,7 +16,9 @@ spec:
           image: feature-flag-service
           ports:
             - containerPort: 8080
-          env: []
+          env:
+            - name: ENABLE_CREDIT_CARD_MELTDOWN
+              value: "false"
           resources:
             requests:
               cpu: 30m
