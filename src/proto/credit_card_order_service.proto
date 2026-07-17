@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package easytrade.dbadapter.creditcardorder;
+
+option csharp_namespace = "EasyTrade.DbAdapter.CreditCardOrder.Grpc";
+option go_package = "github.com/dynatrace/easytrade/dbadapter/proto";
+option java_package = "com.dynatrace.easytrade.dbadapter.creditcardorder.grpc";
+option java_multiple_files = true;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+message CreditCardOrderMessage {
+  string id = 1;
+  string account_id = 2;
+  string email = 3;
+  string name = 4;
+  string shipping_address = 5;
+  string card_level = 6;
+  string shipping_id = 7;
+}
+
+message CreateCreditCardOrderRequest {
+  string id = 1;
+  string account_id = 2;
+  string email = 3;
+  string name = 4;
+  string shipping_address = 5;
+  string card_level = 6;
+}
+
+message CreditCardOrderStatusMessage {
+  string id = 1;
+  string credit_card_order_id = 2;
+  google.protobuf.Timestamp timestamp = 3;
+  string status = 4;
+  string details = 5;
+}
+
+message GetShippingAddressRequest {
+  string order_id = 1;
+}
+
+message ShippingAddressMessage {
+  string shipping_address = 1;
+  string name = 2;
+  string email = 3;
+}
+
+message CreditCardManufactureDataMessage {
+  string order_id = 1;
+  string name = 2;
+  string card_level = 3;
+}
+
+message OrdersToManufactureResponse {
+  repeated CreditCardManufactureDataMessage orders = 1;
+}
+
+message GetStatusListByAccountIdRequest {
+  string account_id = 1;
+}
+
+message OrderStatusListResponse {
+  repeated CreditCardOrderStatusMessage statuses = 1;
+}
+
+message GetLastOrderStatusByAccountIdRequest {
+  string account_id = 1;
+}
+
+message InsertNewStatusRequest {
+  string order_id = 1;
+  string status = 2;
+  string details = 3;
+  google.protobuf.Timestamp timestamp = 4;
+}
+
+message CreditCardMessage {
+  string order_id = 1;
+  string card_level = 2;
+  string card_number = 3;
+  string card_cvs = 4;
+  google.protobuf.Timestamp card_valid_date = 5;
+}
+
+message InsertNewCreditCardRequest {
+  string order_id = 1;
+  string card_level = 2;
+  string card_number = 3;
+  string card_cvs = 4;
+  google.protobuf.Timestamp card_valid_date = 5;
+}
+
+message UpdateOrderShippingIdRequest {
+  string order_id = 1;
+  string shipping_id = 2;
+}
+
+message DeleteOrdersRequest {
+  string account_id = 1;
+}
+
+service CreditCardOrderService {
+  rpc CreateCreditCardOrder(CreateCreditCardOrderRequest) returns (CreditCardOrderMessage) {}
+
+  rpc GetShippingAddressByOrderId(GetShippingAddressRequest) returns (ShippingAddressMessage) {}
+
+  // Get all order statuses ordered by timestamp DESC
+  rpc GetStatusListByAccountId(GetStatusListByAccountIdRequest) returns (OrderStatusListResponse) {}
+
+  rpc GetLastOrderStatusByAccountId(GetLastOrderStatusByAccountIdRequest) returns (CreditCardOrderStatusMessage) {}
+  
+  // Get manufacture data for all orders with status ORDER_CREATED
+  rpc GetOrdersToManufacture(google.protobuf.Empty) returns (OrdersToManufactureResponse) {}
+  rpc InsertNewStatus(InsertNewStatusRequest) returns (CreditCardOrderStatusMessage) {}
+  rpc InsertNewCreditCard(InsertNewCreditCardRequest) returns (CreditCardMessage) {}
+  rpc UpdateOrderShippingId(UpdateOrderShippingIdRequest) returns (CreditCardOrderMessage) {}
+  rpc DeleteOrdersByAccountId(DeleteOrdersRequest) returns (easytrade.dbadapter.common.BatchResponse) {}
+}
