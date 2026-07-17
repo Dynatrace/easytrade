@@ -33,11 +33,6 @@ message GetBalanceRequest {
   string account_id = 1;
 }
 
-message GetBalanceResponse {
-  bool found = 1;
-  BalanceMessage balance = 2;
-}
-
 message UpdateBalanceRequest {
   string account_id = 1;
   double value = 2;
@@ -54,8 +49,7 @@ message AddBalanceHistoryRequest {
 service BalanceService {
   rpc CreateBalance(CreateBalanceRequest) returns (BalanceMessage) {}
 
-  // found = false when does not exist
-  rpc GetBalanceByAccountId(GetBalanceRequest) returns (GetBalanceResponse) {}
+  rpc GetBalanceByAccountId(GetBalanceRequest) returns (BalanceMessage) {}
 
   rpc UpdateBalance(UpdateBalanceRequest) returns (BalanceMessage) {}
 

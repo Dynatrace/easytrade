@@ -44,9 +44,9 @@ message GetAccountByIdRequest {
   string id = 1;
 }
 
-message GetAccountResponse {
-  bool found = 1;
-  AccountMessage account = 2;
+message DeleteAccountsOlderThanRequest {
+  google.protobuf.Timestamp before = 1;
+  string origin = 2;
 }
 
 message AccountsResponse {
@@ -56,10 +56,9 @@ message AccountsResponse {
 service AccountService {
   rpc CreateAccount(CreateAccountRequest) returns (AccountMessage) {}
 
-  // found = false when does not exist
-  rpc GetAccountById(GetAccountByIdRequest) returns (GetAccountResponse) {}
+  rpc GetAccountById(GetAccountByIdRequest) returns (AccountMessage) {}
 
   rpc GetAccounts(google.protobuf.Empty) returns (AccountsResponse) {}
 
-  rpc DeleteAccountsOlderThan(easytrade.dbadapter.common.DeleteBeforeRequest) returns (easytrade.dbadapter.common.DeleteResponse) {}
+  rpc DeleteAccountsOlderThan(DeleteAccountsOlderThanRequest) returns (easytrade.dbadapter.common.DeleteResponse) {}
 }

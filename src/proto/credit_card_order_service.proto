@@ -9,6 +9,7 @@ option java_multiple_files = true;
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "common.proto";
 
 message CreditCardOrderMessage {
   string id = 1;
@@ -29,15 +30,6 @@ message CreateCreditCardOrderRequest {
   string card_level = 6;
 }
 
-message GetOrderByAccountIdRequest {
-  string account_id = 1;
-}
-
-message GetOrderByAccountIdResponse {
-  bool found = 1;
-  string order_id = 2;
-}
-
 message CreditCardOrderStatusMessage {
   string id = 1;
   string credit_card_order_id = 2;
@@ -56,28 +48,18 @@ message ShippingAddressMessage {
   string email = 3;
 }
 
-message GetShippingAddressResponse {
-  bool found = 1;
-  ShippingAddressMessage shipping_address = 2;
-}
-
-message GetCreditCardManufactureDataRequest {
-  string order_id = 1;
-}
-
 message CreditCardManufactureDataMessage {
   string order_id = 1;
   string name = 2;
   string card_level = 3;
 }
 
-message GetCreditCardManufactureDataResponse {
-  bool found = 1;
-  CreditCardManufactureDataMessage data = 2;
+message OrdersToManufactureResponse {
+  repeated CreditCardManufactureDataMessage orders = 1;
 }
 
-message GetOrderStatusListRequest {
-  string order_id = 1;
+message GetStatusListByAccountIdRequest {
+  string account_id = 1;
 }
 
 message OrderStatusListResponse {
@@ -86,15 +68,6 @@ message OrderStatusListResponse {
 
 message GetLastOrderStatusByAccountIdRequest {
   string account_id = 1;
-}
-
-message GetLastOrderStatusByAccountIdResponse {
-  bool found = 1;
-  CreditCardOrderStatusMessage status = 2;
-}
-
-message OrdersResponse {
-  repeated string order_ids = 1;
 }
 
 message InsertNewStatusRequest {
@@ -132,25 +105,17 @@ message DeleteOrdersRequest {
 service CreditCardOrderService {
   rpc CreateCreditCardOrder(CreateCreditCardOrderRequest) returns (CreditCardOrderMessage) {}
 
-  // found = false when does not exist
-  rpc GetOrderByAccountId(GetOrderByAccountIdRequest) returns (GetOrderByAccountIdResponse) {}
-
-  // found = false when does not exist
-  rpc GetShippingAddressByOrderId(GetShippingAddressRequest) returns (GetShippingAddressResponse) {}
-
-  // found = false when does not exist
-  rpc GetCreditCardManufactureData(GetCreditCardManufactureDataRequest) returns (GetCreditCardManufactureDataResponse) {}
+  rpc GetShippingAddressByOrderId(GetShippingAddressRequest) returns (ShippingAddressMessage) {}
 
   // Get all order statuses ordered by timestamp DESC
-  rpc GetOrderStatusList(GetOrderStatusListRequest) returns (OrderStatusListResponse) {}
+  rpc GetStatusListByAccountId(GetStatusListByAccountIdRequest) returns (OrderStatusListResponse) {}
 
-  // found = false when does not exist
-  rpc GetLastOrderStatusByAccountId(GetLastOrderStatusByAccountIdRequest) returns (GetLastOrderStatusByAccountIdResponse) {}
-
-  // Get all orders with status ORDER_CREATED
-  rpc GetOrdersWithStatusOrderCreated(google.protobuf.Empty) returns (OrdersResponse) {}
+  rpc GetLastOrderStatusByAccountId(GetLastOrderStatusByAccountIdRequest) returns (CreditCardOrderStatusMessage) {}
+  
+  // Get manufacture data for all orders with status ORDER_CREATED
+  rpc GetOrdersToManufacture(google.protobuf.Empty) returns (OrdersToManufactureResponse) {}
   rpc InsertNewStatus(InsertNewStatusRequest) returns (CreditCardOrderStatusMessage) {}
   rpc InsertNewCreditCard(InsertNewCreditCardRequest) returns (CreditCardMessage) {}
   rpc UpdateOrderShippingId(UpdateOrderShippingIdRequest) returns (CreditCardOrderMessage) {}
-  rpc DeleteOrdersByAccountId(DeleteOrdersRequest) returns (google.protobuf.Empty) {}
+  rpc DeleteOrdersByAccountId(DeleteOrdersRequest) returns (easytrade.dbadapter.common.DeleteResponse) {}
 }

@@ -8,8 +8,8 @@
 | **PackageService** | 1 | 1. GetPackages | Manager |
 | **InstrumentService** | 6 | 1. GetInstrumentById 2. GetAllInstruments 3. GetOwnedInstrument 4. GetOwnedInstruments [Get all owned instruments for an account] 5. AddOwnedInstrument 6. UpdateOwnedInstrument | Broker |
 | **TradeService** | 6 | 1. CreateTrade 2. UpdateTrade 3. GetOpenTrades 4. GetExpiredTrades [Get expired open trades] 5. GetAccountTrades [Get all trades for a specific account with optional filters] 6. DeleteTradesOlderThan | Broker, Content-Creator |
-| **CreditCardOrderService** | 11 | 1. CreateCreditCardOrder 2. GetOrderByAccountId 3. GetShippingAddressByOrderId 4. GetCreditCardManufactureData [Get credit card manufacture data by order ID] 5. GetOrderStatusList [Get all order statuses by timestamp DESC] 6. GetLastOrderStatusByAccountId 7. GetOrdersWithStatusOrderCreated 8. InsertNewStatus 9. InsertNewCreditCard 10. UpdateOrderShippingId 11. DeleteOrdersByAccountId | Credit-Card |
-| **PricingService** | 5 | 1. GetLatestPrices 2. GetMostRecentPriceForInstrument 3. GetPricesForInstrument 4. InsertPricesBatch 5. DeletePricesOlderThan | Pricing, Content-Creator |
-| **TOTAL** | **39** | | |
+| **CreditCardOrderService** | 9 | 1. CreateCreditCardOrder 2. GetShippingAddressByOrderId 3. GetStatusListByAccountId [Get all order statuses by timestamp DESC] 4. GetLastOrderStatusByAccountId 5. GetOrdersToManufacture 6. InsertNewStatus 7. InsertNewCreditCard 8. UpdateOrderShippingId 9. DeleteOrdersByAccountId | Credit-Card |
+| **PricingService** | 5 | 1. GetLatestPrices 2. GetLatestPriceForInstrument 3. GetPricesForInstrument 4. InsertPricesBatch 5. DeletePricesOlderThan | Pricing, Content-Creator |
+| **TOTAL** | **37** | | |
 
 ---

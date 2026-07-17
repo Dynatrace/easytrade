@@ -30,11 +30,6 @@ message GetInstrumentRequest {
   string id = 1;
 }
 
-message GetInstrumentResponse {
-  bool found = 1;
-  InstrumentMessage instrument = 2;
-}
-
 message InstrumentsResponse {
   repeated InstrumentMessage instruments = 1;
 }
@@ -42,11 +37,6 @@ message InstrumentsResponse {
 message GetOwnedInstrumentRequest {
   string account_id = 1;
   string instrument_id = 2;
-}
-
-message GetOwnedInstrumentResponse {
-  bool found = 1;
-  OwnedInstrumentMessage owned_instrument = 2;
 }
 
 message GetOwnedInstrumentsOfAccountRequest {
@@ -73,13 +63,11 @@ message UpdateOwnedInstrumentRequest {
 }
 
 service InstrumentService {
-  // found = false when does not exist
-  rpc GetInstrumentById(GetInstrumentRequest) returns (GetInstrumentResponse) {}
+  rpc GetInstrumentById(GetInstrumentRequest) returns (InstrumentMessage) {}
 
   rpc GetAllInstruments(google.protobuf.Empty) returns (InstrumentsResponse) {}
 
-  // Get an owned instrument for an account (found = false when the account does not own it)
-  rpc GetOwnedInstrument(GetOwnedInstrumentRequest) returns (GetOwnedInstrumentResponse) {}
+  rpc GetOwnedInstrument(GetOwnedInstrumentRequest) returns (OwnedInstrumentMessage) {}
 
   // Get all owned instruments for an account
   rpc GetOwnedInstruments(GetOwnedInstrumentsOfAccountRequest) returns (OwnedInstrumentsResponse) {}

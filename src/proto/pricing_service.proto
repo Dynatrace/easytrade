@@ -25,13 +25,8 @@ message PricesResponse {
   repeated PriceMessage prices = 1;
 }
 
-message GetMostRecentPriceForInstrumentRequest {
+message GetLatestPriceForInstrumentRequest {
   string instrument_id = 1;
-}
-
-message GetMostRecentPriceForInstrumentResponse {
-  bool found = 1;
-  PriceMessage price = 2;
 }
 
 message GetPricesForInstrumentRequest {
@@ -52,15 +47,19 @@ message InsertPricesBatchRequest {
   repeated PricingRow rows = 1;
 }
 
+message InsertBatchResponse {
+  int32 inserted = 1;
+}
+
 service PricingService {
   rpc GetLatestPrices(google.protobuf.Empty) returns (PricesResponse) {}
 
-  rpc GetMostRecentPriceForInstrument(GetMostRecentPriceForInstrumentRequest) returns (GetMostRecentPriceForInstrumentResponse) {}
+  rpc GetLatestPriceForInstrument(GetLatestPriceForInstrumentRequest) returns (PriceMessage) {}
 
   // Supports optional limit (unset = no limit).
   rpc GetPricesForInstrument(GetPricesForInstrumentRequest) returns (PricesResponse) {}
 
-  rpc InsertPricesBatch(InsertPricesBatchRequest) returns (google.protobuf.Empty) {}
+  rpc InsertPricesBatch(InsertPricesBatchRequest) returns (InsertBatchResponse) {}
 
   rpc DeletePricesOlderThan(easytrade.dbadapter.common.DeleteBeforeRequest) returns (easytrade.dbadapter.common.DeleteResponse) {}
 }
