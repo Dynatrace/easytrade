@@ -117,5 +117,5 @@ service CreditCardOrderService {
   rpc InsertNewStatus(InsertNewStatusRequest) returns (CreditCardOrderStatusMessage) {}
   rpc InsertNewCreditCard(InsertNewCreditCardRequest) returns (CreditCardMessage) {}
   rpc UpdateOrderShippingId(UpdateOrderShippingIdRequest) returns (CreditCardOrderMessage) {}
-  rpc DeleteOrdersByAccountId(DeleteOrdersRequest) returns (easytrade.dbadapter.common.DeleteResponse) {}
+  rpc DeleteOrdersByAccountId(DeleteOrdersRequest) returns (easytrade.dbadapter.common.BatchResponse) {}
 }

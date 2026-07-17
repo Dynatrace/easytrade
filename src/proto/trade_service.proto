@@ -68,5 +68,5 @@ service TradeService {
   // Get all trades for a specific account with optional filters
   rpc GetAccountTrades(GetAccountTradesRequest) returns (TradesResponse) {}
 
-  rpc DeleteTradesOlderThan(easytrade.dbadapter.common.DeleteBeforeRequest) returns (easytrade.dbadapter.common.DeleteResponse) {}
+  rpc DeleteTradesOlderThan(easytrade.dbadapter.common.DeleteBeforeRequest) returns (easytrade.dbadapter.common.BatchResponse) {}
 }

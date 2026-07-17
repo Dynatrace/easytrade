@@ -47,10 +47,6 @@ message InsertPricesBatchRequest {
   repeated PricingRow rows = 1;
 }
 
-message InsertBatchResponse {
-  int32 inserted = 1;
-}
-
 service PricingService {
   rpc GetLatestPrices(google.protobuf.Empty) returns (PricesResponse) {}
 
@@ -59,7 +55,7 @@ service PricingService {
   // Supports optional limit (unset = no limit).
   rpc GetPricesForInstrument(GetPricesForInstrumentRequest) returns (PricesResponse) {}
 
-  rpc InsertPricesBatch(InsertPricesBatchRequest) returns (InsertBatchResponse) {}
+  rpc InsertPricesBatch(InsertPricesBatchRequest) returns (easytrade.dbadapter.common.BatchResponse) {}
 
-  rpc DeletePricesOlderThan(easytrade.dbadapter.common.DeleteBeforeRequest) returns (easytrade.dbadapter.common.DeleteResponse) {}
+  rpc DeletePricesOlderThan(easytrade.dbadapter.common.DeleteBeforeRequest) returns (easytrade.dbadapter.common.BatchResponse) {}
 }

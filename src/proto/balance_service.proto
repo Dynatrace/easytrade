@@ -55,5 +55,5 @@ service BalanceService {
 
   rpc AddBalanceHistory(AddBalanceHistoryRequest) returns (BalanceHistoryMessage) {}
 
-  rpc DeleteBalanceHistoryOlderThan(easytrade.dbadapter.common.DeleteBeforeRequest) returns (easytrade.dbadapter.common.DeleteResponse) {}
+  rpc DeleteBalanceHistoryOlderThan(easytrade.dbadapter.common.DeleteBeforeRequest) returns (easytrade.dbadapter.common.BatchResponse) {}
 }

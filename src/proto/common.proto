@@ -13,6 +13,6 @@ message DeleteBeforeRequest {
   google.protobuf.Timestamp before = 1;
 }
 
-message DeleteResponse {
+message BatchResponse {
   int32 affected = 1;
 }

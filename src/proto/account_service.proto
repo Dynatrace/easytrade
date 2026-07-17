@@ -60,5 +60,5 @@ service AccountService {
 
   rpc GetAccounts(google.protobuf.Empty) returns (AccountsResponse) {}
 
-  rpc DeleteAccountsOlderThan(DeleteAccountsOlderThanRequest) returns (easytrade.dbadapter.common.DeleteResponse) {}
+  rpc DeleteAccountsOlderThan(DeleteAccountsOlderThanRequest) returns (easytrade.dbadapter.common.BatchResponse) {}
 }
