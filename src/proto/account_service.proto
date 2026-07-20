@@ -44,6 +44,10 @@ message GetAccountByIdRequest {
   string id = 1;
 }
 
+message GetAccountByUsernameRequest {
+  string username = 1;
+}
+
 message DeleteAccountsOlderThanRequest {
   google.protobuf.Timestamp before = 1;
   string origin = 2;
@@ -55,6 +59,8 @@ message AccountsResponse {
 
 service AccountService {
   rpc CreateAccount(CreateAccountRequest) returns (AccountMessage) {}
+
+  rpc GetAccountByUsername(GetAccountByUsernameRequest) returns (AccountMessage) {}
 
   rpc GetAccountById(GetAccountByIdRequest) returns (AccountMessage) {}
 
