@@ -1,9 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
-	"dynatrace.com/easytrade/user-service/services"
+	"dynatrace.com/easytrade/user-service/account"
+	"dynatrace.com/easytrade/user-service/dbadapter"
 	"dynatrace.com/easytrade/user-service/utils"
 )
 
@@ -13,10 +15,17 @@ func init() {
 	}
 
 	utils.CheckEnv()
-	services.ConnectToDB()
 }
 
 func main() {
-	router := CreateRouter()
+	baseURL, err := utils.ParseAddress(os.Getenv(utils.DbAdapterAddress))
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	db := dbadapter.NewRestAdapter(baseURL)
+	handler := account.NewHandler(db)
+
+	router := CreateRouter(handler)
 	router.Run()
 }
