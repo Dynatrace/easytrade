@@ -1,8 +1,6 @@
 package utils
 
 const (
-	GoConnectionString = "GO_CONNECTION_STRING"
-	ManagerHostAndPort = "MANAGER_HOSTANDPORT"
-	GinMode            = "GIN_MODE"
-	ProxyPrefix        = "PROXY_PREFIX"
+	DbAdapterAddress = "DB_ADAPTER_ADDRESS"
+	GinMode          = "GIN_MODE"
 )

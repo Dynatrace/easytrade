@@ -148,16 +148,11 @@ services:
   user-service:
     <<: *default-service
     build: src/user-service
-    depends_on:
-      - db
-      - manager
     ports:
       - 8095:8080
     environment:
-      GO_CONNECTION_STRING: *go-connection-string
-      MANAGER_HOSTANDPORT: manager:8080
-      PROXY_PREFIX: user-service
-
+      # db-adapter is not part of the compose stack yet; user-service is prepared to call it.
+      DB_ADAPTER_ADDRESS: http|db-adapter|8080
   credit-card-order-service:
     <<: *default-service
     build: src/credit-card-order-service

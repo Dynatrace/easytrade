@@ -147,8 +147,7 @@ services:
       - manager
     environment:
       GO_CONNECTION_STRING: *go-connection-string
-      MANAGER_HOSTANDPORT: manager:8080
-      PROXY_PREFIX: user-service
+      MANAGER_ADDRESS: http|manager|8080
 
   engine:
     <<: *default-service
