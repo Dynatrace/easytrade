@@ -23,8 +23,6 @@ func newCreateRequest(username, origin string, creationDate time.Time) CreateAcc
 	}
 }
 
-// TestMockAdapter_CreateThenGetById_ReturnsAccount checks a created account is retrievable by
-// its assigned id.
 func TestMockAdapter_CreateThenGetById_ReturnsAccount(t *testing.T) {
 	m := NewMockAdapter()
 
@@ -42,7 +40,6 @@ func TestMockAdapter_CreateThenGetById_ReturnsAccount(t *testing.T) {
 	}
 }
 
-// TestMockAdapter_GetAccountByUsername_ReturnsAccount checks lookup by username.
 func TestMockAdapter_GetAccountByUsername_ReturnsAccount(t *testing.T) {
 	m := NewMockAdapter()
 	created, _ := m.CreateAccount(context.Background(), newCreateRequest("john_doe", "WEB", time.Now()))
@@ -56,31 +53,11 @@ func TestMockAdapter_GetAccountByUsername_ReturnsAccount(t *testing.T) {
 	}
 }
 
-// TestMockAdapter_GetAccountById_Missing_ReturnsErrNotFound checks the not-found sentinel.
 func TestMockAdapter_GetAccountById_Missing_ReturnsErrNotFound(t *testing.T) {
 	m := NewMockAdapter()
 
 	_, err := m.GetAccountById(context.Background(), 999)
 	if !errors.Is(err, ErrNotFound) {
 		t.Fatalf("expected ErrNotFound, got %v", err)
-	}
-}
-
-// TestMockAdapter_DeleteAccountsOlderThan_RemovesMatching checks only accounts older than the
-// cutoff with the matching origin are removed.
-func TestMockAdapter_DeleteAccountsOlderThan_RemovesMatching(t *testing.T) {
-	m := NewMockAdapter()
-	old := time.Now().Add(-48 * time.Hour)
-	recent := time.Now()
-	m.CreateAccount(context.Background(), newCreateRequest("old_web", "WEB", old))
-	m.CreateAccount(context.Background(), newCreateRequest("recent_web", "WEB", recent))
-	m.CreateAccount(context.Background(), newCreateRequest("old_preset", "PRESET", old))
-
-	deleted, err := m.DeleteAccountsOlderThan(context.Background(), time.Now().Add(-24*time.Hour), "WEB")
-	if err != nil {
-		t.Fatalf("DeleteAccountsOlderThan returned error: %v", err)
-	}
-	if deleted != 1 {
-		t.Fatalf("expected 1 deleted, got %d", deleted)
 	}
 }

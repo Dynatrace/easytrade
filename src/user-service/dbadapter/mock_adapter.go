@@ -3,19 +3,14 @@ package dbadapter
 import (
 	"context"
 	"sync"
-	"time"
 )
 
-// MockAdapter is an in-memory DbAdapter used by unit and integration tests. It is a test
-// double at the adapter boundary — not a mock of the database itself — so tests exercise the
-// real handler code paths without a live db-adapter or SQL Server (see .claude/rules/tests.md).
 type MockAdapter struct {
 	mu       sync.Mutex
 	accounts map[int]Account
 	nextID   int
 }
 
-// NewMockAdapter returns an empty in-memory adapter with ids starting at 1.
 func NewMockAdapter() *MockAdapter {
 	return &MockAdapter{
 		accounts: make(map[int]Account),
@@ -82,18 +77,4 @@ func (m *MockAdapter) GetAccounts(_ context.Context) ([]Account, error) {
 		accounts = append(accounts, acc)
 	}
 	return accounts, nil
-}
-
-func (m *MockAdapter) DeleteAccountsOlderThan(_ context.Context, before time.Time, origin string) (int64, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	var deleted int64
-	for id, acc := range m.accounts {
-		if acc.Origin == origin && acc.CreationDate.Before(before) {
-			delete(m.accounts, id)
-			deleted++
-		}
-	}
-	return deleted, nil
 }
