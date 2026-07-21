@@ -7,32 +7,32 @@ import (
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
 )
 
-func mapSlice[T, M any](items []T, conv func(T) M) []M {
-	msgs := make([]M, len(items))
-	for i, it := range items {
-		msgs[i] = conv(it)
+func mapSlice[T, M any](items []T, mapper func(T) M) []M {
+	out := make([]M, len(items))
+	for i, item := range items {
+		out[i] = mapper(item)
 	}
-	return msgs
+	return out
 }
 
-func protoOrErr[T, M any](item T, err error, conv func(T) M) (M, error) {
+func protoOrErr[T, M any](entity T, err error, mapper func(T) M) (M, error) {
 	if err != nil {
 		var zero M
 		return zero, err
 	}
-	return conv(item), nil
+	return mapper(entity), nil
 }
 
-func protoOrNotFound[T, M any](item *T, err error, conv func(*T) M) (M, error) {
+func protoOrNotFound[T, M any](entity *T, err error, mapper func(*T) M) (M, error) {
 	if err != nil {
 		var zero M
 		return zero, err
 	}
-	if item == nil {
+	if entity == nil {
 		var zero M
 		return zero, errNotFound()
 	}
-	return conv(item), nil
+	return mapper(entity), nil
 }
 
 func batchResponse(affected int32, err error) (*pb.BatchResponse, error) {
@@ -40,6 +40,16 @@ func batchResponse(affected int32, err error) (*pb.BatchResponse, error) {
 		return nil, err
 	}
 	return &pb.BatchResponse{Affected: affected}, nil
+}
+
+func fetchOrNotFound[T any](item *T, err error) (*T, error) {
+	if err != nil {
+		return nil, err
+	}
+	if item == nil {
+		return nil, errNotFound()
+	}
+	return item, nil
 }
 
 func errNotFound() error {

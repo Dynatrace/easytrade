@@ -52,25 +52,22 @@ func (s *InstrumentServer) AddOwnedInstrument(ctx context.Context, req *pb.AddOw
 }
 
 func (s *InstrumentServer) UpdateOwnedInstrument(ctx context.Context, req *pb.UpdateOwnedInstrumentRequest) (*pb.OwnedInstrumentMessage, error) {
-	owned := toOwnedModel(req)
-	owned.ID = req.Id
+	owned, err := fetchOrNotFound(s.repo.GetOwned(ctx, req.AccountId, req.InstrumentId))
+	if err != nil {
+		return nil, err
+	}
+	owned.Quantity = req.Quantity
+	owned.LastModificationDate = req.LastModificationDate.AsTime()
 	updated, err := s.repo.UpdateOwned(ctx, owned)
 	return protoOrErr(updated, err, toOwnedProto)
 }
 
-type ownedInstrumentFields interface {
-	GetAccountId() string
-	GetInstrumentId() string
-	GetQuantity() float64
-	GetLastModificationDate() *timestamppb.Timestamp
-}
-
-func toOwnedModel(req ownedInstrumentFields) *models.OwnedInstrument {
+func toOwnedModel(req *pb.AddOwnedInstrumentRequest) *models.OwnedInstrument {
 	return &models.OwnedInstrument{
-		AccountID:            req.GetAccountId(),
-		InstrumentID:         req.GetInstrumentId(),
-		Quantity:             req.GetQuantity(),
-		LastModificationDate: req.GetLastModificationDate().AsTime(),
+		AccountID:            req.AccountId,
+		InstrumentID:         req.InstrumentId,
+		Quantity:             req.Quantity,
+		LastModificationDate: req.LastModificationDate.AsTime(),
 	}
 }
 

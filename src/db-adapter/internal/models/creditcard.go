@@ -39,6 +39,6 @@ type CreditCardOrderRepository interface {
 	GetOrdersToManufacture(ctx context.Context) ([]*CreditCardOrder, error)
 	InsertStatus(ctx context.Context, status *CreditCardOrderStatus) (*CreditCardOrderStatus, error)
 	InsertCard(ctx context.Context, card *CreditCard) (*CreditCard, error)
-	UpdateShippingID(ctx context.Context, orderID, shippingID string) (*CreditCardOrder, error)
+	Update(ctx context.Context, order *CreditCardOrder) (*CreditCardOrder, error)
 	DeleteByAccountID(ctx context.Context, accountID string) (int32, error)
 }

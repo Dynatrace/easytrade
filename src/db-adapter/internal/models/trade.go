@@ -26,6 +26,7 @@ type TradeFilter struct {
 
 type TradeRepository interface {
 	Create(ctx context.Context, trade *Trade) (*Trade, error)
+	GetByID(ctx context.Context, id string) (*Trade, error)
 	Update(ctx context.Context, trade *Trade) (*Trade, error)
 	GetOpen(ctx context.Context) ([]*Trade, error)
 	GetExpired(ctx context.Context) ([]*Trade, error)

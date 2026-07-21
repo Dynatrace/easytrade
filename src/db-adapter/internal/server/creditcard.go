@@ -62,8 +62,13 @@ func (s *CreditCardOrderServer) InsertNewCreditCard(ctx context.Context, req *pb
 }
 
 func (s *CreditCardOrderServer) UpdateOrderShippingId(ctx context.Context, req *pb.UpdateOrderShippingIdRequest) (*pb.CreditCardOrderMessage, error) {
-	order, err := s.repo.UpdateShippingID(ctx, req.OrderId, req.ShippingId)
-	return protoOrErr(order, err, toOrderProto)
+	order, err := fetchOrNotFound(s.repo.GetShippingAddress(ctx, req.OrderId))
+	if err != nil {
+		return nil, err
+	}
+	order.ShippingID = req.ShippingId
+	updated, err := s.repo.Update(ctx, order)
+	return protoOrErr(updated, err, toOrderProto)
 }
 
 func (s *CreditCardOrderServer) DeleteOrdersByAccountId(ctx context.Context, req *pb.DeleteOrdersRequest) (*pb.BatchResponse, error) {

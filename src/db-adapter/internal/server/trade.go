@@ -27,8 +27,15 @@ func (s *TradeServer) CreateTrade(ctx context.Context, req *pb.CreateTradeReques
 }
 
 func (s *TradeServer) UpdateTrade(ctx context.Context, req *pb.UpdateTradeRequest) (*pb.TradeMessage, error) {
-	trade, err := s.repo.Update(ctx, toTradeUpdateModel(req))
-	return protoOrErr(trade, err, toTradeProto)
+	trade, err := fetchOrNotFound(s.repo.GetByID(ctx, req.Id))
+	if err != nil {
+		return nil, err
+	}
+	trade.TimestampClose = optionalTime(req.TimestampClose)
+	trade.TradeClosed = req.TradeClosed
+	trade.Status = req.Status
+	updated, err := s.repo.Update(ctx, trade)
+	return protoOrErr(updated, err, toTradeProto)
 }
 
 func (s *TradeServer) GetOpenTrades(ctx context.Context, _ *emptypb.Empty) (*pb.TradesResponse, error) {
@@ -57,6 +64,14 @@ func (s *TradeServer) tradesResponse(trades []*models.Trade, err error) (*pb.Tra
 	return &pb.TradesResponse{Trades: mapSlice(trades, toTradeProto)}, nil
 }
 
+func optionalTime(ts *timestamppb.Timestamp) *time.Time {
+	if ts == nil {
+		return nil
+	}
+	t := ts.AsTime()
+	return &t
+}
+
 func toTradeModel(req *pb.CreateTradeRequest) *models.Trade {
 	return &models.Trade{
 		AccountID:           req.AccountId,
@@ -70,23 +85,6 @@ func toTradeModel(req *pb.CreateTradeRequest) *models.Trade {
 		TransactionHappened: req.TransactionHappened,
 		Status:              req.Status,
 	}
-}
-
-func toTradeUpdateModel(req *pb.UpdateTradeRequest) *models.Trade {
-	return &models.Trade{
-		ID:             req.Id,
-		TimestampClose: optionalTime(req.TimestampClose),
-		TradeClosed:    req.TradeClosed,
-		Status:         req.Status,
-	}
-}
-
-func optionalTime(ts *timestamppb.Timestamp) *time.Time {
-	if ts == nil {
-		return nil
-	}
-	t := ts.AsTime()
-	return &t
 }
 
 func toTradeProto(t *models.Trade) *pb.TradeMessage {

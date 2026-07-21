@@ -30,8 +30,13 @@ func (s *BalanceServer) GetBalanceByAccountId(ctx context.Context, req *pb.GetBa
 }
 
 func (s *BalanceServer) UpdateBalance(ctx context.Context, req *pb.UpdateBalanceRequest) (*pb.BalanceMessage, error) {
-	balance, err := s.repo.Update(ctx, toBalanceModel(req))
-	return protoOrErr(balance, err, toBalanceProto)
+	balance, err := fetchOrNotFound(s.repo.GetByAccountID(ctx, req.AccountId))
+	if err != nil {
+		return nil, err
+	}
+	balance.Value = req.Value
+	updated, err := s.repo.Update(ctx, balance)
+	return protoOrErr(updated, err, toBalanceProto)
 }
 
 func (s *BalanceServer) AddBalanceHistory(ctx context.Context, req *pb.AddBalanceHistoryRequest) (*pb.BalanceHistoryMessage, error) {
@@ -43,13 +48,8 @@ func (s *BalanceServer) DeleteBalanceHistoryOlderThan(ctx context.Context, req *
 	return batchResponse(s.repo.DeleteHistoryOlderThan(ctx, req.Before.AsTime()))
 }
 
-type balanceValues interface {
-	GetAccountId() string
-	GetValue() float64
-}
-
-func toBalanceModel(req balanceValues) *models.Balance {
-	return &models.Balance{AccountID: req.GetAccountId(), Value: req.GetValue()}
+func toBalanceModel(req *pb.CreateBalanceRequest) *models.Balance {
+	return &models.Balance{AccountID: req.AccountId, Value: req.Value}
 }
 
 func toBalanceProto(b *models.Balance) *pb.BalanceMessage {
