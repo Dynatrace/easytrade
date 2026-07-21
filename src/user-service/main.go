@@ -5,8 +5,10 @@ import (
 	"os"
 
 	"dynatrace.com/easytrade/user-service/account"
-	"dynatrace.com/easytrade/user-service/dbadapter"
+	"dynatrace.com/easytrade/user-service/dbadapter/proto"
 	"dynatrace.com/easytrade/user-service/utils"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func init() {
@@ -18,13 +20,16 @@ func init() {
 }
 
 func main() {
-	baseURL, err := utils.ParseAddress(os.Getenv(utils.DbAdapterAddress))
+	addr := os.Getenv(utils.DbAdapterAddress)
+
+	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	db := dbadapter.NewRestAdapter(baseURL)
-	handler := account.NewHandler(db)
+
+	client := proto.NewAccountServiceClient(conn)
+	handler := account.NewHandler(client)
 
 	router := CreateRouter(handler)
 	router.Run()

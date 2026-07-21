@@ -1,23 +1,25 @@
 package account
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 
-	"dynatrace.com/easytrade/user-service/dbadapter"
+	"dynatrace.com/easytrade/user-service/dbadapter/proto"
 	"dynatrace.com/easytrade/user-service/utils"
 	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 var logger = utils.GetSugar()
 
 type Handler struct {
-	db dbadapter.DbAdapter
+	client proto.AccountServiceClient
 }
 
-func NewHandler(db dbadapter.DbAdapter) *Handler {
-	return &Handler{db: db}
+func NewHandler(client proto.AccountServiceClient) *Handler {
+	return &Handler{client: client}
 }
 
 // Login handles POST /api/auth/login.
@@ -28,9 +30,9 @@ func (h *Handler) Login(ctx *gin.Context) {
 		return
 	}
 
-	acc, err := h.db.GetAccountByUsername(ctx.Request.Context(), body.Username)
+	acc, err := h.client.GetAccountByUsername(ctx.Request.Context(), &proto.GetAccountByUsernameRequest{Username: body.Username})
 	if err != nil {
-		if errors.Is(err, dbadapter.ErrNotFound) {
+		if status.Code(err) == codes.NotFound {
 			ctx.JSON(http.StatusUnauthorized, ErrorResponse{Error: "user not found"})
 			return
 		}
@@ -55,7 +57,7 @@ func (h *Handler) Signup(ctx *gin.Context) {
 		return
 	}
 
-	acc, err := h.db.CreateAccount(ctx.Request.Context(), body.ToCreateAccountRequest())
+	acc, err := h.client.CreateAccount(ctx.Request.Context(), body.ToCreateAccountRequest())
 	if err != nil {
 		logger.Errorw("signup failed", "error", err)
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
@@ -67,18 +69,12 @@ func (h *Handler) Signup(ctx *gin.Context) {
 
 // GetAccount handles GET /api/accounts/:id.
 func (h *Handler) GetAccount(ctx *gin.Context) {
-	accountIdStr := ctx.Param("id")
-	logger.Infow("GetAccount called", "accountId", accountIdStr)
+	id := ctx.Param("id")
+	logger.Infow("GetAccount called", "accountId", id)
 
-	id, err := strconv.Atoi(accountIdStr)
+	acc, err := h.client.GetAccountById(ctx.Request.Context(), &proto.GetAccountByIdRequest{Id: id})
 	if err != nil {
-		ctx.String(http.StatusBadRequest, "invalid account id: %v", err)
-		return
-	}
-
-	acc, err := h.db.GetAccountById(ctx.Request.Context(), id)
-	if err != nil {
-		if errors.Is(err, dbadapter.ErrNotFound) {
+		if status.Code(err) == codes.NotFound {
 			ctx.String(http.StatusNotFound, "account not found")
 			return
 		}
@@ -86,7 +82,7 @@ func (h *Handler) GetAccount(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, acc)
+	ctx.JSON(http.StatusOK, toAccountResponse(acc))
 }
 
 // GetPresets handles GET /api/accounts/presets?limit=.
@@ -99,13 +95,13 @@ func (h *Handler) GetPresets(ctx *gin.Context) {
 		limit, _ = strconv.Atoi(limitStr)
 	}
 
-	accounts, err := h.db.GetAccounts(ctx.Request.Context())
+	resp, err := h.client.GetAccounts(ctx.Request.Context(), &emptypb.Empty{})
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, "failed to get accounts: %v", err)
 		return
 	}
 
-	presetAccounts := filterPresets(accounts)
+	presetAccounts := filterPresets(resp.Accounts)
 	if limit > 0 && limit < len(presetAccounts) {
 		presetAccounts = presetAccounts[:limit]
 	}

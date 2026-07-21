@@ -2,9 +2,9 @@
 
 Go service for user authentication and account management. Runs behind the nginx reverse proxy.
 
-**Stack:** Go, Gin. All data access goes through the `db-adapter` service (REST) via the
-`DbAdapter` interface — the service no longer connects to SQL Server or the `manager` service
-directly.
+**Stack:** Go, Gin. All data access goes through the `db-adapter` service over gRPC, via the
+generated `proto.AccountServiceClient` (contract in `../proto/account_service.proto`; regenerate
+with `make -C ../proto generate`).
 
 ## Build
 
@@ -17,4 +17,4 @@ go test ./...
 
 | Name | Description |
 | ---- | ----------- |
-| `DB_ADAPTER_ADDRESS` | Address of the `db-adapter` service in `protocol\|host\|port` format (e.g. `http\|db-adapter\|8080`) |
+| `DB_ADAPTER_ADDRESS` | Ready-to-dial address of the `db-adapter` gRPC service (e.g. `db-adapter:8080`) |
