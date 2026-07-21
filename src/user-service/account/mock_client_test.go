@@ -12,9 +12,6 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-// fakeAccountServiceClient is an in-memory stand-in for proto.AccountServiceClient, used to drive
-// handler tests without a real db-adapter. It implements the generated client interface directly
-// so handler.go needs no separate translation layer between test and production code paths.
 type fakeAccountServiceClient struct {
 	mu       sync.Mutex
 	accounts map[string]*proto.AccountMessage
