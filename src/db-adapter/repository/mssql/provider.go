@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dynatrace/easytrade/dbadapter/internal/config"
-	"github.com/dynatrace/easytrade/dbadapter/internal/db"
-	"github.com/dynatrace/easytrade/dbadapter/internal/repository"
+	"github.com/dynatrace/easytrade/dbadapter/config"
+	"github.com/dynatrace/easytrade/dbadapter/db"
+	"github.com/dynatrace/easytrade/dbadapter/repository"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"

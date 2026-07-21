@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"github.com/dynatrace/easytrade/dbadapter/internal/models"
+	"github.com/dynatrace/easytrade/dbadapter/models"
 )
 
 type CompositeRepository interface {

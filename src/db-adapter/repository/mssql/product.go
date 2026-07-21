@@ -3,8 +3,8 @@ package mssql
 import (
 	"context"
 
-	"github.com/dynatrace/easytrade/dbadapter/internal/models"
-	"github.com/dynatrace/easytrade/dbadapter/internal/repository"
+	"github.com/dynatrace/easytrade/dbadapter/models"
+	"github.com/dynatrace/easytrade/dbadapter/repository"
 	"gorm.io/gorm"
 )
 

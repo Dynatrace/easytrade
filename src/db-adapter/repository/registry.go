@@ -3,7 +3,7 @@ package repository
 import (
 	"fmt"
 
-	"github.com/dynatrace/easytrade/dbadapter/internal/config"
+	"github.com/dynatrace/easytrade/dbadapter/config"
 )
 
 type Provider interface {

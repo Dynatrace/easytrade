@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/dynatrace/easytrade/dbadapter/internal/models"
+	"github.com/dynatrace/easytrade/dbadapter/models"
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
