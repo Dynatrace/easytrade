@@ -149,10 +149,11 @@ services:
     <<: *default-service
     build: src/user-service
     ports:
-      - 8095:8080
+      - 8089:8080
     environment:
       # db-adapter is not part of the compose stack yet; user-service is prepared to call it.
-      DB_ADAPTER_ADDRESS: http|db-adapter|8080
+      DB_ADAPTER_ADDRESS: db-adapter:8080
+      
   credit-card-order-service:
     <<: *default-service
     build: src/credit-card-order-service
