@@ -2,5 +2,5 @@
 
 public interface IUserServiceConnector
 {
-    public Task<Account> GetAccountById(int id);
+    public Task<Account> GetAccountById(string id);
 }
