@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - main
+      - architecture-update
   workflow_call:
     secrets:
       SNYK_API_TOKEN:
