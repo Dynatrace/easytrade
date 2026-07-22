@@ -27,14 +27,6 @@ services:
     environment:
       SA_PASSWORD: yourStrong(!)Password
 
-  contentcreator:
-    <<: *default-service
-    build: src/contentcreator
-    depends_on:
-      - db
-    environment:
-      MSSQL_CONNECTIONSTRING: *java-connection-string
-
   manager:
     <<: *default-service
     build: src/manager/easyTradeManager
@@ -130,7 +122,7 @@ services:
       - offerservice
       - accountservice
       - credit-card-order-service
-      - third-party-service
+      - background-service
     ports:
       - 80:80
 
@@ -174,31 +166,17 @@ services:
     build: src/credit-card-order-service
     depends_on:
       - db
-      - third-party-service
+      - background-service
     ports:
       - 8091:8080
     environment:
       PROXY_PREFIX: credit-card-order-service
       MSSQL_CONNECTIONSTRING: *java-connection-string
-      THIRD_PARTY_SERVICE_HOSTANDPORT: third-party-service:8080
+      THIRD_PARTY_SERVICE_HOSTANDPORT: background-service:8080
       <<: *feature-flag-service-env
       WORK_DELAY: 30
       WORK_RATE: 30
       JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
-
-  third-party-service:
-    <<: *default-service
-    build: src/third-party-service
-    ports:
-      - 8093:8080
-    environment:
-      <<: *feature-flag-service-env
-      PROXY_PREFIX: third-party-service
-      CREDIT_CARD_ORDER_SERVICE_HOSTANDPORT: credit-card-order-service:8080
-      COURIER_DELAY: 10
-      COURIER_RATE: 10
-      MANUFACTURE_DELAY: 10
-      MANUFACTURE_RATE: 10
 
   feature-flag-service:
     <<: *default-service
@@ -210,24 +188,18 @@ services:
       # ENABLE_MODIFY: "false"
       # ENABLE_FRONTEND_MODIFY: "false"
 
-  aggregator-service:
-    <<: *default-service
-    build: src/aggregator-service
-    depends_on:
-      - offerservice
-    environment:
-      OFFER_SERVICE_PROTOCOL: http
-      OFFER_SERVICE_HOST: offerservice
-      OFFER_SERVICE_PORT: 8080
 
   background-service:
     <<: *default-service
     build: src/background-service
+    depends_on:
+      - offerservice
     ports:
       - 8095:8080
     environment:
       <<: *feature-flag-service-env
-      OFFER_SERVICE_ADDRESS: http://aggregator-service:8080
+      OFFER_SERVICE_ADDRESS: http://offerservice:8080
+      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
       CREDIT_CARD_ORDER_SERVICE_ADDRESS: http://credit-card-order-service:8080
       COURIER_DELAY: 10
       COURIER_RATE: 10

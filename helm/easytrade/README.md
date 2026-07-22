@@ -64,10 +64,9 @@ Each service can be configured individually. All services share the same configu
 The easytrade chart includes the following microservices:
 
 - `accountservice` - Account management service
-- `aggregator-service` - Data aggregation service
+- `background-service` - Consolidated data aggregation, content/pricing generation, credit-card manufacture/courier simulation, and (Kubernetes-only) problem-pattern operator
 - `broker-service` - Trading broker service
 - `calculationservice` - Calculation engine
-- `contentcreator` - Content creation service
 - `credit-card-order-service` - Credit card order processing
 - `db` - Microsoft SQL Server database (StatefulSet)
 - `feature-flag-service` - Feature flag management
@@ -78,9 +77,7 @@ The easytrade chart includes the following microservices:
 - `manager` - Management service
 - `offerservice` - Offer management
 - `pricing-service` - Pricing calculation
-- `problem-operator` - Problem pattern simulator
 - `rabbitmq` - RabbitMQ message broker
-- `third-party-service` - Third-party integration service
 
 ### Example Configurations
 
@@ -104,7 +101,7 @@ frontendreverseproxy:
   enabled: true
 
 # Disable all other services
-aggregator-service:
+background-service:
   enabled: false
 calculationservice:
   enabled: false
@@ -151,7 +148,7 @@ db:
 #### Service with RBAC
 
 ```yaml
-problem-operator:
+background-service:
   enabled: true
   rbac:
     create: true

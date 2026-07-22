@@ -32,14 +32,6 @@ services:
     environment:
       SA_PASSWORD: yourStrong(!)Password
 
-  contentcreator:
-    <<: *default-service
-    image: ${REGISTRY}/contentcreator:${TAG}
-    depends_on:
-      - db
-    environment:
-      MSSQL_CONNECTIONSTRING: *java-connection-string
-
   manager:
     <<: *default-service
     image: ${REGISTRY}/manager:${TAG}
@@ -118,7 +110,7 @@ services:
       - offerservice
       - accountservice
       - credit-card-order-service
-      - third-party-service
+      - background-service
     ports:
       - 80:80
 
@@ -163,34 +155,27 @@ services:
     image: ${REGISTRY}/credit-card-order-service:${TAG}
     depends_on:
       - db
-      - third-party-service
+      - background-service
     environment:
       PROXY_PREFIX: credit-card-order-service
       MSSQL_CONNECTIONSTRING: *java-connection-string
-      THIRD_PARTY_SERVICE_HOSTANDPORT: third-party-service:8080
+      THIRD_PARTY_SERVICE_HOSTANDPORT: background-service:8080
       <<: *feature-flag-service-env
       WORK_DELAY: 300
       WORK_RATE: 900
       JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
 
-  third-party-service:
+  background-service:
     <<: *default-service
-    image: ${REGISTRY}/third-party-service:${TAG}
-    environment:
-      <<: *feature-flag-service-env
-      PROXY_PREFIX: third-party-service
-      CREDIT_CARD_ORDER_SERVICE_HOSTANDPORT: credit-card-order-service:8080
-      COURIER_DELAY: 400
-      COURIER_RATE: 900
-      MANUFACTURE_DELAY: 500
-      MANUFACTURE_RATE: 900
-
-  aggregator-service:
-    <<: *default-service
-    image: ${REGISTRY}/aggregator-service:${TAG}
+    image: ${REGISTRY}/background-service:${TAG}
     depends_on:
       - offerservice
     environment:
-      OFFER_SERVICE_PROTOCOL: http
-      OFFER_SERVICE_HOST: offerservice
-      OFFER_SERVICE_PORT: 8080
+      <<: *feature-flag-service-env
+      OFFER_SERVICE_ADDRESS: http://offerservice:8080
+      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
+      CREDIT_CARD_ORDER_SERVICE_ADDRESS: http://credit-card-order-service:8080
+      COURIER_DELAY: 10
+      COURIER_RATE: 10
+      MANUFACTURE_DELAY: 10
+      MANUFACTURE_RATE: 10

@@ -12,10 +12,10 @@ dependencies:
     version: "0.1.0"
     condition: accountservice.enabled
   - name: app
-    alias: aggregator-service
+    alias: background-service
     repository: "file://./charts/app"
     version: "0.1.0"
-    condition: aggregator-service.enabled
+    condition: background-service.enabled
   - name: app
     alias: broker-service
     repository: "file://./charts/app"
@@ -26,11 +26,6 @@ dependencies:
     repository: "file://./charts/app"
     version: "0.1.0"
     condition: calculationservice.enabled
-  - name: app
-    alias: contentcreator
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: contentcreator.enabled
   - name: app
     alias: credit-card-order-service
     repository: "file://./charts/app"
@@ -82,17 +77,7 @@ dependencies:
     version: "0.1.0"
     condition: pricing-service.enabled
   - name: app
-    alias: problem-operator
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: problem-operator.enabled
-  - name: app
     alias: rabbitmq
     repository: "file://./charts/app"
     version: "0.1.0"
     condition: rabbitmq.enabled
-  - name: app
-    alias: third-party-service
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: third-party-service.enabled

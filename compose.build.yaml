@@ -4,10 +4,10 @@ services:
     build:
       context: src/accountservice
 
-  aggregator-service:
-    image: ${REGISTRY}/aggregator-service:${TAG}
+  background-service:
+    image: ${REGISTRY}/background-service:${TAG}
     build:
-      context: src/aggregator-service
+      context: src/background-service
 
   broker-service:
     image: ${REGISTRY}/broker-service:${TAG}
@@ -18,11 +18,6 @@ services:
     image: ${REGISTRY}/calculationservice:${TAG}
     build:
       context: src/calculationservice
-
-  contentcreator:
-    image: ${REGISTRY}/contentcreator:${TAG}
-    build:
-      context: src/contentcreator
 
   credit-card-order-service:
     image: ${REGISTRY}/credit-card-order-service:${TAG}
@@ -74,17 +69,7 @@ services:
     build:
       context: src/pricing-service
 
-  problem-operator:
-    image: ${REGISTRY}/problem-operator:${TAG}
-    build:
-      context: src/problem-operator
-
   rabbitmq:
     image: ${REGISTRY}/rabbitmq:${TAG}
     build:
       context: src/rabbitmq
-
-  third-party-service:
-    image: ${REGISTRY}/third-party-service:${TAG}
-    build:
-      context: src/third-party-service

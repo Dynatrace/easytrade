@@ -2,12 +2,12 @@
 
 ## Repository structure
 
-`src/` contains 18 services grouped by technology:
+`src/` contains 15 services grouped by technology:
 
 | Technology                     | Services                                                                                                                 |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| Java 21 / Spring Boot / Gradle | `accountservice`, `contentcreator`, `credit-card-order-service`, `feature-flag-service`, `third-party-service`          |
-| Go / Go Modules                | `aggregator-service`, `pricing-service`, `problem-operator`                                                              |
+| Java 21 / Spring Boot / Gradle | `accountservice`, `credit-card-order-service`, `feature-flag-service`                                                    |
+| Go / Go Modules                | `background-service`, `pricing-service`                                                                                 |
 | TypeScript / Node.js / npm     | `frontend`, `loadgen`, `offerservice`                                                                                    |
 | C# / .NET 8 / NuGet            | `broker-service`, `loginservice`, `manager`                                                                              |
 | Python / Poetry                | `db/user-generator` (local utility script, not a service)                                                                |
@@ -44,7 +44,7 @@ Bump versions in this block across **all** affected `build.gradle` files in one 
 - Pin transitive dependencies using the `overrides` field in `package.json`.
 - Run `npm install` after editing `package.json` to regenerate `package-lock.json`.
 
-#### Go (services: `pricing-service`, `problem-operator`)
+#### Go (services: `pricing-service`, `background-service`)
 
 Go stdlib vulnerabilities are fixed by upgrading the Go toolchain version, not by changing individual module dependencies. Three files must be updated in sync for each service:
 

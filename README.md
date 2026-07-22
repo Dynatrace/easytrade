@@ -19,10 +19,9 @@ EasyTrade consists of the following services/components:
 | Service                                                              | Proxy port | Proxy endpoint               |
 | -------------------------------------------------------------------- | ---------- | ---------------------------- |
 | [Account service](src/accountservice/README.md)                      | 80         | `/accountservice`            |
-| [Aggregator service](src/aggregator-service/README.md)               | 80         | `---`                        |
+| [Background service](src/background-service/README.md)               | 80         | `/third-party-service`       |
 | [Broker service](src/broker-service/README.md)                       | 80         | `/broker-service`            |
 | [Calculation service](src/calculationservice/README.md)              | 80         | `---`                        |
-| [Content creator](src/contentcreator/README.md)                      | 80         | `---`                        |
 | [Credit card order service](src/credit-card-order-service/README.md) | 80         | `/credit-card-order-service` |
 | [Db](src/db/README.md)                                               | 80         | `---`                        |
 | [Feature flag service](src/feature-flag-service/README.md)           | 80         | `/feature-flag-service`      |
@@ -33,9 +32,7 @@ EasyTrade consists of the following services/components:
 | [Manager](src/manager/easyTradeManager/README.md)                    | 80         | `/manager`                   |
 | [Offer service](src/offerservice/README.md)                          | 80         | `/offerservice`              |
 | [Pricing service](src/pricing-service/README.md)                     | 80         | `/pricing-service`           |
-| [Problem operator](src/problem-operator/README.md)                   | 80         | `---`                        |
 | [RabbitMQ](src/rabbitmq/README.md)                                   | 80         | `---`                        |
-| [Third party service](src/third-party-service/README.md)             | 80         | `/third-party-service`       |
 
 > To learn more about endpoints / swagger for the services go to their respective readmes
 
@@ -122,9 +119,9 @@ Currently there are 4 problem patterns supported in easyTrade:
    - 15 min - then we will notice a small slowdown (for 150 seconds) followed by 40% lower traffic for 15 minutes on some requests
    - 20 min - then we will notice a small slowdown (for 150 seconds) followed by 40% lower traffic for 30 minutes on some requests
 
-3. FactoryCrisis - when enabled, the factory won't produce new cards, which will cause the Third party service not to process credit card orders. This will block the Credit Card Order service.
+3. FactoryCrisis - when enabled, the factory won't produce new cards, which will cause background-service's manufacture scheduler not to process credit card orders. This will block the Credit Card Order service.
 
-4. HighCpuUsage - this problem pattern causes a slowdown of broker-service response time and highly increases CPU usage during that time. If the app is deployed on K8s, a CPU resource limit is also applied by the problem operator. This should generate CPU throttling on the pod.
+4. HighCpuUsage - this problem pattern causes a slowdown of broker-service response time and highly increases CPU usage during that time. If the app is deployed on K8s, a CPU resource limit is also applied by background-service's operator subsystem. This should generate CPU throttling on the pod.
 
 To turn a plugin on/off send a request similar to the following:
 

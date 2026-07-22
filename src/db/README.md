@@ -46,7 +46,7 @@ The MSSQL is initialized with:
 |                 | Instruments — 15 rows                                                                                                                                                                                |
 |                 | OwnedInstruments — 1575 rows (105 accounts × 15 instruments), generated via CROSS JOIN; INTERNAL accounts start at quantity 0, PRESET accounts get a quantity of (AccountId + InstrumentId) % 10 + 1 |
 |                 | Packages and Products — 3 rows each                                                                                                                                                                  |
-|                 | Pricing — 15 seed rows (one per instrument) inserted at init so the app is usable immediately; replaced by ~21600 rows once ContentCreator starts                                                    |
+|                 | Pricing — 15 seed rows (one per instrument) inserted at init so the app is usable immediately; replaced by ~21600 rows once background-service's contentcreator sub-component starts                |
 |                 | Trades — starts empty, populated at runtime by broker-service                                                                                                                                        |
 
 ## Debugging
