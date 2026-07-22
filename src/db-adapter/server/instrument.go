@@ -21,6 +21,9 @@ func NewInstrumentServer(repo models.InstrumentRepository) *InstrumentServer {
 }
 
 func (s *InstrumentServer) GetInstrumentById(ctx context.Context, req *pb.GetInstrumentRequest) (*pb.InstrumentMessage, error) {
+	if err := validateUUID(req.Id); err != nil {
+		return nil, err
+	}
 	inst, err := s.repo.GetByID(ctx, req.Id)
 	return protoOrNotFound(inst, err, toInstrumentProto)
 }
@@ -34,11 +37,20 @@ func (s *InstrumentServer) GetAllInstruments(ctx context.Context, _ *emptypb.Emp
 }
 
 func (s *InstrumentServer) GetOwnedInstrument(ctx context.Context, req *pb.GetOwnedInstrumentRequest) (*pb.OwnedInstrumentMessage, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
+	if err := validateUUID(req.InstrumentId); err != nil {
+		return nil, err
+	}
 	owned, err := s.repo.GetOwned(ctx, req.AccountId, req.InstrumentId)
 	return protoOrNotFound(owned, err, toOwnedProto)
 }
 
 func (s *InstrumentServer) GetOwnedInstruments(ctx context.Context, req *pb.GetOwnedInstrumentsOfAccountRequest) (*pb.OwnedInstrumentsResponse, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
 	owned, err := s.repo.GetAllOwned(ctx, req.AccountId)
 	if err != nil {
 		return nil, err
@@ -47,11 +59,23 @@ func (s *InstrumentServer) GetOwnedInstruments(ctx context.Context, req *pb.GetO
 }
 
 func (s *InstrumentServer) AddOwnedInstrument(ctx context.Context, req *pb.AddOwnedInstrumentRequest) (*pb.OwnedInstrumentMessage, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
+	if err := validateUUID(req.InstrumentId); err != nil {
+		return nil, err
+	}
 	owned, err := s.repo.AddOwned(ctx, toOwnedModel(req))
 	return protoOrErr(owned, err, toOwnedProto)
 }
 
 func (s *InstrumentServer) UpdateOwnedInstrument(ctx context.Context, req *pb.UpdateOwnedInstrumentRequest) (*pb.OwnedInstrumentMessage, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
+	if err := validateUUID(req.InstrumentId); err != nil {
+		return nil, err
+	}
 	owned, err := fetchOrNotFound(s.repo.GetOwned(ctx, req.AccountId, req.InstrumentId))
 	if err != nil {
 		return nil, err

@@ -6,13 +6,14 @@ import (
 
 	"github.com/dynatrace/easytrade/dbadapter/models"
 	"github.com/dynatrace/easytrade/dbadapter/repository"
+	mssql "github.com/microsoft/go-mssqldb"
 	"gorm.io/gorm"
 )
 
 type tradeModel struct {
-	Id                  string `gorm:"primaryKey"`
-	AccountId           string
-	InstrumentId        string
+	Id                  mssql.UniqueIdentifier `gorm:"primaryKey"`
+	AccountId           mssql.UniqueIdentifier
+	InstrumentId        mssql.UniqueIdentifier
 	Direction           string
 	Quantity            float64
 	EntryPrice          float64
@@ -27,9 +28,9 @@ func (tradeModel) TableName() string { return repository.TableTrades }
 
 func toTrade(src *tradeModel) *models.Trade {
 	return &models.Trade{
-		ID:                  src.Id,
-		AccountID:           src.AccountId,
-		InstrumentID:        src.InstrumentId,
+		ID:                  uuidString(src.Id),
+		AccountID:           uuidString(src.AccountId),
+		InstrumentID:        uuidString(src.InstrumentId),
 		Direction:           src.Direction,
 		Quantity:            src.Quantity,
 		EntryPrice:          src.EntryPrice,
@@ -43,9 +44,9 @@ func toTrade(src *tradeModel) *models.Trade {
 
 func fromTrade(trade *models.Trade) *tradeModel {
 	return &tradeModel{
-		Id:                  trade.ID,
-		AccountId:           trade.AccountID,
-		InstrumentId:        trade.InstrumentID,
+		Id:                  newIfEmpty(trade.ID),
+		AccountId:           parseUUID(trade.AccountID),
+		InstrumentId:        parseUUID(trade.InstrumentID),
 		Direction:           trade.Direction,
 		Quantity:            trade.Quantity,
 		EntryPrice:          trade.EntryPrice,

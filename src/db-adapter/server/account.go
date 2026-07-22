@@ -21,11 +21,17 @@ func NewAccountServer(repo models.AccountRepository) *AccountServer {
 }
 
 func (s *AccountServer) CreateAccount(ctx context.Context, req *pb.CreateAccountRequest) (*pb.AccountMessage, error) {
+	if err := validateUUID(req.PackageId); err != nil {
+		return nil, err
+	}
 	account, err := s.repo.Create(ctx, toAccountModel(req))
 	return protoOrErr(account, err, toAccountProto)
 }
 
 func (s *AccountServer) GetAccountById(ctx context.Context, req *pb.GetAccountByIdRequest) (*pb.AccountMessage, error) {
+	if err := validateUUID(req.Id); err != nil {
+		return nil, err
+	}
 	account, err := s.repo.GetByID(ctx, req.Id)
 	return protoOrNotFound(account, err, toAccountProto)
 }

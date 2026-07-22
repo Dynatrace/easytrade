@@ -2,10 +2,30 @@ package mssql
 
 import (
 	"errors"
+	"strings"
 
 	"github.com/dynatrace/easytrade/dbadapter/repository"
+	"github.com/google/uuid"
+	mssql "github.com/microsoft/go-mssqldb"
 	"gorm.io/gorm"
 )
+
+func uuidString(uuid mssql.UniqueIdentifier) string {
+	return strings.ToLower(uuid.String())
+}
+
+func parseUUID(str string) mssql.UniqueIdentifier {
+	var u mssql.UniqueIdentifier
+	_ = u.Scan(str)
+	return u
+}
+
+func newIfEmpty(str string) mssql.UniqueIdentifier {
+	if str == "" {
+		return mssql.UniqueIdentifier(uuid.New())
+	}
+	return parseUUID(str)
+}
 
 func mapSlice[M, T any](items []M, mapper func(*M) *T) []*T {
 	out := make([]*T, len(items))

@@ -6,12 +6,13 @@ import (
 
 	"github.com/dynatrace/easytrade/dbadapter/models"
 	"github.com/dynatrace/easytrade/dbadapter/repository"
+	mssql "github.com/microsoft/go-mssqldb"
 	"gorm.io/gorm"
 )
 
 type instrumentModel struct {
-	Id          string `gorm:"primaryKey"`
-	ProductId   string
+	Id          mssql.UniqueIdentifier `gorm:"primaryKey"`
+	ProductId   mssql.UniqueIdentifier
 	Code        string
 	Name        string
 	Description string
@@ -20,9 +21,9 @@ type instrumentModel struct {
 func (instrumentModel) TableName() string { return repository.TableInstruments }
 
 type ownedInstrumentModel struct {
-	Id                   string `gorm:"primaryKey"`
-	AccountId            string
-	InstrumentId         string
+	Id                   mssql.UniqueIdentifier `gorm:"primaryKey"`
+	AccountId            mssql.UniqueIdentifier
+	InstrumentId         mssql.UniqueIdentifier
 	Quantity             float64
 	LastModificationDate time.Time
 }
@@ -31,8 +32,8 @@ func (ownedInstrumentModel) TableName() string { return repository.TableOwnedIns
 
 func toInstrument(src *instrumentModel) *models.Instrument {
 	return &models.Instrument{
-		ID:          src.Id,
-		ProductID:   src.ProductId,
+		ID:          uuidString(src.Id),
+		ProductID:   uuidString(src.ProductId),
 		Code:        src.Code,
 		Name:        src.Name,
 		Description: src.Description,
@@ -41,9 +42,9 @@ func toInstrument(src *instrumentModel) *models.Instrument {
 
 func toOwnedInstrument(src *ownedInstrumentModel) *models.OwnedInstrument {
 	return &models.OwnedInstrument{
-		ID:                   src.Id,
-		AccountID:            src.AccountId,
-		InstrumentID:         src.InstrumentId,
+		ID:                   uuidString(src.Id),
+		AccountID:            uuidString(src.AccountId),
+		InstrumentID:         uuidString(src.InstrumentId),
 		Quantity:             src.Quantity,
 		LastModificationDate: src.LastModificationDate,
 	}
@@ -51,9 +52,9 @@ func toOwnedInstrument(src *ownedInstrumentModel) *models.OwnedInstrument {
 
 func fromOwnedInstrument(owned *models.OwnedInstrument) *ownedInstrumentModel {
 	return &ownedInstrumentModel{
-		Id:                   owned.ID,
-		AccountId:            owned.AccountID,
-		InstrumentId:         owned.InstrumentID,
+		Id:                   newIfEmpty(owned.ID),
+		AccountId:            parseUUID(owned.AccountID),
+		InstrumentId:         parseUUID(owned.InstrumentID),
 		Quantity:             owned.Quantity,
 		LastModificationDate: owned.LastModificationDate,
 	}

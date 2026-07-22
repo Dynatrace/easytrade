@@ -6,12 +6,13 @@ import (
 
 	"github.com/dynatrace/easytrade/dbadapter/models"
 	"github.com/dynatrace/easytrade/dbadapter/repository"
+	mssql "github.com/microsoft/go-mssqldb"
 	"gorm.io/gorm"
 )
 
 type accountModel struct {
-	Id                    string `gorm:"primaryKey"`
-	PackageId             string
+	Id                    mssql.UniqueIdentifier `gorm:"primaryKey"`
+	PackageId             mssql.UniqueIdentifier
 	FirstName             string
 	LastName              string
 	Username              string
@@ -28,8 +29,8 @@ func (accountModel) TableName() string { return repository.TableAccounts }
 
 func toAccount(src *accountModel) *models.Account {
 	return &models.Account{
-		ID:                    src.Id,
-		PackageID:             src.PackageId,
+		ID:                    uuidString(src.Id),
+		PackageID:             uuidString(src.PackageId),
 		FirstName:             src.FirstName,
 		LastName:              src.LastName,
 		Username:              src.Username,
@@ -45,8 +46,8 @@ func toAccount(src *accountModel) *models.Account {
 
 func fromAccount(account *models.Account) *accountModel {
 	return &accountModel{
-		Id:                    account.ID,
-		PackageId:             account.PackageID,
+		Id:                    newIfEmpty(account.ID),
+		PackageId:             parseUUID(account.PackageID),
 		FirstName:             account.FirstName,
 		LastName:              account.LastName,
 		Username:              account.Username,

@@ -5,11 +5,12 @@ import (
 
 	"github.com/dynatrace/easytrade/dbadapter/models"
 	"github.com/dynatrace/easytrade/dbadapter/repository"
+	mssql "github.com/microsoft/go-mssqldb"
 	"gorm.io/gorm"
 )
 
 type packageModel struct {
-	Id      string `gorm:"primaryKey"`
+	Id      mssql.UniqueIdentifier `gorm:"primaryKey"`
 	Name    string
 	Price   float64
 	Support string
@@ -19,7 +20,7 @@ func (packageModel) TableName() string { return repository.TablePackages }
 
 func toPackage(src *packageModel) *models.Package {
 	return &models.Package{
-		ID:      src.Id,
+		ID:      uuidString(src.Id),
 		Name:    src.Name,
 		Price:   src.Price,
 		Support: src.Support,

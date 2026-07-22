@@ -29,11 +29,17 @@ func (s *PricingServer) GetLatestPrices(ctx context.Context, _ *emptypb.Empty) (
 }
 
 func (s *PricingServer) GetLatestPriceForInstrument(ctx context.Context, req *pb.GetLatestPriceForInstrumentRequest) (*pb.PriceMessage, error) {
+	if err := validateUUID(req.InstrumentId); err != nil {
+		return nil, err
+	}
 	p, err := s.repo.GetMostRecent(ctx, req.InstrumentId)
 	return protoOrNotFound(p, err, toPriceProto)
 }
 
 func (s *PricingServer) GetPricesForInstrument(ctx context.Context, req *pb.GetPricesForInstrumentRequest) (*pb.PricesResponse, error) {
+	if err := validateUUID(req.InstrumentId); err != nil {
+		return nil, err
+	}
 	var limit *int
 	if req.Limit != nil {
 		v := int(*req.Limit)
@@ -47,6 +53,11 @@ func (s *PricingServer) GetPricesForInstrument(ctx context.Context, req *pb.GetP
 }
 
 func (s *PricingServer) InsertPricesBatch(ctx context.Context, req *pb.InsertPricesBatchRequest) (*pb.BatchResponse, error) {
+	for _, row := range req.Rows {
+		if err := validateUUID(row.InstrumentId); err != nil {
+			return nil, err
+		}
+	}
 	return batchResponse(s.repo.InsertBatch(ctx, mapSlice(req.Rows, toPriceModel)))
 }
 

@@ -7,12 +7,13 @@ import (
 
 	"github.com/dynatrace/easytrade/dbadapter/models"
 	"github.com/dynatrace/easytrade/dbadapter/repository"
+	mssql "github.com/microsoft/go-mssqldb"
 	"gorm.io/gorm"
 )
 
 type creditCardOrderModel struct {
-	Id              string `gorm:"primaryKey"`
-	AccountId       string
+	Id              mssql.UniqueIdentifier `gorm:"primaryKey"`
+	AccountId       mssql.UniqueIdentifier
 	Email           string
 	Name            string
 	ShippingAddress string
@@ -23,8 +24,8 @@ type creditCardOrderModel struct {
 func (creditCardOrderModel) TableName() string { return repository.TableCreditCardOrders }
 
 type creditCardOrderStatusModel struct {
-	Id                string `gorm:"primaryKey"`
-	CreditCardOrderId string
+	Id                mssql.UniqueIdentifier `gorm:"primaryKey"`
+	CreditCardOrderId mssql.UniqueIdentifier
 	Timestamp         time.Time
 	Status            string
 	Details           string
@@ -35,8 +36,8 @@ func (creditCardOrderStatusModel) TableName() string {
 }
 
 type creditCardModel struct {
-	Id                string `gorm:"primaryKey"`
-	CreditCardOrderId string
+	Id                mssql.UniqueIdentifier `gorm:"primaryKey"`
+	CreditCardOrderId mssql.UniqueIdentifier
 	Level             string
 	Number            string
 	Cvs               string
@@ -47,8 +48,8 @@ func (creditCardModel) TableName() string { return repository.TableCreditCards }
 
 func toCreditCardOrder(src *creditCardOrderModel) *models.CreditCardOrder {
 	order := &models.CreditCardOrder{
-		ID:              src.Id,
-		AccountID:       src.AccountId,
+		ID:              uuidString(src.Id),
+		AccountID:       uuidString(src.AccountId),
 		Email:           src.Email,
 		Name:            src.Name,
 		ShippingAddress: src.ShippingAddress,
@@ -62,8 +63,8 @@ func toCreditCardOrder(src *creditCardOrderModel) *models.CreditCardOrder {
 
 func fromCreditCardOrder(order *models.CreditCardOrder) *creditCardOrderModel {
 	dbOrder := &creditCardOrderModel{
-		Id:              order.ID,
-		AccountId:       order.AccountID,
+		Id:              newIfEmpty(order.ID),
+		AccountId:       parseUUID(order.AccountID),
 		Email:           order.Email,
 		Name:            order.Name,
 		ShippingAddress: order.ShippingAddress,
@@ -77,8 +78,8 @@ func fromCreditCardOrder(order *models.CreditCardOrder) *creditCardOrderModel {
 
 func toCreditCardOrderStatus(src *creditCardOrderStatusModel) *models.CreditCardOrderStatus {
 	return &models.CreditCardOrderStatus{
-		ID:                src.Id,
-		CreditCardOrderID: src.CreditCardOrderId,
+		ID:                uuidString(src.Id),
+		CreditCardOrderID: uuidString(src.CreditCardOrderId),
 		Timestamp:         src.Timestamp,
 		Status:            src.Status,
 		Details:           src.Details,
@@ -87,7 +88,8 @@ func toCreditCardOrderStatus(src *creditCardOrderStatusModel) *models.CreditCard
 
 func fromCreditCardOrderStatus(status *models.CreditCardOrderStatus) *creditCardOrderStatusModel {
 	return &creditCardOrderStatusModel{
-		CreditCardOrderId: status.CreditCardOrderID,
+		Id:                newIfEmpty(status.ID),
+		CreditCardOrderId: parseUUID(status.CreditCardOrderID),
 		Timestamp:         status.Timestamp,
 		Status:            status.Status,
 		Details:           status.Details,
@@ -96,7 +98,7 @@ func fromCreditCardOrderStatus(status *models.CreditCardOrderStatus) *creditCard
 
 func toCreditCard(src *creditCardModel) *models.CreditCard {
 	return &models.CreditCard{
-		OrderID:   src.CreditCardOrderId,
+		OrderID:   uuidString(src.CreditCardOrderId),
 		Level:     src.Level,
 		Number:    src.Number,
 		CVS:       src.Cvs,
@@ -106,7 +108,8 @@ func toCreditCard(src *creditCardModel) *models.CreditCard {
 
 func fromCreditCard(card *models.CreditCard) *creditCardModel {
 	return &creditCardModel{
-		CreditCardOrderId: card.OrderID,
+		Id:                newIfEmpty(""),
+		CreditCardOrderId: parseUUID(card.OrderID),
 		Level:             card.Level,
 		Number:            card.Number,
 		Cvs:               card.CVS,
@@ -138,7 +141,7 @@ func (repo *CreditCardOrderRepository) Create(ctx context.Context, order *models
 }
 
 func (repo *CreditCardOrderRepository) GetShippingAddress(ctx context.Context, orderID string) (*models.CreditCardOrder, error) {
-	return firstOptional(repo.db.WithContext(ctx).Where(repository.ColID+" = ?", orderID), toCreditCardOrder)
+	return firstOptional(repo.db.WithContext(ctx).Where(repository.ColID+" = ?", parseUUID(orderID)), toCreditCardOrder)
 }
 
 func (repo *CreditCardOrderRepository) GetStatusListByAccountID(ctx context.Context, accountID string) ([]*models.CreditCardOrderStatus, error) {

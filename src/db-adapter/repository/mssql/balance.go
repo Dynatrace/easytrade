@@ -6,19 +6,20 @@ import (
 
 	"github.com/dynatrace/easytrade/dbadapter/models"
 	"github.com/dynatrace/easytrade/dbadapter/repository"
+	mssql "github.com/microsoft/go-mssqldb"
 	"gorm.io/gorm"
 )
 
 type balanceModel struct {
-	AccountId string `gorm:"primaryKey"`
+	AccountId mssql.UniqueIdentifier `gorm:"primaryKey"`
 	Value     float64
 }
 
 func (balanceModel) TableName() string { return repository.TableBalances }
 
 type balanceHistoryModel struct {
-	Id          string `gorm:"primaryKey"`
-	AccountId   string
+	Id          mssql.UniqueIdentifier `gorm:"primaryKey"`
+	AccountId   mssql.UniqueIdentifier
 	OldValue    float64
 	ValueChange float64
 	ActionType  string
@@ -28,17 +29,17 @@ type balanceHistoryModel struct {
 func (balanceHistoryModel) TableName() string { return repository.TableBalanceHistory }
 
 func toBalance(src *balanceModel) *models.Balance {
-	return &models.Balance{AccountID: src.AccountId, Value: src.Value}
+	return &models.Balance{AccountID: uuidString(src.AccountId), Value: src.Value}
 }
 
 func fromBalance(balance *models.Balance) *balanceModel {
-	return &balanceModel{AccountId: balance.AccountID, Value: balance.Value}
+	return &balanceModel{AccountId: parseUUID(balance.AccountID), Value: balance.Value}
 }
 
 func toBalanceHistory(src *balanceHistoryModel) *models.BalanceHistory {
 	return &models.BalanceHistory{
-		ID:          src.Id,
-		AccountID:   src.AccountId,
+		ID:          uuidString(src.Id),
+		AccountID:   uuidString(src.AccountId),
 		OldValue:    src.OldValue,
 		ValueChange: src.ValueChange,
 		ActionType:  src.ActionType,
@@ -48,7 +49,8 @@ func toBalanceHistory(src *balanceHistoryModel) *models.BalanceHistory {
 
 func fromBalanceHistory(history *models.BalanceHistory) *balanceHistoryModel {
 	return &balanceHistoryModel{
-		AccountId:   history.AccountID,
+		Id:          newIfEmpty(history.ID),
+		AccountId:   parseUUID(history.AccountID),
 		OldValue:    history.OldValue,
 		ValueChange: history.ValueChange,
 		ActionType:  history.ActionType,

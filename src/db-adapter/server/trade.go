@@ -22,11 +22,20 @@ func NewTradeServer(repo models.TradeRepository) *TradeServer {
 }
 
 func (s *TradeServer) CreateTrade(ctx context.Context, req *pb.CreateTradeRequest) (*pb.TradeMessage, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
+	if err := validateUUID(req.InstrumentId); err != nil {
+		return nil, err
+	}
 	trade, err := s.repo.Create(ctx, toTradeModel(req))
 	return protoOrErr(trade, err, toTradeProto)
 }
 
 func (s *TradeServer) UpdateTrade(ctx context.Context, req *pb.UpdateTradeRequest) (*pb.TradeMessage, error) {
+	if err := validateUUID(req.Id); err != nil {
+		return nil, err
+	}
 	trade, err := fetchOrNotFound(s.repo.GetByID(ctx, req.Id))
 	if err != nil {
 		return nil, err
@@ -47,6 +56,9 @@ func (s *TradeServer) GetExpiredTrades(ctx context.Context, _ *emptypb.Empty) (*
 }
 
 func (s *TradeServer) GetAccountTrades(ctx context.Context, req *pb.GetAccountTradesRequest) (*pb.TradesResponse, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
 	return s.tradesResponse(s.repo.GetByAccount(ctx, req.AccountId, models.TradeFilter{
 		OnlyOpen: req.OnlyOpen,
 		OnlyLong: req.OnlyLong,

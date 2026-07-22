@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/dynatrace/easytrade/dbadapter/repository"
+	"github.com/google/uuid"
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -49,4 +50,11 @@ func fetchOrNotFound[T any](item *T, err error) (*T, error) {
 
 func errNotFound() error {
 	return status.Error(codes.NotFound, "not found")
+}
+
+func validateUUID(value string) error {
+	if _, err := uuid.Parse(value); err != nil {
+		return status.Errorf(codes.InvalidArgument, "%q is not a valid UUID", value)
+	}
+	return nil
 }

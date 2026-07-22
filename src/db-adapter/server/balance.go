@@ -20,16 +20,25 @@ func NewBalanceServer(repo models.BalanceRepository) *BalanceServer {
 }
 
 func (s *BalanceServer) CreateBalance(ctx context.Context, req *pb.CreateBalanceRequest) (*pb.BalanceMessage, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
 	balance, err := s.repo.Create(ctx, toBalanceModel(req))
 	return protoOrErr(balance, err, toBalanceProto)
 }
 
 func (s *BalanceServer) GetBalanceByAccountId(ctx context.Context, req *pb.GetBalanceRequest) (*pb.BalanceMessage, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
 	balance, err := s.repo.GetByAccountID(ctx, req.AccountId)
 	return protoOrNotFound(balance, err, toBalanceProto)
 }
 
 func (s *BalanceServer) UpdateBalance(ctx context.Context, req *pb.UpdateBalanceRequest) (*pb.BalanceMessage, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
 	balance, err := fetchOrNotFound(s.repo.GetByAccountID(ctx, req.AccountId))
 	if err != nil {
 		return nil, err
@@ -40,6 +49,9 @@ func (s *BalanceServer) UpdateBalance(ctx context.Context, req *pb.UpdateBalance
 }
 
 func (s *BalanceServer) AddBalanceHistory(ctx context.Context, req *pb.AddBalanceHistoryRequest) (*pb.BalanceHistoryMessage, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
 	history, err := s.repo.AddHistory(ctx, toBalanceHistoryModel(req))
 	return protoOrErr(history, err, toBalanceHistoryProto)
 }

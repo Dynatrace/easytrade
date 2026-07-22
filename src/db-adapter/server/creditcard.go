@@ -23,16 +23,25 @@ func NewCreditCardOrderServer(repo models.CreditCardOrderRepository) *CreditCard
 }
 
 func (s *CreditCardOrderServer) CreateCreditCardOrder(ctx context.Context, req *pb.CreateCreditCardOrderRequest) (*pb.CreditCardOrderMessage, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
 	order, err := s.repo.Create(ctx, toOrderModel(req))
 	return protoOrErr(order, err, toOrderProto)
 }
 
 func (s *CreditCardOrderServer) GetShippingAddressByOrderId(ctx context.Context, req *pb.GetShippingAddressRequest) (*pb.ShippingAddressMessage, error) {
+	if err := validateUUID(req.OrderId); err != nil {
+		return nil, err
+	}
 	order, err := s.repo.GetShippingAddress(ctx, req.OrderId)
 	return protoOrNotFound(order, err, toShippingAddressProto)
 }
 
 func (s *CreditCardOrderServer) GetStatusListByAccountId(ctx context.Context, req *pb.GetStatusListByAccountIdRequest) (*pb.OrderStatusListResponse, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
 	statuses, err := s.repo.GetStatusListByAccountID(ctx, req.AccountId)
 	if errors.Is(err, repository.ErrNotFound) {
 		return &pb.OrderStatusListResponse{}, nil
@@ -44,6 +53,9 @@ func (s *CreditCardOrderServer) GetStatusListByAccountId(ctx context.Context, re
 }
 
 func (s *CreditCardOrderServer) GetLastOrderStatusByAccountId(ctx context.Context, req *pb.GetLastOrderStatusByAccountIdRequest) (*pb.CreditCardOrderStatusMessage, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
 	orderStatus, err := s.repo.GetLastStatusByAccountID(ctx, req.AccountId)
 	return protoOrNotFound(orderStatus, err, toStatusProto)
 }
@@ -57,16 +69,25 @@ func (s *CreditCardOrderServer) GetOrdersToManufacture(ctx context.Context, _ *e
 }
 
 func (s *CreditCardOrderServer) InsertNewStatus(ctx context.Context, req *pb.InsertNewStatusRequest) (*pb.CreditCardOrderStatusMessage, error) {
+	if err := validateUUID(req.OrderId); err != nil {
+		return nil, err
+	}
 	orderStatus, err := s.repo.InsertStatus(ctx, toStatusModel(req))
 	return protoOrErr(orderStatus, err, toStatusProto)
 }
 
 func (s *CreditCardOrderServer) InsertNewCreditCard(ctx context.Context, req *pb.InsertNewCreditCardRequest) (*pb.CreditCardMessage, error) {
+	if err := validateUUID(req.OrderId); err != nil {
+		return nil, err
+	}
 	card, err := s.repo.InsertCard(ctx, toCardModel(req))
 	return protoOrErr(card, err, toCardProto)
 }
 
 func (s *CreditCardOrderServer) UpdateOrderShippingId(ctx context.Context, req *pb.UpdateOrderShippingIdRequest) (*pb.CreditCardOrderMessage, error) {
+	if err := validateUUID(req.OrderId); err != nil {
+		return nil, err
+	}
 	order, err := fetchOrNotFound(s.repo.GetShippingAddress(ctx, req.OrderId))
 	if err != nil {
 		return nil, err
@@ -77,6 +98,9 @@ func (s *CreditCardOrderServer) UpdateOrderShippingId(ctx context.Context, req *
 }
 
 func (s *CreditCardOrderServer) DeleteOrdersByAccountId(ctx context.Context, req *pb.DeleteOrdersRequest) (*pb.BatchResponse, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
 	return batchResponse(s.repo.DeleteByAccountID(ctx, req.AccountId))
 }
 

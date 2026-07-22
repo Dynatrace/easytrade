@@ -6,12 +6,13 @@ import (
 
 	"github.com/dynatrace/easytrade/dbadapter/models"
 	"github.com/dynatrace/easytrade/dbadapter/repository"
+	mssql "github.com/microsoft/go-mssqldb"
 	"gorm.io/gorm"
 )
 
 type priceModel struct {
-	Id           string `gorm:"primaryKey"`
-	InstrumentId string
+	Id           mssql.UniqueIdentifier `gorm:"primaryKey"`
+	InstrumentId mssql.UniqueIdentifier
 	Timestamp    time.Time
 	Open         float64
 	High         float64
@@ -23,7 +24,8 @@ func (priceModel) TableName() string { return repository.TablePrices }
 
 func fromPrice(price *models.Price) priceModel {
 	return priceModel{
-		InstrumentId: price.InstrumentID,
+		Id:           newIfEmpty(price.ID),
+		InstrumentId: parseUUID(price.InstrumentID),
 		Timestamp:    price.Timestamp,
 		Open:         price.Open,
 		High:         price.High,
@@ -34,8 +36,8 @@ func fromPrice(price *models.Price) priceModel {
 
 func toPrice(src *priceModel) *models.Price {
 	return &models.Price{
-		ID:           src.Id,
-		InstrumentID: src.InstrumentId,
+		ID:           uuidString(src.Id),
+		InstrumentID: uuidString(src.InstrumentId),
 		Timestamp:    src.Timestamp,
 		Open:         src.Open,
 		High:         src.High,
