@@ -2,9 +2,11 @@ package server
 
 import (
 	"context"
+	"errors"
 
 	"github.com/dynatrace/easytrade/dbadapter/models"
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
+	"github.com/dynatrace/easytrade/dbadapter/repository"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -32,6 +34,9 @@ func (s *CreditCardOrderServer) GetShippingAddressByOrderId(ctx context.Context,
 
 func (s *CreditCardOrderServer) GetStatusListByAccountId(ctx context.Context, req *pb.GetStatusListByAccountIdRequest) (*pb.OrderStatusListResponse, error) {
 	statuses, err := s.repo.GetStatusListByAccountID(ctx, req.AccountId)
+	if errors.Is(err, repository.ErrNotFound) {
+		return &pb.OrderStatusListResponse{}, nil
+	}
 	if err != nil {
 		return nil, err
 	}

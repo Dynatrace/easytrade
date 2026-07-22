@@ -1,10 +1,12 @@
 package server
 
 import (
+	"errors"
+
+	"github.com/dynatrace/easytrade/dbadapter/repository"
+	pb "github.com/dynatrace/easytrade/dbadapter/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	pb "github.com/dynatrace/easytrade/dbadapter/proto"
 )
 
 func mapSlice[T, M any](items []T, mapper func(T) M) []M {
@@ -24,15 +26,11 @@ func protoOrErr[T, M any](entity T, err error, mapper func(T) M) (M, error) {
 }
 
 func protoOrNotFound[T, M any](entity *T, err error, mapper func(*T) M) (M, error) {
-	if err != nil {
-		var zero M
-		return zero, err
-	}
-	if entity == nil {
+	if errors.Is(err, repository.ErrNotFound) {
 		var zero M
 		return zero, errNotFound()
 	}
-	return mapper(entity), nil
+	return protoOrErr(entity, err, mapper)
 }
 
 func batchResponse(affected int32, err error) (*pb.BatchResponse, error) {
@@ -43,13 +41,10 @@ func batchResponse(affected int32, err error) (*pb.BatchResponse, error) {
 }
 
 func fetchOrNotFound[T any](item *T, err error) (*T, error) {
-	if err != nil {
-		return nil, err
-	}
-	if item == nil {
+	if errors.Is(err, repository.ErrNotFound) {
 		return nil, errNotFound()
 	}
-	return item, nil
+	return item, err
 }
 
 func errNotFound() error {

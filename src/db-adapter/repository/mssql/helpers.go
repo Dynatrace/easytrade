@@ -3,6 +3,7 @@ package mssql
 import (
 	"errors"
 
+	"github.com/dynatrace/easytrade/dbadapter/repository"
 	"gorm.io/gorm"
 )
 
@@ -18,7 +19,7 @@ func firstOptional[M, T any](query *gorm.DB, mapper func(*M) *T) (*T, error) {
 	var item M
 	switch err := query.First(&item).Error; {
 	case errors.Is(err, gorm.ErrRecordNotFound):
-		return nil, nil
+		return nil, repository.ErrNotFound
 	case err != nil:
 		return nil, err
 	default:

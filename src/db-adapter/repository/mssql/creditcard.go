@@ -2,6 +2,7 @@ package mssql
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/dynatrace/easytrade/dbadapter/models"
@@ -142,7 +143,10 @@ func (repo *CreditCardOrderRepository) GetShippingAddress(ctx context.Context, o
 
 func (repo *CreditCardOrderRepository) GetStatusListByAccountID(ctx context.Context, accountID string) ([]*models.CreditCardOrderStatus, error) {
 	order, err := repo.findOrderByAccountID(ctx, accountID)
-	if err != nil || order == nil {
+	if errors.Is(err, repository.ErrNotFound) {
+		return nil, repository.ErrNotFound
+	}
+	if err != nil {
 		return nil, err
 	}
 	return findAll(
@@ -153,7 +157,7 @@ func (repo *CreditCardOrderRepository) GetStatusListByAccountID(ctx context.Cont
 
 func (repo *CreditCardOrderRepository) GetLastStatusByAccountID(ctx context.Context, accountID string) (*models.CreditCardOrderStatus, error) {
 	order, err := repo.findOrderByAccountID(ctx, accountID)
-	if err != nil || order == nil {
+	if err != nil {
 		return nil, err
 	}
 	return firstOptional(
@@ -167,7 +171,7 @@ func (repo *CreditCardOrderRepository) GetOrdersToManufacture(ctx context.Contex
 		" ON " + repository.TableCreditCardOrderStatus + "." + repository.ColCreditCardOrderID +
 		" = " + repository.TableCreditCardOrders + "." + repository.ColID
 	where := repository.TableCreditCardOrderStatus + "." + repository.ColStatus + " = ?"
-	query := repo.db.WithContext(ctx).Joins(join).Where(where, "ORDER_CREATED")
+	query := repo.db.WithContext(ctx).Joins(join).Where(where, repository.StatusOrderCreated)
 	return findAll(query, toCreditCardOrder)
 }
 

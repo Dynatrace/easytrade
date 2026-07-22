@@ -2,15 +2,15 @@ package repository
 
 const (
 	TableAccounts              = "Accounts"
-	TableBalances              = "Balances"
-	TableBalanceHistory        = "BalanceHistory"
+	TableBalances              = "Balance"
+	TableBalanceHistory        = "Balancehistory"
 	TableCreditCardOrders      = "CreditCardOrders"
 	TableCreditCardOrderStatus = "CreditCardOrderStatus"
 	TableCreditCards           = "CreditCards"
 	TableInstruments           = "Instruments"
-	TableOwnedInstruments      = "OwnedInstruments"
+	TableOwnedInstruments      = "Ownedinstruments"
 	TablePackages              = "Packages"
-	TablePrices                = "Prices"
+	TablePrices                = "Pricing"
 	TableProducts              = "Products"
 	TableTrades                = "Trades"
 )
@@ -30,4 +30,8 @@ const (
 	ColTradeClosed       = "TradeClosed"
 	ColTimestampOpen     = "TimestampOpen"
 	ColTimestampClose    = "TimestampClose"
+)
+
+const (
+	StatusOrderCreated = "order_created"
 )
