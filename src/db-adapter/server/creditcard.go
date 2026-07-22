@@ -118,7 +118,6 @@ func toManufactureDataProto(order *models.CreditCardOrder) *pb.CreditCardManufac
 
 func toOrderModel(req *pb.CreateCreditCardOrderRequest) *models.CreditCardOrder {
 	return &models.CreditCardOrder{
-		ID:              req.Id,
 		AccountID:       req.AccountId,
 		Email:           req.Email,
 		Name:            req.Name,

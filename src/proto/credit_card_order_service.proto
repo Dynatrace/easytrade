@@ -22,12 +22,11 @@ message CreditCardOrderMessage {
 }
 
 message CreateCreditCardOrderRequest {
-  string id = 1;
-  string account_id = 2;
-  string email = 3;
-  string name = 4;
-  string shipping_address = 5;
-  string card_level = 6;
+  string account_id = 1;
+  string email = 2;
+  string name = 3;
+  string shipping_address = 4;
+  string card_level = 5;
 }
 
 message CreditCardOrderStatusMessage {

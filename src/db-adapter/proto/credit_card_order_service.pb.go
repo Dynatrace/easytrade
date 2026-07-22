@@ -117,12 +117,11 @@ func (x *CreditCardOrderMessage) GetShippingId() string {
 
 type CreateCreditCardOrderRequest struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	AccountId       string                 `protobuf:"bytes,2,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
-	Email           string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"`
-	Name            string                 `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
-	ShippingAddress string                 `protobuf:"bytes,5,opt,name=shipping_address,json=shippingAddress,proto3" json:"shipping_address,omitempty"`
-	CardLevel       string                 `protobuf:"bytes,6,opt,name=card_level,json=cardLevel,proto3" json:"card_level,omitempty"`
+	AccountId       string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`
+	Email           string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	Name            string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	ShippingAddress string                 `protobuf:"bytes,4,opt,name=shipping_address,json=shippingAddress,proto3" json:"shipping_address,omitempty"`
+	CardLevel       string                 `protobuf:"bytes,5,opt,name=card_level,json=cardLevel,proto3" json:"card_level,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -155,13 +154,6 @@ func (x *CreateCreditCardOrderRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use CreateCreditCardOrderRequest.ProtoReflect.Descriptor instead.
 func (*CreateCreditCardOrderRequest) Descriptor() ([]byte, []int) {
 	return file_credit_card_order_service_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *CreateCreditCardOrderRequest) GetId() string {
-	if x != nil {
-		return x.Id
-	}
-	return ""
 }
 
 func (x *CreateCreditCardOrderRequest) GetAccountId() string {
@@ -946,16 +938,15 @@ const file_credit_card_order_service_proto_rawDesc = "" +
 	"\n" +
 	"card_level\x18\x06 \x01(\tR\tcardLevel\x12\x1f\n" +
 	"\vshipping_id\x18\a \x01(\tR\n" +
-	"shippingId\"\xc1\x01\n" +
-	"\x1cCreateCreditCardOrderRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1d\n" +
+	"shippingId\"\xb1\x01\n" +
+	"\x1cCreateCreditCardOrderRequest\x12\x1d\n" +
 	"\n" +
-	"account_id\x18\x02 \x01(\tR\taccountId\x12\x14\n" +
-	"\x05email\x18\x03 \x01(\tR\x05email\x12\x12\n" +
-	"\x04name\x18\x04 \x01(\tR\x04name\x12)\n" +
-	"\x10shipping_address\x18\x05 \x01(\tR\x0fshippingAddress\x12\x1d\n" +
+	"account_id\x18\x01 \x01(\tR\taccountId\x12\x14\n" +
+	"\x05email\x18\x02 \x01(\tR\x05email\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12)\n" +
+	"\x10shipping_address\x18\x04 \x01(\tR\x0fshippingAddress\x12\x1d\n" +
 	"\n" +
-	"card_level\x18\x06 \x01(\tR\tcardLevel\"\xcb\x01\n" +
+	"card_level\x18\x05 \x01(\tR\tcardLevel\"\xcb\x01\n" +
 	"\x1cCreditCardOrderStatusMessage\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12/\n" +
 	"\x14credit_card_order_id\x18\x02 \x01(\tR\x11creditCardOrderId\x128\n" +
