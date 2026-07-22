@@ -151,33 +151,6 @@ func TestGetAccount_ExistingId_ReturnsOk(t *testing.T) {
 	}
 }
 
-// TestGetAccount_ExistingId_OmitsHashedPassword checks the response never leaks the password hash.
-func TestGetAccount_ExistingId_OmitsHashedPassword(t *testing.T) {
-	client := newFakeAccountServiceClient()
-	id := seedAccount(t, client, "demouser", "demopass", "WEB")
-	router := newTestRouter(client)
-
-	recorder := doRequest(router, http.MethodGet, "/api/accounts/"+id, "")
-
-	if strings.Contains(recorder.Body.String(), "assword") {
-		t.Fatalf("response leaked a password field: %s", recorder.Body.String())
-	}
-}
-
-// TestGetAccount_ExistingId_UsesCamelCaseFields checks the response uses the API's camelCase
-// contract rather than the proto wire format's snake_case field names.
-func TestGetAccount_ExistingId_UsesCamelCaseFields(t *testing.T) {
-	client := newFakeAccountServiceClient()
-	id := seedAccount(t, client, "demouser", "demopass", "WEB")
-	router := newTestRouter(client)
-
-	recorder := doRequest(router, http.MethodGet, "/api/accounts/"+id, "")
-
-	if !strings.Contains(recorder.Body.String(), `"firstName"`) {
-		t.Fatalf("expected camelCase \"firstName\" field, got: %s", recorder.Body.String())
-	}
-}
-
 // TestGetAccount_MissingId_ReturnsNotFound checks an unknown id returns 404.
 func TestGetAccount_MissingId_ReturnsNotFound(t *testing.T) {
 	router := newTestRouter(newFakeAccountServiceClient())

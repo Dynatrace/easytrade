@@ -2,10 +2,8 @@ package account
 
 import (
 	"context"
-	"strconv"
-	"sync"
-
 	"dynatrace.com/easytrade/user-service/dbadapter/proto"
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -13,24 +11,17 @@ import (
 )
 
 type fakeAccountServiceClient struct {
-	mu       sync.Mutex
 	accounts map[string]*proto.AccountMessage
-	nextID   int
 }
 
 func newFakeAccountServiceClient() *fakeAccountServiceClient {
 	return &fakeAccountServiceClient{
 		accounts: make(map[string]*proto.AccountMessage),
-		nextID:   1,
 	}
 }
 
 func (f *fakeAccountServiceClient) CreateAccount(_ context.Context, in *proto.CreateAccountRequest, _ ...grpc.CallOption) (*proto.AccountMessage, error) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-
-	id := strconv.Itoa(f.nextID)
-	f.nextID++
+	id := uuid.New().String()
 
 	acc := &proto.AccountMessage{
 		Id:                    id,
@@ -51,9 +42,6 @@ func (f *fakeAccountServiceClient) CreateAccount(_ context.Context, in *proto.Cr
 }
 
 func (f *fakeAccountServiceClient) GetAccountById(_ context.Context, in *proto.GetAccountByIdRequest, _ ...grpc.CallOption) (*proto.AccountMessage, error) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-
 	acc, ok := f.accounts[in.Id]
 	if !ok {
 		return nil, status.Error(codes.NotFound, "account not found")
@@ -62,9 +50,6 @@ func (f *fakeAccountServiceClient) GetAccountById(_ context.Context, in *proto.G
 }
 
 func (f *fakeAccountServiceClient) GetAccountByUsername(_ context.Context, in *proto.GetAccountByUsernameRequest, _ ...grpc.CallOption) (*proto.AccountMessage, error) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-
 	for _, acc := range f.accounts {
 		if acc.Username == in.Username {
 			return acc, nil
@@ -74,9 +59,6 @@ func (f *fakeAccountServiceClient) GetAccountByUsername(_ context.Context, in *p
 }
 
 func (f *fakeAccountServiceClient) GetAccounts(_ context.Context, _ *emptypb.Empty, _ ...grpc.CallOption) (*proto.AccountsResponse, error) {
-	f.mu.Lock()
-	defer f.mu.Unlock()
-
 	accounts := make([]*proto.AccountMessage, 0, len(f.accounts))
 	for _, acc := range f.accounts {
 		accounts = append(accounts, acc)
