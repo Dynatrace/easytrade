@@ -65,12 +65,13 @@ services:
     image: ${REGISTRY}/broker-service:${TAG}
     depends_on:
       - db
-      - accountservice
+      - user-service
       - pricing-service
       - feature-flag-service
     environment:
-      ACCOUNTSERVICE_HOSTANDPORT: accountservice:8080
+      USER_SERVICE_HOSTANDPORT: user-service:8080
       PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
+      ENGINE_HOSTANDPORT: engine:8080
       <<: *feature-flag-service-env
       PROXY_PREFIX: broker-service
       MSSQL_CONNECTIONSTRING: *dotnet-connection-string
@@ -92,19 +93,9 @@ services:
     image: ${REGISTRY}/frontend:${TAG}
     depends_on:
       - broker-service
-      - loginservice
+      - user-service
       - pricing-service
-      - accountservice
       - credit-card-order-service
-
-  loginservice:
-    <<: *default-service
-    image: ${REGISTRY}/loginservice:${TAG}
-    depends_on:
-      - db
-    environment:
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
-      PROXY_PREFIX: loginservice
 
   frontendreverseproxy:
     <<: *default-service
@@ -112,11 +103,10 @@ services:
     depends_on:
       - broker-service
       - frontend
-      - loginservice
+      - user-service
       - pricing-service
       - feature-flag-service
       - offerservice
-      - accountservice
       - credit-card-order-service
       - third-party-service
     ports:
@@ -134,12 +124,12 @@ services:
     <<: *default-service
     image: ${REGISTRY}/offerservice:${TAG}
     depends_on:
-      - loginservice
+      - user-service
       - manager
     environment:
       <<: *feature-flag-service-env
-      LOGIN_SERVICE_PORT: 8080
-      LOGIN_SERVICE_BASE_URL: loginservice
+      USER_SERVICE_PORT: 8080
+      USER_SERVICE_BASE_URL: user-service
       MANAGER_BASE_URL: manager
       MANAGER_PORT: 8080
 
@@ -149,14 +139,24 @@ services:
     environment:
       PROXY_PREFIX: feature-flag-service
 
-  accountservice:
+  user-service:
     <<: *default-service
-    image: ${REGISTRY}/accountservice:${TAG}
+    image: ${REGISTRY}/user-service:${TAG}
     depends_on:
+      - db
       - manager
     environment:
-      MANAGER_HOSTANDPORT: manager:8080
-      PROXY_PREFIX: accountservice
+      GO_CONNECTION_STRING: *go-connection-string
+      MANAGER_ADDRESS: http|manager|8080
+
+  engine:
+    <<: *default-service
+    image: ${REGISTRY}/engine:${TAG}
+    depends_on:
+      - broker-service
+    environment:
+      BROKER_HOSTANDPORT: broker-service:8080
+      PROXY_PREFIX: engine
 
   credit-card-order-service:
     <<: *default-service

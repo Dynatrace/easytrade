@@ -3,30 +3,30 @@
 # configs
 
 configs:
-  # === [JAVA] ACCOUNT SERVICE ===
-  - id: easytrade_accountservice_get-account
+  # === [GO] USER SERVICE ===
+  - id: easytrade_user-service_get-account
     config:
-      name: EasyTrade [accountservice | Java] - GET /api/accounts/{accountId}
-      template: easytrade_accountservice_get-account.json
+      name: EasyTrade [user-service | Go] - GET /api/accounts/{accountId}
+      template: easytrade_user-service_get-account.json
       skip: false
-      parameters: &javaCapture
+      parameters: &goCapture
         refCaptureRule:
           project: config.bizevent-capturing
           type: reference
           configType: builtin:oneagent.features
-          configId: http-java
+          configId: http-go
           property: name
     type: &bizevent_type
       settings:
         schema: builtin:bizevents.http.incoming
         scope: environment
 
-  - id: easytrade_accountservice_get-preset-accounts
+  - id: easytrade_user-service_get-preset-accounts
     config:
-      name: EasyTrade [accountservice | Java] - GET /api/accounts/presets
-      template: easytrade_accountservice_get-preset-accounts.json
+      name: EasyTrade [user-service | Go] - GET /api/accounts/presets
+      template: easytrade_user-service_get-preset-accounts.json
       skip: false
-      parameters: *javaCapture
+      parameters: *goCapture
     type: *bizevent_type
 
   # === [DOTNET] BROKER SERVICE ===
@@ -122,7 +122,13 @@ configs:
       name: EasyTrade [credit-card-order-service | Java] DELETE /v1/order/{accountId}
       template: easytrade_credit-card-order-service_delete-card.json
       skip: false
-      parameters: *javaCapture
+      parameters: &javaCapture
+        refCaptureRule:
+          project: config.bizevent-capturing
+          type: reference
+          configType: builtin:oneagent.features
+          configId: http-java
+          property: name
     type: *bizevent_type
 
   - id: easytrade_credit-card-order-service_get-latest-status
@@ -214,29 +220,21 @@ configs:
       parameters: *javaCapture
     type: *bizevent_type
 
-  # === [DOTNET] LOGIN SERVICE ===
-  - id: easytrade_loginservice_login
+  # === [GO] USER SERVICE — auth ===
+  - id: easytrade_user-service_login
     config:
-      name: EasyTrade [loginservice | .NET] - POST /api/Login
-      template: easytrade_loginservice_login.json
+      name: EasyTrade [user-service | Go] - POST /api/auth/login
+      template: easytrade_user-service_login.json
       skip: false
-      parameters: *dotnetCapture
+      parameters: *goCapture
     type: *bizevent_type
 
-  - id: easytrade_loginservice_logout
+  - id: easytrade_user-service_signup
     config:
-      name: EasyTrade [loginservice | .NET] - POST /api/Logout
-      template: easytrade_loginservice_logout.json
+      name: EasyTrade [user-service | Go] - POST /api/auth/signup
+      template: easytrade_user-service_signup.json
       skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
-
-  - id: easytrade_loginservice_signup
-    config:
-      name: EasyTrade [loginservice | .NET] - POST /api/Signup
-      template: easytrade_loginservice_signup.json
-      skip: false
-      parameters: *dotnetCapture
+      parameters: *goCapture
     type: *bizevent_type
 
   # === [DOTNET] MANAGER ===
@@ -500,13 +498,7 @@ configs:
       name: EasyTrade [pricing-service | Go] - GET /v1/prices/instrument/{instrumentId}
       template: easytrade_pricing-service_get-instrument-price.json
       skip: false
-      parameters: &goCapture
-        refCaptureRule:
-          project: config.bizevent-capturing
-          type: reference
-          configType: builtin:oneagent.features
-          configId: http-go
-          property: name
+      parameters: *goCapture
     type: *bizevent_type
 
   - id: easytrade_pricing-service_last

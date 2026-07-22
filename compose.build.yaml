@@ -1,9 +1,4 @@
 services:
-  accountservice:
-    image: ${REGISTRY}/accountservice:${TAG}
-    build:
-      context: src/accountservice
-
   aggregator-service:
     image: ${REGISTRY}/aggregator-service:${TAG}
     build:
@@ -54,11 +49,6 @@ services:
     build:
       context: src/loadgen
 
-  loginservice:
-    image: ${REGISTRY}/loginservice:${TAG}
-    build:
-      context: src/loginservice
-
   manager:
     image: ${REGISTRY}/manager:${TAG}
     build:
@@ -88,3 +78,8 @@ services:
     image: ${REGISTRY}/third-party-service:${TAG}
     build:
       context: src/third-party-service
+
+  user-service:
+    image: ${REGISTRY}/user-service:${TAG}
+    build:
+      context: src/user-service

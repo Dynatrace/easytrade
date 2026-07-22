@@ -1,5 +1,4 @@
-﻿using EasyTrade.BrokerService.Entities.Accounts;
-using EasyTrade.BrokerService.Helpers;
+﻿using EasyTrade.BrokerService.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace EasyTrade.BrokerService.Entities.Instruments.Repository;
@@ -17,9 +16,6 @@ public class InstrumentRepository(BrokerDbContext dbContext)
         await DbContext
             .OwnedInstruments.Where(x => x.AccountId == accountId && x.InstrumentId == instrumentId)
             .FirstOrDefaultAsync();
-
-    public IQueryable<OwnedInstrument> GetOwnedInstrumentsOfAccount(Account account) =>
-        GetOwnedInstrumentsOfAccount(account.Id);
 
     public IQueryable<OwnedInstrument> GetOwnedInstrumentsOfAccount(int accountId) =>
         DbContext.OwnedInstruments.Where(x => x!.AccountId == accountId).AsQueryable();

@@ -1,8 +1,8 @@
 ﻿namespace EasyTrade.BrokerService.Entities.Accounts;
 
 public class Account(
-    int id,
-    int packageId,
+    string id,
+    string packageId,
     string firstName,
     string lastName,
     string username,
@@ -15,8 +15,8 @@ public class Account(
     string address
 )
 {
-    public int Id { get; set; } = id;
-    public int PackageId { get; set; } = packageId;
+    public string Id { get; set; } = id;
+    public string PackageId { get; set; } = packageId;
     public string FirstName { get; set; } = firstName;
     public string LastName { get; set; } = lastName;
     public string Username { get; set; } = username;

@@ -1,8 +1,6 @@
 package datagenerator
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"math/rand"
 
 	"dynatrace.com/easytrade/aggregator-service/config"
@@ -20,7 +18,7 @@ func CreateFakeSignupRequest(platformName string, packageProb *config.PackagePro
 	sr.Username = sr.FirstName + sr.LastName
 	sr.Email = sr.Username + "@" + faker.DomainName()
 	sr.Address = faker.GetRealAddress().Address
-	sr.HashedPassword, _ = hashPassword(faker.Password())
+	sr.Password = faker.Password()
 	sr.Origin = platformName
 
 	return sr
@@ -51,11 +49,3 @@ func getRandomValueWithProbability[T any](elements []T, probabilities []float32)
 	return elements[resultId]
 }
 
-func hashPassword(password string) (string, error) {
-	h := sha256.New()
-	_, err := h.Write([]byte(password))
-	if err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(h.Sum(nil)), nil
-}

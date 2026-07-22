@@ -66,11 +66,11 @@ services:
       - 8084:8080
     depends_on:
       - db
-      - accountservice
+      - user-service
       - pricing-service
       - feature-flag-service
     environment:
-      ACCOUNTSERVICE_HOSTANDPORT: accountservice:8080
+      USER_SERVICE_HOSTANDPORT: user-service:8080
       PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
       <<: *feature-flag-service-env
       PROXY_PREFIX: broker-service
@@ -98,25 +98,13 @@ services:
       # dockerfile: Dockerfile
     # depends_on:
     #   - broker-service
-    #   - loginservice
+    #   - user-service
     #   - pricing-service
-    #   - accountservice
     #   - credit-card-order-service
     ports:
       - 8092:3000
     volumes:
       - ./src/frontend/src:/app/src:ro
-
-  loginservice:
-    <<: *default-service
-    build: src/loginservice
-    environment:
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
-      PROXY_PREFIX: loginservice
-    depends_on:
-      - db
-    ports:
-      - 8086:8080
 
   frontendreverseproxy:
     <<: *default-service
@@ -124,13 +112,12 @@ services:
     depends_on:
       - broker-service
       - frontend
-      - loginservice
       - pricing-service
       - feature-flag-service
       - offerservice
-      - accountservice
       - credit-card-order-service
       - third-party-service
+      - user-service
     ports:
       - 80:80
 
@@ -146,29 +133,27 @@ services:
     <<: *default-service
     build: src/offerservice
     depends_on:
-      - loginservice
+      - user-service
       - manager
       - feature-flag-service
     ports:
       - 8087:8080
     environment:
       <<: *feature-flag-service-env
-      LOGIN_SERVICE_PORT: 8080
-      LOGIN_SERVICE_BASE_URL: loginservice
+      USER_SERVICE_PORT: 8080
+      USER_SERVICE_BASE_URL: user-service
       MANAGER_BASE_URL: manager
       MANAGER_PORT: 8080
 
-  accountservice:
+  user-service:
     <<: *default-service
-    build: src/accountservice
-    depends_on:
-      - manager
+    build: src/user-service
     ports:
       - 8089:8080
     environment:
-      MANAGER_HOSTANDPORT: manager:8080
-      PROXY_PREFIX: accountservice
-
+      # db-adapter is not part of the compose stack yet; user-service is prepared to call it.
+      DB_ADAPTER_ADDRESS: db-adapter:8080
+      
   credit-card-order-service:
     <<: *default-service
     build: src/credit-card-order-service

@@ -18,7 +18,7 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "MSSQL_CONNECTIONSTRING": "Data Source=localhost;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true",
-        "ACCOUNTSERVICE_HOSTANDPORT": "localhost:8089",
+        "USER_SERVICE_HOSTANDPORT": "localhost:8095",
         "PRICINGSERVICE_HOSTANDPORT": "localhost:8083",
         "FEATURE_FLAG_SERVICE_PROTOCOL": "http",
         "FEATURE_FLAG_SERVICE_BASE_URL": "localhost",

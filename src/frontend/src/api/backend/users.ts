@@ -1,5 +1,3 @@
-import { XMLBuilder, XMLParser } from "fast-xml-parser"
-
 export type PresetUser = {
     id: number
     username: string
@@ -36,11 +34,6 @@ export type LoginResponse = {
     error?: string
 }
 
-export type LogoutResponse = {
-    message?: string
-    error?: string
-}
-
 type SignupRequest = {
     packageId: number
     origin: string
@@ -57,88 +50,38 @@ type SignupResponse = {
     error?: string
 }
 
-export type IdResponse<T> = {
-    IdResponse: T
-}
-
-export type MessageResponse<T> = {
-    MessageResponse: T
-}
-
 export class UserBackend {
-    private readonly accountServiceUrl: string
-    private readonly loginServiceUrl: string
+    private readonly userServiceUrl: string
     private readonly brokerServiceUrl: string
 
-    constructor(
-        accountServiceUrl: string,
-        loginServiceUrl: string,
-        brokerServiceUrl: string
-    ) {
-        this.accountServiceUrl = accountServiceUrl
-        this.loginServiceUrl = loginServiceUrl
+    constructor(userServiceUrl: string, brokerServiceUrl: string) {
+        this.userServiceUrl = userServiceUrl
         this.brokerServiceUrl = brokerServiceUrl
     }
 
-    async loginXml(
-        xmlBuilder: XMLBuilder,
-        xmlParser: XMLParser,
-        username: string,
-        password: string
-    ): Promise<IdResponse<LoginResponse>> {
-        const response = await fetch(`${this.loginServiceUrl}/Login`, {
+    async login(username: string, password: string): Promise<LoginResponse> {
+        const response = await fetch(`${this.userServiceUrl}/auth/login`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/xml",
-                Accept: "application/xml",
-            },
-            body: xmlBuilder.build({ LoginRequest: { username, password } }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
         })
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
-        return xmlParser.parse(await response.text()) as IdResponse<LoginResponse>
+        if (!response.ok) return { error: "Login or password invalid" }
+        return response.json() as Promise<LoginResponse>
     }
 
-    async logoutXml(
-        xmlBuilder: XMLBuilder,
-        xmlParser: XMLParser,
-        accountId: number
-    ): Promise<MessageResponse<LogoutResponse>> {
-        const response = await fetch(`${this.loginServiceUrl}/Logout`, {
+    async signup(request: SignupRequest): Promise<SignupResponse> {
+        const response = await fetch(`${this.userServiceUrl}/auth/signup`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/xml",
-                Accept: "application/xml",
-            },
-            body: xmlBuilder.build({ LogoutRequest: { accountId } }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(request),
         })
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
-        return xmlParser.parse(
-            await response.text()
-        ) as MessageResponse<LogoutResponse>
-    }
-
-    async signupXml(
-        xmlBuilder: XMLBuilder,
-        xmlParser: XMLParser,
-        request: SignupRequest
-    ): Promise<IdResponse<SignupResponse>> {
-        const response = await fetch(`${this.loginServiceUrl}/Signup`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/xml",
-                Accept: "application/xml",
-            },
-            body: xmlBuilder.build({ SignupRequest: request }),
-        })
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
-        return xmlParser.parse(
-            await response.text()
-        ) as IdResponse<SignupResponse>
+        if (!response.ok) return { error: "There was an error processing the signup request." }
+        return response.json() as Promise<SignupResponse>
     }
 
     async getData(accountId: string): Promise<UserResponse> {
         const response = await fetch(
-            `${this.accountServiceUrl}/accounts/${accountId}`,
+            `${this.userServiceUrl}/accounts/${accountId}`,
             { headers: { Accept: "application/json" } }
         )
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
@@ -156,7 +99,7 @@ export class UserBackend {
 
     async getPreset(): Promise<PresetUsersResponse> {
         const response = await fetch(
-            `${this.accountServiceUrl}/accounts/presets`,
+            `${this.userServiceUrl}/accounts/presets`,
             { headers: { Accept: "application/json" } }
         )
         if (!response.ok) throw new Error(`HTTP ${response.status}`)

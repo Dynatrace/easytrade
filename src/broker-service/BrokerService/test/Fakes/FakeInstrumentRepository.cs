@@ -1,4 +1,3 @@
-using EasyTrade.BrokerService.Entities.Accounts;
 using EasyTrade.BrokerService.Entities.Instruments;
 using EasyTrade.BrokerService.Entities.Instruments.Repository;
 using EasyTrade.BrokerService.Test.Helpers;
@@ -47,9 +46,6 @@ public class FakeInstrumentRepository : FakeTransactionalRepository, IInstrument
         );
         return Task.FromResult(ownedInstrument);
     }
-
-    public IQueryable<OwnedInstrument> GetOwnedInstrumentsOfAccount(Account account) =>
-        GetOwnedInstrumentsOfAccount(account.Id);
 
     public IQueryable<OwnedInstrument> GetOwnedInstrumentsOfAccount(int accountId) =>
         _ownedInstruments.Where(x => x.AccountId == accountId).AsAsyncQueryable();

@@ -15,7 +15,7 @@
         "dataSource": "request.path"
       },
       "type": "EQUALS",
-      "value": "/loginservice/api/Signup",
+      "value": "/user-service/api/auth/signup",
       "caseSensitive": false
     }
   ],
