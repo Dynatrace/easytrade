@@ -219,3 +219,17 @@ services:
       OFFER_SERVICE_PROTOCOL: http
       OFFER_SERVICE_HOST: offerservice
       OFFER_SERVICE_PORT: 8080
+
+  background-service:
+    <<: *default-service
+    build: src/background-service
+    ports:
+      - 8095:8080
+    environment:
+      <<: *feature-flag-service-env
+      OFFER_SERVICE_ADDRESS: http://aggregator-service:8080
+      CREDIT_CARD_ORDER_SERVICE_ADDRESS: http://credit-card-order-service:8080
+      COURIER_DELAY: 10
+      COURIER_RATE: 10
+      MANUFACTURE_DELAY: 10
+      MANUFACTURE_RATE: 10
