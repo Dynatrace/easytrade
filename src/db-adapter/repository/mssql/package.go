@@ -9,7 +9,7 @@ import (
 )
 
 type packageModel struct {
-	Id      string
+	Id      string `gorm:"primaryKey"`
 	Name    string
 	Price   float64
 	Support string

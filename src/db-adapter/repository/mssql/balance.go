@@ -10,14 +10,14 @@ import (
 )
 
 type balanceModel struct {
-	AccountId string  `gorm:"primaryKey"`
+	AccountId string `gorm:"primaryKey"`
 	Value     float64
 }
 
 func (balanceModel) TableName() string { return repository.TableBalances }
 
 type balanceHistoryModel struct {
-	Id          string
+	Id          string `gorm:"primaryKey"`
 	AccountId   string
 	OldValue    float64
 	ValueChange float64

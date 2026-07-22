@@ -10,7 +10,7 @@ import (
 )
 
 type priceModel struct {
-	Id           string
+	Id           string `gorm:"primaryKey"`
 	InstrumentId string
 	Timestamp    time.Time
 	Open         float64

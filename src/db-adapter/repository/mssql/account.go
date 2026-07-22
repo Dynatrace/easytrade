@@ -10,7 +10,7 @@ import (
 )
 
 type accountModel struct {
-	Id                    string
+	Id                    string `gorm:"primaryKey"`
 	PackageId             string
 	FirstName             string
 	LastName              string

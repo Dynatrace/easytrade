@@ -11,7 +11,7 @@ import (
 )
 
 type creditCardOrderModel struct {
-	Id              string
+	Id              string `gorm:"primaryKey"`
 	AccountId       string
 	Email           string
 	Name            string
@@ -23,7 +23,7 @@ type creditCardOrderModel struct {
 func (creditCardOrderModel) TableName() string { return repository.TableCreditCardOrders }
 
 type creditCardOrderStatusModel struct {
-	Id                string
+	Id                string `gorm:"primaryKey"`
 	CreditCardOrderId string
 	Timestamp         time.Time
 	Status            string
@@ -35,7 +35,7 @@ func (creditCardOrderStatusModel) TableName() string {
 }
 
 type creditCardModel struct {
-	Id                string
+	Id                string `gorm:"primaryKey"`
 	CreditCardOrderId string
 	Level             string
 	Number            string

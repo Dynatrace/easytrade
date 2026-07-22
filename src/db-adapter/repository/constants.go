@@ -34,4 +34,6 @@ const (
 
 const (
 	StatusOrderCreated = "order_created"
+	DirectionLongBuy   = "longbuy"
+	DirectionLongSell  = "longsell"
 )

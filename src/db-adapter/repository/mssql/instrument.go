@@ -10,7 +10,7 @@ import (
 )
 
 type instrumentModel struct {
-	Id          string
+	Id          string `gorm:"primaryKey"`
 	ProductId   string
 	Code        string
 	Name        string
@@ -20,7 +20,7 @@ type instrumentModel struct {
 func (instrumentModel) TableName() string { return repository.TableInstruments }
 
 type ownedInstrumentModel struct {
-	Id                   string
+	Id                   string `gorm:"primaryKey"`
 	AccountId            string
 	InstrumentId         string
 	Quantity             float64

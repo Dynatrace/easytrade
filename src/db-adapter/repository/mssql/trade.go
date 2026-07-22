@@ -10,7 +10,7 @@ import (
 )
 
 type tradeModel struct {
-	Id                  string
+	Id                  string `gorm:"primaryKey"`
 	AccountId           string
 	InstrumentId        string
 	Direction           string
@@ -104,7 +104,7 @@ func (repo *TradeRepository) GetByAccount(ctx context.Context, accountID string,
 		query = query.Where(repository.ColTradeClosed+" = ?", false)
 	}
 	if filter.OnlyLong {
-		query = query.Where(repository.ColDirection+" = ?", "LONG")
+		query = query.Where(repository.ColDirection+" IN (?, ?)", repository.DirectionLongBuy, repository.DirectionLongSell)
 	}
 	return findAll(query, toTrade)
 }
