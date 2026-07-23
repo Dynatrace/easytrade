@@ -1,17 +1,14 @@
 USE [TradeManagement]
-GO 
+GO
 CREATE TABLE [dbo].[Instruments](
-        [Id] INT IDENTITY(1, 1) NOT NULL,
-        [ProductId] INT NOT NULL,
+        [Id] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
+        [ProductId] UNIQUEIDENTIFIER NOT NULL,
         [Code] nvarchar(6) NOT NULL,
         [Name] nvarchar(255) NOT NULL,
         [Description] nvarchar(255) NOT NULL,
         CONSTRAINT [PK_Instruments] PRIMARY KEY CLUSTERED ([Id] ASC) ON [PRIMARY],
         CONSTRAINT [FK_Instruments_Products] FOREIGN KEY ([ProductId]) REFERENCES [Products]([Id])
     )
-GO
-SET
-	IDENTITY_INSERT [dbo].[Instruments] ON
 GO
 INSERT INTO [dbo].[Instruments] (
         [Id],
@@ -21,106 +18,106 @@ INSERT INTO [dbo].[Instruments] (
         [Description]
     )
 VALUES(
-        1,
-        1,
+        'c0000000-0000-4000-8000-000000000001',
+        'b0000000-0000-4000-8000-000000000001',
         'ETRAVE',
         'EasyTravel',
         'EasyTravel Incorporated'
     ),
     (
-        2,
-        2,
+        'c0000000-0000-4000-8000-000000000002',
+        'b0000000-0000-4000-8000-000000000002',
         'EPLANE',
         'EasyPlanes',
         'EasyPlanes Worldwide'
     ),
     (
-        3,
-        3,
+        'c0000000-0000-4000-8000-000000000003',
+        'b0000000-0000-4000-8000-000000000003',
         'EHOTEL',
         'EasyHotels',
         'EasyHotels International'
     ),
     (
-        4, 
-        1, 
-        'JANGRP', 
-        'Janssen Groep', 
+        'c0000000-0000-4000-8000-000000000004',
+        'b0000000-0000-4000-8000-000000000001',
+        'JANGRP',
+        'Janssen Groep',
         'Janssen Groep'
     ),
     (
-        5, 
-        2, 
-        'CORFIG', 
-        'Corti e figli', 
+        'c0000000-0000-4000-8000-000000000005',
+        'b0000000-0000-4000-8000-000000000002',
+        'CORFIG',
+        'Corti e figli',
         'Corti e figli'
     ),
     (
-        6, 
-        3, 
-        'CMRTIN', 
-        'Cummerata Inc', 
+        'c0000000-0000-4000-8000-000000000006',
+        'b0000000-0000-4000-8000-000000000003',
+        'CMRTIN',
+        'Cummerata Inc',
         'Cummerata Inc'
     ),
     (
-        7,
-        1,
+        'c0000000-0000-4000-8000-000000000007',
+        'b0000000-0000-4000-8000-000000000001',
         'CHAMAT',
         'Charles - Mathieu',
         'Charles - Mathieu'
     ),
     (
-        8,
-        2,
+        'c0000000-0000-4000-8000-000000000008',
+        'b0000000-0000-4000-8000-000000000002',
         'BLSTCR',
         'BlueStar Craft',
         'BlueStar Craft'
     ),
     (
-        9, 
-        3, 
+        'c0000000-0000-4000-8000-000000000009',
+        'b0000000-0000-4000-8000-000000000003',
         'CAFGAL',
-        'Cafe Galore', 
+        'Cafe Galore',
         'Cafe Galore'
     ),
     (
-        10,
-        1,
+        'c0000000-0000-4000-8000-000000000010',
+        'b0000000-0000-4000-8000-000000000001',
         'DECGRP',
         'Deckerr Gruppe',
         'Deckerr Gruppe'
     ),
     (
-        11, 
-        2, 
-        'PETBAN', 
-        'Peters Bank', 
+        'c0000000-0000-4000-8000-000000000011',
+        'b0000000-0000-4000-8000-000000000002',
+        'PETBAN',
+        'Peters Bank',
         'Peters Bank'
     ),
     (
-        12,
-        3,
+        'c0000000-0000-4000-8000-000000000012',
+        'b0000000-0000-4000-8000-000000000003',
         'BATBAT',
         'Batista - Batista',
         'Batista - Batista'
     ),
     (
-        13, 
-        1, 
-        'STOLLC', 
-        'Stokes LLC', 
+        'c0000000-0000-4000-8000-000000000013',
+        'b0000000-0000-4000-8000-000000000001',
+        'STOLLC',
+        'Stokes LLC',
         'Stokes LLC'
     ),
     (
-        14,
-        2,
+        'c0000000-0000-4000-8000-000000000014',
+        'b0000000-0000-4000-8000-000000000002',
         'LEBRGA',
         'Lemke - Braun Garden',
         'Lemke - Braun Garden'
     ),
     (
-        15,
-        3,
+        'c0000000-0000-4000-8000-000000000015',
+        'b0000000-0000-4000-8000-000000000003',
         'MOROBA',
         'Mohr Royalty Bank',
         'Mohr Royalty Bank'

@@ -1,14 +1,12 @@
 USE [TradeManagement]
 GO
 CREATE TABLE [dbo].[Packages] (
-    [Id] INT IDENTITY(1, 1) NOT NULL,
+    [Id] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
     [Name] nvarchar(50) NOT NULL,
     [Price] DECIMAL (18, 8) NOT NULL,
     [Support] nvarchar(255) NOT NULL,
     CONSTRAINT [PK_Packages] PRIMARY KEY CLUSTERED ([Id] ASC) ON [PRIMARY]
 )
-GO
-    SET IDENTITY_INSERT [dbo].[Packages] ON
 GO
 INSERT INTO [dbo].[Packages](
     [Id],
@@ -18,19 +16,19 @@ INSERT INTO [dbo].[Packages](
 )
 VALUES
 (
-    1,
+    'a0000000-0000-4000-8000-000000000001',
     'Starter',
     0.0,
     "['Email']"
 ),
 (
-    2,
+    'a0000000-0000-4000-8000-000000000002',
     'Light',
     24.99,
     "['Email','Hotline']"
 ),
 (
-    3,
+    'a0000000-0000-4000-8000-000000000003',
     'Pro',
     49.99,
     "['Email','Hotline','AccountManager']"

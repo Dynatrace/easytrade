@@ -1,9 +1,9 @@
 USE [TradeManagement]
 GO
 CREATE TABLE [dbo].[Ownedinstruments](
-    [Id] INT IDENTITY(1, 1) NOT NULL,
-    [AccountId] INT NOT NULL,
-    [InstrumentId] INT NOT NULL,
+    [Id] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
+    [AccountId] UNIQUEIDENTIFIER NOT NULL,
+    [InstrumentId] UNIQUEIDENTIFIER NOT NULL,
     [Quantity] DECIMAL (18, 8) NOT NULL,
     [LastModificationDate] datetimeoffset(0),
     CONSTRAINT [PK_Ownedinstruments] PRIMARY KEY CLUSTERED ([Id] ASC) ON [PRIMARY],

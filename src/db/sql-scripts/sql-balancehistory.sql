@@ -1,8 +1,8 @@
 USE [TradeManagement]
 GO
 CREATE TABLE [dbo].[Balancehistory](
-    [Id] INT IDENTITY(1, 1) NOT NULL,
-    [AccountId] INT NOT NULL,
+    [Id] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
+    [AccountId] UNIQUEIDENTIFIER NOT NULL,
     [OldValue] DECIMAL (18, 8) NOT NULL,
     [ValueChange] DECIMAL (18, 8) NOT NULL,
     [ActionType] VARCHAR(14) NOT NULL CHECK(

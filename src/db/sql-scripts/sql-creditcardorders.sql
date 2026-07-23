@@ -1,8 +1,8 @@
 USE [TradeManagement]
 GO
         CREATE TABLE [dbo].[CreditCardOrders] (
-                [Id] nvarchar(36) NOT NULL,
-                [AccountId] INT NOT NULL,
+                [Id] UNIQUEIDENTIFIER NOT NULL DEFAULT NEWID(),
+                [AccountId] UNIQUEIDENTIFIER NOT NULL,
                 [Email] nvarchar(255) NOT NULL,
                 [Name] nvarchar(101) NOT NULL,
                 [ShippingId] nvarchar(36),
