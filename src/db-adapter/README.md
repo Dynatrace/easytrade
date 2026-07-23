@@ -55,18 +55,6 @@ all be the same string.
 
 `go build ./...` must pass — the `var _` assertions catch any unimplemented method.
 
-### Portability notes
-
-- **Quote identifiers in raw SQL fragments yourself.** GORM quotes identifiers it
-  derives from the model (table name, struct columns), but the `Where`/`Order`/
-  `Joins`/`Select`/`Group` strings we build from the `Col*`/`Table*` constants are
-  passed through verbatim. If your DB is case-sensitive (Postgres) or otherwise
-  folds unquoted identifiers, quote them — see `postgres/helpers.go` (`q`, `qcol`).
-- **Match the identifier casing / collation.** MSSQL is case-insensitive; Postgres
-  is not. The `constants.go` names are PascalCase, so the Postgres DDL quotes every
-  identifier and its enum `CHECK`s use `lower(...)` to accept mixed-case input the
-  way MSSQL did.
-
 ## Makefile
 
 ```bash
