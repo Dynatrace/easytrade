@@ -7,6 +7,7 @@ import (
 	"github.com/dynatrace/easytrade/dbadapter/config"
 	"github.com/dynatrace/easytrade/dbadapter/repository"
 	_ "github.com/dynatrace/easytrade/dbadapter/repository/mssql"
+	_ "github.com/dynatrace/easytrade/dbadapter/repository/postgres"
 	"github.com/dynatrace/easytrade/dbadapter/server"
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
 	log "github.com/sirupsen/logrus"
