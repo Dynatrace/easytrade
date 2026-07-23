@@ -11,8 +11,8 @@ import (
 )
 
 type accountModel struct {
-	Id                    mssql.UniqueIdentifier `gorm:"primaryKey"`
-	PackageId             mssql.UniqueIdentifier
+	Id                    *mssql.UniqueIdentifier `gorm:"primaryKey;default:newid()"`
+	PackageId             *mssql.UniqueIdentifier
 	FirstName             string
 	LastName              string
 	Username              string
@@ -46,7 +46,7 @@ func toAccount(src *accountModel) *models.Account {
 
 func fromAccount(account *models.Account) *accountModel {
 	return &accountModel{
-		Id:                    newIfEmpty(account.ID),
+		Id:                    parseUUID(account.ID),
 		PackageId:             parseUUID(account.PackageID),
 		FirstName:             account.FirstName,
 		LastName:              account.LastName,

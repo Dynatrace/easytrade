@@ -12,8 +12,8 @@ import (
 )
 
 type creditCardOrderModel struct {
-	Id              mssql.UniqueIdentifier `gorm:"primaryKey"`
-	AccountId       mssql.UniqueIdentifier
+	Id              *mssql.UniqueIdentifier `gorm:"primaryKey;default:newid()"`
+	AccountId       *mssql.UniqueIdentifier
 	Email           string
 	Name            string
 	ShippingAddress string
@@ -24,8 +24,8 @@ type creditCardOrderModel struct {
 func (creditCardOrderModel) TableName() string { return repository.TableCreditCardOrders }
 
 type creditCardOrderStatusModel struct {
-	Id                mssql.UniqueIdentifier `gorm:"primaryKey"`
-	CreditCardOrderId mssql.UniqueIdentifier
+	Id                *mssql.UniqueIdentifier `gorm:"primaryKey;default:newid()"`
+	CreditCardOrderId *mssql.UniqueIdentifier
 	Timestamp         time.Time
 	Status            string
 	Details           string
@@ -36,8 +36,8 @@ func (creditCardOrderStatusModel) TableName() string {
 }
 
 type creditCardModel struct {
-	Id                mssql.UniqueIdentifier `gorm:"primaryKey"`
-	CreditCardOrderId mssql.UniqueIdentifier
+	Id                *mssql.UniqueIdentifier `gorm:"primaryKey;default:newid()"`
+	CreditCardOrderId *mssql.UniqueIdentifier
 	Level             string
 	Number            string
 	Cvs               string
@@ -63,7 +63,7 @@ func toCreditCardOrder(src *creditCardOrderModel) *models.CreditCardOrder {
 
 func fromCreditCardOrder(order *models.CreditCardOrder) *creditCardOrderModel {
 	dbOrder := &creditCardOrderModel{
-		Id:              newIfEmpty(order.ID),
+		Id:              parseUUID(order.ID),
 		AccountId:       parseUUID(order.AccountID),
 		Email:           order.Email,
 		Name:            order.Name,
@@ -88,7 +88,7 @@ func toCreditCardOrderStatus(src *creditCardOrderStatusModel) *models.CreditCard
 
 func fromCreditCardOrderStatus(status *models.CreditCardOrderStatus) *creditCardOrderStatusModel {
 	return &creditCardOrderStatusModel{
-		Id:                newIfEmpty(status.ID),
+		Id:                parseUUID(status.ID),
 		CreditCardOrderId: parseUUID(status.CreditCardOrderID),
 		Timestamp:         status.Timestamp,
 		Status:            status.Status,
@@ -98,6 +98,7 @@ func fromCreditCardOrderStatus(status *models.CreditCardOrderStatus) *creditCard
 
 func toCreditCard(src *creditCardModel) *models.CreditCard {
 	return &models.CreditCard{
+		ID:        uuidString(src.Id),
 		OrderID:   uuidString(src.CreditCardOrderId),
 		Level:     src.Level,
 		Number:    src.Number,
@@ -108,7 +109,7 @@ func toCreditCard(src *creditCardModel) *models.CreditCard {
 
 func fromCreditCard(card *models.CreditCard) *creditCardModel {
 	return &creditCardModel{
-		Id:                newIfEmpty(""),
+		Id:                parseUUID(card.ID),
 		CreditCardOrderId: parseUUID(card.OrderID),
 		Level:             card.Level,
 		Number:            card.Number,

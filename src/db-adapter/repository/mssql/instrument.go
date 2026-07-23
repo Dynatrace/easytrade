@@ -11,8 +11,8 @@ import (
 )
 
 type instrumentModel struct {
-	Id          mssql.UniqueIdentifier `gorm:"primaryKey"`
-	ProductId   mssql.UniqueIdentifier
+	Id          *mssql.UniqueIdentifier `gorm:"primaryKey;default:newid()"`
+	ProductId   *mssql.UniqueIdentifier
 	Code        string
 	Name        string
 	Description string
@@ -21,9 +21,9 @@ type instrumentModel struct {
 func (instrumentModel) TableName() string { return repository.TableInstruments }
 
 type ownedInstrumentModel struct {
-	Id                   mssql.UniqueIdentifier `gorm:"primaryKey"`
-	AccountId            mssql.UniqueIdentifier
-	InstrumentId         mssql.UniqueIdentifier
+	Id                   *mssql.UniqueIdentifier `gorm:"primaryKey;default:newid()"`
+	AccountId            *mssql.UniqueIdentifier
+	InstrumentId         *mssql.UniqueIdentifier
 	Quantity             float64
 	LastModificationDate time.Time
 }
@@ -52,7 +52,7 @@ func toOwnedInstrument(src *ownedInstrumentModel) *models.OwnedInstrument {
 
 func fromOwnedInstrument(owned *models.OwnedInstrument) *ownedInstrumentModel {
 	return &ownedInstrumentModel{
-		Id:                   newIfEmpty(owned.ID),
+		Id:                   parseUUID(owned.ID),
 		AccountId:            parseUUID(owned.AccountID),
 		InstrumentId:         parseUUID(owned.InstrumentID),
 		Quantity:             owned.Quantity,

@@ -11,9 +11,9 @@ import (
 )
 
 type tradeModel struct {
-	Id                  mssql.UniqueIdentifier `gorm:"primaryKey"`
-	AccountId           mssql.UniqueIdentifier
-	InstrumentId        mssql.UniqueIdentifier
+	Id                  *mssql.UniqueIdentifier `gorm:"primaryKey;default:newid()"`
+	AccountId           *mssql.UniqueIdentifier
+	InstrumentId        *mssql.UniqueIdentifier
 	Direction           string
 	Quantity            float64
 	EntryPrice          float64
@@ -44,7 +44,7 @@ func toTrade(src *tradeModel) *models.Trade {
 
 func fromTrade(trade *models.Trade) *tradeModel {
 	return &tradeModel{
-		Id:                  newIfEmpty(trade.ID),
+		Id:                  parseUUID(trade.ID),
 		AccountId:           parseUUID(trade.AccountID),
 		InstrumentId:        parseUUID(trade.InstrumentID),
 		Direction:           trade.Direction,

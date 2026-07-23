@@ -10,7 +10,7 @@ import (
 )
 
 type packageModel struct {
-	Id      mssql.UniqueIdentifier `gorm:"primaryKey"`
+	Id      *mssql.UniqueIdentifier `gorm:"primaryKey;default:newid()"`
 	Name    string
 	Price   float64
 	Support string

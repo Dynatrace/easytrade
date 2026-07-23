@@ -24,6 +24,7 @@ type CreditCardOrderStatus struct {
 }
 
 type CreditCard struct {
+	ID        string
 	OrderID   string
 	Level     string
 	Number    string

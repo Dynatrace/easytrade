@@ -5,26 +5,26 @@ import (
 	"strings"
 
 	"github.com/dynatrace/easytrade/dbadapter/repository"
-	"github.com/google/uuid"
 	mssql "github.com/microsoft/go-mssqldb"
 	"gorm.io/gorm"
 )
 
-func uuidString(uuid mssql.UniqueIdentifier) string {
+func uuidString(uuid *mssql.UniqueIdentifier) string {
+	if uuid == nil {
+		return ""
+	}
 	return strings.ToLower(uuid.String())
 }
 
-func parseUUID(str string) mssql.UniqueIdentifier {
-	var u mssql.UniqueIdentifier
-	_ = u.Scan(str)
-	return u
-}
-
-func newIfEmpty(str string) mssql.UniqueIdentifier {
+func parseUUID(str string) *mssql.UniqueIdentifier {
 	if str == "" {
-		return mssql.UniqueIdentifier(uuid.New())
+		return nil
 	}
-	return parseUUID(str)
+	var u mssql.UniqueIdentifier
+	if err := u.Scan(str); err != nil {
+		return nil
+	}
+	return &u
 }
 
 func mapSlice[M, T any](items []M, mapper func(*M) *T) []*T {

@@ -11,15 +11,15 @@ import (
 )
 
 type balanceModel struct {
-	AccountId mssql.UniqueIdentifier `gorm:"primaryKey"`
+	AccountId *mssql.UniqueIdentifier `gorm:"primaryKey;default:newid()"`
 	Value     float64
 }
 
 func (balanceModel) TableName() string { return repository.TableBalances }
 
 type balanceHistoryModel struct {
-	Id          mssql.UniqueIdentifier `gorm:"primaryKey"`
-	AccountId   mssql.UniqueIdentifier
+	Id          *mssql.UniqueIdentifier `gorm:"primaryKey;default:newid()"`
+	AccountId   *mssql.UniqueIdentifier
 	OldValue    float64
 	ValueChange float64
 	ActionType  string
@@ -49,7 +49,7 @@ func toBalanceHistory(src *balanceHistoryModel) *models.BalanceHistory {
 
 func fromBalanceHistory(history *models.BalanceHistory) *balanceHistoryModel {
 	return &balanceHistoryModel{
-		Id:          newIfEmpty(history.ID),
+		Id:          parseUUID(history.ID),
 		AccountId:   parseUUID(history.AccountID),
 		OldValue:    history.OldValue,
 		ValueChange: history.ValueChange,

@@ -10,7 +10,7 @@ import (
 )
 
 type productModel struct {
-	Id       mssql.UniqueIdentifier `gorm:"primaryKey"`
+	Id       *mssql.UniqueIdentifier `gorm:"primaryKey;default:newid()"`
 	Name     string
 	Ppt      float64
 	Currency string

@@ -11,8 +11,8 @@ import (
 )
 
 type priceModel struct {
-	Id           mssql.UniqueIdentifier `gorm:"primaryKey"`
-	InstrumentId mssql.UniqueIdentifier
+	Id           *mssql.UniqueIdentifier `gorm:"primaryKey;default:newid()"`
+	InstrumentId *mssql.UniqueIdentifier
 	Timestamp    time.Time
 	Open         float64
 	High         float64
@@ -24,7 +24,7 @@ func (priceModel) TableName() string { return repository.TablePrices }
 
 func fromPrice(price *models.Price) priceModel {
 	return priceModel{
-		Id:           newIfEmpty(price.ID),
+		Id:           parseUUID(price.ID),
 		InstrumentId: parseUUID(price.InstrumentID),
 		Timestamp:    price.Timestamp,
 		Open:         price.Open,
