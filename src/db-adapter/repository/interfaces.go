@@ -7,6 +7,17 @@ import (
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
 )
 
+type CompositeRepository interface {
+	Account() AccountRepository
+	Balance() BalanceRepository
+	CreditCard() CreditCardOrderRepository
+	Instrument() InstrumentRepository
+	Package() PackageRepository
+	Pricing() PricingRepository
+	Product() ProductRepository
+	Trade() TradeRepository
+}
+
 type AccountRepository interface {
 	Create(ctx context.Context, req *pb.CreateAccountRequest) (*pb.AccountMessage, error)
 	GetByID(ctx context.Context, id string) (*pb.AccountMessage, error)
