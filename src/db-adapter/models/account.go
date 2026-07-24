@@ -25,5 +25,5 @@ type AccountRepository interface {
 	GetByID(ctx context.Context, id string) (*Account, error)
 	GetByUsername(ctx context.Context, username string) (*Account, error)
 	GetAll(ctx context.Context) ([]*Account, error)
-	DeleteOlderThan(ctx context.Context, date time.Time, origin string) (int32, error)
+	DeleteOlderThan(ctx context.Context, before *time.Time, origin string) (int32, error)
 }

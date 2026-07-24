@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"time"
 
 	"github.com/dynatrace/easytrade/dbadapter/models"
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
@@ -50,7 +51,12 @@ func (s *AccountServer) GetAccounts(ctx context.Context, _ *emptypb.Empty) (*pb.
 }
 
 func (s *AccountServer) DeleteAccountsOlderThan(ctx context.Context, req *pb.DeleteAccountsOlderThanRequest) (*pb.BatchResponse, error) {
-	return batchResponse(s.repo.DeleteOlderThan(ctx, req.Before.AsTime(), req.Origin))
+	var before *time.Time
+	if req.Before != nil {
+		t := req.Before.AsTime()
+		before = &t
+	}
+	return batchResponse(s.repo.DeleteOlderThan(ctx, before, req.Origin))
 }
 
 func toAccountModel(req *pb.CreateAccountRequest) *models.Account {

@@ -89,9 +89,10 @@ func (repo *AccountRepository) GetAll(ctx context.Context) ([]*models.Account, e
 	return findAll(repo.db.WithContext(ctx), toAccount)
 }
 
-func (repo *AccountRepository) DeleteOlderThan(ctx context.Context, date time.Time, origin string) (int32, error) {
-	return affectedRows(repo.db.WithContext(ctx).
-		Where(q(repository.ColCreationDate)+" < ?", date).
-		Where(q(repository.ColOrigin)+" = ?", origin).
-		Delete(&accountModel{}))
+func (repo *AccountRepository) DeleteOlderThan(ctx context.Context, before *time.Time, origin string) (int32, error) {
+	db := repo.db.WithContext(ctx).Where(q(repository.ColOrigin)+" = ?", origin)
+	if before != nil {
+		db = db.Where(q(repository.ColCreationDate)+" < ?", *before)
+	}
+	return affectedRows(db.Delete(&accountModel{}))
 }
