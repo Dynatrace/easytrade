@@ -1,4 +1,3 @@
-;
 CREATE TABLE "Balancehistory"(
     "Id" uuid NOT NULL DEFAULT gen_random_uuid(),
     "AccountId" uuid NOT NULL,
@@ -10,5 +9,4 @@ CREATE TABLE "Balancehistory"(
     "ActionDate" timestamptz NOT NULL,
     CONSTRAINT "PK_Balancehistory" PRIMARY KEY ("Id"),
     CONSTRAINT "FK_Balancehistory_Accounts" FOREIGN KEY ("AccountId") REFERENCES "Accounts"("Id") ON DELETE CASCADE
-)
-;
+);

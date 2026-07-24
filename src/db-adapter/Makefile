@@ -4,7 +4,7 @@ PROTOC_FLAGS := \
     --go_out=paths=source_relative:proto \
     --go-grpc_out=paths=source_relative:proto
 
-.PHONY: proto build test tidy
+.PHONY: proto build test tidy run
 
 proto:
 	protoc $(PROTOC_FLAGS) $(PROTO_DIR)/*.proto
@@ -17,3 +17,6 @@ test:
 
 tidy:
 	go mod tidy
+
+run:
+	go run .

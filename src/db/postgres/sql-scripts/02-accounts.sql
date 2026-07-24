@@ -1,4 +1,3 @@
-;
 CREATE TABLE "Accounts" (
     "Id" uuid NOT NULL DEFAULT gen_random_uuid(),
     "PackageId" uuid NOT NULL,
@@ -14,8 +13,7 @@ CREATE TABLE "Accounts" (
     "Address" varchar(255) NOT NULL,
     CONSTRAINT "PK_Accounts" PRIMARY KEY ("Id"),
     CONSTRAINT "FK_Accounts_Packages" FOREIGN KEY ("PackageId") REFERENCES "Packages"("Id")
-)
-;
+);
 INSERT INTO
     "Accounts" (
         "PackageId",
@@ -29,7 +27,7 @@ INSERT INTO
         "PackageActivationDate",
         "AccountActive",
         "Address"
-    )
+)
 VALUES(
     'a0000000-0000-4000-8000-000000000002',
     'EASYTRADE',

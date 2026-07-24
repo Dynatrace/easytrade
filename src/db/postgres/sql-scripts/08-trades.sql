@@ -1,4 +1,3 @@
-;
 CREATE TABLE "Trades" (
     "Id" uuid NOT NULL DEFAULT gen_random_uuid(),
     "AccountId" uuid NOT NULL,
@@ -14,5 +13,4 @@ CREATE TABLE "Trades" (
     CONSTRAINT "PK_Trades" PRIMARY KEY ("Id"),
     CONSTRAINT "FK_Trades_Accounts" FOREIGN KEY ("AccountId") REFERENCES "Accounts"("Id") ON DELETE CASCADE,
     CONSTRAINT "FK_Trades_Instruments" FOREIGN KEY ("InstrumentId") REFERENCES "Instruments"("Id")
-)
-;
+);

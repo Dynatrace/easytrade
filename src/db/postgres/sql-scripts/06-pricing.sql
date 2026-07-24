@@ -1,17 +1,14 @@
-;
-        CREATE TABLE "Pricing" (
-                "Id" uuid NOT NULL DEFAULT gen_random_uuid(),
-                "InstrumentId" uuid NOT NULL,
-                "Timestamp" timestamptz NOT NULL,
-                "Open" numeric(18, 8) NOT NULL,
-                "High" numeric(18, 8) NOT NULL,
-                "Low" numeric(18, 8) NOT NULL,
-                "Close" numeric(18, 8) NOT NULL,
-                CONSTRAINT "PK_Pricing" PRIMARY KEY ("Id"),
-                CONSTRAINT "FK_Pricing_Instruments" FOREIGN KEY ("InstrumentId") REFERENCES "Instruments"("Id")
-        )
-;
-
+CREATE TABLE "Pricing" (
+    "Id" uuid NOT NULL DEFAULT gen_random_uuid(),
+    "InstrumentId" uuid NOT NULL,
+    "Timestamp" timestamptz NOT NULL,
+    "Open" numeric(18, 8) NOT NULL,
+    "High" numeric(18, 8) NOT NULL,
+    "Low" numeric(18, 8) NOT NULL,
+    "Close" numeric(18, 8) NOT NULL,
+    CONSTRAINT "PK_Pricing" PRIMARY KEY ("Id"),
+    CONSTRAINT "FK_Pricing_Instruments" FOREIGN KEY ("InstrumentId") REFERENCES "Instruments"("Id")
+);
 -- Seed one initial price per instrument so the broker-service can serve
 -- instrument data immediately on startup (before contentcreator runs).
 -- Values are the time0 (00:00) anchor prices from contentcreator's Instruments.java.

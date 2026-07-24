@@ -1,12 +1,10 @@
-;
 CREATE TABLE "Packages" (
     "Id" uuid NOT NULL DEFAULT gen_random_uuid(),
     "Name" varchar(50) NOT NULL,
     "Price" numeric(18, 8) NOT NULL,
     "Support" varchar(255) NOT NULL,
     CONSTRAINT "PK_Packages" PRIMARY KEY ("Id")
-)
-;
+);
 INSERT INTO "Packages"(
     "Id",
     "Name",
@@ -32,4 +30,3 @@ VALUES
     49.99,
     '[''Email'',''Hotline'',''AccountManager'']'
 );
-;
