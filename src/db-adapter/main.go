@@ -5,11 +5,10 @@ import (
 	"net"
 
 	"github.com/dynatrace/easytrade/dbadapter/config"
-	"github.com/dynatrace/easytrade/dbadapter/repository"
-	_ "github.com/dynatrace/easytrade/dbadapter/repository/mssql"
-	_ "github.com/dynatrace/easytrade/dbadapter/repository/postgres"
-	"github.com/dynatrace/easytrade/dbadapter/server"
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
+	"github.com/dynatrace/easytrade/dbadapter/repository"
+	_ "github.com/dynatrace/easytrade/dbadapter/repository/sql"
+	"github.com/dynatrace/easytrade/dbadapter/server"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )

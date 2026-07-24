@@ -3,20 +3,19 @@ package server
 import (
 	"context"
 
-	"github.com/dynatrace/easytrade/dbadapter/models"
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
+	"github.com/dynatrace/easytrade/dbadapter/repository"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var _ pb.InstrumentServiceServer = (*InstrumentServer)(nil)
 
 type InstrumentServer struct {
 	pb.UnimplementedInstrumentServiceServer
-	repo models.InstrumentRepository
+	repo repository.InstrumentRepository
 }
 
-func NewInstrumentServer(repo models.InstrumentRepository) *InstrumentServer {
+func NewInstrumentServer(repo repository.InstrumentRepository) *InstrumentServer {
 	return &InstrumentServer{repo: repo}
 }
 
@@ -24,8 +23,7 @@ func (s *InstrumentServer) GetInstrumentById(ctx context.Context, req *pb.GetIns
 	if err := validateUUID(req.Id); err != nil {
 		return nil, err
 	}
-	inst, err := s.repo.GetByID(ctx, req.Id)
-	return protoOrNotFound(inst, err, toInstrumentProto)
+	return fetchOrNotFound(s.repo.GetByID(ctx, req.Id))
 }
 
 func (s *InstrumentServer) GetAllInstruments(ctx context.Context, _ *emptypb.Empty) (*pb.InstrumentsResponse, error) {
@@ -33,7 +31,7 @@ func (s *InstrumentServer) GetAllInstruments(ctx context.Context, _ *emptypb.Emp
 	if err != nil {
 		return nil, err
 	}
-	return &pb.InstrumentsResponse{Instruments: mapSlice(instruments, toInstrumentProto)}, nil
+	return &pb.InstrumentsResponse{Instruments: instruments}, nil
 }
 
 func (s *InstrumentServer) GetOwnedInstrument(ctx context.Context, req *pb.GetOwnedInstrumentRequest) (*pb.OwnedInstrumentMessage, error) {
@@ -43,8 +41,7 @@ func (s *InstrumentServer) GetOwnedInstrument(ctx context.Context, req *pb.GetOw
 	if err := validateUUID(req.InstrumentId); err != nil {
 		return nil, err
 	}
-	owned, err := s.repo.GetOwned(ctx, req.AccountId, req.InstrumentId)
-	return protoOrNotFound(owned, err, toOwnedProto)
+	return fetchOrNotFound(s.repo.GetOwned(ctx, req.AccountId, req.InstrumentId))
 }
 
 func (s *InstrumentServer) GetOwnedInstruments(ctx context.Context, req *pb.GetOwnedInstrumentsOfAccountRequest) (*pb.OwnedInstrumentsResponse, error) {
@@ -55,7 +52,7 @@ func (s *InstrumentServer) GetOwnedInstruments(ctx context.Context, req *pb.GetO
 	if err != nil {
 		return nil, err
 	}
-	return &pb.OwnedInstrumentsResponse{OwnedInstruments: mapSlice(owned, toOwnedProto)}, nil
+	return &pb.OwnedInstrumentsResponse{OwnedInstruments: owned}, nil
 }
 
 func (s *InstrumentServer) AddOwnedInstrument(ctx context.Context, req *pb.AddOwnedInstrumentRequest) (*pb.OwnedInstrumentMessage, error) {
@@ -65,8 +62,7 @@ func (s *InstrumentServer) AddOwnedInstrument(ctx context.Context, req *pb.AddOw
 	if err := validateUUID(req.InstrumentId); err != nil {
 		return nil, err
 	}
-	owned, err := s.repo.AddOwned(ctx, toOwnedModel(req))
-	return protoOrErr(owned, err, toOwnedProto)
+	return s.repo.AddOwned(ctx, req)
 }
 
 func (s *InstrumentServer) UpdateOwnedInstrument(ctx context.Context, req *pb.UpdateOwnedInstrumentRequest) (*pb.OwnedInstrumentMessage, error) {
@@ -76,41 +72,11 @@ func (s *InstrumentServer) UpdateOwnedInstrument(ctx context.Context, req *pb.Up
 	if err := validateUUID(req.InstrumentId); err != nil {
 		return nil, err
 	}
-	owned, err := fetchOrNotFound(s.repo.GetOwned(ctx, req.AccountId, req.InstrumentId))
+	existing, err := fetchOrNotFound(s.repo.GetOwned(ctx, req.AccountId, req.InstrumentId))
 	if err != nil {
 		return nil, err
 	}
-	owned.Quantity = req.Quantity
-	owned.LastModificationDate = req.LastModificationDate.AsTime()
-	updated, err := s.repo.UpdateOwned(ctx, owned)
-	return protoOrErr(updated, err, toOwnedProto)
-}
-
-func toOwnedModel(req *pb.AddOwnedInstrumentRequest) *models.OwnedInstrument {
-	return &models.OwnedInstrument{
-		AccountID:            req.AccountId,
-		InstrumentID:         req.InstrumentId,
-		Quantity:             req.Quantity,
-		LastModificationDate: req.LastModificationDate.AsTime(),
-	}
-}
-
-func toInstrumentProto(inst *models.Instrument) *pb.InstrumentMessage {
-	return &pb.InstrumentMessage{
-		Id:          inst.ID,
-		ProductId:   inst.ProductID,
-		Code:        inst.Code,
-		Name:        inst.Name,
-		Description: inst.Description,
-	}
-}
-
-func toOwnedProto(o *models.OwnedInstrument) *pb.OwnedInstrumentMessage {
-	return &pb.OwnedInstrumentMessage{
-		Id:                   o.ID,
-		AccountId:            o.AccountID,
-		InstrumentId:         o.InstrumentID,
-		Quantity:             o.Quantity,
-		LastModificationDate: timestamppb.New(o.LastModificationDate),
-	}
+	existing.Quantity = req.Quantity
+	existing.LastModificationDate = req.LastModificationDate
+	return fetchOrNotFound(s.repo.UpdateOwned(ctx, existing))
 }

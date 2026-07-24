@@ -3,8 +3,8 @@ package server
 import (
 	"context"
 
-	"github.com/dynatrace/easytrade/dbadapter/models"
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
+	"github.com/dynatrace/easytrade/dbadapter/repository"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -12,10 +12,10 @@ var _ pb.PackageServiceServer = (*PackageServer)(nil)
 
 type PackageServer struct {
 	pb.UnimplementedPackageServiceServer
-	repo models.PackageRepository
+	repo repository.PackageRepository
 }
 
-func NewPackageServer(repo models.PackageRepository) *PackageServer {
+func NewPackageServer(repo repository.PackageRepository) *PackageServer {
 	return &PackageServer{repo: repo}
 }
 
@@ -24,14 +24,5 @@ func (s *PackageServer) GetPackages(ctx context.Context, _ *emptypb.Empty) (*pb.
 	if err != nil {
 		return nil, err
 	}
-	return &pb.PackagesResponse{Packages: mapSlice(packages, toPackageProto)}, nil
-}
-
-func toPackageProto(p *models.Package) *pb.PackageMessage {
-	return &pb.PackageMessage{
-		Id:      p.ID,
-		Name:    p.Name,
-		Price:   p.Price,
-		Support: p.Support,
-	}
+	return &pb.PackagesResponse{Packages: packages}, nil
 }

@@ -3,20 +3,19 @@ package server
 import (
 	"context"
 
-	"github.com/dynatrace/easytrade/dbadapter/models"
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
+	"github.com/dynatrace/easytrade/dbadapter/repository"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var _ pb.PricingServiceServer = (*PricingServer)(nil)
 
 type PricingServer struct {
 	pb.UnimplementedPricingServiceServer
-	repo models.PricingRepository
+	repo repository.PricingRepository
 }
 
-func NewPricingServer(repo models.PricingRepository) *PricingServer {
+func NewPricingServer(repo repository.PricingRepository) *PricingServer {
 	return &PricingServer{repo: repo}
 }
 
@@ -25,15 +24,14 @@ func (s *PricingServer) GetLatestPrices(ctx context.Context, _ *emptypb.Empty) (
 	if err != nil {
 		return nil, err
 	}
-	return &pb.PricesResponse{Prices: mapSlice(prices, toPriceProto)}, nil
+	return &pb.PricesResponse{Prices: prices}, nil
 }
 
 func (s *PricingServer) GetLatestPriceForInstrument(ctx context.Context, req *pb.GetLatestPriceForInstrumentRequest) (*pb.PriceMessage, error) {
 	if err := validateUUID(req.InstrumentId); err != nil {
 		return nil, err
 	}
-	p, err := s.repo.GetMostRecent(ctx, req.InstrumentId)
-	return protoOrNotFound(p, err, toPriceProto)
+	return fetchOrNotFound(s.repo.GetMostRecent(ctx, req.InstrumentId))
 }
 
 func (s *PricingServer) GetPricesForInstrument(ctx context.Context, req *pb.GetPricesForInstrumentRequest) (*pb.PricesResponse, error) {
@@ -49,7 +47,7 @@ func (s *PricingServer) GetPricesForInstrument(ctx context.Context, req *pb.GetP
 	if err != nil {
 		return nil, err
 	}
-	return &pb.PricesResponse{Prices: mapSlice(prices, toPriceProto)}, nil
+	return &pb.PricesResponse{Prices: prices}, nil
 }
 
 func (s *PricingServer) InsertPricesBatch(ctx context.Context, req *pb.InsertPricesBatchRequest) (*pb.BatchResponse, error) {
@@ -58,32 +56,9 @@ func (s *PricingServer) InsertPricesBatch(ctx context.Context, req *pb.InsertPri
 			return nil, err
 		}
 	}
-	return batchResponse(s.repo.InsertBatch(ctx, mapSlice(req.Rows, toPriceModel)))
+	return batchResponse(s.repo.InsertBatch(ctx, req))
 }
 
 func (s *PricingServer) DeletePricesOlderThan(ctx context.Context, req *pb.DeleteBeforeRequest) (*pb.BatchResponse, error) {
 	return batchResponse(s.repo.DeleteOlderThan(ctx, req.Before.AsTime()))
-}
-
-func toPriceModel(row *pb.PricingRow) *models.Price {
-	return &models.Price{
-		InstrumentID: row.InstrumentId,
-		Timestamp:    row.Timestamp.AsTime(),
-		Open:         row.Open,
-		High:         row.High,
-		Low:          row.Low,
-		Close:        row.Close,
-	}
-}
-
-func toPriceProto(p *models.Price) *pb.PriceMessage {
-	return &pb.PriceMessage{
-		Id:           p.ID,
-		InstrumentId: p.InstrumentID,
-		Timestamp:    timestamppb.New(p.Timestamp),
-		Open:         p.Open,
-		High:         p.High,
-		Low:          p.Low,
-		Close:        p.Close,
-	}
 }

@@ -3,8 +3,8 @@ package server
 import (
 	"context"
 
-	"github.com/dynatrace/easytrade/dbadapter/models"
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
+	"github.com/dynatrace/easytrade/dbadapter/repository"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -12,10 +12,10 @@ var _ pb.ProductServiceServer = (*ProductServer)(nil)
 
 type ProductServer struct {
 	pb.UnimplementedProductServiceServer
-	repo models.ProductRepository
+	repo repository.ProductRepository
 }
 
-func NewProductServer(repo models.ProductRepository) *ProductServer {
+func NewProductServer(repo repository.ProductRepository) *ProductServer {
 	return &ProductServer{repo: repo}
 }
 
@@ -24,14 +24,5 @@ func (s *ProductServer) GetProducts(ctx context.Context, _ *emptypb.Empty) (*pb.
 	if err != nil {
 		return nil, err
 	}
-	return &pb.ProductsResponse{Products: mapSlice(products, toProductProto)}, nil
-}
-
-func toProductProto(p *models.Product) *pb.ProductMessage {
-	return &pb.ProductMessage{
-		Id:       p.ID,
-		Name:     p.Name,
-		Ppt:      p.Ppt,
-		Currency: p.Currency,
-	}
+	return &pb.ProductsResponse{Products: products}, nil
 }

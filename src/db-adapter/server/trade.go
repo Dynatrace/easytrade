@@ -2,22 +2,20 @@ package server
 
 import (
 	"context"
-	"time"
 
-	"github.com/dynatrace/easytrade/dbadapter/models"
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
+	"github.com/dynatrace/easytrade/dbadapter/repository"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var _ pb.TradeServiceServer = (*TradeServer)(nil)
 
 type TradeServer struct {
 	pb.UnimplementedTradeServiceServer
-	repo models.TradeRepository
+	repo repository.TradeRepository
 }
 
-func NewTradeServer(repo models.TradeRepository) *TradeServer {
+func NewTradeServer(repo repository.TradeRepository) *TradeServer {
 	return &TradeServer{repo: repo}
 }
 
@@ -28,23 +26,21 @@ func (s *TradeServer) CreateTrade(ctx context.Context, req *pb.CreateTradeReques
 	if err := validateUUID(req.InstrumentId); err != nil {
 		return nil, err
 	}
-	trade, err := s.repo.Create(ctx, toTradeModel(req))
-	return protoOrErr(trade, err, toTradeProto)
+	return s.repo.Create(ctx, req)
 }
 
 func (s *TradeServer) UpdateTrade(ctx context.Context, req *pb.UpdateTradeRequest) (*pb.TradeMessage, error) {
 	if err := validateUUID(req.Id); err != nil {
 		return nil, err
 	}
-	trade, err := fetchOrNotFound(s.repo.GetByID(ctx, req.Id))
+	existing, err := fetchOrNotFound(s.repo.GetByID(ctx, req.Id))
 	if err != nil {
 		return nil, err
 	}
-	trade.TimestampClose = optionalTime(req.TimestampClose)
-	trade.TradeClosed = req.TradeClosed
-	trade.Status = req.Status
-	updated, err := s.repo.Update(ctx, trade)
-	return protoOrErr(updated, err, toTradeProto)
+	existing.TimestampClose = req.TimestampClose
+	existing.TradeClosed = req.TradeClosed
+	existing.Status = req.Status
+	return fetchOrNotFound(s.repo.Update(ctx, existing))
 }
 
 func (s *TradeServer) GetOpenTrades(ctx context.Context, _ *emptypb.Empty) (*pb.TradesResponse, error) {
@@ -59,61 +55,16 @@ func (s *TradeServer) GetAccountTrades(ctx context.Context, req *pb.GetAccountTr
 	if err := validateUUID(req.AccountId); err != nil {
 		return nil, err
 	}
-	return s.tradesResponse(s.repo.GetByAccount(ctx, req.AccountId, models.TradeFilter{
-		OnlyOpen: req.OnlyOpen,
-		OnlyLong: req.OnlyLong,
-	}))
+	return s.tradesResponse(s.repo.GetByAccount(ctx, req.AccountId, req.OnlyOpen, req.OnlyLong))
 }
 
 func (s *TradeServer) DeleteTradesOlderThan(ctx context.Context, req *pb.DeleteBeforeRequest) (*pb.BatchResponse, error) {
 	return batchResponse(s.repo.DeleteOlderThan(ctx, req.Before.AsTime()))
 }
 
-func (s *TradeServer) tradesResponse(trades []*models.Trade, err error) (*pb.TradesResponse, error) {
+func (s *TradeServer) tradesResponse(trades []*pb.TradeMessage, err error) (*pb.TradesResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &pb.TradesResponse{Trades: mapSlice(trades, toTradeProto)}, nil
-}
-
-func optionalTime(ts *timestamppb.Timestamp) *time.Time {
-	if ts == nil {
-		return nil
-	}
-	t := ts.AsTime()
-	return &t
-}
-
-func toTradeModel(req *pb.CreateTradeRequest) *models.Trade {
-	return &models.Trade{
-		AccountID:           req.AccountId,
-		InstrumentID:        req.InstrumentId,
-		Direction:           req.Direction,
-		Quantity:            req.Quantity,
-		EntryPrice:          req.EntryPrice,
-		TimestampOpen:       req.TimestampOpen.AsTime(),
-		TimestampClose:      optionalTime(req.TimestampClose),
-		TradeClosed:         req.TradeClosed,
-		TransactionHappened: req.TransactionHappened,
-		Status:              req.Status,
-	}
-}
-
-func toTradeProto(t *models.Trade) *pb.TradeMessage {
-	msg := &pb.TradeMessage{
-		Id:                  t.ID,
-		AccountId:           t.AccountID,
-		InstrumentId:        t.InstrumentID,
-		Direction:           t.Direction,
-		Quantity:            t.Quantity,
-		EntryPrice:          t.EntryPrice,
-		TimestampOpen:       timestamppb.New(t.TimestampOpen),
-		TradeClosed:         t.TradeClosed,
-		TransactionHappened: t.TransactionHappened,
-		Status:              t.Status,
-	}
-	if t.TimestampClose != nil {
-		msg.TimestampClose = timestamppb.New(*t.TimestampClose)
-	}
-	return msg
+	return &pb.TradesResponse{Trades: trades}, nil
 }
