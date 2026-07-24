@@ -50,6 +50,7 @@ func (Provider) Connect(cfg config.DatabaseConfig) (repository.CompositeReposito
 	return newSQLRepository(gormDB), nil
 }
 
+// Add "guid conversion=true" so SQL Server UNIQUEIDENTIFIER values can be scanned into uuid.UUID
 func withGuidConversion(raw string) string {
 	u, err := url.Parse(raw)
 	if err != nil {
