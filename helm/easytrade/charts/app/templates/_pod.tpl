@@ -26,7 +26,9 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- $repository := .Values.image.repository }}
-      {{- if and .Values.global.image.baseRepository (not .Values.image.repository) }}
+      {{- if $repository }}
+        {{- $repository = tpl $repository $ }}
+      {{- else if .Values.global.image.baseRepository }}
         {{- $repository = printf "%s/%s" .Values.global.image.baseRepository .Chart.Name }}
       {{- end }}
       image: "{{ $repository }}:{{ .Values.image.tag | default .Values.global.image.tag }}"
