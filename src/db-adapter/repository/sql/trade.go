@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type tradeModel struct {
+type Trade struct {
 	Id                  *uuid.UUID `gorm:"primaryKey;default:(-)"`
 	AccountId           *uuid.UUID
 	InstrumentId        *uuid.UUID
@@ -25,10 +25,10 @@ type tradeModel struct {
 	Status              string
 }
 
-func (tradeModel) TableName() string { return repository.TableTrades }
+func (Trade) TableName() string { return repository.TableTrades }
 
-func fromCreateTrade(req *pb.CreateTradeRequest) *tradeModel {
-	return &tradeModel{
+func fromTradeCreateProto(req *pb.CreateTradeRequest) *Trade {
+	return &Trade{
 		AccountId:           parseUUID(req.AccountId),
 		InstrumentId:        parseUUID(req.InstrumentId),
 		Direction:           req.Direction,
@@ -42,7 +42,7 @@ func fromCreateTrade(req *pb.CreateTradeRequest) *tradeModel {
 	}
 }
 
-func toTradeProto(src *tradeModel) *pb.TradeMessage {
+func toTradeProto(src *Trade) *pb.TradeMessage {
 	msg := &pb.TradeMessage{
 		Id:                  uuidString(src.Id),
 		AccountId:           uuidString(src.AccountId),
@@ -70,7 +70,7 @@ func NewTradeRepository(db *gorm.DB) repository.TradeRepository {
 }
 
 func (repo *TradeRepository) Create(ctx context.Context, req *pb.CreateTradeRequest) (*pb.TradeMessage, error) {
-	dbTrade := fromCreateTrade(req)
+	dbTrade := fromTradeCreateProto(req)
 	if err := repo.db.WithContext(ctx).Create(dbTrade).Error; err != nil {
 		return nil, err
 	}
@@ -81,8 +81,8 @@ func (repo *TradeRepository) GetByID(ctx context.Context, id string) (*pb.TradeM
 	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", id), toTradeProto)
 }
 
-func fromTradeMessage(msg *pb.TradeMessage) *tradeModel {
-	return &tradeModel{
+func fromTradeProto(msg *pb.TradeMessage) *Trade {
+	return &Trade{
 		Id:                  parseUUID(msg.Id),
 		AccountId:           parseUUID(msg.AccountId),
 		InstrumentId:        parseUUID(msg.InstrumentId),
@@ -98,7 +98,7 @@ func fromTradeMessage(msg *pb.TradeMessage) *tradeModel {
 }
 
 func (repo *TradeRepository) Update(ctx context.Context, msg *pb.TradeMessage) (*pb.TradeMessage, error) {
-	m := fromTradeMessage(msg)
+	m := fromTradeProto(msg)
 	if err := repo.db.WithContext(ctx).Save(m).Error; err != nil {
 		return nil, err
 	}
@@ -130,5 +130,5 @@ func (repo *TradeRepository) GetByAccount(ctx context.Context, accountID string,
 }
 
 func (repo *TradeRepository) DeleteOlderThan(ctx context.Context, date time.Time) (int32, error) {
-	return affectedRows(repo.db.WithContext(ctx).Where(q(repository.ColTimestampOpen)+" < ?", date).Delete(&tradeModel{}))
+	return affectedRows(repo.db.WithContext(ctx).Where(q(repository.ColTimestampOpen)+" < ?", date).Delete(&Trade{}))
 }

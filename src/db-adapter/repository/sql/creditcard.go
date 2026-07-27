@@ -12,8 +12,8 @@ import (
 	"gorm.io/gorm"
 )
 
-func fromOrderMessage(msg *pb.CreditCardOrderMessage) *creditCardOrderModel {
-	m := &creditCardOrderModel{
+func fromOrderProto(msg *pb.CreditCardOrderMessage) *CreditCardOrder {
+	m := &CreditCardOrder{
 		Id:              parseUUID(msg.Id),
 		AccountId:       parseUUID(msg.AccountId),
 		Email:           msg.Email,
@@ -27,7 +27,7 @@ func fromOrderMessage(msg *pb.CreditCardOrderMessage) *creditCardOrderModel {
 	return m
 }
 
-type creditCardOrderModel struct {
+type CreditCardOrder struct {
 	Id              *uuid.UUID `gorm:"primaryKey;default:(-)"`
 	AccountId       *uuid.UUID
 	Email           string
@@ -37,9 +37,9 @@ type creditCardOrderModel struct {
 	ShippingId      *string
 }
 
-func (creditCardOrderModel) TableName() string { return repository.TableCreditCardOrders }
+func (CreditCardOrder) TableName() string { return repository.TableCreditCardOrders }
 
-type creditCardOrderStatusModel struct {
+type CreditCardOrderStatus struct {
 	Id                *uuid.UUID `gorm:"primaryKey;default:(-)"`
 	CreditCardOrderId *uuid.UUID
 	Timestamp         time.Time
@@ -47,11 +47,11 @@ type creditCardOrderStatusModel struct {
 	Details           string
 }
 
-func (creditCardOrderStatusModel) TableName() string {
+func (CreditCardOrderStatus) TableName() string {
 	return repository.TableCreditCardOrderStatus
 }
 
-type creditCardModel struct {
+type CreditCard struct {
 	Id                *uuid.UUID `gorm:"primaryKey;default:(-)"`
 	CreditCardOrderId *uuid.UUID
 	Level             string
@@ -60,10 +60,10 @@ type creditCardModel struct {
 	ValidDate         time.Time
 }
 
-func (creditCardModel) TableName() string { return repository.TableCreditCards }
+func (CreditCard) TableName() string { return repository.TableCreditCards }
 
-func fromCreateOrder(req *pb.CreateCreditCardOrderRequest) *creditCardOrderModel {
-	return &creditCardOrderModel{
+func fromOrderCreateProto(req *pb.CreateCreditCardOrderRequest) *CreditCardOrder {
+	return &CreditCardOrder{
 		AccountId:       parseUUID(req.AccountId),
 		Email:           req.Email,
 		Name:            req.Name,
@@ -72,7 +72,7 @@ func fromCreateOrder(req *pb.CreateCreditCardOrderRequest) *creditCardOrderModel
 	}
 }
 
-func toOrderProto(src *creditCardOrderModel) *pb.CreditCardOrderMessage {
+func toOrderProto(src *CreditCardOrder) *pb.CreditCardOrderMessage {
 	msg := &pb.CreditCardOrderMessage{
 		Id:              uuidString(src.Id),
 		AccountId:       uuidString(src.AccountId),
@@ -87,24 +87,24 @@ func toOrderProto(src *creditCardOrderModel) *pb.CreditCardOrderMessage {
 	return msg
 }
 
-func toShippingAddressProto(src *creditCardOrderModel) *pb.ShippingAddressMessage {
+func toShippingAddressProto(c *CreditCardOrder) *pb.ShippingAddressMessage {
 	return &pb.ShippingAddressMessage{
-		ShippingAddress: src.ShippingAddress,
-		Name:            src.Name,
-		Email:           src.Email,
+		ShippingAddress: c.ShippingAddress,
+		Name:            c.Name,
+		Email:           c.Email,
 	}
 }
 
-func toManufactureDataProto(src *creditCardOrderModel) *pb.CreditCardManufactureDataMessage {
+func toManufactureDataProto(c *CreditCardOrder) *pb.CreditCardManufactureDataMessage {
 	return &pb.CreditCardManufactureDataMessage{
-		OrderId:   uuidString(src.Id),
-		Name:      src.Name,
-		CardLevel: src.CardLevel,
+		OrderId:   uuidString(c.Id),
+		Name:      c.Name,
+		CardLevel: c.CardLevel,
 	}
 }
 
-func fromInsertStatus(req *pb.InsertNewStatusRequest) *creditCardOrderStatusModel {
-	return &creditCardOrderStatusModel{
+func fromStatusProto(req *pb.InsertNewStatusRequest) *CreditCardOrderStatus {
+	return &CreditCardOrderStatus{
 		CreditCardOrderId: parseUUID(req.OrderId),
 		Timestamp:         req.Timestamp.AsTime(),
 		Status:            req.Status,
@@ -112,7 +112,7 @@ func fromInsertStatus(req *pb.InsertNewStatusRequest) *creditCardOrderStatusMode
 	}
 }
 
-func toStatusProto(src *creditCardOrderStatusModel) *pb.CreditCardOrderStatusMessage {
+func toStatusProto(src *CreditCardOrderStatus) *pb.CreditCardOrderStatusMessage {
 	return &pb.CreditCardOrderStatusMessage{
 		Id:                uuidString(src.Id),
 		CreditCardOrderId: uuidString(src.CreditCardOrderId),
@@ -122,8 +122,8 @@ func toStatusProto(src *creditCardOrderStatusModel) *pb.CreditCardOrderStatusMes
 	}
 }
 
-func fromInsertCard(req *pb.InsertNewCreditCardRequest) *creditCardModel {
-	return &creditCardModel{
+func fromCardProto(req *pb.InsertNewCreditCardRequest) *CreditCard {
+	return &CreditCard{
 		CreditCardOrderId: parseUUID(req.OrderId),
 		Level:             req.CardLevel,
 		Number:            req.CardNumber,
@@ -132,7 +132,7 @@ func fromInsertCard(req *pb.InsertNewCreditCardRequest) *creditCardModel {
 	}
 }
 
-func toCardProto(src *creditCardModel) *pb.CreditCardMessage {
+func toCardProto(src *CreditCard) *pb.CreditCardMessage {
 	return &pb.CreditCardMessage{
 		OrderId:       uuidString(src.CreditCardOrderId),
 		CardLevel:     src.Level,
@@ -150,10 +150,10 @@ func NewCreditCardOrderRepository(db *gorm.DB) repository.CreditCardOrderReposit
 	return &CreditCardOrderRepository{db: db}
 }
 
-func (repo *CreditCardOrderRepository) findOrderByAccountID(ctx context.Context, accountID string) (*creditCardOrderModel, error) {
+func (repo *CreditCardOrderRepository) findOrderByAccountID(ctx context.Context, accountID string) (*CreditCardOrder, error) {
 	return firstOptional(
 		repo.db.WithContext(ctx).Where(q(repository.ColAccountID)+" = ?", accountID),
-		func(order *creditCardOrderModel) *creditCardOrderModel { return order },
+		func(order *CreditCardOrder) *CreditCardOrder { return order },
 	)
 }
 
@@ -162,7 +162,7 @@ func (repo *CreditCardOrderRepository) GetByID(ctx context.Context, id string) (
 }
 
 func (repo *CreditCardOrderRepository) Create(ctx context.Context, req *pb.CreateCreditCardOrderRequest) (*pb.CreditCardOrderMessage, error) {
-	dbOrder := fromCreateOrder(req)
+	dbOrder := fromOrderCreateProto(req)
 	if err := repo.db.WithContext(ctx).Create(dbOrder).Error; err != nil {
 		return nil, err
 	}
@@ -208,7 +208,7 @@ func (repo *CreditCardOrderRepository) GetOrdersToManufacture(ctx context.Contex
 }
 
 func (repo *CreditCardOrderRepository) InsertStatus(ctx context.Context, req *pb.InsertNewStatusRequest) (*pb.CreditCardOrderStatusMessage, error) {
-	dbStatus := fromInsertStatus(req)
+	dbStatus := fromStatusProto(req)
 	if err := repo.db.WithContext(ctx).Create(dbStatus).Error; err != nil {
 		return nil, err
 	}
@@ -216,7 +216,7 @@ func (repo *CreditCardOrderRepository) InsertStatus(ctx context.Context, req *pb
 }
 
 func (repo *CreditCardOrderRepository) InsertCard(ctx context.Context, req *pb.InsertNewCreditCardRequest) (*pb.CreditCardMessage, error) {
-	dbCard := fromInsertCard(req)
+	dbCard := fromCardProto(req)
 	if err := repo.db.WithContext(ctx).Create(dbCard).Error; err != nil {
 		return nil, err
 	}
@@ -224,7 +224,7 @@ func (repo *CreditCardOrderRepository) InsertCard(ctx context.Context, req *pb.I
 }
 
 func (repo *CreditCardOrderRepository) Update(ctx context.Context, msg *pb.CreditCardOrderMessage) (*pb.CreditCardOrderMessage, error) {
-	m := fromOrderMessage(msg)
+	m := fromOrderProto(msg)
 	if err := repo.db.WithContext(ctx).Save(m).Error; err != nil {
 		return nil, err
 	}
@@ -232,5 +232,5 @@ func (repo *CreditCardOrderRepository) Update(ctx context.Context, msg *pb.Credi
 }
 
 func (repo *CreditCardOrderRepository) DeleteByAccountID(ctx context.Context, accountID string) (int32, error) {
-	return affectedRows(repo.db.WithContext(ctx).Where(q(repository.ColAccountID)+" = ?", accountID).Delete(&creditCardOrderModel{}))
+	return affectedRows(repo.db.WithContext(ctx).Where(q(repository.ColAccountID)+" = ?", accountID).Delete(&CreditCardOrder{}))
 }

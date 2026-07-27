@@ -9,16 +9,16 @@ import (
 	"gorm.io/gorm"
 )
 
-type packageModel struct {
+type Package struct {
 	Id      *uuid.UUID `gorm:"primaryKey;default:(-)"`
 	Name    string
 	Price   float64
 	Support string
 }
 
-func (packageModel) TableName() string { return repository.TablePackages }
+func (Package) TableName() string { return repository.TablePackages }
 
-func toPackageProto(src *packageModel) *pb.PackageMessage {
+func toPackageProto(src *Package) *pb.PackageMessage {
 	return &pb.PackageMessage{
 		Id:      uuidString(src.Id),
 		Name:    src.Name,

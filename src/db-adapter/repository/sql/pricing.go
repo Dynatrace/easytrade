@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type priceModel struct {
+type Price struct {
 	Id           *uuid.UUID `gorm:"primaryKey;default:(-)"`
 	InstrumentId *uuid.UUID
 	Timestamp    time.Time
@@ -21,10 +21,10 @@ type priceModel struct {
 	Close        float64
 }
 
-func (priceModel) TableName() string { return repository.TablePrices }
+func (Price) TableName() string { return repository.TablePrices }
 
-func fromPricingRow(row *pb.PricingRow) priceModel {
-	return priceModel{
+func fromPriceProto(row *pb.PricingRow) Price {
+	return Price{
 		InstrumentId: parseUUID(row.InstrumentId),
 		Timestamp:    row.Timestamp.AsTime(),
 		Open:         row.Open,
@@ -34,7 +34,7 @@ func fromPricingRow(row *pb.PricingRow) priceModel {
 	}
 }
 
-func toPriceProto(src *priceModel) *pb.PriceMessage {
+func toPriceProto(src *Price) *pb.PriceMessage {
 	return &pb.PriceMessage{
 		Id:           uuidString(src.Id),
 		InstrumentId: uuidString(src.InstrumentId),
@@ -56,7 +56,7 @@ func NewPricingRepository(db *gorm.DB) repository.PricingRepository {
 
 func (repo *PricingRepository) GetLatest(ctx context.Context) ([]*pb.PriceMessage, error) {
 	latest := repo.db.
-		Model(&priceModel{}).
+		Model(&Price{}).
 		Select(q(repository.ColInstrumentID) + ", MAX(" + q(repository.ColTimestamp) + ") AS " + q("MaxTimestamp")).
 		Group(repository.ColInstrumentID)
 	join := "INNER JOIN (?) AS latest ON " +
@@ -87,9 +87,9 @@ func (repo *PricingRepository) InsertBatch(ctx context.Context, req *pb.InsertPr
 	if len(req.Rows) == 0 {
 		return 0, nil
 	}
-	dbModels := make([]priceModel, len(req.Rows))
+	dbModels := make([]Price, len(req.Rows))
 	for i, row := range req.Rows {
-		dbModels[i] = fromPricingRow(row)
+		dbModels[i] = fromPriceProto(row)
 	}
 	if err := repo.db.WithContext(ctx).CreateInBatches(dbModels, 1000).Error; err != nil {
 		return 0, err
@@ -98,5 +98,5 @@ func (repo *PricingRepository) InsertBatch(ctx context.Context, req *pb.InsertPr
 }
 
 func (repo *PricingRepository) DeleteOlderThan(ctx context.Context, date time.Time) (int32, error) {
-	return affectedRows(repo.db.WithContext(ctx).Where(q(repository.ColTimestamp)+" < ?", date).Delete(&priceModel{}))
+	return affectedRows(repo.db.WithContext(ctx).Where(q(repository.ColTimestamp)+" < ?", date).Delete(&Price{}))
 }

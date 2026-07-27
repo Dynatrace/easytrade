@@ -11,14 +11,14 @@ import (
 	"gorm.io/gorm"
 )
 
-type balanceModel struct {
+type Balance struct {
 	AccountId *uuid.UUID `gorm:"primaryKey;default:(-)"`
 	Value     float64
 }
 
-func (balanceModel) TableName() string { return repository.TableBalances }
+func (Balance) TableName() string { return repository.TableBalances }
 
-type balanceHistoryModel struct {
+type BalanceHistory struct {
 	Id          *uuid.UUID `gorm:"primaryKey;default:(-)"`
 	AccountId   *uuid.UUID
 	OldValue    float64
@@ -27,14 +27,14 @@ type balanceHistoryModel struct {
 	ActionDate  time.Time
 }
 
-func (balanceHistoryModel) TableName() string { return repository.TableBalanceHistory }
+func (BalanceHistory) TableName() string { return repository.TableBalanceHistory }
 
-func toBalanceProto(src *balanceModel) *pb.BalanceMessage {
+func toBalanceProto(src *Balance) *pb.BalanceMessage {
 	return &pb.BalanceMessage{AccountId: uuidString(src.AccountId), Value: src.Value}
 }
 
-func fromAddBalanceHistory(req *pb.AddBalanceHistoryRequest) *balanceHistoryModel {
-	return &balanceHistoryModel{
+func fromBalanceHistoryProto(req *pb.AddBalanceHistoryRequest) *BalanceHistory {
+	return &BalanceHistory{
 		AccountId:   parseUUID(req.AccountId),
 		OldValue:    req.OldValue,
 		ValueChange: req.ValueChange,
@@ -43,7 +43,7 @@ func fromAddBalanceHistory(req *pb.AddBalanceHistoryRequest) *balanceHistoryMode
 	}
 }
 
-func toBalanceHistoryProto(src *balanceHistoryModel) *pb.BalanceHistoryMessage {
+func toBalanceHistoryProto(src *BalanceHistory) *pb.BalanceHistoryMessage {
 	return &pb.BalanceHistoryMessage{
 		Id:          uuidString(src.Id),
 		AccountId:   uuidString(src.AccountId),
@@ -63,7 +63,7 @@ func NewBalanceRepository(db *gorm.DB) repository.BalanceRepository {
 }
 
 func (repo *BalanceRepository) Create(ctx context.Context, req *pb.CreateBalanceRequest) (*pb.BalanceMessage, error) {
-	dbBalance := &balanceModel{AccountId: parseUUID(req.AccountId), Value: req.Value}
+	dbBalance := &Balance{AccountId: parseUUID(req.AccountId), Value: req.Value}
 	if err := repo.db.WithContext(ctx).Create(dbBalance).Error; err != nil {
 		return nil, err
 	}
@@ -74,15 +74,15 @@ func (repo *BalanceRepository) GetByAccountID(ctx context.Context, accountID str
 	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColAccountID)+" = ?", accountID), toBalanceProto)
 }
 
-func fromBalanceMessage(msg *pb.BalanceMessage) *balanceModel {
-	return &balanceModel{
+func fromBalanceProto(msg *pb.BalanceMessage) *Balance {
+	return &Balance{
 		AccountId: parseUUID(msg.AccountId),
 		Value:     msg.Value,
 	}
 }
 
 func (repo *BalanceRepository) Update(ctx context.Context, msg *pb.BalanceMessage) (*pb.BalanceMessage, error) {
-	m := fromBalanceMessage(msg)
+	m := fromBalanceProto(msg)
 	if err := repo.db.WithContext(ctx).Save(m).Error; err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func (repo *BalanceRepository) Update(ctx context.Context, msg *pb.BalanceMessag
 }
 
 func (repo *BalanceRepository) AddHistory(ctx context.Context, req *pb.AddBalanceHistoryRequest) (*pb.BalanceHistoryMessage, error) {
-	dbHistory := fromAddBalanceHistory(req)
+	dbHistory := fromBalanceHistoryProto(req)
 	if err := repo.db.WithContext(ctx).Create(dbHistory).Error; err != nil {
 		return nil, err
 	}
@@ -98,5 +98,5 @@ func (repo *BalanceRepository) AddHistory(ctx context.Context, req *pb.AddBalanc
 }
 
 func (repo *BalanceRepository) DeleteHistoryOlderThan(ctx context.Context, date time.Time) (int32, error) {
-	return affectedRows(repo.db.WithContext(ctx).Where(q(repository.ColActionDate)+" < ?", date).Delete(&balanceHistoryModel{}))
+	return affectedRows(repo.db.WithContext(ctx).Where(q(repository.ColActionDate)+" < ?", date).Delete(&BalanceHistory{}))
 }

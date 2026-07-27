@@ -9,16 +9,16 @@ import (
 	"gorm.io/gorm"
 )
 
-type productModel struct {
+type Product struct {
 	Id       *uuid.UUID `gorm:"primaryKey;default:(-)"`
 	Name     string
 	Ppt      float64
 	Currency string
 }
 
-func (productModel) TableName() string { return repository.TableProducts }
+func (Product) TableName() string { return repository.TableProducts }
 
-func toProductProto(src *productModel) *pb.ProductMessage {
+func toProductProto(src *Product) *pb.ProductMessage {
 	return &pb.ProductMessage{
 		Id:       uuidString(src.Id),
 		Name:     src.Name,

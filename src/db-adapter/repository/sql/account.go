@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type accountModel struct {
+type Account struct {
 	Id                    *uuid.UUID `gorm:"primaryKey;default:(-)"`
 	PackageId             *uuid.UUID
 	FirstName             string
@@ -26,10 +26,10 @@ type accountModel struct {
 	Address               string
 }
 
-func (accountModel) TableName() string { return repository.TableAccounts }
+func (Account) TableName() string { return repository.TableAccounts }
 
-func fromCreateAccount(req *pb.CreateAccountRequest) *accountModel {
-	return &accountModel{
+func fromAccountProto(req *pb.CreateAccountRequest) *Account {
+	return &Account{
 		PackageId:             parseUUID(req.PackageId),
 		FirstName:             req.FirstName,
 		LastName:              req.LastName,
@@ -44,7 +44,7 @@ func fromCreateAccount(req *pb.CreateAccountRequest) *accountModel {
 	}
 }
 
-func toAccountProto(src *accountModel) *pb.AccountMessage {
+func toAccountProto(src *Account) *pb.AccountMessage {
 	return &pb.AccountMessage{
 		Id:                    uuidString(src.Id),
 		PackageId:             uuidString(src.PackageId),
@@ -70,7 +70,7 @@ func NewAccountRepository(db *gorm.DB) repository.AccountRepository {
 }
 
 func (repo *AccountRepository) Create(ctx context.Context, req *pb.CreateAccountRequest) (*pb.AccountMessage, error) {
-	dbAccount := fromCreateAccount(req)
+	dbAccount := fromAccountProto(req)
 	if err := repo.db.WithContext(ctx).Create(dbAccount).Error; err != nil {
 		return nil, err
 	}
@@ -94,5 +94,5 @@ func (repo *AccountRepository) DeleteOlderThan(ctx context.Context, before *time
 	if before != nil {
 		db = db.Where(q(repository.ColCreationDate)+" < ?", *before)
 	}
-	return affectedRows(db.Delete(&accountModel{}))
+	return affectedRows(db.Delete(&Account{}))
 }
