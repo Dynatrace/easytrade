@@ -10,6 +10,7 @@ global:
     name: TradeManagement
     # supports: ["mssql", "postgres"]
     type: mssql
+    port: 1433  # 5432 for postgres
 
   # Global labels to be added to all resources
   labels: {}
@@ -140,7 +141,7 @@ db:
       memory: 1.5Gi
   service:
     enabled: true
-    port: 1433
+    port: "{{ .Values.global.database.port }}"
   # Enabling persistence will create a PersistentVolumeClaim for the database data
   # persistence:
   #   enabled: true

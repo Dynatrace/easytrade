@@ -72,7 +72,7 @@ spec:
         {{- end }}
       {{- else }}
         - name: http
-          containerPort: {{ .Values.service.port }}
+          containerPort: {{ tpl (.Values.service.port | toString) $ }}
           protocol: TCP
       {{- end }}
       {{- with .Values.livenessProbe }}
