@@ -59,11 +59,11 @@ func (repo *CreditCardOrderRepository) findOrderByAccountID(ctx context.Context,
 }
 
 func (repo *CreditCardOrderRepository) GetByID(ctx context.Context, id string) (*pb.CreditCardOrderMessage, error) {
-	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", id), toOrderProto)
+	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", id), (*CreditCardOrder).toProto)
 }
 
 func (repo *CreditCardOrderRepository) GetShippingAddress(ctx context.Context, orderID string) (*pb.ShippingAddressMessage, error) {
-	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", orderID), toShippingAddressProto)
+	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", orderID), (*CreditCardOrder).toShippingAddressProto)
 }
 
 func (repo *CreditCardOrderRepository) GetStatusListByAccountID(ctx context.Context, accountID string) ([]*pb.CreditCardOrderStatusMessage, error) {
@@ -76,7 +76,7 @@ func (repo *CreditCardOrderRepository) GetStatusListByAccountID(ctx context.Cont
 	}
 	return findAll(
 		repo.db.WithContext(ctx).Where(q(repository.ColCreditCardOrderID)+" = ?", order.Id).Order(q(repository.ColTimestamp)+" DESC"),
-		toStatusProto,
+                 (*CreditCardOrderStatus).toProto,
 	)
 }
 
@@ -87,7 +87,7 @@ func (repo *CreditCardOrderRepository) GetLastStatusByAccountID(ctx context.Cont
 	}
 	return firstOptional(
 		repo.db.WithContext(ctx).Where(q(repository.ColCreditCardOrderID)+" = ?", order.Id).Order(q(repository.ColTimestamp)+" DESC"),
-		toStatusProto,
+                 (*CreditCardOrderStatus).toProto,
 	)
 }
 
@@ -97,7 +97,7 @@ func (repo *CreditCardOrderRepository) GetOrdersToManufacture(ctx context.Contex
 		" = " + qcol(repository.TableCreditCardOrders, repository.ColID)
 	where := qcol(repository.TableCreditCardOrderStatus, repository.ColStatus) + " = ?"
 	query := repo.db.WithContext(ctx).Joins(join).Where(where, repository.StatusOrderCreated)
-	return findAll(query, toManufactureDataProto)
+	return findAll(query, (*CreditCardOrder).toManufactureDataProto)
 }
 
 func (repo *CreditCardOrderRepository) Create(ctx context.Context, req *pb.CreateCreditCardOrderRequest) (*pb.CreditCardOrderMessage, error) {
@@ -105,7 +105,7 @@ func (repo *CreditCardOrderRepository) Create(ctx context.Context, req *pb.Creat
 	if err := repo.db.WithContext(ctx).Create(dbOrder).Error; err != nil {
 		return nil, err
 	}
-	return toOrderProto(dbOrder), nil
+	return dbOrder.toProto(), nil
 }
 
 func (repo *CreditCardOrderRepository) InsertStatus(ctx context.Context, req *pb.InsertNewStatusRequest) (*pb.CreditCardOrderStatusMessage, error) {
@@ -113,7 +113,7 @@ func (repo *CreditCardOrderRepository) InsertStatus(ctx context.Context, req *pb
 	if err := repo.db.WithContext(ctx).Create(dbStatus).Error; err != nil {
 		return nil, err
 	}
-	return toStatusProto(dbStatus), nil
+	return dbStatus.toProto(), nil
 }
 
 func (repo *CreditCardOrderRepository) InsertCard(ctx context.Context, req *pb.InsertNewCreditCardRequest) (*pb.CreditCardMessage, error) {
@@ -121,7 +121,7 @@ func (repo *CreditCardOrderRepository) InsertCard(ctx context.Context, req *pb.I
 	if err := repo.db.WithContext(ctx).Create(dbCard).Error; err != nil {
 		return nil, err
 	}
-	return toCardProto(dbCard), nil
+	return dbCard.toProto(), nil
 }
 
 func (repo *CreditCardOrderRepository) Update(ctx context.Context, msg *pb.CreditCardOrderMessage) (*pb.CreditCardOrderMessage, error) {
@@ -129,7 +129,7 @@ func (repo *CreditCardOrderRepository) Update(ctx context.Context, msg *pb.Credi
 	if err := repo.db.WithContext(ctx).Save(m).Error; err != nil {
 		return nil, err
 	}
-	return toOrderProto(m), nil
+	return m.toProto(), nil
 }
 
 func (repo *CreditCardOrderRepository) DeleteByAccountID(ctx context.Context, accountID string) (int32, error) {
@@ -161,7 +161,7 @@ func orderCreateFromProto(req *pb.CreateCreditCardOrderRequest) *CreditCardOrder
 	}
 }
 
-func toOrderProto(src *CreditCardOrder) *pb.CreditCardOrderMessage {
+func (src *CreditCardOrder) toProto() *pb.CreditCardOrderMessage {
 	msg := &pb.CreditCardOrderMessage{
 		Id:              uuidString(src.Id),
 		AccountId:       uuidString(src.AccountId),
@@ -176,7 +176,7 @@ func toOrderProto(src *CreditCardOrder) *pb.CreditCardOrderMessage {
 	return msg
 }
 
-func toShippingAddressProto(c *CreditCardOrder) *pb.ShippingAddressMessage {
+func (c *CreditCardOrder) toShippingAddressProto() *pb.ShippingAddressMessage {
 	return &pb.ShippingAddressMessage{
 		ShippingAddress: c.ShippingAddress,
 		Name:            c.Name,
@@ -184,7 +184,7 @@ func toShippingAddressProto(c *CreditCardOrder) *pb.ShippingAddressMessage {
 	}
 }
 
-func toManufactureDataProto(c *CreditCardOrder) *pb.CreditCardManufactureDataMessage {
+func (c *CreditCardOrder) toManufactureDataProto() *pb.CreditCardManufactureDataMessage {
 	return &pb.CreditCardManufactureDataMessage{
 		OrderId:   uuidString(c.Id),
 		Name:      c.Name,
@@ -201,7 +201,7 @@ func statusFromProto(req *pb.InsertNewStatusRequest) *CreditCardOrderStatus {
 	}
 }
 
-func toStatusProto(src *CreditCardOrderStatus) *pb.CreditCardOrderStatusMessage {
+func (src *CreditCardOrderStatus) toProto() *pb.CreditCardOrderStatusMessage {
 	return &pb.CreditCardOrderStatusMessage{
 		Id:                uuidString(src.Id),
 		CreditCardOrderId: uuidString(src.CreditCardOrderId),
@@ -221,7 +221,7 @@ func cardFromProto(req *pb.InsertNewCreditCardRequest) *CreditCard {
 	}
 }
 
-func toCardProto(src *CreditCard) *pb.CreditCardMessage {
+func (src *CreditCard) toProto() *pb.CreditCardMessage {
 	return &pb.CreditCardMessage{
 		OrderId:       uuidString(src.CreditCardOrderId),
 		CardLevel:     src.Level,

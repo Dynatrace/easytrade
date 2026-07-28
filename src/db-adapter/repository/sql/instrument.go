@@ -39,11 +39,11 @@ func NewInstrumentRepository(db *gorm.DB) repository.InstrumentRepository {
 }
 
 func (repo *InstrumentRepository) GetByID(ctx context.Context, id string) (*pb.InstrumentMessage, error) {
-	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", id), toInstrumentProto)
+	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", id), (*Instrument).toProto)
 }
 
 func (repo *InstrumentRepository) GetAll(ctx context.Context) ([]*pb.InstrumentMessage, error) {
-	return findAll(repo.db.WithContext(ctx), toInstrumentProto)
+	return findAll(repo.db.WithContext(ctx), (*Instrument).toProto)
 }
 
 func (repo *InstrumentRepository) GetOwned(ctx context.Context, accountID, instrumentID string) (*pb.OwnedInstrumentMessage, error) {
@@ -51,12 +51,12 @@ func (repo *InstrumentRepository) GetOwned(ctx context.Context, accountID, instr
 		repo.db.WithContext(ctx).
 			Where(q(repository.ColAccountID)+" = ?", accountID).
 			Where(q(repository.ColInstrumentID)+" = ?", instrumentID),
-		toOwnedProto,
+           (*OwnedInstrument).toProto,
 	)
 }
 
 func (repo *InstrumentRepository) GetAllOwned(ctx context.Context, accountID string) ([]*pb.OwnedInstrumentMessage, error) {
-	return findAll(repo.db.WithContext(ctx).Where(q(repository.ColAccountID)+" = ?", accountID), toOwnedProto)
+	return findAll(repo.db.WithContext(ctx).Where(q(repository.ColAccountID)+" = ?", accountID), (*OwnedInstrument).toProto)
 }
 
 func (repo *InstrumentRepository) AddOwned(ctx context.Context, req *pb.AddOwnedInstrumentRequest) (*pb.OwnedInstrumentMessage, error) {
@@ -64,7 +64,7 @@ func (repo *InstrumentRepository) AddOwned(ctx context.Context, req *pb.AddOwned
 	if err := repo.db.WithContext(ctx).Create(dbOwned).Error; err != nil {
 		return nil, err
 	}
-	return toOwnedProto(dbOwned), nil
+	return dbOwned.toProto(), nil
 }
 
 func (repo *InstrumentRepository) UpdateOwned(ctx context.Context, msg *pb.OwnedInstrumentMessage) (*pb.OwnedInstrumentMessage, error) {
@@ -72,7 +72,7 @@ func (repo *InstrumentRepository) UpdateOwned(ctx context.Context, msg *pb.Owned
 	if err := repo.db.WithContext(ctx).Save(m).Error; err != nil {
 		return nil, err
 	}
-	return toOwnedProto(m), nil
+	return m.toProto(), nil
 }
 
 func ownedFromProto(msg *pb.OwnedInstrumentMessage) *OwnedInstrument {
@@ -94,7 +94,7 @@ func ownedAddFromProto(req *pb.AddOwnedInstrumentRequest) *OwnedInstrument {
 	}
 }
 
-func toOwnedProto(src *OwnedInstrument) *pb.OwnedInstrumentMessage {
+func (src *OwnedInstrument) toProto() *pb.OwnedInstrumentMessage {
 	return &pb.OwnedInstrumentMessage{
 		Id:                   uuidString(src.Id),
 		AccountId:            uuidString(src.AccountId),
@@ -104,7 +104,7 @@ func toOwnedProto(src *OwnedInstrument) *pb.OwnedInstrumentMessage {
 	}
 }
 
-func toInstrumentProto(src *Instrument) *pb.InstrumentMessage {
+func (src *Instrument) toProto() *pb.InstrumentMessage {
 	return &pb.InstrumentMessage{
 		Id:          uuidString(src.Id),
 		ProductId:   uuidString(src.ProductId),

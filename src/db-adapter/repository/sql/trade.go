@@ -36,11 +36,11 @@ func NewTradeRepository(db *gorm.DB) repository.TradeRepository {
 }
 
 func (repo *TradeRepository) GetByID(ctx context.Context, id string) (*pb.TradeMessage, error) {
-	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", id), toTradeProto)
+	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", id), (*Trade).toProto)
 }
 
 func (repo *TradeRepository) GetOpen(ctx context.Context) ([]*pb.TradeMessage, error) {
-	return findAll(repo.db.WithContext(ctx).Where(q(repository.ColTradeClosed)+" = ?", false), toTradeProto)
+	return findAll(repo.db.WithContext(ctx).Where(q(repository.ColTradeClosed)+" = ?", false), (*Trade).toProto)
 }
 
 func (repo *TradeRepository) GetExpired(ctx context.Context) ([]*pb.TradeMessage, error) {
@@ -48,7 +48,7 @@ func (repo *TradeRepository) GetExpired(ctx context.Context) ([]*pb.TradeMessage
 		repo.db.WithContext(ctx).
 			Where(q(repository.ColTradeClosed)+" = ?", false).
 			Where(q(repository.ColTimestampClose)+" IS NOT NULL AND "+q(repository.ColTimestampClose)+" < ?", time.Now()),
-		toTradeProto,
+           (*Trade).toProto,
 	)
 }
 
@@ -60,7 +60,7 @@ func (repo *TradeRepository) GetByAccount(ctx context.Context, accountID string,
 	if onlyLong {
 		query = query.Where(q(repository.ColDirection)+" IN (?, ?)", repository.DirectionLongBuy, repository.DirectionLongSell)
 	}
-	return findAll(query, toTradeProto)
+	return findAll(query, (*Trade).toProto)
 }
 
 func (repo *TradeRepository) Create(ctx context.Context, req *pb.CreateTradeRequest) (*pb.TradeMessage, error) {
@@ -68,7 +68,7 @@ func (repo *TradeRepository) Create(ctx context.Context, req *pb.CreateTradeRequ
 	if err := repo.db.WithContext(ctx).Create(dbTrade).Error; err != nil {
 		return nil, err
 	}
-	return toTradeProto(dbTrade), nil
+	return dbTrade.toProto(), nil
 }
 
 func (repo *TradeRepository) Update(ctx context.Context, msg *pb.TradeMessage) (*pb.TradeMessage, error) {
@@ -76,7 +76,7 @@ func (repo *TradeRepository) Update(ctx context.Context, msg *pb.TradeMessage) (
 	if err := repo.db.WithContext(ctx).Save(m).Error; err != nil {
 		return nil, err
 	}
-	return toTradeProto(m), nil
+	return m.toProto(), nil
 }
 
 func (repo *TradeRepository) DeleteOlderThan(ctx context.Context, date time.Time) (int32, error) {
@@ -114,7 +114,7 @@ func tradeFromProto(msg *pb.TradeMessage) *Trade {
 	}
 }
 
-func toTradeProto(src *Trade) *pb.TradeMessage {
+func (src *Trade) toProto() *pb.TradeMessage {
 	msg := &pb.TradeMessage{
 		Id:                  uuidString(src.Id),
 		AccountId:           uuidString(src.AccountId),

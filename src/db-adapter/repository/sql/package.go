@@ -27,10 +27,10 @@ func NewPackageRepository(db *gorm.DB) repository.PackageRepository {
 }
 
 func (repo *PackageRepository) GetAll(ctx context.Context) ([]*pb.PackageMessage, error) {
-	return findAll(repo.db.WithContext(ctx), toPackageProto)
+	return findAll(repo.db.WithContext(ctx), (*Package).toProto)
 }
 
-func toPackageProto(src *Package) *pb.PackageMessage {
+func (src *Package) toProto() *pb.PackageMessage {
 	return &pb.PackageMessage{
 		Id:      uuidString(src.Id),
 		Name:    src.Name,

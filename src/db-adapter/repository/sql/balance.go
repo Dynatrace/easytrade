@@ -37,7 +37,7 @@ func NewBalanceRepository(db *gorm.DB) repository.BalanceRepository {
 }
 
 func (repo *BalanceRepository) GetByAccountID(ctx context.Context, accountID string) (*pb.BalanceMessage, error) {
-	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColAccountID)+" = ?", accountID), toBalanceProto)
+	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColAccountID)+" = ?", accountID), (*Balance).toProto)
 }
 
 func (repo *BalanceRepository) Create(ctx context.Context, req *pb.CreateBalanceRequest) (*pb.BalanceMessage, error) {
@@ -45,7 +45,7 @@ func (repo *BalanceRepository) Create(ctx context.Context, req *pb.CreateBalance
 	if err := repo.db.WithContext(ctx).Create(dbBalance).Error; err != nil {
 		return nil, err
 	}
-	return toBalanceProto(dbBalance), nil
+	return dbBalance.toProto(), nil
 }
 
 func (repo *BalanceRepository) Update(ctx context.Context, msg *pb.BalanceMessage) (*pb.BalanceMessage, error) {
@@ -53,7 +53,7 @@ func (repo *BalanceRepository) Update(ctx context.Context, msg *pb.BalanceMessag
 	if err := repo.db.WithContext(ctx).Save(m).Error; err != nil {
 		return nil, err
 	}
-	return toBalanceProto(m), nil
+	return m.toProto(), nil
 }
 
 func (repo *BalanceRepository) AddHistory(ctx context.Context, req *pb.AddBalanceHistoryRequest) (*pb.BalanceHistoryMessage, error) {
@@ -61,7 +61,7 @@ func (repo *BalanceRepository) AddHistory(ctx context.Context, req *pb.AddBalanc
 	if err := repo.db.WithContext(ctx).Create(dbHistory).Error; err != nil {
 		return nil, err
 	}
-	return toBalanceHistoryProto(dbHistory), nil
+	return dbHistory.toProto(), nil
 }
 
 func (repo *BalanceRepository) DeleteHistoryOlderThan(ctx context.Context, date time.Time) (int32, error) {
@@ -75,7 +75,7 @@ func balanceFromProto(msg *pb.BalanceMessage) *Balance {
 	}
 }
 
-func toBalanceProto(src *Balance) *pb.BalanceMessage {
+func (src *Balance) toProto() *pb.BalanceMessage {
 	return &pb.BalanceMessage{AccountId: uuidString(src.AccountId), Value: src.Value}
 }
 
@@ -89,7 +89,7 @@ func balanceHistoryFromProto(req *pb.AddBalanceHistoryRequest) *BalanceHistory {
 	}
 }
 
-func toBalanceHistoryProto(src *BalanceHistory) *pb.BalanceHistoryMessage {
+func (src *BalanceHistory) toProto() *pb.BalanceHistoryMessage {
 	return &pb.BalanceHistoryMessage{
 		Id:          uuidString(src.Id),
 		AccountId:   uuidString(src.AccountId),

@@ -27,10 +27,10 @@ func NewProductRepository(db *gorm.DB) repository.ProductRepository {
 }
 
 func (repo *ProductRepository) GetAll(ctx context.Context) ([]*pb.ProductMessage, error) {
-	return findAll(repo.db.WithContext(ctx), toProductProto)
+	return findAll(repo.db.WithContext(ctx), (*Product).toProto)
 }
 
-func toProductProto(src *Product) *pb.ProductMessage {
+func (src *Product) toProto() *pb.ProductMessage {
 	return &pb.ProductMessage{
 		Id:       uuidString(src.Id),
 		Name:     src.Name,

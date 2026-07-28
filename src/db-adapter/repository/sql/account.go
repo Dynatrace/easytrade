@@ -37,15 +37,15 @@ func NewAccountRepository(db *gorm.DB) repository.AccountRepository {
 }
 
 func (repo *AccountRepository) GetByID(ctx context.Context, id string) (*pb.AccountMessage, error) {
-	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", id), toAccountProto)
+	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", id), (*Account).toProto)
 }
 
 func (repo *AccountRepository) GetByUsername(ctx context.Context, username string) (*pb.AccountMessage, error) {
-	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColUsername)+" = ?", username), toAccountProto)
+	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColUsername)+" = ?", username), (*Account).toProto)
 }
 
 func (repo *AccountRepository) GetAll(ctx context.Context) ([]*pb.AccountMessage, error) {
-	return findAll(repo.db.WithContext(ctx), toAccountProto)
+	return findAll(repo.db.WithContext(ctx), (*Account).toProto)
 }
 
 func (repo *AccountRepository) Create(ctx context.Context, req *pb.CreateAccountRequest) (*pb.AccountMessage, error) {
@@ -53,7 +53,7 @@ func (repo *AccountRepository) Create(ctx context.Context, req *pb.CreateAccount
 	if err := repo.db.WithContext(ctx).Create(dbAccount).Error; err != nil {
 		return nil, err
 	}
-	return toAccountProto(dbAccount), nil
+	return dbAccount.toProto(), nil
 }
 
 func (repo *AccountRepository) DeleteOlderThan(ctx context.Context, before *time.Time, origin string) (int32, error) {
@@ -80,7 +80,7 @@ func accountFromProto(req *pb.CreateAccountRequest) *Account {
 	}
 }
 
-func toAccountProto(src *Account) *pb.AccountMessage {
+func (src *Account) toProto() *pb.AccountMessage {
 	return &pb.AccountMessage{
 		Id:                    uuidString(src.Id),
 		PackageId:             uuidString(src.PackageId),
