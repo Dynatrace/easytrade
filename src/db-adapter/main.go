@@ -5,9 +5,6 @@ import (
 	"net"
 
 	"github.com/dynatrace/easytrade/dbadapter/config"
-	pb "github.com/dynatrace/easytrade/dbadapter/proto"
-	"github.com/dynatrace/easytrade/dbadapter/repository"
-	_ "github.com/dynatrace/easytrade/dbadapter/repository/sql"
 	"github.com/dynatrace/easytrade/dbadapter/server"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -16,9 +13,9 @@ import (
 func main() {
 	cfg := config.Load()
 
-	repo, err := repository.Open(cfg.Database)
+	backend, err := newDBBackend(cfg.Database)
 	if err != nil {
-		log.WithError(err).Fatal("Failed to connect to database")
+		log.WithError(err).Fatal("Failed to open database backend")
 	}
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", cfg.Server.GRPCPort))
@@ -27,15 +24,7 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-
-	pb.RegisterAccountServiceServer(grpcServer, server.NewAccountServer(repo.Account()))
-	pb.RegisterBalanceServiceServer(grpcServer, server.NewBalanceServer(repo.Balance()))
-	pb.RegisterCreditCardOrderServiceServer(grpcServer, server.NewCreditCardOrderServer(repo.CreditCard()))
-	pb.RegisterPackageServiceServer(grpcServer, server.NewPackageServer(repo.Package()))
-	pb.RegisterInstrumentServiceServer(grpcServer, server.NewInstrumentServer(repo.Instrument()))
-	pb.RegisterPricingServiceServer(grpcServer, server.NewPricingServer(repo.Pricing()))
-	pb.RegisterProductServiceServer(grpcServer, server.NewProductServer(repo.Product()))
-	pb.RegisterTradeServiceServer(grpcServer, server.NewTradeServer(repo.Trade()))
+	server.Register(grpcServer, backend)
 
 	log.Infof("db-adapter listening on :%s", cfg.Server.GRPCPort)
 	if err := grpcServer.Serve(lis); err != nil {

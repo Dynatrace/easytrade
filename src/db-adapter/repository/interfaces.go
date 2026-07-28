@@ -7,7 +7,7 @@ import (
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
 )
 
-type CompositeRepository interface {
+type DBBackend interface {
 	Account() AccountRepository
 	Balance() BalanceRepository
 	CreditCard() CreditCardOrderRepository
