@@ -27,40 +27,6 @@ type Trade struct {
 
 func (Trade) TableName() string { return repository.TableTrades }
 
-func fromTradeCreateProto(req *pb.CreateTradeRequest) *Trade {
-	return &Trade{
-		AccountId:           parseUUID(req.AccountId),
-		InstrumentId:        parseUUID(req.InstrumentId),
-		Direction:           req.Direction,
-		Quantity:            req.Quantity,
-		EntryPrice:          req.EntryPrice,
-		TimestampOpen:       req.TimestampOpen.AsTime(),
-		TimestampClose:      optionalTime(req.TimestampClose),
-		TradeClosed:         req.TradeClosed,
-		TransactionHappened: req.TransactionHappened,
-		Status:              req.Status,
-	}
-}
-
-func toTradeProto(src *Trade) *pb.TradeMessage {
-	msg := &pb.TradeMessage{
-		Id:                  uuidString(src.Id),
-		AccountId:           uuidString(src.AccountId),
-		InstrumentId:        uuidString(src.InstrumentId),
-		Direction:           src.Direction,
-		Quantity:            src.Quantity,
-		EntryPrice:          src.EntryPrice,
-		TimestampOpen:       timestamppb.New(src.TimestampOpen),
-		TradeClosed:         src.TradeClosed,
-		TransactionHappened: src.TransactionHappened,
-		Status:              src.Status,
-	}
-	if src.TimestampClose != nil {
-		msg.TimestampClose = timestamppb.New(*src.TimestampClose)
-	}
-	return msg
-}
-
 var _ repository.TradeRepository = (*TradeRepository)(nil)
 
 type TradeRepository struct{ db *gorm.DB }
@@ -69,40 +35,8 @@ func NewTradeRepository(db *gorm.DB) repository.TradeRepository {
 	return &TradeRepository{db: db}
 }
 
-func (repo *TradeRepository) Create(ctx context.Context, req *pb.CreateTradeRequest) (*pb.TradeMessage, error) {
-	dbTrade := fromTradeCreateProto(req)
-	if err := repo.db.WithContext(ctx).Create(dbTrade).Error; err != nil {
-		return nil, err
-	}
-	return toTradeProto(dbTrade), nil
-}
-
 func (repo *TradeRepository) GetByID(ctx context.Context, id string) (*pb.TradeMessage, error) {
 	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", id), toTradeProto)
-}
-
-func fromTradeProto(msg *pb.TradeMessage) *Trade {
-	return &Trade{
-		Id:                  parseUUID(msg.Id),
-		AccountId:           parseUUID(msg.AccountId),
-		InstrumentId:        parseUUID(msg.InstrumentId),
-		Direction:           msg.Direction,
-		Quantity:            msg.Quantity,
-		EntryPrice:          msg.EntryPrice,
-		TimestampOpen:       msg.TimestampOpen.AsTime(),
-		TimestampClose:      optionalTime(msg.TimestampClose),
-		TradeClosed:         msg.TradeClosed,
-		TransactionHappened: msg.TransactionHappened,
-		Status:              msg.Status,
-	}
-}
-
-func (repo *TradeRepository) Update(ctx context.Context, msg *pb.TradeMessage) (*pb.TradeMessage, error) {
-	m := fromTradeProto(msg)
-	if err := repo.db.WithContext(ctx).Save(m).Error; err != nil {
-		return nil, err
-	}
-	return toTradeProto(m), nil
 }
 
 func (repo *TradeRepository) GetOpen(ctx context.Context) ([]*pb.TradeMessage, error) {
@@ -129,6 +63,72 @@ func (repo *TradeRepository) GetByAccount(ctx context.Context, accountID string,
 	return findAll(query, toTradeProto)
 }
 
+func (repo *TradeRepository) Create(ctx context.Context, req *pb.CreateTradeRequest) (*pb.TradeMessage, error) {
+	dbTrade := tradeCreateFromProto(req)
+	if err := repo.db.WithContext(ctx).Create(dbTrade).Error; err != nil {
+		return nil, err
+	}
+	return toTradeProto(dbTrade), nil
+}
+
+func (repo *TradeRepository) Update(ctx context.Context, msg *pb.TradeMessage) (*pb.TradeMessage, error) {
+	m := tradeFromProto(msg)
+	if err := repo.db.WithContext(ctx).Save(m).Error; err != nil {
+		return nil, err
+	}
+	return toTradeProto(m), nil
+}
+
 func (repo *TradeRepository) DeleteOlderThan(ctx context.Context, date time.Time) (int32, error) {
 	return affectedRows(repo.db.WithContext(ctx).Where(q(repository.ColTimestampOpen)+" < ?", date).Delete(&Trade{}))
+}
+
+func tradeCreateFromProto(req *pb.CreateTradeRequest) *Trade {
+	return &Trade{
+		AccountId:           parseUUID(req.AccountId),
+		InstrumentId:        parseUUID(req.InstrumentId),
+		Direction:           req.Direction,
+		Quantity:            req.Quantity,
+		EntryPrice:          req.EntryPrice,
+		TimestampOpen:       req.TimestampOpen.AsTime(),
+		TimestampClose:      optionalTime(req.TimestampClose),
+		TradeClosed:         req.TradeClosed,
+		TransactionHappened: req.TransactionHappened,
+		Status:              req.Status,
+	}
+}
+
+func tradeFromProto(msg *pb.TradeMessage) *Trade {
+	return &Trade{
+		Id:                  parseUUID(msg.Id),
+		AccountId:           parseUUID(msg.AccountId),
+		InstrumentId:        parseUUID(msg.InstrumentId),
+		Direction:           msg.Direction,
+		Quantity:            msg.Quantity,
+		EntryPrice:          msg.EntryPrice,
+		TimestampOpen:       msg.TimestampOpen.AsTime(),
+		TimestampClose:      optionalTime(msg.TimestampClose),
+		TradeClosed:         msg.TradeClosed,
+		TransactionHappened: msg.TransactionHappened,
+		Status:              msg.Status,
+	}
+}
+
+func toTradeProto(src *Trade) *pb.TradeMessage {
+	msg := &pb.TradeMessage{
+		Id:                  uuidString(src.Id),
+		AccountId:           uuidString(src.AccountId),
+		InstrumentId:        uuidString(src.InstrumentId),
+		Direction:           src.Direction,
+		Quantity:            src.Quantity,
+		EntryPrice:          src.EntryPrice,
+		TimestampOpen:       timestamppb.New(src.TimestampOpen),
+		TradeClosed:         src.TradeClosed,
+		TransactionHappened: src.TransactionHappened,
+		Status:              src.Status,
+	}
+	if src.TimestampClose != nil {
+		msg.TimestampClose = timestamppb.New(*src.TimestampClose)
+	}
+	return msg
 }

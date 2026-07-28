@@ -18,15 +18,6 @@ type Package struct {
 
 func (Package) TableName() string { return repository.TablePackages }
 
-func toPackageProto(src *Package) *pb.PackageMessage {
-	return &pb.PackageMessage{
-		Id:      uuidString(src.Id),
-		Name:    src.Name,
-		Price:   src.Price,
-		Support: src.Support,
-	}
-}
-
 var _ repository.PackageRepository = (*PackageRepository)(nil)
 
 type PackageRepository struct{ db *gorm.DB }
@@ -37,4 +28,13 @@ func NewPackageRepository(db *gorm.DB) repository.PackageRepository {
 
 func (repo *PackageRepository) GetAll(ctx context.Context) ([]*pb.PackageMessage, error) {
 	return findAll(repo.db.WithContext(ctx), toPackageProto)
+}
+
+func toPackageProto(src *Package) *pb.PackageMessage {
+	return &pb.PackageMessage{
+		Id:      uuidString(src.Id),
+		Name:    src.Name,
+		Price:   src.Price,
+		Support: src.Support,
+	}
 }

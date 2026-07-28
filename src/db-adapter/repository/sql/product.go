@@ -18,15 +18,6 @@ type Product struct {
 
 func (Product) TableName() string { return repository.TableProducts }
 
-func toProductProto(src *Product) *pb.ProductMessage {
-	return &pb.ProductMessage{
-		Id:       uuidString(src.Id),
-		Name:     src.Name,
-		Ppt:      src.Ppt,
-		Currency: src.Currency,
-	}
-}
-
 var _ repository.ProductRepository = (*ProductRepository)(nil)
 
 type ProductRepository struct{ db *gorm.DB }
@@ -37,4 +28,13 @@ func NewProductRepository(db *gorm.DB) repository.ProductRepository {
 
 func (repo *ProductRepository) GetAll(ctx context.Context) ([]*pb.ProductMessage, error) {
 	return findAll(repo.db.WithContext(ctx), toProductProto)
+}
+
+func toProductProto(src *Product) *pb.ProductMessage {
+	return &pb.ProductMessage{
+		Id:       uuidString(src.Id),
+		Name:     src.Name,
+		Ppt:      src.Ppt,
+		Currency: src.Currency,
+	}
 }

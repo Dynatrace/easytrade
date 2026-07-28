@@ -19,8 +19,6 @@ type Instrument struct {
 	Description string
 }
 
-func (Instrument) TableName() string { return repository.TableInstruments }
-
 type OwnedInstrument struct {
 	Id                   *uuid.UUID `gorm:"primaryKey;default:(-)"`
 	AccountId            *uuid.UUID
@@ -29,36 +27,8 @@ type OwnedInstrument struct {
 	LastModificationDate time.Time
 }
 
+func (Instrument) TableName() string      { return repository.TableInstruments }
 func (OwnedInstrument) TableName() string { return repository.TableOwnedInstruments }
-
-func toInstrumentProto(src *Instrument) *pb.InstrumentMessage {
-	return &pb.InstrumentMessage{
-		Id:          uuidString(src.Id),
-		ProductId:   uuidString(src.ProductId),
-		Code:        src.Code,
-		Name:        src.Name,
-		Description: src.Description,
-	}
-}
-
-func toOwnedProto(src *OwnedInstrument) *pb.OwnedInstrumentMessage {
-	return &pb.OwnedInstrumentMessage{
-		Id:                   uuidString(src.Id),
-		AccountId:            uuidString(src.AccountId),
-		InstrumentId:         uuidString(src.InstrumentId),
-		Quantity:             src.Quantity,
-		LastModificationDate: timestamppb.New(src.LastModificationDate),
-	}
-}
-
-func fromOwnedAddProto(req *pb.AddOwnedInstrumentRequest) *OwnedInstrument {
-	return &OwnedInstrument{
-		AccountId:            parseUUID(req.AccountId),
-		InstrumentId:         parseUUID(req.InstrumentId),
-		Quantity:             req.Quantity,
-		LastModificationDate: req.LastModificationDate.AsTime(),
-	}
-}
 
 var _ repository.InstrumentRepository = (*InstrumentRepository)(nil)
 
@@ -90,14 +60,22 @@ func (repo *InstrumentRepository) GetAllOwned(ctx context.Context, accountID str
 }
 
 func (repo *InstrumentRepository) AddOwned(ctx context.Context, req *pb.AddOwnedInstrumentRequest) (*pb.OwnedInstrumentMessage, error) {
-	dbOwned := fromOwnedAddProto(req)
+	dbOwned := ownedAddFromProto(req)
 	if err := repo.db.WithContext(ctx).Create(dbOwned).Error; err != nil {
 		return nil, err
 	}
 	return toOwnedProto(dbOwned), nil
 }
 
-func fromOwnedProto(msg *pb.OwnedInstrumentMessage) *OwnedInstrument {
+func (repo *InstrumentRepository) UpdateOwned(ctx context.Context, msg *pb.OwnedInstrumentMessage) (*pb.OwnedInstrumentMessage, error) {
+	m := ownedFromProto(msg)
+	if err := repo.db.WithContext(ctx).Save(m).Error; err != nil {
+		return nil, err
+	}
+	return toOwnedProto(m), nil
+}
+
+func ownedFromProto(msg *pb.OwnedInstrumentMessage) *OwnedInstrument {
 	return &OwnedInstrument{
 		Id:                   parseUUID(msg.Id),
 		AccountId:            parseUUID(msg.AccountId),
@@ -107,10 +85,31 @@ func fromOwnedProto(msg *pb.OwnedInstrumentMessage) *OwnedInstrument {
 	}
 }
 
-func (repo *InstrumentRepository) UpdateOwned(ctx context.Context, msg *pb.OwnedInstrumentMessage) (*pb.OwnedInstrumentMessage, error) {
-	m := fromOwnedProto(msg)
-	if err := repo.db.WithContext(ctx).Save(m).Error; err != nil {
-		return nil, err
+func ownedAddFromProto(req *pb.AddOwnedInstrumentRequest) *OwnedInstrument {
+	return &OwnedInstrument{
+		AccountId:            parseUUID(req.AccountId),
+		InstrumentId:         parseUUID(req.InstrumentId),
+		Quantity:             req.Quantity,
+		LastModificationDate: req.LastModificationDate.AsTime(),
 	}
-	return toOwnedProto(m), nil
+}
+
+func toOwnedProto(src *OwnedInstrument) *pb.OwnedInstrumentMessage {
+	return &pb.OwnedInstrumentMessage{
+		Id:                   uuidString(src.Id),
+		AccountId:            uuidString(src.AccountId),
+		InstrumentId:         uuidString(src.InstrumentId),
+		Quantity:             src.Quantity,
+		LastModificationDate: timestamppb.New(src.LastModificationDate),
+	}
+}
+
+func toInstrumentProto(src *Instrument) *pb.InstrumentMessage {
+	return &pb.InstrumentMessage{
+		Id:          uuidString(src.Id),
+		ProductId:   uuidString(src.ProductId),
+		Code:        src.Code,
+		Name:        src.Name,
+		Description: src.Description,
+	}
 }

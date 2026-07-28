@@ -16,8 +16,6 @@ type Balance struct {
 	Value     float64
 }
 
-func (Balance) TableName() string { return repository.TableBalances }
-
 type BalanceHistory struct {
 	Id          *uuid.UUID `gorm:"primaryKey;default:(-)"`
 	AccountId   *uuid.UUID
@@ -27,13 +25,61 @@ type BalanceHistory struct {
 	ActionDate  time.Time
 }
 
+func (Balance) TableName() string        { return repository.TableBalances }
 func (BalanceHistory) TableName() string { return repository.TableBalanceHistory }
+
+var _ repository.BalanceRepository = (*BalanceRepository)(nil)
+
+type BalanceRepository struct{ db *gorm.DB }
+
+func NewBalanceRepository(db *gorm.DB) repository.BalanceRepository {
+	return &BalanceRepository{db: db}
+}
+
+func (repo *BalanceRepository) GetByAccountID(ctx context.Context, accountID string) (*pb.BalanceMessage, error) {
+	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColAccountID)+" = ?", accountID), toBalanceProto)
+}
+
+func (repo *BalanceRepository) Create(ctx context.Context, req *pb.CreateBalanceRequest) (*pb.BalanceMessage, error) {
+	dbBalance := &Balance{AccountId: parseUUID(req.AccountId), Value: req.Value}
+	if err := repo.db.WithContext(ctx).Create(dbBalance).Error; err != nil {
+		return nil, err
+	}
+	return toBalanceProto(dbBalance), nil
+}
+
+func (repo *BalanceRepository) Update(ctx context.Context, msg *pb.BalanceMessage) (*pb.BalanceMessage, error) {
+	m := balanceFromProto(msg)
+	if err := repo.db.WithContext(ctx).Save(m).Error; err != nil {
+		return nil, err
+	}
+	return toBalanceProto(m), nil
+}
+
+func (repo *BalanceRepository) AddHistory(ctx context.Context, req *pb.AddBalanceHistoryRequest) (*pb.BalanceHistoryMessage, error) {
+	dbHistory := balanceHistoryFromProto(req)
+	if err := repo.db.WithContext(ctx).Create(dbHistory).Error; err != nil {
+		return nil, err
+	}
+	return toBalanceHistoryProto(dbHistory), nil
+}
+
+func (repo *BalanceRepository) DeleteHistoryOlderThan(ctx context.Context, date time.Time) (int32, error) {
+	return affectedRows(repo.db.WithContext(ctx).Where(q(repository.ColActionDate)+" < ?", date).Delete(&BalanceHistory{}))
+}
+
+func balanceFromProto(msg *pb.BalanceMessage) *Balance {
+	return &Balance{
+		AccountId: parseUUID(msg.AccountId),
+		Value:     msg.Value,
+	}
+}
 
 func toBalanceProto(src *Balance) *pb.BalanceMessage {
 	return &pb.BalanceMessage{AccountId: uuidString(src.AccountId), Value: src.Value}
 }
 
-func fromBalanceHistoryProto(req *pb.AddBalanceHistoryRequest) *BalanceHistory {
+func balanceHistoryFromProto(req *pb.AddBalanceHistoryRequest) *BalanceHistory {
 	return &BalanceHistory{
 		AccountId:   parseUUID(req.AccountId),
 		OldValue:    req.OldValue,
@@ -52,51 +98,4 @@ func toBalanceHistoryProto(src *BalanceHistory) *pb.BalanceHistoryMessage {
 		ActionType:  src.ActionType,
 		ActionDate:  timestamppb.New(src.ActionDate),
 	}
-}
-
-var _ repository.BalanceRepository = (*BalanceRepository)(nil)
-
-type BalanceRepository struct{ db *gorm.DB }
-
-func NewBalanceRepository(db *gorm.DB) repository.BalanceRepository {
-	return &BalanceRepository{db: db}
-}
-
-func (repo *BalanceRepository) Create(ctx context.Context, req *pb.CreateBalanceRequest) (*pb.BalanceMessage, error) {
-	dbBalance := &Balance{AccountId: parseUUID(req.AccountId), Value: req.Value}
-	if err := repo.db.WithContext(ctx).Create(dbBalance).Error; err != nil {
-		return nil, err
-	}
-	return toBalanceProto(dbBalance), nil
-}
-
-func (repo *BalanceRepository) GetByAccountID(ctx context.Context, accountID string) (*pb.BalanceMessage, error) {
-	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColAccountID)+" = ?", accountID), toBalanceProto)
-}
-
-func fromBalanceProto(msg *pb.BalanceMessage) *Balance {
-	return &Balance{
-		AccountId: parseUUID(msg.AccountId),
-		Value:     msg.Value,
-	}
-}
-
-func (repo *BalanceRepository) Update(ctx context.Context, msg *pb.BalanceMessage) (*pb.BalanceMessage, error) {
-	m := fromBalanceProto(msg)
-	if err := repo.db.WithContext(ctx).Save(m).Error; err != nil {
-		return nil, err
-	}
-	return toBalanceProto(m), nil
-}
-
-func (repo *BalanceRepository) AddHistory(ctx context.Context, req *pb.AddBalanceHistoryRequest) (*pb.BalanceHistoryMessage, error) {
-	dbHistory := fromBalanceHistoryProto(req)
-	if err := repo.db.WithContext(ctx).Create(dbHistory).Error; err != nil {
-		return nil, err
-	}
-	return toBalanceHistoryProto(dbHistory), nil
-}
-
-func (repo *BalanceRepository) DeleteHistoryOlderThan(ctx context.Context, date time.Time) (int32, error) {
-	return affectedRows(repo.db.WithContext(ctx).Where(q(repository.ColActionDate)+" < ?", date).Delete(&BalanceHistory{}))
 }

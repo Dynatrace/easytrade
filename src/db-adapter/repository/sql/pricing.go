@@ -23,29 +23,6 @@ type Price struct {
 
 func (Price) TableName() string { return repository.TablePrices }
 
-func fromPriceProto(row *pb.PricingRow) Price {
-	return Price{
-		InstrumentId: parseUUID(row.InstrumentId),
-		Timestamp:    row.Timestamp.AsTime(),
-		Open:         row.Open,
-		High:         row.High,
-		Low:          row.Low,
-		Close:        row.Close,
-	}
-}
-
-func toPriceProto(src *Price) *pb.PriceMessage {
-	return &pb.PriceMessage{
-		Id:           uuidString(src.Id),
-		InstrumentId: uuidString(src.InstrumentId),
-		Timestamp:    timestamppb.New(src.Timestamp),
-		Open:         src.Open,
-		High:         src.High,
-		Low:          src.Low,
-		Close:        src.Close,
-	}
-}
-
 var _ repository.PricingRepository = (*PricingRepository)(nil)
 
 type PricingRepository struct{ db *gorm.DB }
@@ -89,7 +66,7 @@ func (repo *PricingRepository) InsertBatch(ctx context.Context, req *pb.InsertPr
 	}
 	dbModels := make([]Price, len(req.Rows))
 	for i, row := range req.Rows {
-		dbModels[i] = fromPriceProto(row)
+		dbModels[i] = priceFromProto(row)
 	}
 	if err := repo.db.WithContext(ctx).CreateInBatches(dbModels, 1000).Error; err != nil {
 		return 0, err
@@ -99,4 +76,27 @@ func (repo *PricingRepository) InsertBatch(ctx context.Context, req *pb.InsertPr
 
 func (repo *PricingRepository) DeleteOlderThan(ctx context.Context, date time.Time) (int32, error) {
 	return affectedRows(repo.db.WithContext(ctx).Where(q(repository.ColTimestamp)+" < ?", date).Delete(&Price{}))
+}
+
+func priceFromProto(row *pb.PricingRow) Price {
+	return Price{
+		InstrumentId: parseUUID(row.InstrumentId),
+		Timestamp:    row.Timestamp.AsTime(),
+		Open:         row.Open,
+		High:         row.High,
+		Low:          row.Low,
+		Close:        row.Close,
+	}
+}
+
+func toPriceProto(src *Price) *pb.PriceMessage {
+	return &pb.PriceMessage{
+		Id:           uuidString(src.Id),
+		InstrumentId: uuidString(src.InstrumentId),
+		Timestamp:    timestamppb.New(src.Timestamp),
+		Open:         src.Open,
+		High:         src.High,
+		Low:          src.Low,
+		Close:        src.Close,
+	}
 }

@@ -28,7 +28,43 @@ type Account struct {
 
 func (Account) TableName() string { return repository.TableAccounts }
 
-func fromAccountProto(req *pb.CreateAccountRequest) *Account {
+var _ repository.AccountRepository = (*AccountRepository)(nil)
+
+type AccountRepository struct{ db *gorm.DB }
+
+func NewAccountRepository(db *gorm.DB) repository.AccountRepository {
+	return &AccountRepository{db: db}
+}
+
+func (repo *AccountRepository) GetByID(ctx context.Context, id string) (*pb.AccountMessage, error) {
+	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", id), toAccountProto)
+}
+
+func (repo *AccountRepository) GetByUsername(ctx context.Context, username string) (*pb.AccountMessage, error) {
+	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColUsername)+" = ?", username), toAccountProto)
+}
+
+func (repo *AccountRepository) GetAll(ctx context.Context) ([]*pb.AccountMessage, error) {
+	return findAll(repo.db.WithContext(ctx), toAccountProto)
+}
+
+func (repo *AccountRepository) Create(ctx context.Context, req *pb.CreateAccountRequest) (*pb.AccountMessage, error) {
+	dbAccount := accountFromProto(req)
+	if err := repo.db.WithContext(ctx).Create(dbAccount).Error; err != nil {
+		return nil, err
+	}
+	return toAccountProto(dbAccount), nil
+}
+
+func (repo *AccountRepository) DeleteOlderThan(ctx context.Context, before *time.Time, origin string) (int32, error) {
+	db := repo.db.WithContext(ctx).Where(q(repository.ColOrigin)+" = ?", origin)
+	if before != nil {
+		db = db.Where(q(repository.ColCreationDate)+" < ?", *before)
+	}
+	return affectedRows(db.Delete(&Account{}))
+}
+
+func accountFromProto(req *pb.CreateAccountRequest) *Account {
 	return &Account{
 		PackageId:             parseUUID(req.PackageId),
 		FirstName:             req.FirstName,
@@ -59,40 +95,4 @@ func toAccountProto(src *Account) *pb.AccountMessage {
 		AccountActive:         src.AccountActive,
 		Address:               src.Address,
 	}
-}
-
-var _ repository.AccountRepository = (*AccountRepository)(nil)
-
-type AccountRepository struct{ db *gorm.DB }
-
-func NewAccountRepository(db *gorm.DB) repository.AccountRepository {
-	return &AccountRepository{db: db}
-}
-
-func (repo *AccountRepository) Create(ctx context.Context, req *pb.CreateAccountRequest) (*pb.AccountMessage, error) {
-	dbAccount := fromAccountProto(req)
-	if err := repo.db.WithContext(ctx).Create(dbAccount).Error; err != nil {
-		return nil, err
-	}
-	return toAccountProto(dbAccount), nil
-}
-
-func (repo *AccountRepository) GetByID(ctx context.Context, id string) (*pb.AccountMessage, error) {
-	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", id), toAccountProto)
-}
-
-func (repo *AccountRepository) GetByUsername(ctx context.Context, username string) (*pb.AccountMessage, error) {
-	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColUsername)+" = ?", username), toAccountProto)
-}
-
-func (repo *AccountRepository) GetAll(ctx context.Context) ([]*pb.AccountMessage, error) {
-	return findAll(repo.db.WithContext(ctx), toAccountProto)
-}
-
-func (repo *AccountRepository) DeleteOlderThan(ctx context.Context, before *time.Time, origin string) (int32, error) {
-	db := repo.db.WithContext(ctx).Where(q(repository.ColOrigin)+" = ?", origin)
-	if before != nil {
-		db = db.Where(q(repository.ColCreationDate)+" < ?", *before)
-	}
-	return affectedRows(db.Delete(&Account{}))
 }
