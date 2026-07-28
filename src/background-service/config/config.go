@@ -25,6 +25,7 @@ var Registry = []VarSpec{
 	{Name: "COURIER_RATE", Required: true},
 	{Name: "MANUFACTURE_DELAY", Required: true},
 	{Name: "MANUFACTURE_RATE", Required: true},
+	{Name: "MANUFACTURE_DELAY_CHANCE_PERCENT", Required: true, Default: "20"},
 
 	// contentcreator
 	{Name: "DB_ADAPTER_SERVICE_ADDRESS", Required: true, Default: "db-adapter:50051"},
@@ -54,6 +55,8 @@ func CheckEnv() Values {
 		switch {
 		case found:
 			values[spec.Name] = v
+		case spec.Default != "":
+			values[spec.Name] = spec.Default
 		case spec.Required:
 			fmt.Println("Please set", spec.Name, "environment variable")
 			os.Exit(1)
