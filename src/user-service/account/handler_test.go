@@ -113,6 +113,21 @@ func TestLogin_UnknownUser_ReturnsUnauthorized(t *testing.T) {
 	}
 }
 
+// TestSignup_UsernameAlreadyExists_ReturnsConflict checks a signup with an existing username returns 409.
+func TestSignup_UsernameAlreadyExists_ReturnsConflict(t *testing.T) {
+	client := newFakeAccountServiceClient()
+	seedAccount(t, client, "demouser", "demopass", "WEB")
+	router := newTestRouter(client)
+
+	recorder := doRequest(router, http.MethodPost, "/api/auth/signup",
+		`{"packageId":1,"firstName":"Jane","lastName":"Doe","username":"demouser",`+
+			`"email":"demouser@example.com","password":"demopass","origin":"WEB",`+
+			`"address":"123 Main St"}`)
+	if recorder.Code != http.StatusConflict {
+		t.Fatalf("expected status %d, got %d", http.StatusConflict, recorder.Code)
+	}
+}
+
 // TestSignup_MissingFields_ReturnsBadRequest checks a body missing required fields is rejected.
 func TestSignup_MissingFields_ReturnsBadRequest(t *testing.T) {
 	router := newTestRouter(newFakeAccountServiceClient())

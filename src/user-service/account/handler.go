@@ -57,7 +57,18 @@ func (h *Handler) Signup(ctx *gin.Context) {
 		return
 	}
 
-	acc, err := h.client.CreateAccount(ctx.Request.Context(), body.ToCreateAccountRequest())
+	_, err := h.client.GetAccountByUsername(ctx.Request.Context(), &proto.GetAccountByUsernameRequest{Username: body.Username})
+	if err == nil {
+		ctx.JSON(http.StatusConflict, ErrorResponse{Error: "username already exists"})
+		return
+	}
+	if status.Code(err) != codes.NotFound {
+		logger.Errorw("signup failed", "error", err)
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	acc, err := h.client.CreateAccount(ctx.Request.Context(), body.ToProtoAccountRequest())
 	if err != nil {
 		logger.Errorw("signup failed", "error", err)
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
@@ -82,7 +93,7 @@ func (h *Handler) GetAccount(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, toAccountResponse(acc))
+	ctx.JSON(http.StatusOK, accountResponseFromProto(acc))
 }
 
 // GetPresets handles GET /api/accounts/presets?limit=.
@@ -105,6 +116,29 @@ func (h *Handler) GetPresets(ctx *gin.Context) {
 	if limit > 0 && limit < len(presetAccounts) {
 		presetAccounts = presetAccounts[:limit]
 	}
+	shortAccounts := presetsToShortAccounts(presetAccounts)
 
-	ctx.JSON(http.StatusOK, AccountsContainer{Results: presetAccounts})
+	ctx.JSON(http.StatusOK, AccountsContainer{Results: shortAccounts})
+}
+
+func filterPresets(accounts []*proto.AccountMessage) []*proto.AccountMessage {
+	var presets []*proto.AccountMessage
+	for _, acc := range accounts {
+		if isPreset(acc) {
+			presets = append(presets, acc)
+		}
+	}
+	return presets
+}
+
+func presetsToShortAccounts(accounts []*proto.AccountMessage) []ShortAccount {
+	var shortAccounts []ShortAccount
+	for _, acc := range accounts {
+		shortAccounts = append(shortAccounts, shortAccountFromProto(acc))
+	}
+	return shortAccounts
+}
+
+func isPreset(a *proto.AccountMessage) bool {
+	return a.Origin == "PRESET"
 }

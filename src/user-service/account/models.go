@@ -26,9 +26,9 @@ type SignupRequest struct {
 	Address   string `json:"address" binding:"required"`
 }
 
-// ToCreateAccountRequest maps the signup payload to a db-adapter CreateAccountRequest, hashing
+// ToProtoAccountRequest maps the signup payload to a db-adapter CreateAccountRequest, hashing
 // the password and stamping creation/activation dates.
-func (sr *SignupRequest) ToCreateAccountRequest() *proto.CreateAccountRequest {
+func (sr *SignupRequest) ToProtoAccountRequest() *proto.CreateAccountRequest {
 	now := timestamppb.New(time.Now())
 	return &proto.CreateAccountRequest{
 		PackageId:             strconv.Itoa(sr.PackageId),
@@ -81,7 +81,7 @@ type AccountResponse struct {
 	Address               string    `json:"address"`
 }
 
-func toAccountResponse(a *proto.AccountMessage) AccountResponse {
+func accountResponseFromProto(a *proto.AccountMessage) AccountResponse {
 	return AccountResponse{
 		Id:                    a.Id,
 		PackageId:             a.PackageId,
@@ -97,25 +97,11 @@ func toAccountResponse(a *proto.AccountMessage) AccountResponse {
 	}
 }
 
-func isPreset(a *proto.AccountMessage) bool {
-	return a.Origin == "PRESET"
-}
-
-func toShortAccount(a *proto.AccountMessage) ShortAccount {
+func shortAccountFromProto(a *proto.AccountMessage) ShortAccount {
 	return ShortAccount{
 		Id:        a.Id,
 		Username:  a.Username,
 		FirstName: a.FirstName,
 		LastName:  a.LastName,
 	}
-}
-
-func filterPresets(accounts []*proto.AccountMessage) []ShortAccount {
-	var presets []ShortAccount
-	for _, acc := range accounts {
-		if isPreset(acc) {
-			presets = append(presets, toShortAccount(acc))
-		}
-	}
-	return presets
 }
