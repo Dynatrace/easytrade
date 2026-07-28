@@ -8,16 +8,15 @@ SQL dialect is added without touching the server or interface layers.
 
 ```
 repository/
-  interfaces.go       all 8 repository interfaces (proto types in, proto types out)
-  repository.go       CompositeRepository – bundles all 8 repositories
-  registry.go         Provider interface + Register()/Open()
+  interfaces.go       DBBackend composite interface + 8 repository interfaces
   constants.go        canonical table & column names
   errors.go           sentinel errors (ErrNotFound, …)
   sql/                single dialect-agnostic GORM backend (MSSQL + Postgres)
-server/               gRPC handlers – orchestrate fetch/mutate/save; depend on interfaces only
+server/               gRPC handlers and register.go (wires handlers logic)
 config/               env config; DB_TYPE selects the backend
 db/                   connect-with-retry helper
-main.go               blank-imports repository/sql, then calls repository.Open()
+backend.go            (in package main) exports newDBBackend which switches on DB_TYPE
+main.go               calls newDBBackend and server.Register to start the gRPC server
 ```
 
 The schema + seed SQL for each backend lives outside this service, in
@@ -26,25 +25,29 @@ builds the `db` container from `src/db/${DB_TYPE}`.
 
 ## Add a new backend
 
-The registry in `repository/registry.go` is the only extension point. A backend is
-any package that implements `repository.Provider` and calls `repository.Register` in
-its `init()`. The server layer never needs to change.
+The `newDBBackend` function in `backend.go` is the extension point. The server layer never needs to change.
 
 ### Option A — new SQL dialect (GORM-supported)
 
-`repository/sql` already handles any GORM dialector. Add a branch in
-`repository/sql/provider.go` and register the new name:
+`repository/sql` already handles any GORM dialector. Add a constructor in
+`repository/sql/backend.go`:
 
 ```go
-// provider.go – Connect()
-case "mysql":
-    dialector = mysql.Open(cfg.Url)
+func NewMySQLBackend(cfg config.DatabaseConfig) (repository.DBBackend, error) {
+    return newBackend(cfg, mysql.Open(cfg.Url))
+}
+```
 
-// provider.go – init()
-func init() {
-    repository.Register("mssql", Provider{})
-    repository.Register("postgres", Provider{})
-    repository.Register("mysql", Provider{})
+Then wire it up in `backend.go` (next to `main.go`):
+
+```go
+func newDBBackend(cfg config.DatabaseConfig) (repository.DBBackend, error) {
+    switch cfg.Type {
+    // ...
+    case "mysql":
+        return sqlrepo.NewMySQLBackend(cfg)
+    // ...
+    }
 }
 ```
 
@@ -59,24 +62,24 @@ func init() {
 
 ### Option B — entirely new database (non-SQL)
 
-Create a new package `repository/<name>/` that implements `repository.Provider` and
-all 8 interfaces from `repository/interfaces.go`, then register it:
+Create a new package `repository/<name>/` that exposes a constructor returning a `repository.DBBackend` (which implements all 8 interfaces from `repository/interfaces.go`).
 
 ```go
-// repository/<name>/provider.go
-type Provider struct{}
+// repository/<name>/backend.go
+package name
 
-func (Provider) Connect(cfg config.DatabaseConfig) (repository.CompositeRepository, error) {
-    // open connection, return a CompositeRepository
+import "github.com/dynatrace/easytrade/dbadapter/repository"
+
+func NewBackend(cfg config.DatabaseConfig) (repository.DBBackend, error) {
+    // open connection, return a DBBackend implementation
 }
-
-func init() { repository.Register("<name>", Provider{}) }
 ```
 
-Blank-import the package in `main.go` so its `init()` runs:
+Then add it to the switch statement in `backend.go`:
 
 ```go
-_ "github.com/dynatrace/easytrade/dbadapter/repository/<name>"
+    case "<name>":
+        return customrepo.NewBackend(cfg)
 ```
 
 Use the table/column name constants from `repository/constants.go` — never
