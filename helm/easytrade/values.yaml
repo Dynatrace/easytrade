@@ -52,10 +52,10 @@ background-service:
     POD_NAMESPACE: "{{ .Release.Namespace }}"
     HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT: "300m"
     HIGH_CPU_USAGE_BROKER_SERVICE_NAME: "{{ .Release.Name }}-broker-service"
-  envFromSecret:
-    MSSQL_CONNECTIONSTRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "GO_CONNECTION_STRING"
+    DB_ADAPTER_SERVICE_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+    MANUFACTURE_DELAY_CHANCE_PERCENT: "20"
+    CONTENT_CLEANUP_INTERVAL: "60"
+    CONTENT_STALE_AFTER_HOURS: "24"
   resources:
     requests:
       cpu: 30m
@@ -199,7 +199,7 @@ frontendreverseproxy:
     MANAGER_URL: "http://{{ .Release.Name }}-manager:8080"
     OFFER_SERVICE_URL: "http://{{ .Release.Name }}-offerservice:8080"
     PRICING_SERVICE_URL: "http://{{ .Release.Name }}-pricing-service:8080"
-    THIRD_PARTY_SERVICE_URL: "http://{{ .Release.Name }}-background-service:8080"
+    BACKGROUND_SERVICE_URL: "http://{{ .Release.Name }}-background-service:8080"
   resources:
     requests:
       cpu: 50m

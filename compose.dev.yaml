@@ -197,7 +197,6 @@ services:
     ports:
       - 8095:8080
     environment:
-      <<: *feature-flag-service-env
       OFFER_SERVICE_ADDRESS: http://offerservice:8080
       FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
       CREDIT_CARD_ORDER_SERVICE_ADDRESS: http://credit-card-order-service:8080
