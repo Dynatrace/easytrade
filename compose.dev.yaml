@@ -202,11 +202,12 @@ services:
       DB_TYPE: ${DB_TYPE}
       DB_URL: ${DB_URL}
 
-  aggregator-service:
+  background-service:
     <<: *default-service
     build: src/background-service
     depends_on:
       - offerservice
+      - db-adapter
     ports:
       - 8095:8080
     environment:
