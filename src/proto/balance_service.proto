@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package easytrade.dbadapter.balance;
+
+option csharp_namespace = "EasyTrade.DbAdapter.Balance.Grpc";
+option go_package = "github.com/dynatrace/easytrade/dbadapter/proto";
+option java_package = "com.dynatrace.easytrade.dbadapter.balance.grpc";
+option java_multiple_files = true;
+
+import "google/protobuf/timestamp.proto";
+import "common.proto";
+
+message BalanceMessage {
+  string account_id = 1;
+  double value = 2;
+}
+
+message BalanceHistoryMessage {
+  string id = 1;
+  string account_id = 2;
+  double old_value = 3;
+  double value_change = 4;
+  string action_type = 5;
+  google.protobuf.Timestamp action_date = 6;
+}
+
+message CreateBalanceRequest {
+  string account_id = 1;
+  double value = 2;
+}
+
+message GetBalanceRequest {
+  string account_id = 1;
+}
+
+message UpdateBalanceRequest {
+  string account_id = 1;
+  double value = 2;
+}
+
+message AddBalanceHistoryRequest {
+  string account_id = 1;
+  double old_value = 2;
+  double value_change = 3;
+  string action_type = 4;
+  google.protobuf.Timestamp action_date = 5;
+}
+
+service BalanceService {
+  rpc CreateBalance(CreateBalanceRequest) returns (BalanceMessage) {}
+
+  rpc GetBalanceByAccountId(GetBalanceRequest) returns (BalanceMessage) {}
+
+  rpc UpdateBalance(UpdateBalanceRequest) returns (BalanceMessage) {}
+
+  rpc AddBalanceHistory(AddBalanceHistoryRequest) returns (BalanceHistoryMessage) {}
+
+  rpc DeleteBalanceHistoryOlderThan(easytrade.dbadapter.common.DeleteBeforeRequest) returns (easytrade.dbadapter.common.BatchResponse) {}
+}

@@ -1,0 +1,40 @@
+package sql
+
+import (
+	"context"
+
+	pb "github.com/dynatrace/easytrade/dbadapter/proto"
+	"github.com/dynatrace/easytrade/dbadapter/repository"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
+
+type Package struct {
+	Id      *uuid.UUID `gorm:"primaryKey;default:(-)"`
+	Name    string
+	Price   float64
+	Support string
+}
+
+func (Package) TableName() string { return repository.TablePackages }
+
+var _ repository.PackageRepository = (*PackageRepository)(nil)
+
+type PackageRepository struct{ db *gorm.DB }
+
+func NewPackageRepository(db *gorm.DB) repository.PackageRepository {
+	return &PackageRepository{db: db}
+}
+
+func (repo *PackageRepository) GetAll(ctx context.Context) ([]*pb.PackageMessage, error) {
+	return findAndMapAll(repo.db.WithContext(ctx), (*Package).toProto)
+}
+
+func (src *Package) toProto() *pb.PackageMessage {
+	return &pb.PackageMessage{
+		Id:      uuidString(src.Id),
+		Name:    src.Name,
+		Price:   src.Price,
+		Support: src.Support,
+	}
+}

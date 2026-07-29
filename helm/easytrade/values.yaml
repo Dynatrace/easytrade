@@ -5,6 +5,13 @@ global:
     # Base repository for all images. Individual services can override the repository if needed.
     baseRepository: "europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade"
     tag: latest
+  database:
+    password: "yourStrong(!)Password"
+    name: TradeManagement
+    # supports: ["mssql", "postgres"]
+    type: mssql
+    port: 1433  # 5432 for postgres
+
   # Global labels to be added to all resources
   labels: {}
   # Environment variables to be added to all pods
@@ -33,10 +40,7 @@ broker-service:
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
     PROXY_PREFIX: "broker-service"
-  envFromSecret:
-    MSSQL_CONNECTIONSTRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "DOTNET_CONNECTION_STRING"
+    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
       cpu: 150m
@@ -66,10 +70,8 @@ calculationservice:
 
 contentcreator:
   enabled: true
-  envFromSecret:
-    MSSQL_CONNECTIONSTRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "JAVA_CONNECTION_STRING"
+  env:
+    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
       cpu: 10m
@@ -89,10 +91,7 @@ credit-card-order-service:
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
-  envFromSecret:
-    MSSQL_CONNECTIONSTRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "JAVA_CONNECTION_STRING"
+    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
       cpu: 20m
@@ -107,10 +106,12 @@ credit-card-order-service:
 db:
   enabled: true
   workloadType: statefulset
-  envFromSecret:
-    SA_PASSWORD:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "SA_PASSWORD"
+  image:
+    repository: "{{ .Values.global.image.baseRepository }}/db-{{ .Values.global.database.type }}"
+  env:
+    SA_PASSWORD: "{{ .Values.global.database.password }}"
+    POSTGRES_PASSWORD: "{{ .Values.global.database.password }}"
+    POSTGRES_DB: "{{ .Values.global.database.name }}"
   resources:
     requests:
       cpu: 500m
@@ -120,12 +121,31 @@ db:
       memory: 1.5Gi
   service:
     enabled: true
-    port: 1433
+    port: "{{ .Values.global.database.port }}"
   # Enabling persistence will create a PersistentVolumeClaim for the database data
   # persistence:
   #   enabled: true
   #   mountPath: /var/opt/mssql
   #   size: 10Gi
+
+db-adapter:
+  enabled: true
+  env:
+    DB_TYPE: "{{ .Values.global.database.type }}"
+  envFromSecret:
+    DB_URL:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "DB_URL"
+  resources:
+    requests:
+      cpu: 10m
+      memory: 30Mi
+    limits:
+      cpu: 100m
+      memory: 30Mi
+  service:
+    enabled: true
+    port: 50051
 
 feature-flag-service:
   enabled: true
@@ -202,10 +222,7 @@ manager:
   enabled: true
   env:
     PROXY_PREFIX: "manager"
-  envFromSecret:
-    MSSQL_CONNECTIONSTRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "DOTNET_CONNECTION_STRING"
+    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
       cpu: 50m
@@ -249,10 +266,7 @@ pricing-service:
     RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
     RABBITMQ_PORT: "5672"
     RABBITMQ_QUEUE: Trade_Data_Raw
-  envFromSecret:
-    MSSQL_CONNECTIONSTRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "GO_CONNECTION_STRING"
+    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
       cpu: 20m
@@ -345,10 +359,7 @@ user-service:
   env:
     MANAGER_HOSTANDPORT: "{{ .Release.Name }}-manager:8080"
     PROXY_PREFIX: "user-service"
-  envFromSecret:
-    GO_CONNECTION_STRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "GO_CONNECTION_STRING"
+    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
       cpu: 20m

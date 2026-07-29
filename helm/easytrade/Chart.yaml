@@ -37,6 +37,11 @@ dependencies:
     version: "0.1.0"
     condition: db.enabled
   - name: app
+    alias: db-adapter
+    repository: "file://./charts/app"
+    version: "0.1.0"
+    condition: db-adapter.enabled
+  - name: app
     alias: feature-flag-service
     repository: "file://./charts/app"
     version: "0.1.0"

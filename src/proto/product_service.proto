@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package easytrade.dbadapter.product;
+
+option csharp_namespace = "EasyTrade.DbAdapter.Product.Grpc";
+option go_package = "github.com/dynatrace/easytrade/dbadapter/proto";
+option java_package = "com.dynatrace.easytrade.dbadapter.product.grpc";
+option java_multiple_files = true;
+
+import "google/protobuf/empty.proto";
+
+message ProductMessage {
+  string id = 1;
+  string name = 2;
+  double ppt = 3;  // price per token
+  string currency = 4;
+}
+
+message ProductsResponse {
+  repeated ProductMessage products = 1;
+}
+
+service ProductService {
+  rpc GetProducts(google.protobuf.Empty) returns (ProductsResponse) {}
+}
