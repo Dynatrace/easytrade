@@ -2,7 +2,7 @@ package contentcreator
 
 import (
 	"context"
-	"strconv"
+	"fmt"
 	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -20,7 +20,7 @@ func (h *Handler) insertPricingBatch(ctx context.Context, rows []pricingRow) err
 	for i, r := range rows {
 		pbRows[i] = &proto.PricingRow{
 			Timestamp:    timestamppb.New(r.Timestamp),
-			InstrumentId: strconv.Itoa(r.InstrumentID),
+			InstrumentId: fmt.Sprintf("c0000000-0000-4000-8000-%012d", r.InstrumentID),
 			Open:         r.Open,
 			High:         r.High,
 			Low:          r.Low,
