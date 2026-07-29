@@ -25,9 +25,14 @@ services:
       context: src/credit-card-order-service
 
   db:
-    image: ${REGISTRY}/db:${TAG}
+    image: ${REGISTRY}/db-${DB_TYPE}:${TAG}
     build:
-      context: src/db
+      context: src/db/${DB_TYPE}
+
+  db-adapter:
+    image: ${REGISTRY}/db-adapter:${TAG}
+    build:
+      context: src/db-adapter
 
   feature-flag-service:
     image: ${REGISTRY}/feature-flag-service:${TAG}

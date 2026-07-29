@@ -21,9 +21,10 @@ x-rabbit-vars: &rabbit-vars
 services:
   db:
     <<: *default-service
-    build: src/db
+    build: src/db/${DB_TYPE}
     ports:
       - 1433:1433
+      - 5432:5432
     environment:
       SA_PASSWORD: yourStrong(!)Password
 
@@ -188,8 +189,18 @@ services:
       # ENABLE_MODIFY: "false"
       # ENABLE_FRONTEND_MODIFY: "false"
 
+  db-adapter:
+    <<: *default-service
+    build: src/db-adapter
+    depends_on:
+      - db
+    ports:
+      - 50051:50051
+    environment:
+      DB_TYPE: ${DB_TYPE}
+      DB_URL: ${DB_URL}
 
-  background-service:
+  aggregator-service:
     <<: *default-service
     build: src/background-service
     depends_on:

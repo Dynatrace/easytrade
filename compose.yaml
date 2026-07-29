@@ -28,7 +28,7 @@ x-rabbit-vars: &rabbit-vars
 services:
   db:
     <<: *default-service
-    image: ${REGISTRY}/db:${TAG}
+    image: ${REGISTRY}/db-${DB_TYPE}:${TAG}
     environment:
       SA_PASSWORD: yourStrong(!)Password
 

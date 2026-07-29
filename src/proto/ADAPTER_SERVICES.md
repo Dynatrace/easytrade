@@ -2,8 +2,8 @@
 
 | Adapter | Methods | Operations | Consuming Services |
 |---|---|---|---|
-| **AccountService** | 4 | 1. CreateAccount 2. GetAccountById 3. GetAccounts 4. DeleteAccountsOlderThan | Account, Login, Manager, Background-Service |
-| **BalanceService** | 5 | 1. CreateBalance 2. GetBalanceByAccountId 3. UpdateBalance 4. AddBalanceHistory 5. DeleteBalanceHistoryOlderThan | Broker, Login, Background-Service |
+| **AccountService** | 4 | 1. CreateAccount 2.GetAccountByUsername 3. GetAccountById 4. GetAccounts 5. DeleteAccountsOlderThan | Account, Login, Manager, Background-Service |
+| **BalanceService** | 5 | 1. CreateBalance 2. GetBalanceByAccountId 3. UpdateBalance 4. AddBalanceHistory 5. DeleteBalanceHistoryOlderThan | Broker, Login, Content-Creator |
 | **ProductService** | 1 | 1. GetProducts | Broker, Manager |
 | **PackageService** | 1 | 1. GetPackages | Manager |
 | **InstrumentService** | 6 | 1. GetInstrumentById 2. GetAllInstruments 3. GetOwnedInstrument 4. GetOwnedInstruments [Get all owned instruments for an account] 5. AddOwnedInstrument 6. UpdateOwnedInstrument | Broker |
