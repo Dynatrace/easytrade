@@ -357,7 +357,6 @@ third-party-service:
 user-service:
   enabled: true
   env:
-    MANAGER_HOSTANDPORT: "{{ .Release.Name }}-manager:8080"
     PROXY_PREFIX: "user-service"
     DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
   resources:
