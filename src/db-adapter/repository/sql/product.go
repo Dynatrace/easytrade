@@ -27,7 +27,7 @@ func NewProductRepository(db *gorm.DB) repository.ProductRepository {
 }
 
 func (repo *ProductRepository) GetAll(ctx context.Context) ([]*pb.ProductMessage, error) {
-	return findAll(repo.db.WithContext(ctx), (*Product).toProto)
+	return findAndMapAll(repo.db.WithContext(ctx), (*Product).toProto)
 }
 
 func (src *Product) toProto() *pb.ProductMessage {

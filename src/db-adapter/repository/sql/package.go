@@ -27,7 +27,7 @@ func NewPackageRepository(db *gorm.DB) repository.PackageRepository {
 }
 
 func (repo *PackageRepository) GetAll(ctx context.Context) ([]*pb.PackageMessage, error) {
-	return findAll(repo.db.WithContext(ctx), (*Package).toProto)
+	return findAndMapAll(repo.db.WithContext(ctx), (*Package).toProto)
 }
 
 func (src *Package) toProto() *pb.PackageMessage {

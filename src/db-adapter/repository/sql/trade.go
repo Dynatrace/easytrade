@@ -40,15 +40,15 @@ func (repo *TradeRepository) GetByID(ctx context.Context, id string) (*pb.TradeM
 }
 
 func (repo *TradeRepository) GetOpen(ctx context.Context) ([]*pb.TradeMessage, error) {
-	return findAll(repo.db.WithContext(ctx).Where(q(repository.ColTradeClosed)+" = ?", false), (*Trade).toProto)
+	return findAndMapAll(repo.db.WithContext(ctx).Where(q(repository.ColTradeClosed)+" = ?", false), (*Trade).toProto)
 }
 
 func (repo *TradeRepository) GetExpired(ctx context.Context) ([]*pb.TradeMessage, error) {
-	return findAll(
+	return findAndMapAll(
 		repo.db.WithContext(ctx).
 			Where(q(repository.ColTradeClosed)+" = ?", false).
 			Where(q(repository.ColTimestampClose)+" IS NOT NULL AND "+q(repository.ColTimestampClose)+" < ?", time.Now()),
-           (*Trade).toProto,
+		(*Trade).toProto,
 	)
 }
 
@@ -60,7 +60,7 @@ func (repo *TradeRepository) GetByAccount(ctx context.Context, accountID string,
 	if onlyLong {
 		query = query.Where(q(repository.ColDirection)+" IN (?, ?)", repository.DirectionLongBuy, repository.DirectionLongSell)
 	}
-	return findAll(query, (*Trade).toProto)
+	return findAndMapAll(query, (*Trade).toProto)
 }
 
 func (repo *TradeRepository) Create(ctx context.Context, req *pb.CreateTradeRequest) (*pb.TradeMessage, error) {

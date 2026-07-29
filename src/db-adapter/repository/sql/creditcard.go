@@ -74,9 +74,9 @@ func (repo *CreditCardOrderRepository) GetStatusListByAccountID(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
-	return findAll(
+	return findAndMapAll(
 		repo.db.WithContext(ctx).Where(q(repository.ColCreditCardOrderID)+" = ?", order.Id).Order(q(repository.ColTimestamp)+" DESC"),
-                 (*CreditCardOrderStatus).toProto,
+		(*CreditCardOrderStatus).toProto,
 	)
 }
 
@@ -87,7 +87,7 @@ func (repo *CreditCardOrderRepository) GetLastStatusByAccountID(ctx context.Cont
 	}
 	return firstOptional(
 		repo.db.WithContext(ctx).Where(q(repository.ColCreditCardOrderID)+" = ?", order.Id).Order(q(repository.ColTimestamp)+" DESC"),
-                 (*CreditCardOrderStatus).toProto,
+		(*CreditCardOrderStatus).toProto,
 	)
 }
 
@@ -97,7 +97,7 @@ func (repo *CreditCardOrderRepository) GetOrdersToManufacture(ctx context.Contex
 		" = " + qcol(repository.TableCreditCardOrders, repository.ColID)
 	where := qcol(repository.TableCreditCardOrderStatus, repository.ColStatus) + " = ?"
 	query := repo.db.WithContext(ctx).Joins(join).Where(where, repository.StatusOrderCreated)
-	return findAll(query, (*CreditCardOrder).toManufactureDataProto)
+	return findAndMapAll(query, (*CreditCardOrder).toManufactureDataProto)
 }
 
 func (repo *CreditCardOrderRepository) Create(ctx context.Context, req *pb.CreateCreditCardOrderRequest) (*pb.CreditCardOrderMessage, error) {

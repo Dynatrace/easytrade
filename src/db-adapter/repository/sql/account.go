@@ -45,7 +45,7 @@ func (repo *AccountRepository) GetByUsername(ctx context.Context, username strin
 }
 
 func (repo *AccountRepository) GetAll(ctx context.Context) ([]*pb.AccountMessage, error) {
-	return findAll(repo.db.WithContext(ctx), (*Account).toProto)
+	return findAndMapAll(repo.db.WithContext(ctx), (*Account).toProto)
 }
 
 func (repo *AccountRepository) Create(ctx context.Context, req *pb.CreateAccountRequest) (*pb.AccountMessage, error) {

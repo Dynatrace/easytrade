@@ -40,13 +40,13 @@ func (repo *PricingRepository) GetLatest(ctx context.Context) ([]*pb.PriceMessag
 		qcol(repository.TablePrices, repository.ColInstrumentID) + " = latest." + q(repository.ColInstrumentID) +
 		" AND " + qcol(repository.TablePrices, repository.ColTimestamp) + " = latest." + q("MaxTimestamp")
 	query := repo.db.WithContext(ctx).Joins(join, latest)
-	return findAll(query, (*Price).toProto)
+	return findAndMapAll(query, (*Price).toProto)
 }
 
 func (repo *PricingRepository) GetMostRecent(ctx context.Context, instrumentID string) (*pb.PriceMessage, error) {
 	return firstOptional(
 		repo.db.WithContext(ctx).Where(q(repository.ColInstrumentID)+" = ?", instrumentID).Order(q(repository.ColTimestamp)+" DESC"),
-           (*Price).toProto,
+		(*Price).toProto,
 	)
 }
 
@@ -57,7 +57,7 @@ func (repo *PricingRepository) GetForInstrument(ctx context.Context, instrumentI
 	if limit != nil {
 		query = query.Limit(*limit)
 	}
-	return findAll(query, (*Price).toProto)
+	return findAndMapAll(query, (*Price).toProto)
 }
 
 func (repo *PricingRepository) InsertBatch(ctx context.Context, req *pb.InsertPricesBatchRequest) (int32, error) {

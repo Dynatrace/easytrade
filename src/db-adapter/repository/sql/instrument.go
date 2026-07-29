@@ -43,7 +43,7 @@ func (repo *InstrumentRepository) GetByID(ctx context.Context, id string) (*pb.I
 }
 
 func (repo *InstrumentRepository) GetAll(ctx context.Context) ([]*pb.InstrumentMessage, error) {
-	return findAll(repo.db.WithContext(ctx), (*Instrument).toProto)
+	return findAndMapAll(repo.db.WithContext(ctx), (*Instrument).toProto)
 }
 
 func (repo *InstrumentRepository) GetOwned(ctx context.Context, accountID, instrumentID string) (*pb.OwnedInstrumentMessage, error) {
@@ -51,12 +51,12 @@ func (repo *InstrumentRepository) GetOwned(ctx context.Context, accountID, instr
 		repo.db.WithContext(ctx).
 			Where(q(repository.ColAccountID)+" = ?", accountID).
 			Where(q(repository.ColInstrumentID)+" = ?", instrumentID),
-           (*OwnedInstrument).toProto,
+		(*OwnedInstrument).toProto,
 	)
 }
 
 func (repo *InstrumentRepository) GetAllOwned(ctx context.Context, accountID string) ([]*pb.OwnedInstrumentMessage, error) {
-	return findAll(repo.db.WithContext(ctx).Where(q(repository.ColAccountID)+" = ?", accountID), (*OwnedInstrument).toProto)
+	return findAndMapAll(repo.db.WithContext(ctx).Where(q(repository.ColAccountID)+" = ?", accountID), (*OwnedInstrument).toProto)
 }
 
 func (repo *InstrumentRepository) AddOwned(ctx context.Context, req *pb.AddOwnedInstrumentRequest) (*pb.OwnedInstrumentMessage, error) {

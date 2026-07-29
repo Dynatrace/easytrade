@@ -56,7 +56,7 @@ func affectedRows(query *gorm.DB) (int32, error) {
 	return int32(query.RowsAffected), query.Error
 }
 
-func findAll[M, T any](query *gorm.DB, mapper func(*M) *T) ([]*T, error) {
+func findAndMapAll[M, T any](query *gorm.DB, mapper func(*M) *T) ([]*T, error) {
 	var items []M
 	if err := query.Find(&items).Error; err != nil {
 		return nil, err
