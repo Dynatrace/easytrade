@@ -134,6 +134,50 @@ func (x *ProductsResponse) GetProducts() []*ProductMessage {
 	return nil
 }
 
+type GetProductRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetProductRequest) Reset() {
+	*x = GetProductRequest{}
+	mi := &file_product_service_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetProductRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetProductRequest) ProtoMessage() {}
+
+func (x *GetProductRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_product_service_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetProductRequest.ProtoReflect.Descriptor instead.
+func (*GetProductRequest) Descriptor() ([]byte, []int) {
+	return file_product_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *GetProductRequest) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
 var File_product_service_proto protoreflect.FileDescriptor
 
 const file_product_service_proto_rawDesc = "" +
@@ -145,9 +189,12 @@ const file_product_service_proto_rawDesc = "" +
 	"\x03ppt\x18\x03 \x01(\x01R\x03ppt\x12\x1a\n" +
 	"\bcurrency\x18\x04 \x01(\tR\bcurrency\"[\n" +
 	"\x10ProductsResponse\x12G\n" +
-	"\bproducts\x18\x01 \x03(\v2+.easytrade.dbadapter.product.ProductMessageR\bproducts2h\n" +
+	"\bproducts\x18\x01 \x03(\v2+.easytrade.dbadapter.product.ProductMessageR\bproducts\"#\n" +
+	"\x11GetProductRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id2\xd9\x01\n" +
 	"\x0eProductService\x12V\n" +
-	"\vGetProducts\x12\x16.google.protobuf.Empty\x1a-.easytrade.dbadapter.product.ProductsResponse\"\x00B\x85\x01\n" +
+	"\vGetProducts\x12\x16.google.protobuf.Empty\x1a-.easytrade.dbadapter.product.ProductsResponse\"\x00\x12o\n" +
+	"\x0eGetProductById\x12..easytrade.dbadapter.product.GetProductRequest\x1a+.easytrade.dbadapter.product.ProductMessage\"\x00B\x85\x01\n" +
 	".com.dynatrace.easytrade.dbadapter.product.grpcP\x01Z.github.com/dynatrace/easytrade/dbadapter/proto\xaa\x02 EasyTrade.DbAdapter.Product.Grpcb\x06proto3"
 
 var (
@@ -162,18 +209,21 @@ func file_product_service_proto_rawDescGZIP() []byte {
 	return file_product_service_proto_rawDescData
 }
 
-var file_product_service_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_product_service_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_product_service_proto_goTypes = []any{
-	(*ProductMessage)(nil),   // 0: easytrade.dbadapter.product.ProductMessage
-	(*ProductsResponse)(nil), // 1: easytrade.dbadapter.product.ProductsResponse
-	(*emptypb.Empty)(nil),    // 2: google.protobuf.Empty
+	(*ProductMessage)(nil),    // 0: easytrade.dbadapter.product.ProductMessage
+	(*ProductsResponse)(nil),  // 1: easytrade.dbadapter.product.ProductsResponse
+	(*GetProductRequest)(nil), // 2: easytrade.dbadapter.product.GetProductRequest
+	(*emptypb.Empty)(nil),     // 3: google.protobuf.Empty
 }
 var file_product_service_proto_depIdxs = []int32{
 	0, // 0: easytrade.dbadapter.product.ProductsResponse.products:type_name -> easytrade.dbadapter.product.ProductMessage
-	2, // 1: easytrade.dbadapter.product.ProductService.GetProducts:input_type -> google.protobuf.Empty
-	1, // 2: easytrade.dbadapter.product.ProductService.GetProducts:output_type -> easytrade.dbadapter.product.ProductsResponse
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
+	3, // 1: easytrade.dbadapter.product.ProductService.GetProducts:input_type -> google.protobuf.Empty
+	2, // 2: easytrade.dbadapter.product.ProductService.GetProductById:input_type -> easytrade.dbadapter.product.GetProductRequest
+	1, // 3: easytrade.dbadapter.product.ProductService.GetProducts:output_type -> easytrade.dbadapter.product.ProductsResponse
+	0, // 4: easytrade.dbadapter.product.ProductService.GetProductById:output_type -> easytrade.dbadapter.product.ProductMessage
+	3, // [3:5] is the sub-list for method output_type
+	1, // [1:3] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
 	1, // [1:1] is the sub-list for extension extendee
 	0, // [0:1] is the sub-list for field type_name
@@ -190,7 +240,7 @@ func file_product_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_product_service_proto_rawDesc), len(file_product_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
