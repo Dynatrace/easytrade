@@ -120,7 +120,7 @@ func TestSignup_UsernameAlreadyExists_ReturnsConflict(t *testing.T) {
 	router := newTestRouter(client)
 
 	recorder := doRequest(router, http.MethodPost, "/api/auth/signup",
-		`{"packageId":1,"firstName":"Jane","lastName":"Doe","username":"demouser",`+
+		`{"packageId":"a0000000-0000-4000-8000-000000000001","firstName":"Jane","lastName":"Doe","username":"demouser",`+
 			`"email":"demouser@example.com","password":"demopass","origin":"WEB",`+
 			`"address":"123 Main St"}`)
 	if recorder.Code != http.StatusConflict {
@@ -143,7 +143,7 @@ func TestSignup_MissingFields_ReturnsBadRequest(t *testing.T) {
 func TestSignup_ValidPayload_ReturnsCreated(t *testing.T) {
 	router := newTestRouter(newFakeAccountServiceClient())
 
-	body := `{"packageId":1,"firstName":"Jane","lastName":"Doe","username":"jane_doe",` +
+	body := `{"packageId":"a0000000-0000-4000-8000-000000000001","firstName":"Jane","lastName":"Doe","username":"jane_doe",` +
 		`"email":"jane.doe@example.com","password":"securepassword","origin":"WEB",` +
 		`"address":"123 Main St"}`
 	recorder := doRequest(router, http.MethodPost, "/api/auth/signup", body)

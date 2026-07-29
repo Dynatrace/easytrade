@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:8095
+@baseUrl = http://localhost:8089
 
 ### Login
 POST {{baseUrl}}/api/auth/login
@@ -23,7 +23,7 @@ POST {{baseUrl}}/api/auth/signup
 Content-Type: application/json
 
 {
-  "packageId": 1,
+  "packageId": "a0000000-0000-4000-8000-000000000001",
   "firstName": "Jane",
   "lastName": "Doe",
   "username": "jane_doe",
@@ -34,7 +34,7 @@ Content-Type: application/json
 }
 
 ### Get account by ID
-GET {{baseUrl}}/api/accounts/1
+GET {{baseUrl}}/api/accounts/c2a70e99-436a-4e4a-9b98-2d4e73135c66
 
 ### Get preset accounts
 GET {{baseUrl}}/api/accounts/presets

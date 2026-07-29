@@ -1,7 +1,6 @@
 package account
 
 import (
-	"strconv"
 	"time"
 
 	"dynatrace.com/easytrade/user-service/dbadapter/proto"
@@ -16,7 +15,7 @@ type LoginRequest struct {
 
 // SignupRequest is the payload accepted by POST /api/auth/signup.
 type SignupRequest struct {
-	PackageId int    `json:"packageId" binding:"required"`
+	PackageId string `json:"packageId" binding:"required"`
 	FirstName string `json:"firstName" binding:"required"`
 	LastName  string `json:"lastName" binding:"required"`
 	Username  string `json:"username" binding:"required"`
@@ -31,7 +30,7 @@ type SignupRequest struct {
 func (sr *SignupRequest) ToProtoAccountRequest() *proto.CreateAccountRequest {
 	now := timestamppb.New(time.Now())
 	return &proto.CreateAccountRequest{
-		PackageId:             strconv.Itoa(sr.PackageId),
+		PackageId:             sr.PackageId,
 		FirstName:             sr.FirstName,
 		LastName:              sr.LastName,
 		Username:              sr.Username,
