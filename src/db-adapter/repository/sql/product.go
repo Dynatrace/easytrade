@@ -26,6 +26,10 @@ func NewProductRepository(db *gorm.DB) repository.ProductRepository {
 	return &ProductRepository{db: db}
 }
 
+func (repo *ProductRepository) GetByID(ctx context.Context, id string) (*pb.ProductMessage, error) {
+	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", id), (*Product).toProto)
+}
+
 func (repo *ProductRepository) GetAll(ctx context.Context) ([]*pb.ProductMessage, error) {
 	return findAndMapAll(repo.db.WithContext(ctx), (*Product).toProto)
 }

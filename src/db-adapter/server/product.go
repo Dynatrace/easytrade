@@ -19,6 +19,13 @@ func NewProductServer(repo repository.ProductRepository) *ProductServer {
 	return &ProductServer{repo: repo}
 }
 
+func (s *ProductServer) GetProductById(ctx context.Context, req *pb.GetProductRequest) (*pb.ProductMessage, error) {
+	if err := validateUUID(req.Id); err != nil {
+		return nil, err
+	}
+	return fetchOrNotFound(s.repo.GetByID(ctx, req.Id))
+}
+
 func (s *ProductServer) GetProducts(ctx context.Context, _ *emptypb.Empty) (*pb.ProductsResponse, error) {
 	products, err := s.repo.GetAll(ctx)
 	if err != nil {
