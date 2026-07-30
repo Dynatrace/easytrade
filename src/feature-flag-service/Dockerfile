@@ -15,9 +15,7 @@ ARG BUILD_VERSION=dev
 ARG BUILD_DATE=unknown
 ARG BUILD_COMMIT=unknown
 
-RUN go install github.com/swaggo/swag/cmd/swag@v1.16.3 \
-    && swag init \
-    && go test ./... \
+RUN go test ./... \
     && go build \
         -ldflags "-linkmode=external \
                   -X dynatrace.com/easytrade/feature-flag-service/version.BuildVersion=${BUILD_VERSION} \
