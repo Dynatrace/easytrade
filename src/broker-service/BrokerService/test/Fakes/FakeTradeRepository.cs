@@ -1,10 +1,9 @@
 using EasyTrade.BrokerService.Entities.Trades;
 using EasyTrade.BrokerService.Entities.Trades.Repository;
-using EasyTrade.BrokerService.Test.Helpers;
 
 namespace EasyTrade.BrokerService.Test.Fakes;
 
-public class FakeTradeRepository : FakeTransactionalRepository, ITradeRepository
+public class FakeTradeRepository : ITradeRepository
 {
     private readonly List<Trade> _trades = new();
 
@@ -12,19 +11,39 @@ public class FakeTradeRepository : FakeTransactionalRepository, ITradeRepository
 
     public FakeTradeRepository() { }
 
-    public virtual void AddTrade(Trade trade) => _trades.Add(trade);
-
     public FakeTradeRepository Add(Trade trade)
     {
         _trades.Add(trade);
         return this;
     }
 
-    public IQueryable<Trade> GetAllTrades() => _trades.AsAsyncQueryable();
+    public List<Trade> GetAllTrades() => _trades;
 
-    public void UpdateTrade(Trade trade)
+    public Task<Trade> CreateTradeAsync(Trade trade)
     {
-        var current = _trades.First(x => x.Id == trade.Id);
-        current = trade;
+        _trades.Add(trade);
+        return Task.FromResult(trade);
+    }
+
+    public Task<Trade> UpdateTradeAsync(Trade trade)
+    {
+        var index = _trades.FindIndex(x => x.Id == trade.Id);
+        if (index >= 0)
+            _trades[index] = trade;
+        return Task.FromResult(trade);
+    }
+
+    public Task<List<Trade>> GetOpenTradesAsync() =>
+        Task.FromResult(_trades.Where(x => !x.TradeClosed).ToList());
+
+    public Task<List<Trade>> GetExpiredTradesAsync() =>
+        Task.FromResult(_trades.Where(x => x.TimestampClose < DateTimeOffset.UtcNow).ToList());
+
+    public Task<List<Trade>> GetAccountTradesAsync(Guid accountId, bool onlyOpen, bool onlyLong)
+    {
+        var trades = _trades.Where(x => x.AccountId == accountId);
+        if (onlyOpen) trades = trades.Where(x => !x.TradeClosed);
+        if (onlyLong) trades = trades.Where(x => x.Direction.Equals("buy", StringComparison.OrdinalIgnoreCase));
+        return Task.FromResult(trades.ToList());
     }
 }

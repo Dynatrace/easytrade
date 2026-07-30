@@ -17,22 +17,28 @@ public class InstrumentTests
     private readonly Product[] _products;
     private readonly Price[] _prices;
     private readonly DateTimeOffset _time;
+    private readonly Guid _instrumentId1;
+    private readonly Guid _instrumentId2;
+    private readonly Guid _productId;
 
     public InstrumentTests()
     {
         _time = DateTimeOffset.Now;
+        _instrumentId1 = Guid.NewGuid();
+        _instrumentId2 = Guid.NewGuid();
+        _productId = Guid.NewGuid();
         _instruments = new Instrument[]
         {
-            new Instrument(1, 1, "code1", "name1", "desc1"),
-            new Instrument(2, 1, "code2", "name2", "desc2")
+            new Instrument(_instrumentId1, _productId, "code1", "name1", "desc1"),
+            new Instrument(_instrumentId2, _productId, "code2", "name2", "desc2")
         };
-        _products = new Product[] { new Product(1, "prod1", 2.5M, "curr1") };
+        _products = new Product[] { new Product(_productId, "prod1", 2.5M, "curr1") };
         _prices = new Price[]
         {
-            new Price(1, _time.AddDays(-1), 2, 4, 1, 3),
-            new Price(2, _time.AddDays(-1), 0.5M, 7, 0.25M, 4),
-            new Price(1, _time, 3, 5, 1, 4.5M),
-            new Price(2, _time, 4, 5, 1.5M, 2)
+            new Price(_instrumentId1, _time.AddDays(-1), 2, 4, 1, 3),
+            new Price(_instrumentId2, _time.AddDays(-1), 0.5M, 7, 0.25M, 4),
+            new Price(_instrumentId1, _time, 3, 5, 1, 4.5M),
+            new Price(_instrumentId2, _time, 4, 5, 1.5M, 2)
         };
     }
 
@@ -40,11 +46,11 @@ public class InstrumentTests
     public async Task GetInstruments_WithValidInput_ShouldReturnInstruments()
     {
         // Arrange
-        const int userId = 1;
+        var userId = Guid.NewGuid();
         OwnedInstrument[] ownedInstruments =
         {
-            new OwnedInstrument(userId, 1, 22.5M, _time),
-            new OwnedInstrument(userId, 2, 59.28M, _time.AddDays(-1))
+            new OwnedInstrument(userId, _instrumentId1, 22.5M, _time),
+            new OwnedInstrument(userId, _instrumentId2, 59.28M, _time.AddDays(-1))
         };
 
         var instrumentService = BuildFakeInstrumentService(
@@ -56,8 +62,8 @@ public class InstrumentTests
 
         // Act
         var result = await instrumentService.GetInstruments(userId);
-        var first = result.First(x => x.Id == 1);
-        var second = result.First(x => x.Id == 2);
+        var first = result.First(x => x.Id == _instrumentId1);
+        var second = result.First(x => x.Id == _instrumentId2);
         // Assert
         Assert.Equal(_instruments.Length, result.Count());
         Assert.Equal(ownedInstruments[0].Quantity, first.Amount);
@@ -73,6 +79,7 @@ public class InstrumentTests
     public async Task GetInstruments_WithInvalidAccount_ShouldReturnInstruments()
     {
         // Arrange
+        var accountId = Guid.NewGuid();
         var instrumentService = BuildFakeInstrumentService(
             _instruments,
             Array.Empty<OwnedInstrument>(),
@@ -81,9 +88,9 @@ public class InstrumentTests
         );
 
         // Act
-        var result = await instrumentService.GetInstruments(0);
-        var first = result.First(x => x.Id == 1);
-        var second = result.First(x => x.Id == 2);
+        var result = await instrumentService.GetInstruments(accountId);
+        var first = result.First(x => x.Id == _instrumentId1);
+        var second = result.First(x => x.Id == _instrumentId2);
         // Assert
         Assert.Equal(_instruments.Length, result.Count());
         Assert.Equal(0, first.Amount);

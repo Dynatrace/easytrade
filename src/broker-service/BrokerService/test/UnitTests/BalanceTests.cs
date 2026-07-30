@@ -16,7 +16,7 @@ public class BalanceTests
     {
         // Arrange
         const decimal startingValue = 344.976M;
-        const int id = 21;
+        var id = Guid.NewGuid();
 
         Balance[] balances = { new Balance(id, startingValue) };
         var balanceService = BuildFakeBalanceService(balances, Array.Empty<BalanceHistory>());
@@ -33,7 +33,7 @@ public class BalanceTests
     public async Task GetBalance_InvalidAccountId_ShouldThrowException()
     {
         // Arrange
-        const int id = 213;
+        var id = Guid.NewGuid();
 
         var balanceService = BuildFakeBalanceService(
             Array.Empty<Balance>(),
@@ -52,7 +52,7 @@ public class BalanceTests
         // Arrange
         const decimal startingValue = 100;
         const decimal amount = 100.5M;
-        const int id = 10;
+        var id = Guid.NewGuid();
 
         Balance[] balances = { new Balance(id, startingValue) };
         var balanceService = BuildFakeBalanceService(balances, Array.Empty<BalanceHistory>());
@@ -78,7 +78,7 @@ public class BalanceTests
         // Arrange
         const decimal startingValue = 12;
         const decimal amount = 5.52M;
-        const int id = 122;
+        var id = Guid.NewGuid();
 
         Balance[] balances = { new Balance(id, startingValue) };
         var balanceService = BuildFakeBalanceService(balances, Array.Empty<BalanceHistory>());
@@ -104,7 +104,7 @@ public class BalanceTests
         // Arrange
         const decimal startingValue = 12.3M;
         const decimal amount = 13.3M;
-        const int id = 11;
+        var id = Guid.NewGuid();
 
         Balance[] balances = { new Balance(id, startingValue) };
         var balanceService = BuildFakeBalanceService(balances, Array.Empty<BalanceHistory>());
@@ -120,7 +120,7 @@ public class BalanceTests
     {
         // Arrange
         const decimal amount = 100;
-        const int id = 10;
+        var id = Guid.NewGuid();
 
         var balanceService = BuildFakeBalanceService(
             Array.Empty<Balance>(),
@@ -142,7 +142,7 @@ public class BalanceTests
         // Arrange
         const decimal startingValue = 0;
         const decimal amount = -0.1M;
-        const int id = 10;
+        var id = Guid.NewGuid();
 
         Balance[] balances = { new Balance(id, startingValue) };
         var balanceService = BuildFakeBalanceService(balances, Array.Empty<BalanceHistory>());

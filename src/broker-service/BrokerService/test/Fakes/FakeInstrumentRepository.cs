@@ -1,11 +1,9 @@
-using EasyTrade.BrokerService.Entities.Accounts;
 using EasyTrade.BrokerService.Entities.Instruments;
 using EasyTrade.BrokerService.Entities.Instruments.Repository;
-using EasyTrade.BrokerService.Test.Helpers;
 
 namespace EasyTrade.BrokerService.Test.Fakes;
 
-public class FakeInstrumentRepository : FakeTransactionalRepository, IInstrumentRepository
+public class FakeInstrumentRepository : IInstrumentRepository
 {
     private readonly List<Instrument> _instruments = new();
     private readonly List<OwnedInstrument> _ownedInstruments = new();
@@ -32,15 +30,16 @@ public class FakeInstrumentRepository : FakeTransactionalRepository, IInstrument
     public void DeleteOwnedInstrument(OwnedInstrument? ownedInstrument) =>
         _ownedInstruments.Remove(ownedInstrument!);
 
-    public IQueryable<Instrument> GetAllInstruments() => _instruments.AsAsyncQueryable();
+    public Task<List<Instrument>> GetAllInstrumentsAsync() =>
+        Task.FromResult(_instruments.ToList());
 
-    public Task<Instrument?> GetInstrument(int instrumentId)
+    public Task<Instrument?> GetInstrumentAsync(Guid instrumentId)
     {
         var instrument = _instruments.Find(x => x.Id == instrumentId);
         return Task.FromResult(instrument);
     }
 
-    public Task<OwnedInstrument?> GetOwnedInstrument(int accountId, int instrumentId)
+    public Task<OwnedInstrument?> GetOwnedInstrumentAsync(Guid accountId, Guid instrumentId)
     {
         var ownedInstrument = _ownedInstruments.Find(x =>
             x.AccountId == accountId && x.InstrumentId == instrumentId
@@ -48,18 +47,24 @@ public class FakeInstrumentRepository : FakeTransactionalRepository, IInstrument
         return Task.FromResult(ownedInstrument);
     }
 
-    public IQueryable<OwnedInstrument> GetOwnedInstrumentsOfAccount(Account account) =>
-        GetOwnedInstrumentsOfAccount(account.Id);
+    public List<OwnedInstrument> GetOwnedInstrumentsOfAccount(Guid accountId) =>
+        _ownedInstruments.Where(x => x.AccountId == accountId).ToList();
 
-    public IQueryable<OwnedInstrument> GetOwnedInstrumentsOfAccount(int accountId) =>
-        _ownedInstruments.Where(x => x.AccountId == accountId).AsAsyncQueryable();
+    public Task<List<OwnedInstrument>> GetOwnedInstrumentsOfAccountAsync(Guid accountId) =>
+        Task.FromResult(_ownedInstruments.Where(x => x.AccountId == accountId).ToList());
 
-    public void UpdateOwnedInstrument(OwnedInstrument? ownedInstrument)
+    public Task<OwnedInstrument> AddOwnedInstrumentAsync(OwnedInstrument ownedInstrument)
     {
-        var current = _ownedInstruments.Find(x => x.Id == ownedInstrument!.Id);
-        current = ownedInstrument;
+        _ownedInstruments.Add(ownedInstrument);
+        return Task.FromResult(ownedInstrument);
     }
 
-    public void AddOwnedInstrument(OwnedInstrument? ownedInstrument) =>
-        _ownedInstruments.Add(ownedInstrument!);
+    public Task<OwnedInstrument> UpdateOwnedInstrumentAsync(OwnedInstrument ownedInstrument)
+    {
+        var index = _ownedInstruments.FindIndex(x =>
+            x.AccountId == ownedInstrument.AccountId && x.InstrumentId == ownedInstrument.InstrumentId);
+        if (index >= 0)
+            _ownedInstruments[index] = ownedInstrument;
+        return Task.FromResult(ownedInstrument);
+    }
 }

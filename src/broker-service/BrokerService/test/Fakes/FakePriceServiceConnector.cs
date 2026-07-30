@@ -17,7 +17,7 @@ public class FakePriceServiceConnector : IPriceServiceConnector
         return this;
     }
 
-    public Task<Price?> GetLastPriceByInstrumentId(int id)
+    public Task<Price?> GetLastPriceByInstrumentId(Guid id)
     {
         var price = _prices
             .Where(x => x.InstrumentId == id)
@@ -28,12 +28,13 @@ public class FakePriceServiceConnector : IPriceServiceConnector
 
     public Task<IEnumerable<Price>> GetLatestPrices()
     {
+        if (_prices.Count == 0) return Task.FromResult(Enumerable.Empty<Price>());
         var maxTimestamp = _prices.Max(x => x.Timestamp);
         var prices = _prices.Where(x => x.Timestamp == maxTimestamp);
         return Task.FromResult(prices);
     }
 
-    public Task<IEnumerable<Price>> GetPricesByInstrumentId(int id, int count)
+    public Task<IEnumerable<Price>> GetPricesByInstrumentId(Guid id, int count)
     {
         var prices = _prices
             .Where(x => x.InstrumentId == id)

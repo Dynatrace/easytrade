@@ -24,25 +24,27 @@ public class TradeTests
     public async Task QuickBuy_WithValidInput_ShouldBuyAsset()
     {
         //Arrange
-        const int userId = 2;
-        const int ownerId = 1;
+        var userId = Guid.NewGuid();
+        var instrumentId1 = Guid.NewGuid();
+        var instrumentId2 = Guid.NewGuid();
+        var productId = Guid.NewGuid();
         const decimal balance = 10000;
         var time = DateTimeOffset.Now;
         const decimal quantity1 = 1.5M,
             quantity2 = 8,
             baseQuantity1 = 2;
-        Balance[] balances = { new Balance(ownerId, 0), new Balance(userId, balance) };
+        Balance[] balances = { new Balance(Constants.OwnerId, 0), new Balance(userId, balance) };
         Instrument[] instruments =
         {
-            new Instrument(1, 1, "code1", "name1", "desc1"),
-            new Instrument(2, 1, "code2", "name2", "desc2")
+            new Instrument(instrumentId1, productId, "code1", "name1", "desc1"),
+            new Instrument(instrumentId2, productId, "code2", "name2", "desc2")
         };
         OwnedInstrument[] ownedInstruments =
         {
-            new OwnedInstrument(userId, 1, baseQuantity1, time)
+            new OwnedInstrument(userId, instrumentId1, baseQuantity1, time)
         };
-        Product[] products = { new Product(1, "prod1", 2.5M, "curr1") };
-        Price[] prices = { new Price(1, time, 3, 5, 1, 4.5M), new Price(2, time, 4, 5, 1.5M, 2) };
+        Product[] products = { new Product(productId, "prod1", 2.5M, "curr1") };
+        Price[] prices = { new Price(instrumentId1, time, 3, 5, 1, 4.5M), new Price(instrumentId2, time, 4, 5, 1.5M, 2) };
         var tradeService = BuildFakeTradeService(
             balances,
             Array.Empty<BalanceHistory>(),
@@ -53,11 +55,11 @@ public class TradeTests
             Array.Empty<Trade>()
         );
         // Act
-        await tradeService.BuyAssets(userId, 1, quantity1);
-        await tradeService.BuyAssets(userId, 2, quantity2);
+        await tradeService.BuyAssets(userId, instrumentId1, quantity1);
+        await tradeService.BuyAssets(userId, instrumentId2, quantity2);
         // Assert
-        var newBalance = (await _balanceRepository!.GetBalanceOfAccount(userId))!.Value;
-        var ownerBalance = (await _balanceRepository!.GetBalanceOfAccount(ownerId))!.Value;
+        var newBalance = (await _balanceRepository!.GetBalanceOfAccountAsync(userId))!.Value;
+        var ownerBalance = (await _balanceRepository!.GetBalanceOfAccountAsync(Constants.OwnerId))!.Value;
         var ownedInstrument = _instrumentRepository!.GetOwnedInstrumentsOfAccount(userId).ToList();
         var balanceHistories = _balanceRepository.GetBalanceHistories().ToList();
         var trades = _tradeRepository!.GetAllTrades().ToList();
@@ -71,9 +73,9 @@ public class TradeTests
 
         Assert.Equal(
             baseQuantity1 + quantity1,
-            ownedInstrument.Find(x => x.InstrumentId == 1)!.Quantity
+            ownedInstrument.Find(x => x.InstrumentId == instrumentId1)!.Quantity
         );
-        Assert.Equal(quantity2, ownedInstrument.Find(x => x.InstrumentId == 2)!.Quantity);
+        Assert.Equal(quantity2, ownedInstrument.Find(x => x.InstrumentId == instrumentId2)!.Quantity);
 
         Assert.Equal(6, balanceHistories.Count);
         Assert.Equal(2, trades.Count);
@@ -89,27 +91,29 @@ public class TradeTests
     public async Task QuickSell_WithValidInput_ShouldBuyAsset()
     {
         //Arrange
-        const int userId = 2;
-        const int ownerId = 1;
+        var userId = Guid.NewGuid();
+        var instrumentId1 = Guid.NewGuid();
+        var instrumentId2 = Guid.NewGuid();
+        var productId = Guid.NewGuid();
         const decimal balance = 10000;
         var time = DateTimeOffset.Now;
         const decimal quantity1 = 1.5M,
             quantity2 = 8;
         const decimal baseQuantity1 = 2,
             baseQuantity2 = 10;
-        Balance[] balances = { new Balance(ownerId, 0), new Balance(userId, balance) };
+        Balance[] balances = { new Balance(Constants.OwnerId, 0), new Balance(userId, balance) };
         Instrument[] instruments =
         {
-            new Instrument(1, 1, "code1", "name1", "desc1"),
-            new Instrument(2, 1, "code2", "name2", "desc2")
+            new Instrument(instrumentId1, productId, "code1", "name1", "desc1"),
+            new Instrument(instrumentId2, productId, "code2", "name2", "desc2")
         };
         OwnedInstrument[] ownedInstruments =
         {
-            new OwnedInstrument(userId, 1, baseQuantity1, time),
-            new OwnedInstrument(userId, 2, baseQuantity2, time)
+            new OwnedInstrument(userId, instrumentId1, baseQuantity1, time),
+            new OwnedInstrument(userId, instrumentId2, baseQuantity2, time)
         };
-        Product[] products = { new Product(1, "prod1", 2.5M, "curr1") };
-        Price[] prices = { new Price(1, time, 3, 5, 1, 4.5M), new Price(2, time, 4, 5, 1.5M, 2) };
+        Product[] products = { new Product(productId, "prod1", 2.5M, "curr1") };
+        Price[] prices = { new Price(instrumentId1, time, 3, 5, 1, 4.5M), new Price(instrumentId2, time, 4, 5, 1.5M, 2) };
         var tradeService = BuildFakeTradeService(
             balances,
             Array.Empty<BalanceHistory>(),
@@ -120,12 +124,12 @@ public class TradeTests
             Array.Empty<Trade>()
         );
         // Act
-        await tradeService.SellAssets(userId, 1, quantity1);
-        await tradeService.SellAssets(userId, 2, quantity2);
+        await tradeService.SellAssets(userId, instrumentId1, quantity1);
+        await tradeService.SellAssets(userId, instrumentId2, quantity2);
 
         // Assert
-        var newBalance = (await _balanceRepository!.GetBalanceOfAccount(userId))!.Value;
-        var ownerBalance = (await _balanceRepository!.GetBalanceOfAccount(ownerId))!.Value;
+        var newBalance = (await _balanceRepository!.GetBalanceOfAccountAsync(userId))!.Value;
+        var ownerBalance = (await _balanceRepository!.GetBalanceOfAccountAsync(Constants.OwnerId))!.Value;
         var ownedInstrument = _instrumentRepository!.GetOwnedInstrumentsOfAccount(userId).ToList();
         var balanceHistories = _balanceRepository.GetBalanceHistories().ToList();
         var trades = _tradeRepository!.GetAllTrades().ToList();
@@ -139,11 +143,11 @@ public class TradeTests
 
         Assert.Equal(
             baseQuantity1 - quantity1,
-            ownedInstrument.Find(x => x.InstrumentId == 1)!.Quantity
+            ownedInstrument.Find(x => x.InstrumentId == instrumentId1)!.Quantity
         );
         Assert.Equal(
             baseQuantity2 - quantity2,
-            ownedInstrument.Find(x => x.InstrumentId == 2)!.Quantity
+            ownedInstrument.Find(x => x.InstrumentId == instrumentId2)!.Quantity
         );
 
         Assert.Equal(6, balanceHistories.Count);
@@ -160,7 +164,8 @@ public class TradeTests
     public async Task QuickBuySell_WithNegativeAmount_ShouldThrowException()
     {
         //Arrange
-        const int userId = 2;
+        var userId = Guid.NewGuid();
+        var instrumentId = Guid.NewGuid();
         const decimal amount = -12.5M;
         var tradeService = BuildFakeTradeService(
             Array.Empty<Balance>(),
@@ -173,10 +178,10 @@ public class TradeTests
         );
         // Act & Assert
         await Assert.ThrowsAsync<NegativeAmountException>(
-            () => tradeService.BuyAssets(userId, 1, amount)
+            () => tradeService.BuyAssets(userId, instrumentId, amount)
         );
         await Assert.ThrowsAsync<NegativeAmountException>(
-            () => tradeService.SellAssets(userId, 1, amount)
+            () => tradeService.SellAssets(userId, instrumentId, amount)
         );
     }
 
@@ -184,7 +189,8 @@ public class TradeTests
     public async Task QuickBuySell_WithInvalidUserId_ShouldThrowException()
     {
         //Arrange
-        const int userId = 2;
+        var userId = Guid.NewGuid();
+        var instrumentId = Guid.NewGuid();
         var tradeService = BuildFakeTradeService(
             Array.Empty<Balance>(),
             Array.Empty<BalanceHistory>(),
@@ -196,10 +202,10 @@ public class TradeTests
         );
         // Act & Assert
         await Assert.ThrowsAsync<AccountNotFoundException>(
-            () => tradeService.BuyAssets(userId, 1, 1)
+            () => tradeService.BuyAssets(userId, instrumentId, 1)
         );
         await Assert.ThrowsAsync<AccountNotFoundException>(
-            () => tradeService.SellAssets(userId, 1, 1)
+            () => tradeService.SellAssets(userId, instrumentId, 1)
         );
     }
 
@@ -207,7 +213,8 @@ public class TradeTests
     public async Task QuickBuySell_WithInvalidInstrumentId_ShouldThrowException()
     {
         //Arrange
-        const int userId = 2;
+        var userId = Guid.NewGuid();
+        var instrumentId = Guid.NewGuid();
         Balance[] balances = { new Balance(userId, 0), };
         var tradeService = BuildFakeTradeService(
             balances,
@@ -220,10 +227,10 @@ public class TradeTests
         );
         // Act & Assert
         await Assert.ThrowsAsync<InstrumentNotFoundException>(
-            () => tradeService.BuyAssets(userId, 1, 1)
+            () => tradeService.BuyAssets(userId, instrumentId, 1)
         );
         await Assert.ThrowsAsync<InstrumentNotFoundException>(
-            () => tradeService.SellAssets(userId, 1, 1)
+            () => tradeService.SellAssets(userId, instrumentId, 1)
         );
     }
 
@@ -231,11 +238,13 @@ public class TradeTests
     public async Task QuickBuy_NotEnoughMoney_ShouldThrowException()
     {
         //Arrange
-        const int userId = 2;
+        var userId = Guid.NewGuid();
+        var instrumentId = Guid.NewGuid();
+        var productId = Guid.NewGuid();
         Balance[] balances = { new Balance(userId, 3) };
-        Instrument[] instruments = { new Instrument(1, 1, "code1", "name1", "desc1") };
-        Product[] products = { new Product(1, "prod1", 2.5M, "curr1") };
-        Price[] prices = { new Price(1, DateTimeOffset.Now, 3, 5, 1, 4.5M), };
+        Instrument[] instruments = { new Instrument(instrumentId, productId, "code1", "name1", "desc1") };
+        Product[] products = { new Product(productId, "prod1", 2.5M, "curr1") };
+        Price[] prices = { new Price(instrumentId, DateTimeOffset.Now, 3, 5, 1, 4.5M), };
         var tradeService = BuildFakeTradeService(
             balances,
             Array.Empty<BalanceHistory>(),
@@ -247,7 +256,7 @@ public class TradeTests
         );
         // Act & Assert
         await Assert.ThrowsAsync<NotEnoughMoneyException>(
-            () => tradeService.BuyAssets(userId, 1, 1)
+            () => tradeService.BuyAssets(userId, instrumentId, 1)
         );
     }
 
@@ -255,24 +264,27 @@ public class TradeTests
     public async Task QuickSell_NotEnoughAssets_ShouldThrowException()
     {
         //Arrange
-        const int userId = 2;
+        var userId = Guid.NewGuid();
+        var instrumentId1 = Guid.NewGuid();
+        var instrumentId2 = Guid.NewGuid();
+        var productId = Guid.NewGuid();
         const decimal baseQuantity1 = 10,
             sellQuantity = 15;
         Balance[] balances = { new Balance(userId, 0) };
         Instrument[] instruments =
         {
-            new Instrument(1, 1, "code1", "name1", "desc1"),
-            new Instrument(2, 1, "code1", "name1", "desc1")
+            new Instrument(instrumentId1, productId, "code1", "name1", "desc1"),
+            new Instrument(instrumentId2, productId, "code1", "name1", "desc1")
         };
         OwnedInstrument[] ownedInstruments =
         {
-            new OwnedInstrument(userId, 1, baseQuantity1, DateTimeOffset.Now)
+            new OwnedInstrument(userId, instrumentId1, baseQuantity1, DateTimeOffset.Now)
         };
-        Product[] products = { new Product(1, "prod1", 2.5M, "curr1") };
+        Product[] products = { new Product(productId, "prod1", 2.5M, "curr1") };
         Price[] prices =
         {
-            new Price(1, DateTimeOffset.Now, 3, 5, 1, 4.5M),
-            new Price(2, DateTimeOffset.Now, 3, 5, 1, 4.5M)
+            new Price(instrumentId1, DateTimeOffset.Now, 3, 5, 1, 4.5M),
+            new Price(instrumentId2, DateTimeOffset.Now, 3, 5, 1, 4.5M)
         };
         var tradeService = BuildFakeTradeService(
             balances,
@@ -285,10 +297,10 @@ public class TradeTests
         );
         // Act & Assert
         await Assert.ThrowsAsync<NotEnoughAssetsException>(
-            () => tradeService.SellAssets(userId, 1, sellQuantity)
+            () => tradeService.SellAssets(userId, instrumentId1, sellQuantity)
         );
         await Assert.ThrowsAsync<NotEnoughAssetsException>(
-            () => tradeService.SellAssets(userId, 2, sellQuantity)
+            () => tradeService.SellAssets(userId, instrumentId2, sellQuantity)
         );
     }
 
@@ -296,15 +308,20 @@ public class TradeTests
     public async Task GetTradesOfAccount_WithValidInput_ShouldReturnTrades()
     {
         //Arrange
-        const int userId = 2,
-            count = 2;
+        var userId = Guid.NewGuid();
+        var instrumentId1 = Guid.NewGuid();
+        var instrumentId2 = Guid.NewGuid();
+        var instrumentId3 = Guid.NewGuid();
+        var instrumentId4 = Guid.NewGuid();
+        var instrumentId5 = Guid.NewGuid();
+        const int count = 2;
         Trade[] trades =
         {
-            Trade.QuickTrade(userId, 1, ActionType.Buy, 12.5M, 5),
-            Trade.LongTrade(userId, 2, ActionType.LongSell, 1.5M, 10, 24),
-            Trade.QuickTrade(userId, 3, ActionType.Sell, 8, 7.5M),
-            Trade.LongTrade(userId, 4, ActionType.LongBuy, 8, 5.5M, 6),
-            Trade.QuickTrade(userId, 5, ActionType.Sell, 2, 2),
+            Trade.QuickTrade(userId, instrumentId1, ActionType.Buy, 12.5M, 5),
+            Trade.LongTrade(userId, instrumentId2, ActionType.LongSell, 1.5M, 10, 24),
+            Trade.QuickTrade(userId, instrumentId3, ActionType.Sell, 8, 7.5M),
+            Trade.LongTrade(userId, instrumentId4, ActionType.LongBuy, 8, 5.5M, 6),
+            Trade.QuickTrade(userId, instrumentId5, ActionType.Sell, 2, 2),
         };
         var tradeService = BuildFakeTradeService(
             Array.Empty<Balance>(),

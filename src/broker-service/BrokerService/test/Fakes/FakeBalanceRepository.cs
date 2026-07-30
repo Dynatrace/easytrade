@@ -1,10 +1,9 @@
 using EasyTrade.BrokerService.Entities.Balances;
 using EasyTrade.BrokerService.Entities.Balances.Repository;
-using EasyTrade.BrokerService.Test.Helpers;
 
 namespace EasyTrade.BrokerService.Test.Fakes;
 
-public class FakeBalanceRepository : FakeTransactionalRepository, IBalanceRepository
+public class FakeBalanceRepository : IBalanceRepository
 {
     private readonly List<Balance> _balances = new();
     private readonly List<BalanceHistory> _balanceHistories = new();
@@ -20,24 +19,32 @@ public class FakeBalanceRepository : FakeTransactionalRepository, IBalanceReposi
         return this;
     }
 
-    public void AddBalanceHistory(BalanceHistory balanceHistory) =>
-        _balanceHistories.Add(balanceHistory);
+    public List<BalanceHistory> GetBalanceHistories() => _balanceHistories;
 
-    public IQueryable<BalanceHistory> GetBalanceHistories() => _balanceHistories.AsAsyncQueryable();
+    public Balance? GetBalanceOfAccount(Guid accountId)
+    {
+        return _balances.Find(x => x.AccountId == accountId);
+    }
 
-    public Task<Balance?> GetBalanceOfAccount(int accountId)
+    public Task<Balance?> GetBalanceOfAccountAsync(Guid accountId)
     {
         var balance = _balances.Find(x => x.AccountId == accountId);
         return Task.FromResult(balance);
     }
 
-    public void UpdateBalance(Balance balance)
+    public Task<BalanceHistory> AddBalanceHistoryAsync(BalanceHistory balanceHistory)
+    {
+        _balanceHistories.Add(balanceHistory);
+        return Task.FromResult(balanceHistory);
+    }
+
+    public Task<Balance> UpdateBalanceAsync(Balance balance)
     {
         var current = _balances.Find(x => x.AccountId == balance.AccountId);
-        if (current is null)
+        if (current is not null)
         {
-            return;
+            current.Value = balance.Value;
         }
-        current.Value = balance.Value;
+        return Task.FromResult(balance);
     }
 }
