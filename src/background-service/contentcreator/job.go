@@ -75,10 +75,7 @@ func doEachTime(n int, counter *int, fn func()) {
 // plain fixed-interval sleep.
 func sleepProperly(cal time.Time, base time.Duration) {
 	elapsed := time.Since(cal)
-	timeout := base - elapsed
-	if timeout < 0 {
-		timeout = 0
-	}
+	timeout := max(base-elapsed, 0)
 	time.Sleep(timeout)
 }
 
