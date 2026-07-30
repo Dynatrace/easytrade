@@ -1,8 +1,6 @@
 package aggregator
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"math/rand"
 
 	"github.com/go-faker/faker/v4"
@@ -11,13 +9,13 @@ import (
 func createFakeSignupRequest(platformName string, packageProb *PackageProbability) *SignupRequest {
 	sr := &SignupRequest{}
 
-	sr.PackageId = randomPackage(packageProb)
+	sr.PackageId = packageIDs[randomPackage(packageProb)]
 	sr.FirstName = faker.FirstName()
 	sr.LastName = faker.LastName()
 	sr.Username = sr.FirstName + sr.LastName
 	sr.Email = sr.Username + "@" + faker.DomainName()
 	sr.Address = faker.GetRealAddress().Address
-	sr.HashedPassword, _ = hashPassword(faker.Password())
+	sr.Password = faker.Password()
 	sr.Origin = platformName
 
 	return sr
@@ -46,12 +44,4 @@ func randomValueWithProbability[T any](elements []T, probabilities []float32) T 
 		resultID++
 	}
 	return elements[resultID]
-}
-
-func hashPassword(password string) (string, error) {
-	h := sha256.New()
-	if _, err := h.Write([]byte(password)); err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(h.Sum(nil)), nil
 }
