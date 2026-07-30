@@ -112,31 +112,30 @@ func (h *Handler) GetPresets(ctx *gin.Context) {
 		return
 	}
 
-	presetAccounts := filterPresets(resp.Accounts)
-	if limit > 0 && limit < len(presetAccounts) {
-		presetAccounts = presetAccounts[:limit]
+	shortAccounts := mapSlice(filterSlice(resp.Accounts, isPreset), shortAccountFromProto)
+	if limit > 0 && limit < len(shortAccounts) {
+		shortAccounts = shortAccounts[:limit]
 	}
-	shortAccounts := presetsToShortAccounts(presetAccounts)
 
 	ctx.JSON(http.StatusOK, AccountsContainer{Results: shortAccounts})
 }
 
-func filterPresets(accounts []*proto.AccountMessage) []*proto.AccountMessage {
-	var presets []*proto.AccountMessage
-	for _, acc := range accounts {
-		if isPreset(acc) {
-			presets = append(presets, acc)
+func filterSlice[T any](items []T, keep func(T) bool) []T {
+	var result []T
+	for _, it := range items {
+		if keep(it) {
+			result = append(result, it)
 		}
 	}
-	return presets
+	return result
 }
 
-func presetsToShortAccounts(accounts []*proto.AccountMessage) []ShortAccount {
-	var shortAccounts []ShortAccount
-	for _, acc := range accounts {
-		shortAccounts = append(shortAccounts, shortAccountFromProto(acc))
+func mapSlice[T, U any](items []T, mapper func(T) U) []U {
+	result := make([]U, 0, len(items))
+	for _, it := range items {
+		result = append(result, mapper(it))
 	}
-	return shortAccounts
+	return result
 }
 
 func isPreset(a *proto.AccountMessage) bool {
