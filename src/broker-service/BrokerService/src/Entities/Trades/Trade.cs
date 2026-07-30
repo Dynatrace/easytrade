@@ -3,8 +3,8 @@
 namespace EasyTrade.BrokerService.Entities.Trades;
 
 public class Trade(
-    int accountId,
-    int instrumentId,
+    Guid accountId,
+    Guid instrumentId,
     string direction,
     decimal quantity,
     decimal entryPrice,
@@ -15,9 +15,9 @@ public class Trade(
     string status
 )
 {
-    public int Id { get; set; }
-    public int AccountId { get; set; } = accountId;
-    public int InstrumentId { get; set; } = instrumentId;
+    public Guid Id { get; set; }
+    public Guid AccountId { get; set; } = accountId;
+    public Guid InstrumentId { get; set; } = instrumentId;
     public string Direction { get; set; } = direction;
     public decimal Quantity { get; set; } = quantity;
     public decimal EntryPrice { get; set; } = entryPrice;
@@ -28,9 +28,9 @@ public class Trade(
     public string Status { get; set; } = status;
 
     public Trade(
-        int id,
-        int accountId,
-        int instrumentId,
+        Guid id,
+        Guid accountId,
+        Guid instrumentId,
         string direction,
         decimal quantity,
         decimal entryPrice,
@@ -54,8 +54,8 @@ public class Trade(
         ) => Id = id;
 
     public static Trade QuickTrade(
-        int accountId,
-        int instrumentId,
+        Guid accountId,
+        Guid instrumentId,
         ActionType direction,
         decimal price,
         decimal quantity
@@ -74,8 +74,8 @@ public class Trade(
         );
 
     public static Trade LongTrade(
-        int accountId,
-        int instrumentId,
+        Guid accountId,
+        Guid instrumentId,
         ActionType direction,
         decimal price,
         decimal quantity,

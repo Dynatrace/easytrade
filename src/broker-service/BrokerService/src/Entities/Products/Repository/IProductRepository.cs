@@ -1,9 +1,8 @@
-using EasyTrade.BrokerService.Helpers;
-
 namespace EasyTrade.BrokerService.Entities.Products.Repository;
 
-public interface IProductRepository : ITransactionalRepository
+public interface IProductRepository
 {
-    public Task<Product?> GetProduct(int productId);
-    public IQueryable<Product> GetProducts();
+    Task<Product?> GetProductAsync(Guid productId);
+
+    Task<List<Product>> GetProductsAsync();
 }

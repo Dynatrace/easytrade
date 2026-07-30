@@ -4,5 +4,5 @@ namespace EasyTrade.BrokerService.Entities.Instruments.Service;
 
 public interface IInstrumentService
 {
-    public Task<IEnumerable<InstrumentDTO>> GetInstruments(int accountId);
+    public Task<IEnumerable<InstrumentDTO>> GetInstruments(Guid? accountId);
 }

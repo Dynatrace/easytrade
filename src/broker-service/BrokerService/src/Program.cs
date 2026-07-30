@@ -4,7 +4,7 @@ using EasyTrade.BrokerService.Helpers;
 using EasyTrade.BrokerService.Helpers.Logging;
 using EasyTrade.BrokerService.Middleware.CreditCardValidation;
 using EasyTrade.BrokerService.ProblemPatterns.HighCpuUsage;
-using Microsoft.EntityFrameworkCore;
+using EasyTrade.BrokerService.Connectors;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,10 +27,7 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlDocumentation));
 });
 
-// Connect to database
-builder.Services.AddDbContext<BrokerDbContext>(options =>
-    options.UseSqlServer(builder.Configuration[Constants.MsSqlConnectionString])
-);
+builder.Services.AddSingleton<IDbAdapterConnector, DbAdapterConnector>();
 
 // Clear default logging providers and and new ones
 builder.Logging.ClearProviders();

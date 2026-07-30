@@ -5,10 +5,10 @@ using EasyTrade.BrokerService.ExceptionHandling.Exceptions;
 namespace EasyTrade.BrokerService.Entities.Balances;
 
 [Table("Balance")]
-public class Balance(int accountId, decimal value)
+public class Balance(Guid accountId, decimal value)
 {
     [Key]
-    public int AccountId { get; set; } = accountId;
+    public Guid AccountId { get; set; } = accountId;
     public decimal Value { get; set; } = value;
 
     public void Deposit(decimal amount)

@@ -68,7 +68,7 @@ services:
     ports:
       - 8084:8080
     depends_on:
-      - db
+      - db-adapter
       - accountservice
       - pricing-service
       - feature-flag-service
@@ -77,7 +77,7 @@ services:
       PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
       <<: *feature-flag-service-env
       PROXY_PREFIX: broker-service
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
 
   rabbitmq:
     <<: *default-service

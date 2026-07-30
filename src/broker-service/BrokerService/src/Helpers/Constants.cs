@@ -4,6 +4,7 @@
     {
         public const string PricingService = "PRICINGSERVICE_HOSTANDPORT";
         public const string AccountService = "ACCOUNTSERVICE_HOSTANDPORT";
+        public const string DbAdapterService = "DBADAPTER_HOSTANDPORT";
         public const string ProxyPrefix = "PROXY_PREFIX";
         public const string MsSqlConnectionString = "MSSQL_CONNECTIONSTRING";
         public const string FeatureFlagServiceProtocol = "FEATURE_FLAG_SERVICE_PROTOCOL";
@@ -12,8 +13,8 @@
         public const string HighCpuUsageRequestDelayMs = "HIGH_CPU_USAGE_REQUEST_DELAY_MS";
         public const string HighCpuUsageConcurrency = "HIGH_CPU_USAGE_CONCURRENCY";
         public const string FeatureFlagCacheDurationS = "FEATURE_FLAG_CACHE_DURATION_S";
-        public const int OwnerId = 1;
-        public const int InvalidTradeId = -1;
+        public static readonly Guid OwnerId = Guid.Parse("a0000000-0000-4000-8000-000000000000");
+        public static readonly Guid InvalidTradeId = Guid.Empty;
         public const string DbNotResponding = "db_not_responding";
         public const string HighCpuUsage = "high_cpu_usage";
         public const string CreditCardValidation = "credit_card_validation";

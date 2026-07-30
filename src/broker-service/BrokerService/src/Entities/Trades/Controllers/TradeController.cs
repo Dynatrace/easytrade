@@ -113,7 +113,7 @@ public class TradeController : ControllerBase
     [ProducesResponseType(typeof(TradeResultDTO), StatusCodes.Status200OK)]
     [HttpGet("{accountId:int}")]
     public async Task<TradeResultDTO> GetTradesOfAccount(
-        int accountId,
+        Guid accountId,
         [FromQuery] int count = 10,
         [FromQuery] int page = 0,
         [FromQuery] bool onlyOpen = false,

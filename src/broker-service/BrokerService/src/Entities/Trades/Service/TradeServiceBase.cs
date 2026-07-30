@@ -26,9 +26,9 @@ public abstract class TradeServiceBase(
     protected readonly ITradeRepository _tradeRepository = tradeRepository;
     protected readonly ILogger _logger = logger;
 
-    protected async Task UpdateOwnedInstrument(int accountId, int instrumentId, decimal amount)
+    protected async Task UpdateOwnedInstrument(Guid accountId, Guid instrumentId, decimal amount)
     {
-        var ownedInstrument = await _instrumentRepository.GetOwnedInstrument(
+        var ownedInstrument = await _instrumentRepository.GetOwnedInstrumentAsync(
             accountId,
             instrumentId
         );
@@ -40,17 +40,17 @@ public abstract class TradeServiceBase(
                 instrumentId,
                 amount
             );
-            _instrumentRepository.AddOwnedInstrument(
+            await _instrumentRepository.AddOwnedInstrumentAsync(
                 new OwnedInstrument(accountId, instrumentId, amount)
             );
         }
         else
         {
-            UpdateOwnedInstrument(ownedInstrument, amount);
+            await UpdateOwnedInstrument(ownedInstrument, amount);
         }
     }
 
-    protected void UpdateOwnedInstrument(OwnedInstrument ownedInstrument, decimal amount)
+    protected async Task UpdateOwnedInstrument(OwnedInstrument ownedInstrument, decimal amount)
     {
         _logger.LogDebug(
             "Updating owned instrument with account ID [{accountId}], instrument ID [{instrumentId}], amount [{amount}]",
@@ -61,7 +61,7 @@ public abstract class TradeServiceBase(
 
         ownedInstrument.Quantity += amount;
         ownedInstrument.LastModificationDate = DateTimeOffset.Now;
-        _instrumentRepository.UpdateOwnedInstrument(ownedInstrument);
+        await _instrumentRepository.UpdateOwnedInstrumentAsync(ownedInstrument);
     }
 
     protected async Task UpdateBalance(
@@ -80,43 +80,27 @@ public abstract class TradeServiceBase(
         );
 
         var income = actionType is ActionType.Sell or ActionType.LongSell ? amount : -amount;
-        _balanceRepository.AddBalanceHistory(
+        await _balanceRepository.AddBalanceHistoryAsync(
             new BalanceHistory(balance.AccountId, balance.Value, income, actionType)
         );
         balance.Value += income;
-        _balanceRepository.AddBalanceHistory(
+        await _balanceRepository.AddBalanceHistoryAsync(
             new BalanceHistory(balance.AccountId, balance.Value, -ppt, ActionType.TransactionFee)
         );
         balance.Value -= ppt;
-        _balanceRepository.UpdateBalance(balance);
+        await _balanceRepository.UpdateBalanceAsync(balance);
         await CollectFee(ppt);
     }
 
     private async Task CollectFee(decimal fee)
     {
-        _logger.LogDebug("Collecting owner fee [{free}]", fee);
+        _logger.LogDebug("Collecting owner fee [{fee}]", fee);
 
-        var ownerBalance = (await _balanceRepository.GetBalanceOfAccount(Constants.OwnerId))!;
-        _balanceRepository.AddBalanceHistory(
+        var ownerBalance = (await _balanceRepository.GetBalanceOfAccountAsync(Constants.OwnerId))!;
+        await _balanceRepository.AddBalanceHistoryAsync(
             new BalanceHistory(Constants.OwnerId, ownerBalance.Value, fee, ActionType.CollectFee)
         );
         ownerBalance.Value += fee;
-        _balanceRepository.UpdateBalance(ownerBalance);
-    }
-
-    protected async Task SaveChangesOrRollback()
-    {
-        try
-        {
-            await _tradeRepository.SaveChanges();
-            await _tradeRepository.CommitTransaction();
-        }
-        catch (Exception e)
-        {
-            _logger.LogError("Error while saving changes: {Message}", e.Message);
-            await _tradeRepository.RollbackTransaction();
-            var exception = e.InnerException ?? e;
-            throw new DbException(exception.Message, e);
-        }
+        await _balanceRepository.UpdateBalanceAsync(ownerBalance);
     }
 }

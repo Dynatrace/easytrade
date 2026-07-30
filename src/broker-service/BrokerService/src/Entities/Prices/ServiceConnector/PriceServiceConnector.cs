@@ -16,7 +16,7 @@ public class PriceServiceConnector(
 
     private string PriceServiceUrl => $"http://{_configuration[Constants.PricingService]}/";
 
-    public async Task<IEnumerable<Price>> GetPricesByInstrumentId(int id, int count = 10)
+    public async Task<IEnumerable<Price>> GetPricesByInstrumentId(Guid id, int count = 10)
     {
         _logger.LogInformation(
             "Fetching prices with instrument ID [{id}], count [{count}]",
@@ -56,10 +56,24 @@ public class PriceServiceConnector(
         return Array.Empty<Price>();
     }
 
-    public async Task<Price?> GetLastPriceByInstrumentId(int id)
+    public async Task<Price?> GetLastPriceByInstrumentId(Guid id)
     {
-        var priceArray = await GetPricesByInstrumentId(id, 1);
-        return priceArray.FirstOrDefault();
+        _logger.LogInformation(
+            "Fetching last price with instrument ID [{id}]",
+            id
+        );
+
+        var endpoint = $"v1/prices/last?instrumentId={id}";
+        using var client = GetHttpClient();
+        using var response = await client.GetAsync(endpoint);
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            var price = await response.Content.ReadFromJsonAsync<Price>();
+            _logger.LogDebug("Fetched price: {content}", price!.ToJson());
+            return price;
+        }
+        _logger.LogError("Fetch failed with status code [{statusCode}]", response.StatusCode);
+        return null;
     }
 
     private HttpClient GetHttpClient()

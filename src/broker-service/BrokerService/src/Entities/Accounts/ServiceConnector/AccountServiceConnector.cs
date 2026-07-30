@@ -16,7 +16,7 @@ public class AccountServiceConnector(
 
     private string AccountServiceUrl => $"http://{_configuration[Constants.AccountService]}/api/";
 
-    public async Task<Account> GetAccountById(int id)
+    public async Task<Account> GetAccountById(Guid id)
     {
         _logger.LogInformation("Fetching account with ID [{id}]", id);
 

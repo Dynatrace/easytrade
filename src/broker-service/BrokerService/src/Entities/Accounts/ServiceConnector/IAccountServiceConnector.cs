@@ -2,5 +2,5 @@
 
 public interface IAccountServiceConnector
 {
-    public Task<Account> GetAccountById(int id);
+    public Task<Account> GetAccountById(Guid id);
 }
