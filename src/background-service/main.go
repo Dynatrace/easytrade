@@ -39,10 +39,7 @@ func main() {
 	group := scheduler.NewGroup()
 
 	// aggregator-service: 5 platforms x (check-offers + signup) jobs
-	aggCfg, err := aggregator.LoadConfig(values)
-	if err != nil {
-		l.Fatalw("Failed to load aggregator configuration", "err", err)
-	}
+	aggCfg := aggregator.LoadConfig(values)
 	aggregator.RegisterJobs(ctx, group, aggCfg)
 
 	// contentcreator: steady-state per-minute loop + startup backfill

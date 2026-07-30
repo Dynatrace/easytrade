@@ -27,6 +27,6 @@ RUN apk upgrade --no-cache \
 USER easytrade:easytrade
 WORKDIR /home/easytrade
 
-COPY --from=build --chown=easytrade:easytrade ["/build/background-service", "/build/aggregator/config.yaml", "./"]
+COPY --from=build --chown=easytrade:easytrade ["/build/background-service", "./"]
 
 CMD [ "./background-service" ]

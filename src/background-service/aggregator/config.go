@@ -1,45 +1,31 @@
 package aggregator
 
 import (
-	"os"
 	"time"
 
 	"dynatrace.com/easytrade/background-service/config"
-	"gopkg.in/yaml.v3"
 )
 
 type PlatformConfig struct {
-	Name                 string        `yaml:"name"`
-	Filter               string        `yaml:"filter"`
-	MaxFee               float32       `yaml:"maxFee"`
-	Delay                time.Duration `yaml:"delay"`
-	FailDelay            time.Duration `yaml:"failDelay"`
-	SignupInterval       time.Duration `yaml:"signupInterval"`
-	RequestTimeLimit     time.Duration `yaml:"requestTimeLimit"`
-	ConsecutiveFailLimit int           `yaml:"consecutiveFailLimit"`
+	Name                 string
+	Filter               string
+	MaxFee               float32
+	Delay                time.Duration
+	FailDelay            time.Duration
+	SignupInterval       time.Duration
+	RequestTimeLimit     time.Duration
+	ConsecutiveFailLimit int
 }
 
 type PackageProbability struct {
-	Starter float32 `yaml:"starter"`
-	Light   float32 `yaml:"light"`
-	Pro     float32 `yaml:"pro"`
+	Starter float32
+	Light   float32
+	Pro     float32
 }
 
 type PlatformEntry struct {
-	PlatformConfig     `yaml:",inline"`
-	PackageProbability PackageProbability `yaml:"packageProbability"`
-}
-
-type yamlConfig struct {
-	Defaults struct {
-		Delay                time.Duration `yaml:"delay"`
-		FailDelay            time.Duration `yaml:"failDelay"`
-		RequestTimeLimit     time.Duration `yaml:"requestTimeLimit"`
-		SignupInterval       time.Duration `yaml:"signupInterval"`
-		ConsecutiveFailLimit int           `yaml:"consecutiveFailLimit"`
-	} `yaml:"defaults"`
-
-	Platforms []PlatformEntry `yaml:"platforms"`
+	PlatformConfig
+	PackageProbability PackageProbability
 }
 
 type Config struct {
@@ -47,46 +33,40 @@ type Config struct {
 	Platforms           []PlatformEntry
 }
 
-const defaultConfigPath = "config.yaml"
+const (
+	defaultDelay                = 3 * time.Second
+	defaultFailDelay            = 15 * time.Minute
+	defaultRequestTimeLimit     = time.Second
+	defaultSignupInterval       = time.Hour
+	defaultConsecutiveFailLimit = 50
+)
 
-func LoadConfig(values config.Values) (*Config, error) {
-	path := os.Getenv("AGGREGATOR_CONFIG_PATH")
-	if path == "" {
-		path = defaultConfigPath
+func newPlatform(name, filter string, packageProbability PackageProbability) PlatformEntry {
+	return PlatformEntry{
+		PlatformConfig: PlatformConfig{
+			Name:                 name,
+			Filter:               filter,
+			Delay:                defaultDelay,
+			FailDelay:            defaultFailDelay,
+			RequestTimeLimit:     defaultRequestTimeLimit,
+			SignupInterval:       defaultSignupInterval,
+			ConsecutiveFailLimit: defaultConsecutiveFailLimit,
+		},
+		PackageProbability: packageProbability,
 	}
+}
 
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
+var platforms = []PlatformEntry{
+	newPlatform("dynatestsieger.at", "", PackageProbability{Starter: 0.6, Light: 0.3, Pro: 0.1}),
+	newPlatform("tradeCom.co.uk", "", PackageProbability{Starter: 0.8, Light: 0.2, Pro: 0}),
+	newPlatform("CryptoTrading.com", `["Crypto"]`, PackageProbability{Starter: 0.5, Light: 0.4, Pro: 0.1}),
+	newPlatform("CheapTrading.mi", "", PackageProbability{Starter: 1, Light: 0, Pro: 0}),
+	newPlatform("Stratton-oakmount.com", `["Shares"]`, PackageProbability{Starter: 0, Light: 0.1, Pro: 0.9}),
+}
 
-	var yc yamlConfig
-	if err := yaml.NewDecoder(file).Decode(&yc); err != nil {
-		return nil, err
-	}
-
-	for i := range yc.Platforms {
-		p := &yc.Platforms[i]
-		if p.Delay == 0 {
-			p.Delay = yc.Defaults.Delay
-		}
-		if p.FailDelay == 0 {
-			p.FailDelay = yc.Defaults.FailDelay
-		}
-		if p.RequestTimeLimit == 0 {
-			p.RequestTimeLimit = yc.Defaults.RequestTimeLimit
-		}
-		if p.SignupInterval == 0 {
-			p.SignupInterval = yc.Defaults.SignupInterval
-		}
-		if p.ConsecutiveFailLimit == 0 {
-			p.ConsecutiveFailLimit = yc.Defaults.ConsecutiveFailLimit
-		}
-	}
-
+func LoadConfig(values config.Values) *Config {
 	return &Config{
 		OfferServiceAddress: values.Get("OFFER_SERVICE_ADDRESS"),
-		Platforms:           yc.Platforms,
-	}, nil
+		Platforms:           platforms,
+	}
 }
