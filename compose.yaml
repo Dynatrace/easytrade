@@ -55,10 +55,10 @@ services:
     <<: *default-service
     image: ${REGISTRY}/pricing-service:${TAG}
     depends_on:
-      - db
+      - db-adapter
       - rabbitmq
     environment:
-      MSSQL_CONNECTIONSTRING: *go-connection-string
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
       PROXY_PREFIX: pricing-service
       <<: *rabbit-vars
 

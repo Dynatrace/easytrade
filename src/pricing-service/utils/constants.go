@@ -1,12 +1,12 @@
 package utils
 
 const (
-	RabbitmqHost = "RABBITMQ_HOST"
-	RabbitmqUser = "RABBITMQ_USER"
-	// deepcode ignore HardcodedPassword: not a password
-	RabbitmqPassword      = "RABBITMQ_PASSWORD"
-	MssqlConnectionString = "MSSQL_CONNECTIONSTRING"
-	GinMode               = "GIN_MODE"
-	ProxyPrefix           = "PROXY_PREFIX"
-	RabbitmqQueueName     = "RABBITMQ_QUEUE"
+	RabbitmqHost         = "RABBITMQ_HOST"
+	RabbitmqUser         = "RABBITMQ_USER"
+	RabbitmqPassword     = "RABBITMQ_PASSWORD"
+	DbAdapterHostAndPort = "DBADAPTER_HOSTANDPORT"
+	ConnectTimeout       = "CONNECT_TIMEOUT"
+	ConnectRetryWait     = "CONNECT_RETRY"
+	GinMode              = "GIN_MODE"
+	RabbitmqQueueName    = "RABBITMQ_QUEUE"
 )

@@ -53,12 +53,12 @@ services:
     <<: *default-service
     build: src/pricing-service
     depends_on:
-      - db
+      - db-adapter
       - rabbitmq
     ports:
       - 8083:8080
     environment:
-      MSSQL_CONNECTIONSTRING: *go-connection-string
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
       PROXY_PREFIX: pricing-service
       <<: *rabbit-vars
 

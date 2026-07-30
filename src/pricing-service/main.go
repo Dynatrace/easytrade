@@ -13,18 +13,9 @@ func init() {
 	}
 
 	utils.CheckEnv()
-	services.ConnectToDB()
+	services.ConnectToDbAdapter()
 }
 
-//	@title			Pricing service API
-//	@version		1.0
-//	@description	This service provides information about the prices of instruments being handled by easyTrade.
-//	@termsOfService	http://swagger.io/terms/
-
-//	@license.name	Apache 2.0
-//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @schemes	http
 func main() {
 	router := CreateRouter()
 	router.Run()

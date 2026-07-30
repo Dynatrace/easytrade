@@ -1,94 +1,126 @@
 package price
 
 import (
+	"context"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
+	pb "dynatrace.com/easytrade/pricing-service/proto"
 	"dynatrace.com/easytrade/pricing-service/services"
 	"dynatrace.com/easytrade/pricing-service/utils"
 	"github.com/gin-gonic/gin"
-
+	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-// @Summary		Get instrument prices
-// @Description	Get current price of each instrument
-// @Tags			Pricing-service
-// @Accept			*/*
-// @Produce		json
-// @Produce		application/xml
-// @Success		200	{object}	price.pricesResult
-// @Router			/v1/prices/latest [get]
 func GetCurrentPrices(ctx *gin.Context) {
-	log.Info("Getting current prices")
-
-	var priceList []price
-
-	services.DB.Where("Timestamp = (?)", services.DB.Table("Pricing").Select("max(Timestamp)")).Find(&priceList)
-
-	negotiateResponse(ctx, http.StatusOK, &pricesResult{
-		Results: priceList,
+	prices, ok := fetchAndMap(ctx, func() (*pb.PricesResponse, error) {
+		return services.PricingClient.GetLatestPrices(context.Background(), &emptypb.Empty{})
 	})
-	services.SendDataToRabbitQueue(prepareCSV(priceList, utils.RandomIntProvider{}))
+	if !ok {
+		return
+	}
+	respondAndPublish(ctx, &pricesResult{Results: prices}, prices)
 }
 
-// @Summary		Get instrument price
-// @Description	Get last price of instrument
-// @Tags			Pricing-service
-// @Accept			*/*
-// @Produce		json
-// @Produce		application/xml
-// @Success		200	{object}	price.price
-// @Router			/v1/prices/last [get]
 func GetLastPrice(ctx *gin.Context) {
-	log.Info("Getting last price")
-
-	var lastPrice price
-
-	services.DB.Last(&lastPrice)
-
-	negotiateResponse(ctx, http.StatusOK, &lastPrice)
-	services.SendDataToRabbitQueue(prepareCSV([]price{lastPrice}, utils.RandomIntProvider{}))
+	prices, ok := fetchAndMap(ctx, func() (*pb.PricesResponse, error) {
+		return services.PricingClient.GetLatestPrices(context.Background(), &emptypb.Empty{})
+	})
+	if !ok {
+		return
+	}
+	if len(prices) == 0 {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "no prices found"})
+		return
+	}
+	respondAndPublish(ctx, &prices[0], []price{prices[0]})
 }
 
-// @Summary		Get prices of a particular instrument
-// @Description	Get specific number of records of particular instrument
-// @Tags			Pricing-service
-// @Accept			*/*
-// @Produce		json
-// @Produce		application/xml
-// @Success		200	{object}	price.pricesResult
-// @Router			/v1/prices/instrument/{instrumentId} [get]
-// @Param			instrumentId	path	int	true	"Instrument id"
-// @Param			records			query	int	false	"Number of records"
 func GetPricingDataForInstrument(ctx *gin.Context) {
-	instrumentId := ctx.Param("instrumentId")
+	instrumentId, ok := parseUUIDParam(ctx, "instrumentId")
+	if !ok {
+		return
+	}
 	records, _ := strconv.Atoi(ctx.DefaultQuery("records", "100"))
+	recordsI32 := int32(records)
 
-	log.WithFields(log.Fields{
-		"instrumentId": instrumentId,
-		"records":      records,
-	}).Info("Getting pricing data for instrument")
-
-	var priceList []price
-
-	services.DB.Table("Pricing").Where("instrumentId = ?", instrumentId).Order("Timestamp desc").Limit(records).Scan(&priceList)
-
-	negotiateResponse(ctx, http.StatusOK, &pricesResult{
-		Results: priceList,
+	prices, ok := fetchAndMap(ctx, func() (*pb.PricesResponse, error) {
+		return services.PricingClient.GetPricesForInstrument(context.Background(), &pb.GetPricesForInstrumentRequest{
+			InstrumentId: instrumentId.String(),
+			Limit:        &recordsI32,
+		})
 	})
-	services.SendDataToRabbitQueue(prepareCSV(priceList, utils.RandomIntProvider{}))
+	if !ok {
+		return
+	}
+	respondAndPublish(ctx, &pricesResult{Results: prices}, prices)
+}
+
+func fetchAndMap(ctx *gin.Context, call func() (*pb.PricesResponse, error)) ([]price, bool) {
+	resp, err := call()
+	if internalError(ctx, err) {
+		return nil, false
+	}
+	return listFromProto(resp.GetPrices()), true
+}
+
+func parseUUIDParam(ctx *gin.Context, param string) (uuid.UUID, bool) {
+	id, err := uuid.Parse(ctx.Param(param))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid " + param})
+		return uuid.Nil, false
+	}
+	return id, true
+}
+
+func respondAndPublish(ctx *gin.Context, response any, prices []price) {
+	negotiateResponse(ctx, http.StatusOK, response)
+	services.SendDataToRabbitQueue(prepareCSV(prices, utils.RandomIntProvider{}))
+}
+
+func internalError(ctx *gin.Context, err error) bool {
+	if err == nil {
+		return false
+	}
+	log.Error(err)
+	ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	return true
+}
+
+func fromProto(msg *pb.PriceMessage) price {
+	var ts time.Time
+	if msg.GetTimestamp() != nil {
+		ts = msg.GetTimestamp().AsTime()
+	}
+	return price{
+		Id:           uuid.MustParse(msg.GetId()),
+		InstrumentId: uuid.MustParse(msg.GetInstrumentId()),
+		Timestamp:    ts,
+		Open:         msg.GetOpen(),
+		High:         msg.GetHigh(),
+		Low:          msg.GetLow(),
+		Close:        msg.GetClose(),
+	}
+}
+
+func listFromProto(msgs []*pb.PriceMessage) []price {
+	result := make([]price, 0, len(msgs))
+	for _, m := range msgs {
+		result = append(result, fromProto(m))
+	}
+	return result
 }
 
 func prepareCSV(priceList []price, provider utils.IntProvider) string {
 	var stringBuilder strings.Builder
 	stringBuilder.WriteString("date, open, high, low, close, volume\n")
-
 	for _, item := range priceList {
 		stringBuilder.WriteString(item.toCSV(provider.Intn(100) + 100))
 	}
-
 	return stringBuilder.String()
 }
 

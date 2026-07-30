@@ -12,8 +12,6 @@ RUN go mod tidy \
 COPY [".", "."]
 
 RUN go test ./... \
-    && go install github.com/swaggo/swag/cmd/swag@v1.16.3 \
-    && swag init \
     && go build -ldflags '-linkmode=external' -o pricing-service
 
 FROM alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
