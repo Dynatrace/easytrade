@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"time"
 
+	"dynatrace.com/easytrade/background-service/httpclient"
 	"dynatrace.com/easytrade/background-service/logger"
 	"dynatrace.com/easytrade/background-service/scheduler"
 )
@@ -13,15 +14,18 @@ import (
 const xmlProbability = 0.5
 
 func RegisterJobs(ctx context.Context, group *scheduler.Group, cfg *Config) {
-	offerProvider := &OfferServiceConnector{baseURL: cfg.OfferServiceAddress}
-	signupHandler := &OfferServiceSignupHandler{baseURL: cfg.OfferServiceAddress}
+
+	handler := &OfferServiceClient{
+		baseURL: cfg.OfferServiceAddress,
+		http:    httpclient.New(),
+	}
 
 	for i := range cfg.Platforms {
 		entry := cfg.Platforms[i]
 		p := &Platform{
 			PlatformConfig: entry.PlatformConfig,
-			OfferProvider:  offerProvider,
-			SignupHandler:  signupHandler,
+			OfferProvider:  handler,
+			SignupHandler:  handler,
 		}
 		packageProb := entry.PackageProbability
 
@@ -32,7 +36,7 @@ func RegisterJobs(ctx context.Context, group *scheduler.Group, cfg *Config) {
 			Name:     "aggregator-check-offers-" + p.Name,
 			Interval: p.Delay,
 			Run: func(ctx context.Context) error {
-				checkOffersTick(p)
+				checkOffersTick(ctx, p)
 				return nil
 			},
 		})
@@ -41,19 +45,19 @@ func RegisterJobs(ctx context.Context, group *scheduler.Group, cfg *Config) {
 			Name:     "aggregator-signup-" + p.Name,
 			Interval: p.SignupInterval,
 			Run: func(ctx context.Context) error {
-				signupTick(p, &packageProb)
+				signupTick(ctx, p, &packageProb)
 				return nil
 			},
 		})
 	}
 }
 
-func checkOffersTick(p *Platform) {
+func checkOffersTick(ctx context.Context, p *Platform) {
 	l := logger.GetSugar().Named(p.Name)
 	l.Info("Checking the offers...")
 
-	useXML := rand.Float32() > xmlProbability
-	offer, err := p.CheckOffers(useXML)
+	useXML := rand.Float32() <= xmlProbability
+	offer, err := p.CheckOffers(ctx, useXML)
 	if err != nil {
 		l.Error("Checking the offers failed")
 	} else {
@@ -66,13 +70,13 @@ func checkOffersTick(p *Platform) {
 	}
 }
 
-func signupTick(p *Platform, packageProb *PackageProbability) {
+func signupTick(ctx context.Context, p *Platform, packageProb *PackageProbability) {
 	l := logger.GetSugar().Named(p.Name)
 	l.Info("Signing up a user...")
 
 	sr := createFakeSignupRequest(p.Name, packageProb)
 
-	if err := p.Signup(sr); err != nil {
+	if err := p.Signup(ctx, sr); err != nil {
 		l.Error("Signing up a user failed")
 	} else {
 		l.Info("User signed up")

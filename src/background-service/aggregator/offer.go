@@ -1,19 +1,22 @@
 package aggregator
 
 import (
+	"context"
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"io"
 	"net/http"
 	"time"
 
+	"dynatrace.com/easytrade/background-service/httpclient"
 	"dynatrace.com/easytrade/background-service/logger"
 )
 
 const (
-	jsonMimeType = "application/json"
-	xmlMimeType  = "application/xml"
+	jsonMimeType   = "application/json"
+	xmlMimeType    = "application/xml"
+	signupEndpoint = "%s/api/signup"
+	offersEndpoint = "%s/api/offers/%s"
 )
 
 type Offer struct {
@@ -48,32 +51,36 @@ type OfferResult struct {
 }
 
 type OfferProvider interface {
-	GetOffersJSON(platformName, productFilter string, maxYearlyFeeFilter float32) (*OfferResult, error)
-	GetOffersXML(platformName, productFilter string, maxYearlyFeeFilter float32) (*OfferResult, error)
+	GetOffersJSON(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32) (*OfferResult, error)
+	GetOffersXML(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32) (*OfferResult, error)
 }
 
-type OfferServiceConnector struct {
+// OfferServiceClient talks to the offer-service; it implements both
+// OfferProvider and SignupHandler (see signup.go).
+type OfferServiceClient struct {
 	baseURL string
+	http    *httpclient.Client
 }
 
-func (c *OfferServiceConnector) GetOffersJSON(platformName, productFilter string, maxYearlyFeeFilter float32) (*OfferResult, error) {
-	return c.getOffers(platformName, productFilter, maxYearlyFeeFilter, jsonMimeType)
+func (c *OfferServiceClient) GetOffersJSON(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32) (*OfferResult, error) {
+	return c.getOffers(ctx, platformName, productFilter, maxYearlyFeeFilter, jsonMimeType)
 }
 
-func (c *OfferServiceConnector) GetOffersXML(platformName, productFilter string, maxYearlyFeeFilter float32) (*OfferResult, error) {
-	return c.getOffers(platformName, productFilter, maxYearlyFeeFilter, xmlMimeType)
+func (c *OfferServiceClient) GetOffersXML(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32) (*OfferResult, error) {
+	return c.getOffers(ctx, platformName, productFilter, maxYearlyFeeFilter, xmlMimeType)
 }
 
-func (c *OfferServiceConnector) getOffers(platformName, productFilter string, maxYearlyFeeFilter float32, mimeType string) (*OfferResult, error) {
+func (c *OfferServiceClient) getOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32, mimeType string) (*OfferResult, error) {
 	l := logger.GetSugar().Named(platformName)
 
-	url := fmt.Sprintf("%s/api/offers/%s", c.baseURL, platformName)
-	req, err := http.NewRequest(http.MethodGet, url, nil)
+	url := fmt.Sprintf(offersEndpoint, c.baseURL, platformName)
+	headers := map[string]string{"Accept": mimeType}
+
+	req, err := c.http.BuildRequest(ctx, http.MethodGet, url, headers, nil)
 	if err != nil {
 		l.Error(err)
 		return nil, err
 	}
-	req.Header.Set("Accept", mimeType)
 	q := req.URL.Query()
 	q.Add("productFilter", productFilter)
 	q.Add("maxYearlyFeeFilter", fmt.Sprint(maxYearlyFeeFilter))
@@ -82,27 +89,19 @@ func (c *OfferServiceConnector) getOffers(platformName, productFilter string, ma
 	l.Infow("Sending offer request", "productFilter", productFilter, "maxYearlyFeeFilter", maxYearlyFeeFilter)
 
 	start := time.Now()
-	resp, err := http.DefaultClient.Do(req)
+	bodyText, resp, err := c.http.Send(req)
 	duration := time.Since(start)
 	if err != nil {
 		l.Error(err)
 		return nil, err
 	}
-	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		err := fmt.Errorf("unexpected status code %d, expected 200", resp.StatusCode)
+	if err := httpclient.CheckStatus(resp, http.StatusOK); err != nil {
 		l.Error(err)
 		return nil, err
 	}
 
 	l.Infow("Received offer response", "duration", duration)
-
-	bodyText, err := io.ReadAll(resp.Body)
-	if err != nil {
-		l.Error(err)
-		return nil, err
-	}
 
 	offer, err := parseOfferResponse(bodyText, mimeType)
 	if err != nil {

@@ -1,11 +1,13 @@
 package aggregator
 
 import (
-	"bytes"
-	"encoding/json"
+	"context"
 	"fmt"
 	"net/http"
 
+	"github.com/google/uuid"
+
+	"dynatrace.com/easytrade/background-service/httpclient"
 	"dynatrace.com/easytrade/background-service/logger"
 )
 
@@ -30,52 +32,38 @@ func (p Package) String() string {
 	}
 }
 
+// placeholders
+var packageIDs = map[Package]uuid.UUID{
+	StarterPackage: uuid.MustParse("11111111-1111-1111-1111-111111111111"),
+	LightPackage:   uuid.MustParse("22222222-2222-2222-2222-222222222222"),
+	ProPackage:     uuid.MustParse("33333333-3333-3333-3333-333333333333"),
+}
+
 type SignupRequest struct {
-	PackageId      Package
-	FirstName      string
-	LastName       string
-	Username       string
-	Email          string
-	Address        string
-	HashedPassword string
-	Origin         string
+	PackageId uuid.UUID `json:"packageId"`
+	FirstName string    `json:"firstName"`
+	LastName  string    `json:"lastName"`
+	Username  string    `json:"username"`
+	Email     string    `json:"email"`
+	Address   string    `json:"address"`
+	Password  string    `json:"password"`
+	Origin    string    `json:"origin"`
 }
 
 type SignupHandler interface {
-	Signup(platformName string, request *SignupRequest) error
+	Signup(ctx context.Context, platformName string, request *SignupRequest) error
 }
 
-type OfferServiceSignupHandler struct {
-	baseURL string
-}
-
-func (h *OfferServiceSignupHandler) Signup(platformName string, request *SignupRequest) error {
+func (h *OfferServiceClient) Signup(ctx context.Context, platformName string, request *SignupRequest) error {
 	l := logger.GetSugar().Named(platformName)
 
-	url := fmt.Sprintf("%s/api/signup", h.baseURL)
-	body, err := json.Marshal(request)
-	if err != nil {
-		l.Error(err)
-		return err
+	headers := map[string]string{
+		"Content-Type": jsonMimeType,
 	}
 
-	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(body))
+	url := fmt.Sprintf(signupEndpoint, h.baseURL)
+	_, err := httpclient.Do(ctx, h.http, http.MethodPost, url, headers, request, http.StatusCreated)
 	if err != nil {
-		l.Error(err)
-		return err
-	}
-	req.Header.Set("Content-Type", jsonMimeType)
-
-	l.Info("Signing up a user")
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		l.Error(err)
-		return err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusCreated {
-		err := fmt.Errorf("unexpected status code %d, expected 201", resp.StatusCode)
 		l.Error(err)
 		return err
 	}

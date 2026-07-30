@@ -1,6 +1,7 @@
 package aggregator
 
 import (
+	"context"
 	"errors"
 
 	"dynatrace.com/easytrade/background-service/logger"
@@ -15,7 +16,7 @@ type Platform struct {
 	consecutiveFailCounter int
 }
 
-func (p *Platform) CheckOffers(useXML bool) (*Offer, error) {
+func (p *Platform) CheckOffers(ctx context.Context, useXML bool) (*Offer, error) {
 	l := logger.GetSugar().Named(p.Name)
 
 	var (
@@ -25,9 +26,9 @@ func (p *Platform) CheckOffers(useXML bool) (*Offer, error) {
 
 	l.Infow("Fetching the offers", "useXml", useXML)
 	if useXML {
-		result, err = p.OfferProvider.GetOffersXML(p.Name, p.Filter, p.MaxFee)
+		result, err = p.OfferProvider.GetOffersXML(ctx, p.Name, p.Filter, p.MaxFee)
 	} else {
-		result, err = p.OfferProvider.GetOffersJSON(p.Name, p.Filter, p.MaxFee)
+		result, err = p.OfferProvider.GetOffersJSON(ctx, p.Name, p.Filter, p.MaxFee)
 	}
 
 	if err != nil {
@@ -57,11 +58,10 @@ func (p *Platform) CheckOffers(useXML bool) (*Offer, error) {
 	return result.Offer, nil
 }
 
-// Signup submits a signup request for this platform.
-func (p *Platform) Signup(req *SignupRequest) error {
+func (p *Platform) Signup(ctx context.Context, req *SignupRequest) error {
 	l := logger.GetSugar().Named(p.Name)
 
-	if err := p.SignupHandler.Signup(p.Name, req); err != nil {
+	if err := p.SignupHandler.Signup(ctx, p.Name, req); err != nil {
 		l.Error("Failed to signup the user")
 		return err
 	}
