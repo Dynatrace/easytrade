@@ -104,15 +104,14 @@ func (c *OfferServiceClient) getOffers(ctx context.Context, platformName, produc
 }
 
 func parseOfferResponse(body []byte, mimeType string) (*Offer, error) {
+	var offer Offer
 	switch mimeType {
 	case jsonMimeType:
-		var offer Offer
 		if err := json.Unmarshal(body, &offer); err != nil {
 			return nil, err
 		}
 		return &offer, nil
 	case xmlMimeType:
-		var offer Offer
 		if err := xml.Unmarshal(body, &offer); err != nil {
 			return nil, err
 		}
