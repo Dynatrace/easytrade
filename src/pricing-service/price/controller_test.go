@@ -32,7 +32,7 @@ func TestPrepareCSV(t *testing.T) {
 		},
 	}
 	expected := "date, open, high, low, close, volume\n2001-01-01T01:01:01Z,10.010000,10.010000,10.010000,10.010000,200\n2002-02-02T02:02:02Z,20.020000,20.020000,20.020000,20.020000,200\n"
-	csv := prepareCSV(priceList, utils.FakeIntProvider{})
+	csv := buildPricesCSV(priceList, utils.FakeIntProvider{})
 
 	if csv != expected {
 		t.Errorf("The CSV does not generate correctly! Got: '%s' while expecting '%s'", csv, expected)

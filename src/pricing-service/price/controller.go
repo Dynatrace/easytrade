@@ -13,31 +13,36 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func GetCurrentPrices(ctx *gin.Context) {
 	prices, ok := fetchAndMap(ctx, func() (*pb.PricesResponse, error) {
 		return services.PricingClient.GetLatestPrices(context.Background(), &emptypb.Empty{})
-	})
+	}, func(r *pb.PricesResponse) []price { return pricesFromProto(r.GetPrices()) })
 	if !ok {
 		return
 	}
-	respondAndPublish(ctx, &pricesResult{Results: prices}, prices)
+	respondWithPricesAndPublish(ctx, &pricesResult{Results: prices}, prices)
 }
 
 func GetLastPrice(ctx *gin.Context) {
-	prices, ok := fetchAndMap(ctx, func() (*pb.PricesResponse, error) {
-		return services.PricingClient.GetLatestPrices(context.Background(), &emptypb.Empty{})
-	})
+	instrumentId, ok := parseUUIDQuery(ctx, "instrumentId")
 	if !ok {
 		return
 	}
-	if len(prices) == 0 {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "no prices found"})
+	lastPrice, ok := fetchAndMap(ctx, func() (*pb.PriceMessage, error) {
+		return services.PricingClient.GetLatestPriceForInstrument(context.Background(), &pb.GetLatestPriceForInstrumentRequest{
+			InstrumentId: instrumentId.String(),
+		})
+	}, priceFromProto)
+	if !ok {
 		return
 	}
-	respondAndPublish(ctx, &prices[0], []price{prices[0]})
+	negotiateResponse(ctx, http.StatusOK, &lastPrice)
+	services.SendDataToRabbitQueue(buildPricesCSV([]price{lastPrice}, utils.RandomIntProvider{}))
 }
 
 func GetPricingDataForInstrument(ctx *gin.Context) {
@@ -45,31 +50,43 @@ func GetPricingDataForInstrument(ctx *gin.Context) {
 	if !ok {
 		return
 	}
-	records, _ := strconv.Atoi(ctx.DefaultQuery("records", "100"))
-	recordsI32 := int32(records)
-
+	recordsI32 := parseRecordsLimit(ctx)
 	prices, ok := fetchAndMap(ctx, func() (*pb.PricesResponse, error) {
 		return services.PricingClient.GetPricesForInstrument(context.Background(), &pb.GetPricesForInstrumentRequest{
 			InstrumentId: instrumentId.String(),
 			Limit:        &recordsI32,
 		})
-	})
+	}, func(r *pb.PricesResponse) []price { return pricesFromProto(r.GetPrices()) })
 	if !ok {
 		return
 	}
-	respondAndPublish(ctx, &pricesResult{Results: prices}, prices)
+	respondWithPricesAndPublish(ctx, &pricesResult{Results: prices}, prices)
 }
 
-func fetchAndMap(ctx *gin.Context, call func() (*pb.PricesResponse, error)) ([]price, bool) {
+func parseRecordsLimit(ctx *gin.Context) int32 {
+	n, _ := strconv.Atoi(ctx.DefaultQuery("records", "100"))
+	return int32(n)
+}
+
+func fetchAndMap[R, T any](ctx *gin.Context, call func() (R, error), mapper func(R) T) (T, bool) {
 	resp, err := call()
-	if internalError(ctx, err) {
-		return nil, false
+	if handleInternalError(ctx, err) {
+		var zero T
+		return zero, false
 	}
-	return listFromProto(resp.GetPrices()), true
+	return mapper(resp), true
 }
 
 func parseUUIDParam(ctx *gin.Context, param string) (uuid.UUID, bool) {
-	id, err := uuid.Parse(ctx.Param(param))
+	return parseUUID(ctx, param, ctx.Param)
+}
+
+func parseUUIDQuery(ctx *gin.Context, param string) (uuid.UUID, bool) {
+	return parseUUID(ctx, param, ctx.Query)
+}
+
+func parseUUID(ctx *gin.Context, param string, extract func(string) string) (uuid.UUID, bool) {
+	id, err := uuid.Parse(extract(param))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid " + param})
 		return uuid.Nil, false
@@ -77,21 +94,25 @@ func parseUUIDParam(ctx *gin.Context, param string) (uuid.UUID, bool) {
 	return id, true
 }
 
-func respondAndPublish(ctx *gin.Context, response any, prices []price) {
+func respondWithPricesAndPublish(ctx *gin.Context, response any, prices []price) {
 	negotiateResponse(ctx, http.StatusOK, response)
-	services.SendDataToRabbitQueue(prepareCSV(prices, utils.RandomIntProvider{}))
+	services.SendDataToRabbitQueue(buildPricesCSV(prices, utils.RandomIntProvider{}))
 }
 
-func internalError(ctx *gin.Context, err error) bool {
+func handleInternalError(ctx *gin.Context, err error) bool {
 	if err == nil {
 		return false
 	}
 	log.Error(err)
-	ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if st, ok := status.FromError(err); ok && st.Code() == codes.NotFound {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	} else {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
 	return true
 }
 
-func fromProto(msg *pb.PriceMessage) price {
+func priceFromProto(msg *pb.PriceMessage) price {
 	var ts time.Time
 	if msg.GetTimestamp() != nil {
 		ts = msg.GetTimestamp().AsTime()
@@ -107,15 +128,15 @@ func fromProto(msg *pb.PriceMessage) price {
 	}
 }
 
-func listFromProto(msgs []*pb.PriceMessage) []price {
+func pricesFromProto(msgs []*pb.PriceMessage) []price {
 	result := make([]price, 0, len(msgs))
 	for _, m := range msgs {
-		result = append(result, fromProto(m))
+		result = append(result, priceFromProto(m))
 	}
 	return result
 }
 
-func prepareCSV(priceList []price, provider utils.IntProvider) string {
+func buildPricesCSV(priceList []price, provider utils.IntProvider) string {
 	var stringBuilder strings.Builder
 	stringBuilder.WriteString("date, open, high, low, close, volume\n")
 	for _, item := range priceList {
