@@ -40,11 +40,6 @@ type offerProduct struct {
 	Currency string  `xml:"currency" json:"currency"`
 }
 
-type offerXML struct {
-	Offer
-	XMLName xml.Name `xml:"offer"`
-}
-
 type OfferResult struct {
 	Offer           *Offer
 	RequestDuration time.Duration
@@ -55,8 +50,6 @@ type OfferProvider interface {
 	GetOffersXML(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32) (*OfferResult, error)
 }
 
-// OfferServiceClient talks to the offer-service; it implements both
-// OfferProvider and SignupHandler (see signup.go).
 type OfferServiceClient struct {
 	baseURL string
 	http    *httpclient.Client
@@ -119,11 +112,11 @@ func parseOfferResponse(body []byte, mimeType string) (*Offer, error) {
 		}
 		return &offer, nil
 	case xmlMimeType:
-		var wrapper offerXML
-		if err := xml.Unmarshal(body, &wrapper); err != nil {
+		var offer Offer
+		if err := xml.Unmarshal(body, &offer); err != nil {
 			return nil, err
 		}
-		return &wrapper.Offer, nil
+		return &offer, nil
 	default:
 		return nil, fmt.Errorf("unsupported mime type %q", mimeType)
 	}
