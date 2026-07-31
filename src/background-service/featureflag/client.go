@@ -8,10 +8,7 @@ import (
 	"dynatrace.com/easytrade/background-service/httpclient"
 )
 
-const (
-	endpointFlags    = "%s/v1/flags"
-	endpointFlagByID = "%s/v1/flags/%s"
-)
+const endpointFlagByID = "%s/v1/flags/%s"
 
 type Flag struct {
 	ID           string `json:"id"`
@@ -20,10 +17,6 @@ type Flag struct {
 	Description  string `json:"description"`
 	IsModifiable bool   `json:"isModifiable"`
 	Tag          string `json:"tag"`
-}
-
-type flagsResult struct {
-	Results []Flag `json:"results"`
 }
 
 type Client struct {
@@ -39,16 +32,6 @@ func NewFromEnv(values config.Values) *Client {
 func (c *Client) GetFlag(ctx context.Context, id string) (*Flag, error) {
 	url := fmt.Sprintf(endpointFlagByID, c.base, id)
 	return httpclient.GetJSON[Flag](ctx, c.http, url, nil, 200)
-}
-
-func (c *Client) GetFlags(ctx context.Context) ([]Flag, error) {
-	url := fmt.Sprintf(endpointFlags, c.base)
-	result, err := httpclient.GetJSON[flagsResult](ctx, c.http, url, nil, 200)
-	if err != nil {
-		return nil, err
-	}
-
-	return result.Results, nil
 }
 
 func (c *Client) GetBool(ctx context.Context, id string, defaultVal bool) bool {
