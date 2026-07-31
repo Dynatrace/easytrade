@@ -4,7 +4,7 @@
 |---|---|---|
 | **AccountService** | 1. CreateAccount 2.GetAccountByUsername 3. GetAccountById 4. GetAccounts 5. DeleteAccountsOlderThan | Account, Login, Manager, Content-Creator |
 | **BalanceService** | 1. CreateBalance 2. GetBalanceByAccountId 3. UpdateBalance 4. AddBalanceHistory 5. DeleteBalanceHistoryOlderThan | Broker, Login, Content-Creator |
-| **ProductService** | 1. GetProducts | Broker, Manager |
+| **ProductService** | 1. GetProducts 2. GetProductById | Broker, Manager |
 | **PackageService** | 1. GetPackages | Manager |
 | **InstrumentService** | 1. GetInstrumentById 2. GetAllInstruments 3. GetOwnedInstrument 4. GetOwnedInstruments [Get all owned instruments for an account] 5. AddOwnedInstrument 6. UpdateOwnedInstrument | Broker |
 | **TradeService** | 1. CreateTrade 2. UpdateTrade 3. GetOpenTrades 4. GetExpiredTrades [Get expired open trades] 5. GetAccountTrades [Get all trades for a specific account with optional filters] 6. DeleteTradesOlderThan | Broker, Content-Creator |
