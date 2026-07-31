@@ -3,11 +3,9 @@ package operator
 import (
 	"context"
 	"strings"
-	"sync"
 	"time"
 
 	"dynatrace.com/easytrade/background-service/featureflag"
-	"dynatrace.com/easytrade/background-service/scheduler"
 	"go.uber.org/zap"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
@@ -71,21 +69,24 @@ func New(
 func (o *Operator) Run(ctx context.Context) {
 	o.logger.Infow("Starting the operator...", "interval", o.interval, "namespace", o.namespace)
 
-	runner := scheduler.NewAdaptiveRunner(scheduler.Job{
-		Name:     "operator-reconcile",
-		Interval: o.interval,
-		Run: func(ctx context.Context) error {
+	ticker := time.NewTicker(o.interval)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
 			err := o.updateState(ctx)
 			if err == nil {
 				o.logger.Info("Successfully updated state")
+				continue
 			}
-			return err
-		},
-	}, o.backoff)
-
-	var wg sync.WaitGroup
-	runner.Start(ctx, &wg)
-	wg.Wait()
+			prev := o.interval
+			if next := o.backoff(err, prev); next != prev {
+				ticker.Reset(next)
+			}
+		case <-ctx.Done():
+			return
+		}
+	}
 }
 
 func (o *Operator) backoff(err error, current time.Duration) time.Duration {

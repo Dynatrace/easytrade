@@ -15,7 +15,6 @@ import (
 	"dynatrace.com/easytrade/background-service/featureflag"
 	"dynatrace.com/easytrade/background-service/logger"
 	"dynatrace.com/easytrade/background-service/operator"
-	"dynatrace.com/easytrade/background-service/scheduler"
 	"dynatrace.com/easytrade/background-service/server"
 	"dynatrace.com/easytrade/background-service/thirdparty"
 )
@@ -36,11 +35,10 @@ func main() {
 	ctx := context.Background()
 
 	flagClient := featureflag.NewFromEnv(values)
-	group := scheduler.NewGroup()
 
 	// aggregator-service: 5 platforms x (check-offers + signup) jobs
 	aggCfg := aggregator.LoadConfig(values)
-	aggregator.RegisterJobs(ctx, group, aggCfg)
+	aggregator.RegisterJobs(ctx, aggCfg)
 
 	// contentcreator: steady-state per-minute loop + startup backfill
 	conn, err := grpc.NewClient(

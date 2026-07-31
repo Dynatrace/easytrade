@@ -8,12 +8,11 @@ import (
 
 	"dynatrace.com/easytrade/background-service/httpclient"
 	"dynatrace.com/easytrade/background-service/logger"
-	"dynatrace.com/easytrade/background-service/scheduler"
 )
 
 const xmlProbability = 0.5
 
-func RegisterJobs(ctx context.Context, group *scheduler.Group, cfg *Config) {
+func RegisterJobs(ctx context.Context, cfg *Config) {
 
 	handler := &OfferServiceClient{
 		baseURL: cfg.OfferServiceAddress,
@@ -32,23 +31,27 @@ func RegisterJobs(ctx context.Context, group *scheduler.Group, cfg *Config) {
 		logger.GetSugar().Infow("Starting aggregator jobs for platform",
 			"platform", p.Name, "checkOffersInterval", p.Delay, "signupInterval", p.SignupInterval)
 
-		group.Add(ctx, scheduler.Job{
-			Name:     "aggregator-check-offers-" + p.Name,
-			Interval: p.Delay,
-			Run: func(ctx context.Context) error {
-				checkOffersTick(ctx, p)
-				return nil
-			},
+		go runJob(ctx, p.Delay, func(ctx context.Context) {
+			checkOffersTick(ctx, p)
 		})
 
-		group.Add(ctx, scheduler.Job{
-			Name:     "aggregator-signup-" + p.Name,
-			Interval: p.SignupInterval,
-			Run: func(ctx context.Context) error {
-				signupTick(ctx, p, &packageProb)
-				return nil
-			},
+		go runJob(ctx, p.SignupInterval, func(ctx context.Context) {
+			signupTick(ctx, p, &packageProb)
 		})
+	}
+}
+
+// runJob ticks at interval, invoking tick each time, until ctx is cancelled.
+func runJob(ctx context.Context, interval time.Duration, tick func(ctx context.Context)) {
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			tick(ctx)
+		case <-ctx.Done():
+			return
+		}
 	}
 }
 
