@@ -39,7 +39,7 @@ func (h *OfferServiceClient) Signup(ctx context.Context, platformName string, re
 	l := logger.GetSugar().Named(platformName)
 
 	headers := map[string]string{
-		"Content-Type": jsonMimeType,
+		"Content-Type": jsonOfferFormat.mimeType(),
 	}
 
 	url := fmt.Sprintf(signupEndpoint, h.baseURL)

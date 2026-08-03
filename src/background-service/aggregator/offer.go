@@ -13,11 +13,46 @@ import (
 )
 
 const (
-	jsonMimeType   = "application/json"
-	xmlMimeType    = "application/xml"
 	signupEndpoint = "%s/api/signup"
 	offersEndpoint = "%s/api/offers/%s"
 )
+
+type offerFormat int
+
+const (
+	jsonOfferFormat offerFormat = iota
+	xmlOfferFormat
+)
+
+func (f offerFormat) mimeType() string {
+	switch f {
+	case jsonOfferFormat:
+		return "application/json"
+	case xmlOfferFormat:
+		return "application/xml"
+	default:
+		return ""
+	}
+}
+
+func (f offerFormat) parse(body []byte) (*Offer, error) {
+	var offer Offer
+
+	switch f {
+	case jsonOfferFormat:
+		if err := json.Unmarshal(body, &offer); err != nil {
+			return nil, err
+		}
+	case xmlOfferFormat:
+		if err := xml.Unmarshal(body, &offer); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("unsupported offer format %d", f)
+	}
+
+	return &offer, nil
+}
 
 type Offer struct {
 	Platform string         `xml:"platform" json:"platform"`
@@ -46,8 +81,7 @@ type OfferResult struct {
 }
 
 type OfferProvider interface {
-	GetOffersJSON(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32) (*OfferResult, error)
-	GetOffersXML(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32) (*OfferResult, error)
+	GetOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32, format offerFormat) (*OfferResult, error)
 }
 
 type OfferServiceClient struct {
@@ -55,19 +89,11 @@ type OfferServiceClient struct {
 	http    *httpclient.Client
 }
 
-func (c *OfferServiceClient) GetOffersJSON(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32) (*OfferResult, error) {
-	return c.getOffers(ctx, platformName, productFilter, maxYearlyFeeFilter, jsonMimeType)
-}
-
-func (c *OfferServiceClient) GetOffersXML(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32) (*OfferResult, error) {
-	return c.getOffers(ctx, platformName, productFilter, maxYearlyFeeFilter, xmlMimeType)
-}
-
-func (c *OfferServiceClient) getOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32, mimeType string) (*OfferResult, error) {
+func (c *OfferServiceClient) GetOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32, format offerFormat) (*OfferResult, error) {
 	l := logger.GetSugar().Named(platformName)
 
 	url := fmt.Sprintf(offersEndpoint, c.baseURL, platformName)
-	headers := map[string]string{"Accept": mimeType}
+	headers := map[string]string{"Accept": format.mimeType()}
 
 	req, err := c.http.BuildRequest(ctx, http.MethodGet, url, headers, nil)
 	if err != nil {
@@ -96,27 +122,9 @@ func (c *OfferServiceClient) getOffers(ctx context.Context, platformName, produc
 
 	l.Infow("Received offer response", "duration", duration)
 
-	offer, err := parseOfferResponse(bodyText, mimeType)
+	offer, err := format.parse(bodyText)
 	if err != nil {
 		return nil, err
 	}
 	return &OfferResult{Offer: offer, RequestDuration: duration}, nil
-}
-
-func parseOfferResponse(body []byte, mimeType string) (*Offer, error) {
-	var offer Offer
-	switch mimeType {
-	case jsonMimeType:
-		if err := json.Unmarshal(body, &offer); err != nil {
-			return nil, err
-		}
-		return &offer, nil
-	case xmlMimeType:
-		if err := xml.Unmarshal(body, &offer); err != nil {
-			return nil, err
-		}
-		return &offer, nil
-	default:
-		return nil, fmt.Errorf("unsupported mime type %q", mimeType)
-	}
 }

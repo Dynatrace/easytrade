@@ -30,21 +30,12 @@ type Platform struct {
 	consecutiveFailCounter int
 }
 
-func (p *Platform) CheckOffers(ctx context.Context, useXML bool) (*Offer, error) {
+func (p *Platform) CheckOffers(ctx context.Context, format offerFormat) (*Offer, error) {
 	l := logger.GetSugar().Named(p.Name)
 
-	var (
-		result *OfferResult
-		err    error
-	)
+	l.Infow("Fetching the offers", "format", format.mimeType())
 
-	l.Infow("Fetching the offers", "useXml", useXML)
-	if useXML {
-		result, err = p.OfferProvider.GetOffersXML(ctx, p.Name, p.Filter, p.MaxFee)
-	} else {
-		result, err = p.OfferProvider.GetOffersJSON(ctx, p.Name, p.Filter, p.MaxFee)
-	}
-
+	result, err := p.OfferProvider.GetOffers(ctx, p.Name, p.Filter, p.MaxFee, format)
 	if err != nil {
 		l.Error("Failed to fetch the offers")
 		p.consecutiveFailCounter++

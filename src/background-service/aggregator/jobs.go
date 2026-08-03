@@ -62,8 +62,12 @@ func checkOffersTick(ctx context.Context, p *Platform) {
 	l := logger.GetSugar().Named(p.Name)
 	l.Info("Checking the offers...")
 
-	useXML := rand.Float32() <= xmlProbability
-	offer, err := p.CheckOffers(ctx, useXML)
+	format := jsonOfferFormat
+	if rand.Float32() <= xmlProbability {
+		format = xmlOfferFormat
+	}
+
+	offer, err := p.CheckOffers(ctx, format)
 	if err != nil {
 		l.Error("Checking the offers failed")
 	} else {
