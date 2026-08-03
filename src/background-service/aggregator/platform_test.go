@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type offerProviderStub struct {
+type offerServiceStub struct {
 	shouldFail    bool
 	responseTime  time.Duration
 	offer         *Offer
@@ -15,7 +15,7 @@ type offerProviderStub struct {
 	xmlCallCount  int
 }
 
-func (op *offerProviderStub) GetOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32, format offerFormat) (*OfferResult, error) {
+func (op *offerServiceStub) GetOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32, format offerFormat) (*OfferResult, error) {
 	if format == xmlOfferFormat {
 		op.xmlCallCount++
 	} else {
@@ -24,7 +24,11 @@ func (op *offerProviderStub) GetOffers(ctx context.Context, platformName, produc
 	return op.getOffers()
 }
 
-func (op *offerProviderStub) getOffers() (*OfferResult, error) {
+func (op *offerServiceStub) Signup(ctx context.Context, platformName string, request *SignupRequest) error {
+	return nil
+}
+
+func (op *offerServiceStub) getOffers() (*OfferResult, error) {
 	if op.shouldFail {
 		return nil, errors.New("test error")
 	}
@@ -32,8 +36,8 @@ func (op *offerProviderStub) getOffers() (*OfferResult, error) {
 }
 
 func TestCheckOffers_ApiCallCount(t *testing.T) {
-	op := &offerProviderStub{}
-	p := Platform{OfferProvider: op, ConsecutiveFailLimit: 10, RequestTimeLimit: time.Second}
+	op := &offerServiceStub{}
+	p := Platform{Service: op, FailLimit: 10, RequestTimeLimit: time.Second}
 
 	p.CheckOffers(context.Background(), jsonOfferFormat)
 	p.CheckOffers(context.Background(), xmlOfferFormat)
@@ -47,50 +51,50 @@ func TestCheckOffers_ApiCallCount(t *testing.T) {
 }
 
 func TestCheckOffers_CorrectResponseAndTime(t *testing.T) {
-	op := &offerProviderStub{shouldFail: false, responseTime: time.Second}
-	p := Platform{OfferProvider: op, ConsecutiveFailLimit: 10, RequestTimeLimit: time.Minute}
+	op := &offerServiceStub{shouldFail: false, responseTime: time.Second}
+	p := Platform{Service: op, FailLimit: 10, RequestTimeLimit: time.Minute}
 
 	p.CheckOffers(context.Background(), jsonOfferFormat)
 
-	if p.consecutiveFailCounter != 0 {
-		t.Fatalf("Expected 0 failures, got %d", p.consecutiveFailCounter)
+	if p.failCounter != 0 {
+		t.Fatalf("Expected 0 failures, got %d", p.failCounter)
 	}
 }
 
 func TestCheckOffers_CorrectResponseWithTimeLimitExceeded(t *testing.T) {
-	op := &offerProviderStub{shouldFail: false, responseTime: time.Minute}
-	p := Platform{OfferProvider: op, ConsecutiveFailLimit: 10, RequestTimeLimit: time.Second}
+	op := &offerServiceStub{shouldFail: false, responseTime: time.Minute}
+	p := Platform{Service: op, FailLimit: 10, RequestTimeLimit: time.Second}
 
 	p.CheckOffers(context.Background(), jsonOfferFormat)
 
-	if p.consecutiveFailCounter != 1 {
-		t.Fatalf("Expected 1 failure, got %d", p.consecutiveFailCounter)
+	if p.failCounter != 1 {
+		t.Fatalf("Expected 1 failure, got %d", p.failCounter)
 	}
 }
 
 func TestCheckOffers_ErrorResponse(t *testing.T) {
-	op := &offerProviderStub{shouldFail: true}
-	p := Platform{OfferProvider: op}
+	op := &offerServiceStub{shouldFail: true}
+	p := Platform{Service: op}
 
 	p.CheckOffers(context.Background(), jsonOfferFormat)
 
-	if p.consecutiveFailCounter != 1 {
-		t.Fatalf("Expected 1 failure, got %d", p.consecutiveFailCounter)
+	if p.failCounter != 1 {
+		t.Fatalf("Expected 1 failure, got %d", p.failCounter)
 	}
 }
 
-func TestCheckOffers_ConsecutiveFailCounter(t *testing.T) {
+func TestCheckOffers_FailCounter(t *testing.T) {
 	failedAttemptCount := 10
-	op := &offerProviderStub{shouldFail: false, responseTime: time.Minute}
-	p := Platform{OfferProvider: op, ConsecutiveFailLimit: 5, RequestTimeLimit: time.Second}
+	op := &offerServiceStub{shouldFail: false, responseTime: time.Minute}
+	p := Platform{Service: op, FailLimit: 5, RequestTimeLimit: time.Second}
 
 	var err error
 	for range failedAttemptCount {
 		_, err = p.CheckOffers(context.Background(), jsonOfferFormat)
 	}
 
-	if p.consecutiveFailCounter != failedAttemptCount {
-		t.Fatalf("Expected %d failures, got %d", failedAttemptCount, p.consecutiveFailCounter)
+	if p.failCounter != failedAttemptCount {
+		t.Fatalf("Expected %d failures, got %d", failedAttemptCount, p.failCounter)
 	}
 	if !errors.Is(err, ErrFailCounterLimitExceeded) {
 		t.Fatalf("Expected %s error, got %s", ErrFailCounterLimitExceeded, err)
@@ -98,14 +102,14 @@ func TestCheckOffers_ConsecutiveFailCounter(t *testing.T) {
 }
 
 func TestCheckOffers_CounterReset(t *testing.T) {
-	op := &offerProviderStub{shouldFail: true, responseTime: time.Second}
-	p := Platform{OfferProvider: op, ConsecutiveFailLimit: 5, RequestTimeLimit: time.Minute}
+	op := &offerServiceStub{shouldFail: true, responseTime: time.Second}
+	p := Platform{Service: op, FailLimit: 5, RequestTimeLimit: time.Minute}
 
 	p.CheckOffers(context.Background(), jsonOfferFormat)
-	failedCounter := p.consecutiveFailCounter
+	failedCounter := p.failCounter
 	op.shouldFail = false
 	p.CheckOffers(context.Background(), jsonOfferFormat)
-	resetCounter := p.consecutiveFailCounter
+	resetCounter := p.failCounter
 
 	if failedCounter != 1 {
 		t.Fatalf("Expected 1 failure before success, got %d", failedCounter)

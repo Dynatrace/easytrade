@@ -80,10 +80,6 @@ type OfferResult struct {
 	RequestDuration time.Duration
 }
 
-type OfferProvider interface {
-	GetOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32, format offerFormat) (*OfferResult, error)
-}
-
 type OfferServiceClient struct {
 	baseURL string
 	http    *httpclient.Client

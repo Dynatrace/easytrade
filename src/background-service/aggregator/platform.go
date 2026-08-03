@@ -11,23 +11,27 @@ import (
 var ErrFailCounterLimitExceeded = errors.New("fail counter limit exceeded")
 
 const (
-	DefaultDelay                = 3 * time.Second
-	DefaultFailDelay            = 15 * time.Minute
-	DefaultRequestTimeLimit     = time.Second
-	DefaultSignupInterval       = time.Hour
-	DefaultConsecutiveFailLimit = 50
+	DefaultDelay            = 3 * time.Second
+	DefaultFailDelay        = 15 * time.Minute
+	DefaultRequestTimeLimit = time.Second
+	DefaultSignupInterval   = time.Hour
+	DefaultFailLimit        = 50
 )
+
+type OfferService interface {
+	GetOffers(ctx context.Context, platformName string, filter string, maxFee float32, format offerFormat) (*OfferResult, error)
+	Signup(ctx context.Context, platformName string, request *SignupRequest) error
+}
 
 type Platform struct {
 	PlatformConfig
-	Delay                  time.Duration
-	FailDelay              time.Duration
-	SignupInterval         time.Duration
-	RequestTimeLimit       time.Duration
-	ConsecutiveFailLimit   int
-	OfferProvider          OfferProvider
-	SignupHandler          SignupHandler
-	consecutiveFailCounter int
+	Delay            time.Duration
+	FailDelay        time.Duration
+	SignupInterval   time.Duration
+	RequestTimeLimit time.Duration
+	FailLimit        int
+	failCounter      int
+	Service          OfferService
 }
 
 func (p *Platform) CheckOffers(ctx context.Context, format offerFormat) (*Offer, error) {
@@ -35,12 +39,12 @@ func (p *Platform) CheckOffers(ctx context.Context, format offerFormat) (*Offer,
 
 	l.Infow("Fetching the offers", "format", format.mimeType())
 
-	result, err := p.OfferProvider.GetOffers(ctx, p.Name, p.Filter, p.MaxFee, format)
+	result, err := p.Service.GetOffers(ctx, p.Name, p.Filter, p.MaxFee, format)
 	if err != nil {
 		l.Error("Failed to fetch the offers")
-		p.consecutiveFailCounter++
-		if p.consecutiveFailCounter >= p.ConsecutiveFailLimit {
-			l.Warnw(ErrFailCounterLimitExceeded.Error(), "consecutiveFailCounter", p.consecutiveFailCounter)
+		p.failCounter++
+		if p.failCounter >= p.FailLimit {
+			l.Warnw(ErrFailCounterLimitExceeded.Error(), "failCounter", p.failCounter)
 			err = errors.Join(err, ErrFailCounterLimitExceeded)
 		}
 		return nil, err
@@ -49,14 +53,14 @@ func (p *Platform) CheckOffers(ctx context.Context, format offerFormat) (*Offer,
 	l.Infow("Successfully fetched the offers", "requestDuration", result.RequestDuration)
 
 	if result.RequestDuration >= p.RequestTimeLimit {
-		p.consecutiveFailCounter++
+		p.failCounter++
 		l.Warn("Request took too long to process")
 	} else {
-		p.consecutiveFailCounter = 0
+		p.failCounter = 0
 	}
 
-	if p.consecutiveFailCounter >= p.ConsecutiveFailLimit {
-		l.Warnw(ErrFailCounterLimitExceeded.Error(), "consecutiveFailCounter", p.consecutiveFailCounter)
+	if p.failCounter >= p.FailLimit {
+		l.Warnw(ErrFailCounterLimitExceeded.Error(), "failCounter", p.failCounter)
 		return nil, ErrFailCounterLimitExceeded
 	}
 
@@ -66,7 +70,7 @@ func (p *Platform) CheckOffers(ctx context.Context, format offerFormat) (*Offer,
 func (p *Platform) Signup(ctx context.Context, req *SignupRequest) error {
 	l := logger.GetSugar().Named(p.Name)
 
-	if err := p.SignupHandler.Signup(ctx, p.Name, req); err != nil {
+	if err := p.Service.Signup(ctx, p.Name, req); err != nil {
 		l.Error("Failed to signup the user")
 		return err
 	}

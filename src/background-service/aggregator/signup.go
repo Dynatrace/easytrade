@@ -31,10 +31,6 @@ type SignupRequest struct {
 	Origin    string    `json:"origin"`
 }
 
-type SignupHandler interface {
-	Signup(ctx context.Context, platformName string, request *SignupRequest) error
-}
-
 func (h *OfferServiceClient) Signup(ctx context.Context, platformName string, request *SignupRequest) error {
 	l := logger.GetSugar().Named(platformName)
 
