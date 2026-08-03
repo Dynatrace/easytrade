@@ -38,7 +38,7 @@ func main() {
 
 	// aggregator-service: 5 platforms x (check-offers + signup) jobs
 	aggCfg := aggregator.LoadConfig(values)
-	aggregator.RegisterJobs(ctx, aggCfg)
+	aggregator.Start(ctx, aggCfg)
 
 	// contentcreator: steady-state per-minute loop + startup backfill
 	conn, err := grpc.NewClient(
@@ -53,7 +53,7 @@ func main() {
 
 	cleanupInterval := values.MustInt(contentCleanupInterval)
 	staleAfter := time.Duration(values.MustInt(contentStaleAfterHours)) * time.Hour
-	go contentcreator.NewHandler(conn).Start(ctx, cleanupInterval, staleAfter)
+	contentcreator.NewHandler(conn).Start(ctx, cleanupInterval, staleAfter)
 
 	// third-party-service: manufacture + courier schedulers
 	thirdpartyHandlers := thirdparty.Start(ctx, values, flagClient)
@@ -65,7 +65,7 @@ func main() {
 			l.Errorw("Operator failed to initialize; continuing without it", "err", err)
 		} else {
 			op := opCfg.Build()
-			go op.Run(ctx)
+			op.Start(ctx)
 			defer op.Shutdown()
 		}
 	} else {

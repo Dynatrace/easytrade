@@ -15,9 +15,11 @@ const (
 var l = logger.GetSugar().Named("contentcreator")
 
 func (h *Handler) Start(ctx context.Context, cleanupInterval int, staleAfter time.Duration) {
-	now := time.Now().UTC()
-	h.initializePricingData(ctx, now)
-	h.generatePricingData(ctx, now, cleanupInterval, staleAfter)
+	go func() {
+		now := time.Now().UTC()
+		h.initializePricingData(ctx, now)
+		h.generatePricingData(ctx, now, cleanupInterval, staleAfter)
+	}()
 }
 
 func (h *Handler) initializePricingData(ctx context.Context, now time.Time) {

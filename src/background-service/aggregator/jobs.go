@@ -11,7 +11,7 @@ import (
 
 const xmlProbability = 0.5
 
-func RegisterJobs(ctx context.Context, cfg *Config) {
+func Start(ctx context.Context, cfg *Config) {
 
 	handler := &OfferServiceClient{
 		baseURL: cfg.OfferServiceAddress,

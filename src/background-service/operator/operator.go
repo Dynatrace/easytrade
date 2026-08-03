@@ -66,27 +66,29 @@ func New(
 	}
 }
 
-func (o *Operator) Run(ctx context.Context) {
-	o.logger.Infow("Starting the operator...", "interval", o.interval, "namespace", o.namespace)
+func (o *Operator) Start(ctx context.Context) {
+	go func() {
+		o.logger.Infow("Starting the operator...", "interval", o.interval, "namespace", o.namespace)
 
-	ticker := time.NewTicker(o.interval)
-	defer ticker.Stop()
-	for {
-		select {
-		case <-ticker.C:
-			err := o.updateState(ctx)
-			if err == nil {
-				o.logger.Info("Successfully updated state")
-				continue
+		ticker := time.NewTicker(o.interval)
+		defer ticker.Stop()
+		for {
+			select {
+			case <-ticker.C:
+				err := o.updateState(ctx)
+				if err == nil {
+					o.logger.Info("Successfully updated state")
+					continue
+				}
+				prev := o.interval
+				if next := o.backoff(err, prev); next != prev {
+					ticker.Reset(next)
+				}
+			case <-ctx.Done():
+				return
 			}
-			prev := o.interval
-			if next := o.backoff(err, prev); next != prev {
-				ticker.Reset(next)
-			}
-		case <-ctx.Done():
-			return
 		}
-	}
+	}()
 }
 
 func (o *Operator) backoff(err error, current time.Duration) time.Duration {
