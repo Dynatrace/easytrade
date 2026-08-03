@@ -3,14 +3,28 @@ package aggregator
 import (
 	"context"
 	"errors"
+	"time"
 
 	"dynatrace.com/easytrade/background-service/logger"
 )
 
 var ErrFailCounterLimitExceeded = errors.New("fail counter limit exceeded")
 
+const (
+	DefaultDelay                = 3 * time.Second
+	DefaultFailDelay            = 15 * time.Minute
+	DefaultRequestTimeLimit     = time.Second
+	DefaultSignupInterval       = time.Hour
+	DefaultConsecutiveFailLimit = 50
+)
+
 type Platform struct {
 	PlatformConfig
+	Delay                  time.Duration
+	FailDelay              time.Duration
+	SignupInterval         time.Duration
+	RequestTimeLimit       time.Duration
+	ConsecutiveFailLimit   int
 	OfferProvider          OfferProvider
 	SignupHandler          SignupHandler
 	consecutiveFailCounter int

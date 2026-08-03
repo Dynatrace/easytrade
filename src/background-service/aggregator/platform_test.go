@@ -34,7 +34,7 @@ func (op *offerProviderStub) getOffers() (*OfferResult, error) {
 
 func TestCheckOffers_ApiCallCount(t *testing.T) {
 	op := &offerProviderStub{}
-	p := Platform{OfferProvider: op, PlatformConfig: PlatformConfig{ConsecutiveFailLimit: 10, RequestTimeLimit: time.Second}}
+	p := Platform{OfferProvider: op, ConsecutiveFailLimit: 10, RequestTimeLimit: time.Second}
 
 	p.CheckOffers(context.Background(), false)
 	p.CheckOffers(context.Background(), true)
@@ -49,7 +49,7 @@ func TestCheckOffers_ApiCallCount(t *testing.T) {
 
 func TestCheckOffers_CorrectResponseAndTime(t *testing.T) {
 	op := &offerProviderStub{shouldFail: false, responseTime: time.Second}
-	p := Platform{OfferProvider: op, PlatformConfig: PlatformConfig{ConsecutiveFailLimit: 10, RequestTimeLimit: time.Minute}}
+	p := Platform{OfferProvider: op, ConsecutiveFailLimit: 10, RequestTimeLimit: time.Minute}
 
 	p.CheckOffers(context.Background(), false)
 
@@ -60,7 +60,7 @@ func TestCheckOffers_CorrectResponseAndTime(t *testing.T) {
 
 func TestCheckOffers_CorrectResponseWithTimeLimitExceeded(t *testing.T) {
 	op := &offerProviderStub{shouldFail: false, responseTime: time.Minute}
-	p := Platform{OfferProvider: op, PlatformConfig: PlatformConfig{ConsecutiveFailLimit: 10, RequestTimeLimit: time.Second}}
+	p := Platform{OfferProvider: op, ConsecutiveFailLimit: 10, RequestTimeLimit: time.Second}
 
 	p.CheckOffers(context.Background(), false)
 
@@ -83,7 +83,7 @@ func TestCheckOffers_ErrorResponse(t *testing.T) {
 func TestCheckOffers_ConsecutiveFailCounter(t *testing.T) {
 	failedAttemptCount := 10
 	op := &offerProviderStub{shouldFail: false, responseTime: time.Minute}
-	p := Platform{OfferProvider: op, PlatformConfig: PlatformConfig{ConsecutiveFailLimit: 5, RequestTimeLimit: time.Second}}
+	p := Platform{OfferProvider: op, ConsecutiveFailLimit: 5, RequestTimeLimit: time.Second}
 
 	var err error
 	for range failedAttemptCount {
@@ -100,7 +100,7 @@ func TestCheckOffers_ConsecutiveFailCounter(t *testing.T) {
 
 func TestCheckOffers_CounterReset(t *testing.T) {
 	op := &offerProviderStub{shouldFail: true, responseTime: time.Second}
-	p := Platform{OfferProvider: op, PlatformConfig: PlatformConfig{ConsecutiveFailLimit: 5, RequestTimeLimit: time.Minute}}
+	p := Platform{OfferProvider: op, ConsecutiveFailLimit: 5, RequestTimeLimit: time.Minute}
 
 	p.CheckOffers(context.Background(), false)
 	failedCounter := p.consecutiveFailCounter

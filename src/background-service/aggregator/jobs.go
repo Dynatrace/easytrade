@@ -22,9 +22,14 @@ func RegisterJobs(ctx context.Context, cfg *Config) {
 	for i := range cfg.Platforms {
 		entry := cfg.Platforms[i]
 		p := &Platform{
-			PlatformConfig: entry.PlatformConfig,
-			OfferProvider:  handler,
-			SignupHandler:  handler,
+			PlatformConfig:       entry,
+			Delay:                DefaultDelay,
+			FailDelay:            DefaultFailDelay,
+			SignupInterval:       DefaultSignupInterval,
+			RequestTimeLimit:     DefaultRequestTimeLimit,
+			ConsecutiveFailLimit: DefaultConsecutiveFailLimit,
+			OfferProvider:        handler,
+			SignupHandler:        handler,
 		}
 		packageProb := entry.PackageProbability
 
