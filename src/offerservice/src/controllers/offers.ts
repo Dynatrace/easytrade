@@ -1,4 +1,4 @@
-import { Query, ParamsDictionary, Request } from "express-serve-static-core"
+import { ParamsDictionary, Request } from "express-serve-static-core"
 import { Response } from "express"
 import { logger } from "../logger"
 import { toXml } from "../utils"
@@ -10,9 +10,9 @@ import { Empty } from "../proto/google/protobuf/empty"
 type GetOffersRequest = Request<
     ParamsDictionary & { platform: string },
     unknown,
-    unknown,
+    never,
     { productFilter?: string; maxYearlyFeeFilter?: string }
-> & { query: Query }
+>
 
 type OfferFilters = {
     maxYearlyFee: number | undefined
@@ -41,10 +41,7 @@ export async function getOffers(
     let products: ProductMessage[]
 
     try {
-        [packages, products] = await Promise.all([
-            fetchPackages(),
-            fetchProducts(),
-        ])
+        [packages, products] = await Promise.all([fetchPackages(), fetchProducts()])
     } catch (err) {
         logger.error(`Error fetching data from db-adapter`, err)
         res.status(502).json(`Error fetching data from db-adapter [${err}]`)

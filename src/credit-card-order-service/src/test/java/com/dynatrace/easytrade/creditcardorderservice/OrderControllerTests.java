@@ -82,6 +82,26 @@ public class OrderControllerTests {
         checkStatusUpdateResult(HttpStatus.OK.value(), OrderController.STATUS_UPDATED, STATUS_REQUEST, GUID);
     }
 
+    @Test
+    public void updateStatusWithNonExistentOrderIdTest() {
+        Mockito.when(dbAdapterClient.getLastOrderStatusByOrderId(GUID)).thenReturn(Optional.empty());
+
+        checkStatusUpdateResult(HttpStatus.BAD_REQUEST.value(),
+                String.format(OrderController.NO_STATUS_FOR_ID, GUID), STATUS_REQUEST, GUID);
+    }
+
+    @Test
+    public void updateStatusInWrongSequenceTest() {
+        CreditCardOrderStatus currentStatus = new CreditCardOrderStatus(null, GUID, OffsetDateTime.now(),
+                StatusType.CARD_SHIPPED.getType(), "");
+        Mockito.when(dbAdapterClient.getLastOrderStatusByOrderId(GUID)).thenReturn(Optional.of(currentStatus));
+
+        checkStatusUpdateResult(HttpStatus.BAD_REQUEST.value(),
+                String.format(OrderController.WRONG_SEQUENCE, StatusType.SEQUENCE_ERROR.getDescription(),
+                        currentStatus.status(), STATUS_REQUEST.type()),
+                STATUS_REQUEST, GUID);
+    }
+
     private void checkOrderCreationResult(int statusCode, String message, CreditCardOrderRequest request) {
         OrderController controller = new OrderController(dbAdapterClient, openFeatureAPI);
         ResponseEntity<StandardResponse> response = controller.createCreditCardOrder(request);
