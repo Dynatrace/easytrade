@@ -31,24 +31,11 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import dev.openfeature.sdk.Client;
 import dev.openfeature.sdk.OpenFeatureAPI;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
 @RequestMapping(value="/v1/orders",
         produces={"application/json", "application/xml"})
 @CrossOrigin
-@ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Status updated", content =
-                @Content(schema = @Schema(implementation = StandardResponse.class))),
-        @ApiResponse(responseCode = "400", description = "Bad request - check message and data for some hints", content =
-                @Content(schema = @Schema(implementation = StandardResponse.class))),
-        @ApiResponse(responseCode = "500", description = "Internal server error - check message and error for details", content =
-                @Content(schema = @Schema(implementation = StandardResponse.class))),
-})
 public class OrderController {
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
     public static final String ORDER_IDS_DO_NOT_MATCH = "Credit card order found in path and request body don't match!";
@@ -67,7 +54,6 @@ public class OrderController {
     }
 
     @PostMapping(value="", consumes={"application/json", "application/xml"})
-    @Operation(summary = "Order a credit card")
     public ResponseEntity<StandardResponse> createCreditCardOrder(@RequestBody CreditCardOrderRequest request) {
         logger.info("Starting to create a credit card order for data: " + request);
         try {
@@ -86,7 +72,6 @@ public class OrderController {
     }
 
     @GetMapping("/{id}/shipping-address")
-    @Operation(summary = "Get credit card's shipping address")
     public ResponseEntity<StandardResponse> getShippingAddress(@PathVariable String id) {
         logger.info("Finding shipping address for order: " + id);
         try {
@@ -100,7 +85,6 @@ public class OrderController {
     }
 
     @GetMapping("/{accountId}/status")
-    @Operation(summary = "Get credit card order status history")
     public ResponseEntity<StandardResponse> getStatusHistory(@PathVariable Integer accountId) {
         logger.info("Getting status history for accountId: " + accountId);
         try {
@@ -115,7 +99,6 @@ public class OrderController {
     }
 
     @GetMapping("/{accountId}/status/latest")
-    @Operation(summary = "Get credit card order status")
     public ResponseEntity<StandardResponse> getLatestStatus(@PathVariable Integer accountId) {
         logger.info("Getting latest status for accountId: " + accountId);
         try {
@@ -138,7 +121,6 @@ public class OrderController {
     }
 
     @DeleteMapping("/{accountId}")
-    @Operation(summary = "Delete credit card order, status and credit card if any")
     public ResponseEntity<StandardResponse> deleteOrder(@PathVariable Integer accountId) {
         logger.info("Deleting order and/or card for accountId: " + accountId);
         try {
@@ -151,7 +133,6 @@ public class OrderController {
     }
 
     @PostMapping(value="/{id}/status", consumes={"application/json", "application/xml"})
-    @Operation(summary = "Update the credit card order status")
     public ResponseEntity<StandardResponse> updateStatus(@PathVariable String id, @RequestBody StatusRequest request) {
         return handleNewStatus(id, request);
     }

@@ -26,17 +26,6 @@ make run     # go run .
 
 ## Endpoints or logic
 
-### Swagger
-
----
-
-Swagger endpoint is available at:
-
-```bash
-# when deployed with k8s
-http://SOMEWHERE/pricing-service/swagger/index.html
-```
-
 ### Endpoints
 
 ---

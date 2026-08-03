@@ -26,17 +26,6 @@ docker run -d --name SERVICE_NAME IMAGE_NAME
 
 ## Endpoints or logic
 
-### Swagger
-
----
-
-Swagger endpoint is available at:
-
-```bash
-# when deployed with k8s
-http://SOMEWHERE/credit-card-order-service/swagger-ui/index.html
-```
-
 ### Api v1
 
 ---

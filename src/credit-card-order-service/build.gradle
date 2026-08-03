@@ -29,9 +29,6 @@ dependencies {
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
-
-
     // gRPC / protobuf
     implementation 'io.grpc:grpc-netty-shaded:1.68.1'
     implementation 'io.grpc:grpc-protobuf:1.68.1'
@@ -69,6 +66,8 @@ dependencies {
 
 	// Source: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 	implementation 'com.fasterxml.jackson.core:jackson-core:2.21.2'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.2'
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.21.2'
 }
 
 test {
