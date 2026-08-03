@@ -111,33 +111,21 @@ func (h *Handler) GetPresets(ctx *gin.Context) {
 		ctx.String(http.StatusInternalServerError, "failed to get accounts: %v", err)
 		return
 	}
-
-	shortAccounts := mapSlice(filterSlice(resp.Accounts, isPreset), shortAccountFromProto)
-	if limit > 0 && limit < len(shortAccounts) {
-		shortAccounts = shortAccounts[:limit]
+	maxResults := len(resp.Accounts)
+	if limit > 0 {
+		maxResults = min(maxResults, limit)
 	}
 
-	ctx.JSON(http.StatusOK, AccountsContainer{Results: shortAccounts})
-}
+	shortAccounts := make([]ShortAccount, 0, maxResults)
+	for _, acc := range resp.Accounts {
+		if acc.Origin != "PRESET" {
+			continue
+		}
 
-func filterSlice[T any](items []T, keep func(T) bool) []T {
-	var result []T
-	for _, it := range items {
-		if keep(it) {
-			result = append(result, it)
+		shortAccounts = append(shortAccounts, shortAccountFromProto(acc))
+		if len(shortAccounts) == maxResults {
+			break
 		}
 	}
-	return result
-}
-
-func mapSlice[T, U any](items []T, mapper func(T) U) []U {
-	result := make([]U, 0, len(items))
-	for _, it := range items {
-		result = append(result, mapper(it))
-	}
-	return result
-}
-
-func isPreset(a *proto.AccountMessage) bool {
-	return a.Origin == "PRESET"
+	ctx.JSON(http.StatusOK, AccountsContainer{Results: shortAccounts})
 }
