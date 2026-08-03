@@ -28,17 +28,6 @@ docker build -t easytrade-broker-service -f broker-service/Dockerfile .
 
 ## Endpoints or logic
 
-### Swagger
-
----
-
-Swagger endpoint is available at:
-
-```bash
-# when deployed with k8s
-http://SOMEWHERE/broker-service/swagger
-```
-
 ### Problem pattern
 
 ---
