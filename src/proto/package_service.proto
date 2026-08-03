@@ -1,10 +1,10 @@
 syntax = "proto3";
 
-package easytrade.dbadapter.package;
+package easytrade.dbadapter.packages;
 
-option csharp_namespace = "EasyTrade.DbAdapter.Package.Grpc";
+option csharp_namespace = "EasyTrade.DbAdapter.Packages.Grpc";
 option go_package = "github.com/dynatrace/easytrade/dbadapter/proto";
-option java_package = "com.dynatrace.easytrade.dbadapter.package.grpc";
+option java_package = "com.dynatrace.easytrade.dbadapter.packages.grpc";
 option java_multiple_files = true;
 
 import "google/protobuf/empty.proto";
