@@ -10,12 +10,11 @@ import (
 type offerServiceStub struct {
 	shouldFail    bool
 	responseTime  time.Duration
-	offer         *Offer
 	jsonCallCount int
 	xmlCallCount  int
 }
 
-func (op *offerServiceStub) GetOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32, format offerFormat) (*OfferResult, error) {
+func (op *offerServiceStub) GetOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32, format offerFormat) (time.Duration, error) {
 	if format == xmlOfferFormat {
 		op.xmlCallCount++
 	} else {
@@ -28,11 +27,11 @@ func (op *offerServiceStub) Signup(ctx context.Context, platformName string, req
 	return nil
 }
 
-func (op *offerServiceStub) getOffers() (*OfferResult, error) {
+func (op *offerServiceStub) getOffers() (time.Duration, error) {
 	if op.shouldFail {
-		return nil, errors.New("test error")
+		return 0, errors.New("test error")
 	}
-	return &OfferResult{Offer: op.offer, RequestDuration: op.responseTime}, nil
+	return op.responseTime, nil
 }
 
 func TestCheckOffers_ApiCallCount(t *testing.T) {
@@ -88,16 +87,15 @@ func TestCheckOffers_FailCounter(t *testing.T) {
 	op := &offerServiceStub{shouldFail: false, responseTime: time.Minute}
 	p := Platform{Service: op, FailLimit: 5, RequestTimeLimit: time.Second}
 
-	var err error
 	for range failedAttemptCount {
-		_, err = p.CheckOffers(context.Background(), jsonOfferFormat)
+		p.CheckOffers(context.Background(), jsonOfferFormat)
 	}
 
 	if p.failCounter != failedAttemptCount {
 		t.Fatalf("Expected %d failures, got %d", failedAttemptCount, p.failCounter)
 	}
-	if !errors.Is(err, ErrFailCounterLimitExceeded) {
-		t.Fatalf("Expected %s error, got %s", ErrFailCounterLimitExceeded, err)
+	if !p.failureLimitExceeded() {
+		t.Fatalf("Expected failure limit to be exceeded, failCounter=%d, FailLimit=%d", p.failCounter, p.FailLimit)
 	}
 }
 

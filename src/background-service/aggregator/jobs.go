@@ -2,7 +2,6 @@ package aggregator
 
 import (
 	"context"
-	"errors"
 	"math/rand"
 	"time"
 
@@ -43,7 +42,6 @@ func RegisterJobs(ctx context.Context, cfg *Config) {
 	}
 }
 
-// runJob ticks at interval, invoking tick each time, until ctx is cancelled.
 func runJob(ctx context.Context, interval time.Duration, tick func(ctx context.Context)) {
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
@@ -59,22 +57,19 @@ func runJob(ctx context.Context, interval time.Duration, tick func(ctx context.C
 
 func checkOffersTick(ctx context.Context, p *Platform) {
 	l := logger.GetSugar().Named(p.Name)
-	l.Info("Checking the offers...")
-
 	format := jsonOfferFormat
 	if rand.Float32() <= xmlProbability {
 		format = xmlOfferFormat
 	}
 
-	offer, err := p.CheckOffers(ctx, format)
-	if err != nil {
+	if err := p.CheckOffers(ctx, format); err != nil {
 		l.Error("Checking the offers failed")
 	} else {
-		l.Infow("Offers checked", "offer", offer)
+		l.Info("Offers checked")
 	}
 
-	if errors.Is(err, ErrFailCounterLimitExceeded) {
-		l.Warnw("Pausing the platform", "failDelay", p.FailDelay)
+	if p.failureLimitExceeded() {
+		l.Warnw("Pausing the platform", "failDelay", p.FailDelay, "failCounter", p.failCounter)
 		time.Sleep(p.FailDelay)
 	}
 }
@@ -85,9 +80,7 @@ func signupTick(ctx context.Context, p *Platform, packageProb PackageProbability
 
 	sr := createFakeSignupRequest(p.Name, packageProb)
 
-	if err := p.Signup(ctx, sr); err != nil {
+	if err := p.Service.Signup(ctx, p.Name, sr); err != nil {
 		l.Error("Signing up a user failed")
-	} else {
-		l.Info("User signed up")
 	}
 }

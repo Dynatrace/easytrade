@@ -2,8 +2,6 @@ package aggregator
 
 import (
 	"context"
-	"encoding/json"
-	"encoding/xml"
 	"fmt"
 	"net/http"
 	"time"
@@ -35,57 +33,12 @@ func (f offerFormat) mimeType() string {
 	}
 }
 
-func (f offerFormat) parse(body []byte) (*Offer, error) {
-	var offer Offer
-
-	switch f {
-	case jsonOfferFormat:
-		if err := json.Unmarshal(body, &offer); err != nil {
-			return nil, err
-		}
-	case xmlOfferFormat:
-		if err := xml.Unmarshal(body, &offer); err != nil {
-			return nil, err
-		}
-	default:
-		return nil, fmt.Errorf("unsupported offer format %d", f)
-	}
-
-	return &offer, nil
-}
-
-type Offer struct {
-	Platform string         `xml:"platform" json:"platform"`
-	QuoteFor string         `xml:"quoteFor" json:"quoteFor"`
-	Packages []offerPackage `xml:"packages" json:"packages"`
-	Products []offerProduct `xml:"products" json:"products"`
-}
-
-type offerPackage struct {
-	Id      int     `xml:"id" json:"id"`
-	Name    string  `xml:"name" json:"name"`
-	Price   float32 `xml:"price" json:"price"`
-	Support string  `xml:"support" json:"support"`
-}
-
-type offerProduct struct {
-	Id       int     `xml:"id" json:"id"`
-	Name     string  `xml:"name" json:"name"`
-	Ppt      float32 `xml:"ppt" json:"ppt"`
-	Currency string  `xml:"currency" json:"currency"`
-}
-
-type OfferResult struct {
-	Offer           *Offer
-	RequestDuration time.Duration
-}
-
 type OfferServiceClient struct {
 	baseURL string
 	http    *httpclient.Client
 }
 
-func (c *OfferServiceClient) GetOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32, format offerFormat) (*OfferResult, error) {
+func (c *OfferServiceClient) GetOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32, format offerFormat) (time.Duration, error) {
 	l := logger.GetSugar().Named(platformName)
 
 	url := fmt.Sprintf(offersEndpoint, c.baseURL, platformName)
@@ -94,7 +47,7 @@ func (c *OfferServiceClient) GetOffers(ctx context.Context, platformName, produc
 	req, err := c.http.BuildRequest(ctx, http.MethodGet, url, headers, nil)
 	if err != nil {
 		l.Error(err)
-		return nil, err
+		return 0, err
 	}
 	q := req.URL.Query()
 	q.Add("productFilter", productFilter)
@@ -104,23 +57,19 @@ func (c *OfferServiceClient) GetOffers(ctx context.Context, platformName, produc
 	l.Infow("Sending offer request", "productFilter", productFilter, "maxYearlyFeeFilter", maxYearlyFeeFilter)
 
 	start := time.Now()
-	bodyText, resp, err := c.http.Send(req)
+	_, resp, err := c.http.Send(req)
 	duration := time.Since(start)
 	if err != nil {
 		l.Error(err)
-		return nil, err
+		return 0, err
 	}
 
 	if err := httpclient.CheckStatus(resp, http.StatusOK); err != nil {
 		l.Error(err)
-		return nil, err
+		return 0, err
 	}
 
 	l.Infow("Received offer response", "duration", duration)
 
-	offer, err := format.parse(bodyText)
-	if err != nil {
-		return nil, err
-	}
-	return &OfferResult{Offer: offer, RequestDuration: duration}, nil
+	return duration, nil
 }
