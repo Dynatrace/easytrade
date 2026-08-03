@@ -3,41 +3,22 @@ package aggregator
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"net/http"
 
+	"github.com/go-faker/faker/v4"
 	"github.com/google/uuid"
 
 	"dynatrace.com/easytrade/background-service/httpclient"
 	"dynatrace.com/easytrade/background-service/logger"
 )
 
-type Package int
-
-const (
-	StarterPackage Package = iota + 1
-	LightPackage
-	ProPackage
+// placeholder
+var (
+	starterPackageID = uuid.MustParse("11111111-1111-1111-1111-111111111111")
+	lightPackageID   = uuid.MustParse("22222222-2222-2222-2222-222222222222")
+	proPackageID     = uuid.MustParse("33333333-3333-3333-3333-333333333333")
 )
-
-func (p Package) String() string {
-	switch p {
-	case StarterPackage:
-		return "Starter"
-	case LightPackage:
-		return "Light"
-	case ProPackage:
-		return "Pro"
-	default:
-		return "Unknown"
-	}
-}
-
-// placeholders
-var packageIDs = map[Package]uuid.UUID{
-	StarterPackage: uuid.MustParse("11111111-1111-1111-1111-111111111111"),
-	LightPackage:   uuid.MustParse("22222222-2222-2222-2222-222222222222"),
-	ProPackage:     uuid.MustParse("33333333-3333-3333-3333-333333333333"),
-}
 
 type SignupRequest struct {
 	PackageId uuid.UUID `json:"packageId"`
@@ -70,4 +51,33 @@ func (h *OfferServiceClient) Signup(ctx context.Context, platformName string, re
 
 	l.Infow("Successfully registered a user", "email", request.Email)
 	return nil
+}
+
+func createFakeSignupRequest(platformName string, packageProb PackageProbability) *SignupRequest {
+	sr := &SignupRequest{}
+
+	sr.PackageId = randomPackageID(packageProb)
+	sr.FirstName = faker.FirstName()
+	sr.LastName = faker.LastName()
+	sr.Username = sr.FirstName + sr.LastName
+	sr.Email = sr.Username + "@" + faker.DomainName()
+	sr.Address = faker.GetRealAddress().Address
+	sr.Password = faker.Password()
+	sr.Origin = platformName
+
+	return sr
+}
+
+func randomPackageID(p PackageProbability) uuid.UUID {
+	sum := p.Starter + p.Light + p.Pro
+	target := rand.Float32() * sum
+
+	switch {
+	case target < p.Starter:
+		return starterPackageID
+	case target < p.Starter+p.Light:
+		return lightPackageID
+	default:
+		return proPackageID
+	}
 }

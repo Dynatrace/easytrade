@@ -31,8 +31,6 @@ func RegisterJobs(ctx context.Context, cfg *Config) {
 			OfferProvider:        handler,
 			SignupHandler:        handler,
 		}
-		packageProb := entry.PackageProbability
-
 		logger.GetSugar().Infow("Starting aggregator jobs for platform",
 			"platform", p.Name, "checkOffersInterval", p.Delay, "signupInterval", p.SignupInterval)
 
@@ -41,7 +39,7 @@ func RegisterJobs(ctx context.Context, cfg *Config) {
 		})
 
 		go runJob(ctx, p.SignupInterval, func(ctx context.Context) {
-			signupTick(ctx, p, &packageProb)
+			signupTick(ctx, p, entry.PackageProbability)
 		})
 	}
 }
@@ -78,7 +76,7 @@ func checkOffersTick(ctx context.Context, p *Platform) {
 	}
 }
 
-func signupTick(ctx context.Context, p *Platform, packageProb *PackageProbability) {
+func signupTick(ctx context.Context, p *Platform, packageProb PackageProbability) {
 	l := logger.GetSugar().Named(p.Name)
 	l.Info("Signing up a user...")
 
