@@ -98,13 +98,11 @@ and column names identical to `repository/constants.go`. Set `DB_TYPE=<name>` an
 make proto   # regenerate gRPC stubs from src/proto/*.proto → proto/*.pb.go
 make build   # go build ./...
 make test    # go test ./...
-make run    # go run .
+make run     # go run .
 make tidy    # go mod tidy
 ```
 
-Proto sources live in `src/proto/` (shared across services). Generated Go files are
-written to `src/db-adapter/proto/` (`*pb.go` / `*grpc.pb.go`). Requires `protoc` and
-`protoc-gen-go`/`protoc-gen-go-grpc` on `PATH`.
+`make proto` invokes `generate-proto.sh`, which compiles all `../proto/*.proto` files and writes the generated Go stubs into `proto/`; requires `protoc`, `protoc-gen-go`, and `protoc-gen-go-grpc` on `PATH`. Re-run it whenever the shared proto files change.
 
 ## Config
 

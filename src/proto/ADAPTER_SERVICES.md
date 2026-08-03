@@ -8,7 +8,7 @@
 | **PackageService** | 1. GetPackages | Manager |
 | **InstrumentService** | 1. GetInstrumentById 2. GetAllInstruments 3. GetOwnedInstrument 4. GetOwnedInstruments [Get all owned instruments for an account] 5. AddOwnedInstrument 6. UpdateOwnedInstrument | Broker |
 | **TradeService** | 1. CreateTrade 2. UpdateTrade 3. GetOpenTrades 4. GetExpiredTrades [Get expired open trades] 5. GetAccountTrades [Get all trades for a specific account with optional filters] 6. DeleteTradesOlderThan | Broker, Content-Creator |
-| **CreditCardOrderService** | 1. CreateCreditCardOrder 2. GetShippingAddressByOrderId 3. GetStatusListByAccountId [Get all order statuses by timestamp DESC] 4. GetLastOrderStatusByAccountId 5. GetOrdersToManufacture 6. InsertNewStatus 7. InsertNewCreditCard 8. UpdateOrderShippingId 9. DeleteOrdersByAccountId | Credit-Card |
+| **CreditCardOrderService** | 1. CreateCreditCardOrder 2. GetShippingAddressByOrderId 3. GetStatusListByAccountId [Get all order statuses by timestamp DESC] 4. GetLastOrderStatusByAccountId 5. GetLastOrderStatusByOrderId 6. GetOrdersToManufacture 7. InsertNewStatus 8. InsertNewCreditCard 9. UpdateOrderShippingId 10. DeleteOrdersByAccountId | Credit-Card |
 | **PricingService** | 1. GetLatestPrices 2. GetLatestPriceForInstrument 3. GetPricesForInstrument 4. InsertPricesBatch 5. DeletePricesOlderThan | Pricing, Content-Creator |
 
 ---

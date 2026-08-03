@@ -1,11 +1,12 @@
 # easyTradeOfferService
 
-A Node.js/Express service that acts as the public-facing API for product and package information, and for new user registration. It primarily exists to serve the aggregator service, acting as the gateway between it and the internal backend services (manager, loginservice).
+A Node.js/Express service that acts as the public-facing API for product and package information, and for new user registration. It primarily exists to serve the aggregator service, acting as the gateway between it and the internal backend services (db-adapter for products/packages, loginservice for signup).
 
 ## Technologies used
 
 - Node.js + TypeScript
 - Express 5
+- gRPC (via `@grpc/grpc-js`) for db-adapter communication
 - OpenFeature (feature flag evaluation)
 - Winston (structured logging)
 
@@ -22,24 +23,33 @@ docker run -p 8087:8080 offerservice
 
 ```bash
 npm install
+make proto      # generates gRPC client code from proto files
 npm run build   # compiles to ./dist
 npm start       # runs ./dist/app.js
 ```
 
+## Proto code generation
+
+The service uses gRPC to communicate with the db-adapter service. Proto files live in `../proto/` and are compiled by:
+
+```bash
+make proto
+```
+
+This generates TypeScript client classes in `src/proto/` (which are gitignored and regenerated on each build).
+
 ## Environment variables
 
-| Variable                         | Default     | Description                                        |
-| -------------------------------- | ----------- | -------------------------------------------------- |
-| `APP_PORT`                       | `8080`      | Port the HTTP server listens on                    |
-| `MANAGER_PROTOCOL`               | `http`      | Protocol for manager service                       |
-| `MANAGER_BASE_URL`               | `localhost` | Hostname for manager service                       |
-| `MANAGER_PORT`                   | `8081`      | Port for manager service                           |
-| `LOGIN_SERVICE_PROTOCOL`         | `http`      | Protocol for loginservice                          |
-| `LOGIN_SERVICE_BASE_URL`         | `localhost` | Hostname for loginservice                          |
-| `LOGIN_SERVICE_PORT`             | `8081`      | Port for loginservice                              |
-| `FEATURE_FLAG_SERVICE_PROTOCOL`  | `http`      | Protocol for feature flag service                  |
-| `FEATURE_FLAG_SERVICE_BASE_URL`  | `localhost` | Hostname for feature flag service                  |
-| `FEATURE_FLAG_SERVICE_PORT`      | `80`        | Port for feature flag service                      |
+| Variable                         | Default           | Description                                        |
+| -------------------------------- | ----------------- | -------------------------------------------------- |
+| `APP_PORT`                       | `8080`            | Port the HTTP server listens on                    |
+| `DBADAPTER_HOSTANDPORT`          | `localhost:50051` | Host and port of the db-adapter gRPC service       |
+| `LOGIN_SERVICE_PROTOCOL`         | `http`            | Protocol for loginservice                          |
+| `LOGIN_SERVICE_BASE_URL`         | `localhost`       | Hostname for loginservice                          |
+| `LOGIN_SERVICE_PORT`             | `8081`            | Port for loginservice                              |
+| `FEATURE_FLAG_SERVICE_PROTOCOL`  | `http`            | Protocol for feature flag service                  |
+| `FEATURE_FLAG_SERVICE_BASE_URL`  | `localhost`       | Hostname for feature flag service                  |
+| `FEATURE_FLAG_SERVICE_PORT`      | `80`              | Port for feature flag service                      |
 
 ## Endpoints
 

@@ -1,12 +1,12 @@
 # easyTradePricingService
 
-A go service that provides information about instrument prices. Pricing is connected to the mssql database containing instrument prices.
+A go service that provides information about instrument prices. Pricing data is fetched from the `db-adapter` service over gRPC.
 
 ## Technologies used
 
 - Go 1.26
 - Docker
-- MSSql
+- gRPC (db-adapter)
 
 ## Local build instructions
 
@@ -14,6 +14,15 @@ A go service that provides information about instrument prices. Pricing is conne
 docker build -t IMAGE_NAME .
 docker run -d --name SERVICE_NAME IMAGE_NAME
 ```
+
+### Run locally without Docker
+
+```bash
+make proto   # regenerate gRPC stubs from src/proto/ → proto/*.pb.go (requires protoc + protoc-gen-go + protoc-gen-go-grpc)
+make run     # go run .
+```
+
+`make proto` invokes `generate-proto.sh`, which reads `../proto/pricing_service.proto` and `../proto/common.proto` and writes generated Go files into `proto/`; re-run it whenever the shared proto files change.
 
 ## Endpoints or logic
 

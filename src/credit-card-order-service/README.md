@@ -6,7 +6,16 @@ A java service that lets the user order/remove a credit card for their account. 
 
 - Java 21
 - Docker
-- MSSql
+- gRPC (db-adapter)
+
+## Environment variables
+
+| Variable                       | Description                                    |
+| ------------------------------ | ---------------------------------------------- |
+| `DBADAPTER_HOSTANDPORT`        | Host and port of the db-adapter gRPC service   |
+| `THIRD_PARTY_SERVICE_HOSTANDPORT` | Host and port of the third-party manufacturer |
+| `WORK_DELAY`                   | Initial delay (ms) before WorkScheduler starts |
+| `WORK_RATE`                    | Base rate (ms) for WorkScheduler polling       |
 
 ## Local build instructions
 

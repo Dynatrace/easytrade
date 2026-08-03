@@ -1,17 +1,29 @@
 # EasyTradeBrokerService
 
-This service is used to manage accounts' balances and process trades.
+This service manages account balances and processes trades. It leverages gRPC to communicate with the `db-adapter` service for data persistence.
 
 ## Technologies used
 
 - .NET 8 (ASP.NET Core)
 - Docker
+- gRPC
 
 ## Local build instructions
 
+### Standard .NET Development
+
 ```bash
-docker build -t IMAGE_NAME .
-docker run -d --name SERVICE_NAME IMAGE_NAME
+cd BrokerService
+dotnet build
+dotnet test test/BrokerService.test.csproj
+dotnet run --project src/BrokerService.csproj
+```
+### Docker Build
+To build via Docker, ensure that you run the `docker build` command from the parent `src/` directory so Docker has context to the shared `proto/` folder:
+
+```bash
+cd .. 
+docker build -t easytrade-broker-service -f broker-service/Dockerfile .
 ```
 
 ## Endpoints or logic
