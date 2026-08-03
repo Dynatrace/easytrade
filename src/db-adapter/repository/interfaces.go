@@ -40,6 +40,7 @@ type CreditCardOrderRepository interface {
 	GetShippingAddress(ctx context.Context, orderID string) (*pb.ShippingAddressMessage, error)
 	GetStatusListByAccountID(ctx context.Context, accountID string) ([]*pb.CreditCardOrderStatusMessage, error)
 	GetLastStatusByAccountID(ctx context.Context, accountID string) (*pb.CreditCardOrderStatusMessage, error)
+	GetLastStatusByOrderID(ctx context.Context, orderID string) (*pb.CreditCardOrderStatusMessage, error)
 	GetOrdersToManufacture(ctx context.Context) ([]*pb.CreditCardManufactureDataMessage, error)
 	InsertStatus(ctx context.Context, req *pb.InsertNewStatusRequest) (*pb.CreditCardOrderStatusMessage, error)
 	InsertCard(ctx context.Context, req *pb.InsertNewCreditCardRequest) (*pb.CreditCardMessage, error)

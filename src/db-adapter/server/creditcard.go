@@ -55,6 +55,13 @@ func (s *CreditCardOrderServer) GetLastOrderStatusByAccountId(ctx context.Contex
 	return fetchOrNotFound(s.repo.GetLastStatusByAccountID(ctx, req.AccountId))
 }
 
+func (s *CreditCardOrderServer) GetLastOrderStatusByOrderId(ctx context.Context, req *pb.GetLastOrderStatusByOrderIdRequest) (*pb.CreditCardOrderStatusMessage, error) {
+	if err := validateUUID(req.OrderId); err != nil {
+		return nil, err
+	}
+	return fetchOrNotFound(s.repo.GetLastStatusByOrderID(ctx, req.OrderId))
+}
+
 func (s *CreditCardOrderServer) GetOrdersToManufacture(ctx context.Context, _ *emptypb.Empty) (*pb.OrdersToManufactureResponse, error) {
 	orders, err := s.repo.GetOrdersToManufacture(ctx)
 	if err != nil {

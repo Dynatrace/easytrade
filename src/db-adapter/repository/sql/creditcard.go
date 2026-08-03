@@ -91,6 +91,13 @@ func (repo *CreditCardOrderRepository) GetLastStatusByAccountID(ctx context.Cont
 	)
 }
 
+func (repo *CreditCardOrderRepository) GetLastStatusByOrderID(ctx context.Context, orderID string) (*pb.CreditCardOrderStatusMessage, error) {
+	return firstOptional(
+		repo.db.WithContext(ctx).Where(q(repository.ColCreditCardOrderID)+" = ?", orderID).Order(q(repository.ColTimestamp)+" DESC"),
+		(*CreditCardOrderStatus).toProto,
+	)
+}
+
 func (repo *CreditCardOrderRepository) GetOrdersToManufacture(ctx context.Context) ([]*pb.CreditCardManufactureDataMessage, error) {
 	join := "JOIN " + q(repository.TableCreditCardOrderStatus) +
 		" ON " + qcol(repository.TableCreditCardOrderStatus, repository.ColCreditCardOrderID) +

@@ -69,6 +69,10 @@ message GetLastOrderStatusByAccountIdRequest {
   string account_id = 1;
 }
 
+message GetLastOrderStatusByOrderIdRequest {
+  string order_id = 1;
+}
+
 message InsertNewStatusRequest {
   string order_id = 1;
   string status = 2;
@@ -110,7 +114,9 @@ service CreditCardOrderService {
   rpc GetStatusListByAccountId(GetStatusListByAccountIdRequest) returns (OrderStatusListResponse) {}
 
   rpc GetLastOrderStatusByAccountId(GetLastOrderStatusByAccountIdRequest) returns (CreditCardOrderStatusMessage) {}
-  
+
+  rpc GetLastOrderStatusByOrderId(GetLastOrderStatusByOrderIdRequest) returns (CreditCardOrderStatusMessage) {}
+
   // Get manufacture data for all orders with status ORDER_CREATED
   rpc GetOrdersToManufacture(google.protobuf.Empty) returns (OrdersToManufactureResponse) {}
   rpc InsertNewStatus(InsertNewStatusRequest) returns (CreditCardOrderStatusMessage) {}
