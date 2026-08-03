@@ -176,3 +176,108 @@ func TestGetAccount_MissingId_ReturnsNotFound(t *testing.T) {
 		t.Fatalf("expected status %d, got %d", http.StatusNotFound, recorder.Code)
 	}
 }
+
+// TestGetPresets_NoAccounts_ReturnsEmptyList checks that an empty store returns an empty results list.
+func TestGetPresets_NoAccounts_ReturnsEmptyList(t *testing.T) {
+	router := newTestRouter(newFakeAccountServiceClient())
+
+	recorder := doRequest(router, http.MethodGet, "/api/accounts/presets", "")
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, recorder.Code)
+	}
+	if !strings.Contains(recorder.Body.String(), `"results":[]`) {
+		t.Fatalf("expected empty results, got: %s", recorder.Body.String())
+	}
+}
+
+// TestGetPresets_OnlyNonPreset_ReturnsEmptyList checks that non-PRESET accounts are excluded.
+func TestGetPresets_OnlyNonPreset_ReturnsEmptyList(t *testing.T) {
+	client := newFakeAccountServiceClient()
+	seedAccount(t, client, "webuser", "pass", "WEB")
+	router := newTestRouter(client)
+
+	recorder := doRequest(router, http.MethodGet, "/api/accounts/presets", "")
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, recorder.Code)
+	}
+	if !strings.Contains(recorder.Body.String(), `"results":[]`) {
+		t.Fatalf("expected empty results, got: %s", recorder.Body.String())
+	}
+}
+
+// TestGetPresets_MixedOrigins_ReturnsOnlyPresets checks that only PRESET accounts appear.
+func TestGetPresets_MixedOrigins_ReturnsOnlyPresets(t *testing.T) {
+	client := newFakeAccountServiceClient()
+	seedAccount(t, client, "webuser", "pass", "WEB")
+	seedAccount(t, client, "preset1", "pass", "PRESET")
+	seedAccount(t, client, "preset2", "pass", "PRESET")
+	router := newTestRouter(client)
+
+	recorder := doRequest(router, http.MethodGet, "/api/accounts/presets", "")
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, recorder.Code)
+	}
+	body := recorder.Body.String()
+	if strings.Count(body, `"username"`) != 2 {
+		t.Fatalf("expected 2 preset accounts, got body: %s", body)
+	}
+	if strings.Contains(body, "webuser") {
+		t.Fatalf("non-PRESET account leaked into response: %s", body)
+	}
+}
+
+// TestGetPresets_LimitBelowCount_ReturnsLimitedResults checks that ?limit trims the result set.
+func TestGetPresets_LimitBelowCount_ReturnsLimitedResults(t *testing.T) {
+	client := newFakeAccountServiceClient()
+	for i := range 5 {
+		seedAccount(t, client, strings.Repeat("p", i+1), "pass", "PRESET")
+	}
+	router := newTestRouter(client)
+
+	recorder := doRequest(router, http.MethodGet, "/api/accounts/presets?limit=2", "")
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, recorder.Code)
+	}
+	if strings.Count(recorder.Body.String(), `"username"`) != 2 {
+		t.Fatalf("expected 2 results, got body: %s", recorder.Body.String())
+	}
+}
+
+// TestGetPresets_LimitAboveCount_ReturnsAllPresets checks that a limit larger than the preset count returns all.
+func TestGetPresets_LimitAboveCount_ReturnsAllPresets(t *testing.T) {
+	client := newFakeAccountServiceClient()
+	seedAccount(t, client, "preset1", "pass", "PRESET")
+	seedAccount(t, client, "preset2", "pass", "PRESET")
+	router := newTestRouter(client)
+
+	recorder := doRequest(router, http.MethodGet, "/api/accounts/presets?limit=100", "")
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, recorder.Code)
+	}
+	if strings.Count(recorder.Body.String(), `"username"`) != 2 {
+		t.Fatalf("expected 2 results, got body: %s", recorder.Body.String())
+	}
+}
+
+// TestGetPresets_ZeroLimit_ReturnsAllPresets checks that limit=0 is treated as no limit.
+func TestGetPresets_ZeroLimit_ReturnsAllPresets(t *testing.T) {
+	client := newFakeAccountServiceClient()
+	seedAccount(t, client, "preset1", "pass", "PRESET")
+	seedAccount(t, client, "preset2", "pass", "PRESET")
+	seedAccount(t, client, "preset3", "pass", "PRESET")
+	router := newTestRouter(client)
+
+	recorder := doRequest(router, http.MethodGet, "/api/accounts/presets?limit=0", "")
+
+	if recorder.Code != http.StatusOK {
+		t.Fatalf("expected status %d, got %d", http.StatusOK, recorder.Code)
+	}
+	if strings.Count(recorder.Body.String(), `"username"`) != 3 {
+		t.Fatalf("expected 3 results, got body: %s", recorder.Body.String())
+	}
+}
