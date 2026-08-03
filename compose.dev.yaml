@@ -51,7 +51,9 @@ services:
 
   pricing-service:
     <<: *default-service
-    build: src/pricing-service
+    build:
+      context: src/
+      dockerfile: pricing-service/Dockerfile
     depends_on:
       - db-adapter
       - rabbitmq
@@ -64,7 +66,9 @@ services:
 
   broker-service:
     <<: *default-service
-    build: src/broker-service
+    build:
+      context: src/
+      dockerfile: broker-service/Dockerfile
     ports:
       - 8084:8080
     depends_on:
@@ -147,10 +151,12 @@ services:
 
   offerservice:
     <<: *default-service
-    build: src/offerservice
+    build:
+      context: src/
+      dockerfile: offerservice/Dockerfile
     depends_on:
       - loginservice
-      - manager
+      - db-adapter
       - feature-flag-service
     ports:
       - 8087:8080
@@ -158,8 +164,7 @@ services:
       <<: *feature-flag-service-env
       LOGIN_SERVICE_PORT: 8080
       LOGIN_SERVICE_BASE_URL: loginservice
-      MANAGER_BASE_URL: manager
-      MANAGER_PORT: 8080
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
 
   accountservice:
     <<: *default-service
@@ -174,15 +179,17 @@ services:
 
   credit-card-order-service:
     <<: *default-service
-    build: src/credit-card-order-service
+    build:
+      context: src/
+      dockerfile: credit-card-order-service/Dockerfile
     depends_on:
-      - db
+      - db-adapter
       - third-party-service
     ports:
       - 8091:8080
     environment:
       PROXY_PREFIX: credit-card-order-service
-      MSSQL_CONNECTIONSTRING: *java-connection-string
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
       THIRD_PARTY_SERVICE_HOSTANDPORT: third-party-service:8080
       <<: *feature-flag-service-env
       WORK_DELAY: 30
@@ -215,7 +222,9 @@ services:
 
   db-adapter:
     <<: *default-service
-    build: src/db-adapter
+    build:
+      context: src/
+      dockerfile: db-adapter/Dockerfile
     depends_on:
       - db
     ports:

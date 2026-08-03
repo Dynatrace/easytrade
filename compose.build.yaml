@@ -12,7 +12,8 @@ services:
   broker-service:
     image: ${REGISTRY}/broker-service:${TAG}
     build:
-      context: src/broker-service
+      context: src/
+      dockerfile: broker-service/Dockerfile
 
   calculationservice:
     image: ${REGISTRY}/calculationservice:${TAG}
@@ -27,7 +28,8 @@ services:
   credit-card-order-service:
     image: ${REGISTRY}/credit-card-order-service:${TAG}
     build:
-      context: src/credit-card-order-service
+      context: src/
+      dockerfile: credit-card-order-service/Dockerfile
 
   db:
     image: ${REGISTRY}/db-${DB_TYPE}:${TAG}
@@ -37,7 +39,8 @@ services:
   db-adapter:
     image: ${REGISTRY}/db-adapter:${TAG}
     build:
-      context: src/db-adapter
+      context: src/
+      dockerfile: db-adapter/Dockerfile
 
   feature-flag-service:
     image: ${REGISTRY}/feature-flag-service:${TAG}
@@ -72,12 +75,14 @@ services:
   offerservice:
     image: ${REGISTRY}/offerservice:${TAG}
     build:
-      context: src/offerservice
+      context: src/
+      dockerfile: offerservice/Dockerfile
 
   pricing-service:
     image: ${REGISTRY}/pricing-service:${TAG}
     build:
-      context: src/pricing-service
+      context: src/
+      dockerfile: pricing-service/Dockerfile
 
   problem-operator:
     image: ${REGISTRY}/problem-operator:${TAG}

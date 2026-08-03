@@ -137,13 +137,12 @@ services:
     image: ${REGISTRY}/offerservice:${TAG}
     depends_on:
       - loginservice
-      - manager
+      - db-adapter
     environment:
       <<: *feature-flag-service-env
       LOGIN_SERVICE_PORT: 8080
       LOGIN_SERVICE_BASE_URL: loginservice
-      MANAGER_BASE_URL: manager
-      MANAGER_PORT: 8080
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
 
   feature-flag-service:
     <<: *default-service
@@ -164,11 +163,11 @@ services:
     <<: *default-service
     image: ${REGISTRY}/credit-card-order-service:${TAG}
     depends_on:
-      - db
+      - db-adapter
       - third-party-service
     environment:
       PROXY_PREFIX: credit-card-order-service
-      MSSQL_CONNECTIONSTRING: *java-connection-string
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
       THIRD_PARTY_SERVICE_HOSTANDPORT: third-party-service:8080
       <<: *feature-flag-service-env
       WORK_DELAY: 300
