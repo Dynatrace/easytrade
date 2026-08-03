@@ -12,32 +12,30 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.sql.Connection;
 import java.util.List;
 
 @Service
 public class WorkScheduler extends BaseScheduler {
     private static final Logger logger = LoggerFactory.getLogger(WorkScheduler.class);
-    private final DatabaseHelper dbHelper;
+    private final DbAdapterClient dbAdapterClient;
     private final String creditCardOrderService = System.getenv("THIRD_PARTY_SERVICE_HOSTANDPORT");
     private final HttpClient httpClient = HttpClient.newBuilder().build();
 
-    public WorkScheduler(DatabaseHelper dbHelper) {
+    public WorkScheduler(DbAdapterClient dbAdapterClient) {
         super("work", Integer.parseInt(System.getenv("WORK_DELAY")), Integer.parseInt(System.getenv("WORK_RATE")));
-        this.dbHelper = dbHelper;
+        this.dbAdapterClient = dbAdapterClient;
     }
 
     @Override
     protected void run() {
         logger.info("Running WorkScheduler task!");
 
-        try (Connection conn = dbHelper.getConnection()) {
-            List<String> orders = dbHelper.getOrderIdsWithStatusOrderCreated(conn);
+        try {
+            List<ManufactureRequest> orders = dbAdapterClient.getOrdersToManufacture();
             ObjectMapper mapper = new ObjectMapper();
 
-            for (String orderId : orders) {
-                logger.info("Calling manufacturer for order: " + orderId);
-                ManufactureRequest body = dbHelper.getCreditCardManufactureData(conn, orderId);
+            for (ManufactureRequest body : orders) {
+                logger.info("Calling manufacturer for order: " + body.creditCardOrderId());
 
                 // deepcode ignore Ssrf: trusted environment variable
                 HttpRequest request = HttpRequest.newBuilder()
@@ -50,8 +48,8 @@ public class WorkScheduler extends BaseScheduler {
                 StandardResponse standardResponse = mapper.readValue(response.body(), StandardResponse.class);
 
                 if (standardResponse.statusCode() == HttpStatus.OK.value()) {
-                    logger.info("Ordered the manufacture of card with orderId: {}", orderId);
-                    dbHelper.insertNewStatus(orderId, StatusType.CARD_ORDERED);
+                    logger.info("Ordered the manufacture of card with orderId: {}", body.creditCardOrderId());
+                    dbAdapterClient.insertNewStatus(body.creditCardOrderId(), StatusType.CARD_ORDERED);
                 } else {
                     logger.info("Failed to order card manufacture. Status code received is {}, and the message is: {}",
                             standardResponse.statusCode(), standardResponse.message());

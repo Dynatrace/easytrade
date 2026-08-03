@@ -1,8 +1,5 @@
 package com.dynatrace.easytrade.creditcardorderservice;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -41,7 +38,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 @RestController
-@RequestMapping(value="/v1/orders", 
+@RequestMapping(value="/v1/orders",
         produces={"application/json", "application/xml"})
 @CrossOrigin
 @ApiResponses(value = {
@@ -49,7 +46,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
                 @Content(schema = @Schema(implementation = StandardResponse.class))),
         @ApiResponse(responseCode = "400", description = "Bad request - check message and data for some hints", content =
                 @Content(schema = @Schema(implementation = StandardResponse.class))),
-        @ApiResponse(responseCode = "500", description = "Internal server error - check message and error for details", content = 
+        @ApiResponse(responseCode = "500", description = "Internal server error - check message and error for details", content =
                 @Content(schema = @Schema(implementation = StandardResponse.class))),
 })
 public class OrderController {
@@ -61,11 +58,11 @@ public class OrderController {
     public static final String WRONG_SEQUENCE = "%s Tried to update from %s to %s!";
     public static final String ORDER_CREATED = "Credit card order has been created.";
     public static final String ORDER_ALREADY_EXISTS = "A credit card order for given accountId already exists!";
-    private final DatabaseHelper dbHelper;
+    private final DbAdapterClient dbAdapterClient;
     private final OpenFeatureAPI openFeatureAPI;
 
-    public OrderController(DatabaseHelper dbHelper, OpenFeatureAPI openFeatureAPI) {
-        this.dbHelper = dbHelper;
+    public OrderController(DbAdapterClient dbAdapterClient, OpenFeatureAPI openFeatureAPI) {
+        this.dbAdapterClient = dbAdapterClient;
         this.openFeatureAPI = openFeatureAPI;
     }
 
@@ -73,22 +70,18 @@ public class OrderController {
     @Operation(summary = "Order a credit card")
     public ResponseEntity<StandardResponse> createCreditCardOrder(@RequestBody CreditCardOrderRequest request) {
         logger.info("Starting to create a credit card order for data: " + request);
-        
-        try (Connection conn = dbHelper.getConnection()) {
-            Integer orderCount = dbHelper.getOrderCountForAccountId(conn, request.accountId());
-
-            if (orderCount == 0) {
-                String guid = dbHelper.insertNewOrder(conn, request);
-                dbHelper.insertNewStatus(conn, guid, StatusType.ORDER_CREATED);
-
+        try {
+            if (!dbAdapterClient.hasExistingOrder(request.accountId())) {
+                String guid = dbAdapterClient.createOrder(request);
+                dbAdapterClient.insertNewStatus(guid, StatusType.ORDER_CREATED);
                 return buildResponseEntity(HttpStatus.CREATED, ORDER_CREATED,
                         new CreditCardOrderResponse(guid), null, null);
             } else {
                 return buildResponseEntity(HttpStatus.BAD_REQUEST, ORDER_ALREADY_EXISTS,
                         null, request, null);
             }
-        } catch (SQLException e) {
-            return handleSQLException(e);
+        } catch (RuntimeException e) {
+            return handleException(e);
         }
     }
 
@@ -96,13 +89,13 @@ public class OrderController {
     @Operation(summary = "Get credit card's shipping address")
     public ResponseEntity<StandardResponse> getShippingAddress(@PathVariable String id) {
         logger.info("Finding shipping address for order: " + id);
-        try (Connection conn = dbHelper.getConnection()) {
-            Optional<ShippingAddressResponse> response = dbHelper.getShippingAddress(conn, id);
+        try {
+            Optional<ShippingAddressResponse> response = dbAdapterClient.getShippingAddress(id);
             return response
                     .map(r -> buildResponseEntity(HttpStatus.OK, "Address found successfully.", r))
                     .orElse(buildResponseEntity(HttpStatus.NOT_FOUND, "There is no address for given order id."));
-        } catch (SQLException e) {
-            return handleSQLException(e);
+        } catch (RuntimeException e) {
+            return handleException(e);
         }
     }
 
@@ -110,17 +103,14 @@ public class OrderController {
     @Operation(summary = "Get credit card order status history")
     public ResponseEntity<StandardResponse> getStatusHistory(@PathVariable Integer accountId) {
         logger.info("Getting status history for accountId: " + accountId);
-        try (Connection conn = dbHelper.getConnection()) {
-            Optional<String> orderId = dbHelper.getOrderIdForAccount(conn, accountId);
-            if (orderId.isEmpty()) {
-                return buildResponseEntity(HttpStatus.NOT_FOUND,
-                        "Status history for account [" + accountId + "] not found");
-            }
-            List<CreditCardOrderStatus> statusList = dbHelper.getOrderStatusList(conn, orderId.get());
-            return buildResponseEntity(HttpStatus.OK, "Status history found",
-                    new CreditCardOrderStatusHistory(orderId.get(), statusList));
-        } catch (SQLException e) {
-            return handleSQLException(e);
+        try {
+            Optional<CreditCardOrderStatusHistory> history = dbAdapterClient.getStatusListByAccountId(accountId);
+            return history
+                    .map(h -> buildResponseEntity(HttpStatus.OK, "Status history found", h))
+                    .orElse(buildResponseEntity(HttpStatus.NOT_FOUND,
+                            "Status history for account [" + accountId + "] not found"));
+        } catch (RuntimeException e) {
+            return handleException(e);
         }
     }
 
@@ -128,20 +118,19 @@ public class OrderController {
     @Operation(summary = "Get credit card order status")
     public ResponseEntity<StandardResponse> getLatestStatus(@PathVariable Integer accountId) {
         logger.info("Getting latest status for accountId: " + accountId);
-
-        try (Connection conn = dbHelper.getConnection()) {
+        try {
             final Client client = openFeatureAPI.getClient();
             if (client.getBooleanValue("credit_card_meltdown", false)) {
                 CountSequenceTotal(5, 2, 14);
             }
 
-            Optional<CreditCardOrderStatus> status = dbHelper.getLastOrderStatusForAccountId(conn, accountId);
+            Optional<CreditCardOrderStatus> status = dbAdapterClient.getLastOrderStatusByAccountId(accountId);
             return status
                     .map(s -> buildResponseEntity(HttpStatus.OK, "Status found successfully.", s))
                     .orElse(buildResponseEntity(HttpStatus.NOT_FOUND,
                             "Status for the given account id does not exist!"));
-        } catch (SQLException e) {
-            return handleSQLException(e);
+        } catch (RuntimeException e) {
+            return handleException(e);
         } catch (Exception e) {
             logger.error("Exception occured", e);
             throw e;
@@ -152,13 +141,12 @@ public class OrderController {
     @Operation(summary = "Delete credit card order, status and credit card if any")
     public ResponseEntity<StandardResponse> deleteOrder(@PathVariable Integer accountId) {
         logger.info("Deleting order and/or card for accountId: " + accountId);
-        try (Connection conn = dbHelper.getConnection()) {
-            dbHelper.deleteOrderForAccountId(conn, accountId);
-
+        try {
+            dbAdapterClient.deleteOrdersByAccountId(accountId);
             return buildResponseEntity(HttpStatus.OK, "Order and/or card successfully deleted.",
                     null, null, null);
-        } catch (SQLException e) {
-            return handleSQLException(e);
+        } catch (RuntimeException e) {
+            return handleException(e);
         }
     }
 
@@ -208,71 +196,72 @@ public class OrderController {
      **/
     private ResponseEntity<StandardResponse> handleNewStatus(String id, StatusRequest request) {
         logger.info("Handling a status update of: " + request);
-        try (Connection conn = dbHelper.getConnection()) {
-            if (!id.equals(request.orderId())) {
-                return buildResponseEntity(HttpStatus.BAD_REQUEST, ORDER_IDS_DO_NOT_MATCH,
-                        null, request, null);
-            }
-
-            CreditCardOrderStatus status = dbHelper.getLastOrderStatus(conn, id);
-
-            if (status == null) {
-                return buildResponseEntity(HttpStatus.BAD_REQUEST, String.format(NO_STATUS_FOR_ID, id),
-                        null, null, null);
-            }
-
-            return actOnNewStatus(request, status);
-        } catch (SQLException e) {
-            return handleSQLException(e);
+        if (!id.equals(request.orderId())) {
+            return buildResponseEntity(HttpStatus.BAD_REQUEST, ORDER_IDS_DO_NOT_MATCH,
+                    null, request, null);
+        }
+        try {
+            return actOnNewStatus(request);
+        } catch (RuntimeException e) {
+            return handleException(e);
         }
     }
 
-    private ResponseEntity<StandardResponse> actOnNewStatus(StatusRequest request, CreditCardOrderStatus status)
-            throws SQLException {
+    private ResponseEntity<StandardResponse> actOnNewStatus(StatusRequest request) {
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
 
-        StatusType newStatusType = StatusType.valueOf(request.type().toUpperCase());
-        StatusType oldStatusType = StatusType.valueOf(status.status().toUpperCase());
+        try {
+            Optional<CreditCardOrderStatus> currentStatus = dbAdapterClient.getLastOrderStatusByOrderId(request.orderId());
+            if (currentStatus.isEmpty()) {
+                return buildResponseEntity(HttpStatus.BAD_REQUEST, String.format(NO_STATUS_FOR_ID, request.orderId()),
+                        null, null, null);
+            }
 
-        if (newStatusType.getSequence() <= oldStatusType.getSequence()) {
-            String message = String.format(WRONG_SEQUENCE,
-                    StatusType.SEQUENCE_ERROR.getDescription(),
-                    oldStatusType.getType(),
-                    newStatusType.getType());
-            return buildResponseEntity(HttpStatus.BAD_REQUEST, message, null, null, null);
+            StatusType newStatusType = StatusType.valueOf(request.type().toUpperCase());
+            StatusType oldStatusType = StatusType.valueOf(currentStatus.get().status().toUpperCase());
+
+            if (newStatusType.getSequence() <= oldStatusType.getSequence()) {
+                String message = String.format(WRONG_SEQUENCE,
+                        StatusType.SEQUENCE_ERROR.getDescription(),
+                        oldStatusType.getType(),
+                        newStatusType.getType());
+                return buildResponseEntity(HttpStatus.BAD_REQUEST, message, null, null, null);
+            }
+        } catch (RuntimeException e) {
+            return handleException(e);
         }
 
+        StatusType newStatusType = StatusType.valueOf(request.type().toUpperCase());
         switch (newStatusType) {
             case CARD_ORDERED:
             case CARD_DELIVERED:
-                dbHelper.insertNewStatus(request.orderId(), newStatusType);
+                dbAdapterClient.insertNewStatus(request.orderId(), newStatusType);
                 break;
             case CARD_ERROR:
                 ErrorRequest errorRequest = mapper.convertValue(request.details().get(), ErrorRequest.class);
-                dbHelper.insertNewStatus(request.orderId(), newStatusType, String.format(
+                dbAdapterClient.insertNewStatus(request.orderId(), newStatusType, String.format(
                         "There occurred an error of type '%s' and a code of '%d'. Error message: %s",
                         errorRequest.errorType(), errorRequest.errorCode(), errorRequest.errorMessage()));
                 break;
             case CARD_SHIPPED:
                 ShippingIdRequest shippingIdRequest = mapper.convertValue(request.details().get(),
                         ShippingIdRequest.class);
-                dbHelper.updateOrder(request.orderId(), shippingIdRequest);
-                dbHelper.insertNewStatus(request.orderId(), newStatusType);
+                dbAdapterClient.updateOrderShippingId(request.orderId(), shippingIdRequest);
+                dbAdapterClient.insertNewStatus(request.orderId(), newStatusType);
                 break;
             case CARD_CREATED:
                 CreditCardRequest creditCardRequest = mapper.convertValue(request.details().get(),
                         CreditCardRequest.class);
-                dbHelper.insertNewCreditCard(request.orderId(), creditCardRequest);
-                dbHelper.insertNewStatus(request.orderId(), newStatusType);
+                dbAdapterClient.insertNewCreditCard(request.orderId(), creditCardRequest);
+                dbAdapterClient.insertNewStatus(request.orderId(), newStatusType);
                 break;
             default:
-                String msg = String.format(UNKNOWN_STATUS_CHANGE, oldStatusType.getType(), newStatusType.getType());
-                return buildResponseEntity(HttpStatus.BAD_REQUEST, msg, null, null, null);
+                return buildResponseEntity(HttpStatus.BAD_REQUEST,
+                        String.format(UNKNOWN_STATUS_CHANGE, newStatusType.getType()), null, null, null);
         }
 
-        return buildResponseEntity(HttpStatus.OK, STATUS_UPDATED,
-                null, null, null);
+        return buildResponseEntity(HttpStatus.OK, STATUS_UPDATED, null, null, null);
     }
 
     private ResponseEntity<StandardResponse> buildResponseEntity(HttpStatus status, String message) {
@@ -306,7 +295,7 @@ public class OrderController {
                         error));
     }
 
-    private ResponseEntity<StandardResponse> handleSQLException(SQLException e) {
+    private ResponseEntity<StandardResponse> handleException(RuntimeException e) {
         return buildResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "An exception occurred!",
                 null, null, e.getMessage(), true);
     }
