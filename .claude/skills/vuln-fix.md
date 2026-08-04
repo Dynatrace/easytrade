@@ -75,7 +75,7 @@ npm audit   # should show 0 high/critical
 
 ## .NET / NuGet
 
-Bump the affected `PackageReference` version in the `.csproj` file. Applies to `broker-service`, `loginservice`, `manager`.
+Bump the affected `PackageReference` version in the `.csproj` file. Applies to `broker-service`, `loginservice`.
 
 ```xml
 <PackageReference Include="VulnerablePackage" Version="X.Y.Z" />

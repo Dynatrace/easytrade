@@ -30,7 +30,6 @@ EasyTrade consists of the following services/components:
 | [Frontend reverse-proxy](src/frontendreverseproxy/README.md)         | 80         | `---`                        |
 | [Loadgen](src/loadgen/README.md)                                     | --         | `---`                        |
 | [Login service](src/loginservice/README.md)                          | 80         | `/loginservice`              |
-| [Manager](src/manager/easyTradeManager/README.md)                    | 80         | `/manager`                   |
 | [Offer service](src/offerservice/README.md)                          | 80         | `/offerservice`              |
 | [Pricing service](src/pricing-service/README.md)                     | 80         | `/pricing-service`           |
 | [Problem operator](src/problem-operator/README.md)                   | 80         | `---`                        |
