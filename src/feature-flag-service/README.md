@@ -2,6 +2,8 @@
 
 A Go REST service with swagger. It allows to get and update feature flag data.
 
+Exposes `/livez` (liveness) and `/readyz` (readiness) on `HEALTH_PORT` (default `8080`).
+
 ## Technologies used
 
 - Golang

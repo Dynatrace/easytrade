@@ -153,6 +153,9 @@ services:
     image: ${REGISTRY}/feature-flag-service:${TAG}
     environment:
       PROXY_PREFIX: feature-flag-service
+      HEALTH_PORT: "8080"
+    ports:
+      - "8094:8080"
 
   accountservice:
     <<: *default-service

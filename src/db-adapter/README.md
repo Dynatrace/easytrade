@@ -4,6 +4,8 @@ gRPC service that exposes EasyTrade's database behind a stable API. The storage
 backend is pluggable: the gRPC layer depends only on interfaces, so a new
 SQL dialect is added without touching the server or interface layers.
 
+Exposes `/livez` (liveness) and `/readyz` (readiness, pings the DB) on `HEALTH_PORT` (default `8080`).
+
 ## Layout
 
 ```

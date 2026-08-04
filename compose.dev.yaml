@@ -213,6 +213,7 @@ services:
       - 8094:8080
     environment:
       PROXY_PREFIX: feature-flag-service
+      HEALTH_PORT: "8080"
       # ENABLE_MODIFY: "false"
       # ENABLE_FRONTEND_MODIFY: "false"
 
