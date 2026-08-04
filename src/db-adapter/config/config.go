@@ -18,7 +18,8 @@ type DatabaseConfig struct {
 }
 
 type ServerConfig struct {
-	GRPCPort string
+	GRPCPort   string
+	HealthPort string
 }
 
 func Load() *Config {
@@ -30,7 +31,8 @@ func Load() *Config {
 			RetryInterval:  getDuration("DB_RETRY_INTERVAL", 10*time.Second),
 		},
 		Server: ServerConfig{
-			GRPCPort: getEnv("GRPC_PORT", "50051"),
+			GRPCPort:   getEnv("GRPC_PORT", "50051"),
+			HealthPort: getEnv("HEALTH_PORT", "8080"),
 		},
 	}
 }
