@@ -38,17 +38,6 @@ services:
     environment:
       MSSQL_CONNECTIONSTRING: *java-connection-string
 
-  manager:
-    <<: *default-service
-    build: src/manager/easyTradeManager
-    depends_on:
-      - db
-    ports:
-      - 8081:8080
-    environment:
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
-      PROXY_PREFIX: manager
-
   pricing-service:
     <<: *default-service
     build: src/pricing-service
@@ -165,11 +154,11 @@ services:
     <<: *default-service
     build: src/accountservice
     depends_on:
-      - manager
+      - db-adapter
     ports:
       - 8089:8080
     environment:
-      MANAGER_HOSTANDPORT: manager:8080
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
       PROXY_PREFIX: accountservice
 
   credit-card-order-service:

@@ -25,7 +25,6 @@ const services: ServiceVersionUrl[] = [
         versionUrl: "/feature-flag-service/version",
     },
     { serviceName: "Login Service", versionUrl: "/loginservice/api/version" },
-    { serviceName: "Manager", versionUrl: "/manager/api/version" },
     { serviceName: "Offer Service", versionUrl: "/offerservice/api/version" },
     { serviceName: "Pricing Service", versionUrl: "/pricing-service/version" },
     {

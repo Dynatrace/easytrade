@@ -42,15 +42,6 @@ services:
     environment:
       MSSQL_CONNECTIONSTRING: *java-connection-string
 
-  manager:
-    <<: *default-service
-    image: ${REGISTRY}/manager:${TAG}
-    depends_on:
-      - db
-    environment:
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
-      PROXY_PREFIX: manager
-
   pricing-service:
     <<: *default-service
     image: ${REGISTRY}/pricing-service:${TAG}
@@ -155,9 +146,9 @@ services:
     <<: *default-service
     image: ${REGISTRY}/accountservice:${TAG}
     depends_on:
-      - manager
+      - db-adapter
     environment:
-      MANAGER_HOSTANDPORT: manager:8080
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
       PROXY_PREFIX: accountservice
 
   credit-card-order-service:
