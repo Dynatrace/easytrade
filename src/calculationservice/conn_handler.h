@@ -47,6 +47,8 @@ public:
         event_base_loopbreak(evbase_.get());
     }
 
+    struct event_base* GetEventBase() const { return evbase_.get(); }
+
     operator AMQP::TcpHandler *(){
         return &evhandler_;
     }

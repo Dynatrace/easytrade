@@ -19,7 +19,7 @@ RUN git clone -b v4.3.26 https://github.com/CopernicaMarketingSoftware/AMQP-CPP.
     && make \
     && make install
 
-COPY ["conn_handler.h", "consume.cpp", "./"]
+COPY ["conn_handler.h", "health.h", "consume.cpp", "./"]
 
 RUN wget ${ONEAGENT_SDK_URL} -O oneagentsdk.tar.gz \
     && tar -zxvf oneagentsdk.tar.gz \

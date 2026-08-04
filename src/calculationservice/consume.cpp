@@ -5,6 +5,7 @@
 #include <amqpcpp.h>
 
 #include "conn_handler.h"
+#include "health.h"
 #include "onesdk/onesdk.h"
 
 
@@ -89,7 +90,7 @@ void receiveMessage(std::string message){
     return;
 }
 
-void consume(std::string address, std::string queue){
+void consume(std::string address, std::string queue, uint16_t health_port){
     ConnHandler handler;
     AMQP::TcpConnection connection(handler, AMQP::Address(address));
     AMQP::TcpChannel channel(&connection);
@@ -97,6 +98,7 @@ void consume(std::string address, std::string queue){
     channel.onError(
         [&handler](const char *message){
             std::cout << "Channel error: " << message << std::endl;
+            set_health_status(false);
             handler.Stop();
         }
     );
@@ -108,11 +110,17 @@ void consume(std::string address, std::string queue){
                 receiveMessage(msg.body());
             }
         )
+        .onSuccess(
+            [](const std::string &){ set_health_status(true); }
+        )
         .onError(
             [](const char *message){
                 std::cout << "consume operation failed" << std::endl;
+                set_health_status(false);
             }
         );
+
+    HealthServer health(handler.GetEventBase(), health_port);
 
     handler.Start();
 
@@ -134,21 +142,24 @@ std::string getEnvVariable(const char *env_var){
 
 int main(int argc, char **argv)
 {
-    std::string user = getEnvVariable("RABBITMQ_USER");
+    std::string user     = getEnvVariable("RABBITMQ_USER");
     std::string password = getEnvVariable("RABBITMQ_PASSWORD");
-    std::string host = getEnvVariable("RABBITMQ_HOST");
-    std::string port = getEnvVariable("RABBITMQ_PORT");
-    std::string queue = getEnvVariable("RABBITMQ_QUEUE");
+    std::string host     = getEnvVariable("RABBITMQ_HOST");
+    std::string port     = getEnvVariable("RABBITMQ_PORT");
+    std::string queue    = getEnvVariable("RABBITMQ_QUEUE");
+    std::string health_port_str = getEnvVariable("HEALTH_PORT");
 
-    if (user == "" || password == "" || host == "" || port == "" || queue == ""){
+    if (user == "" || password == "" || host == "" || port == "" || queue == "" || health_port_str == "") {
         return EXIT_FAILURE;
     }
+
+    uint16_t health_port = static_cast<uint16_t>(std::stoi(health_port_str));
     std::string address = "amqp://" + user + ":" + password + "@" + host + ":" + port;
 
     /* Initialize SDK */
     onesdk_result_t const onesdk_init_result = onesdk_initialize();
 
-    consume(address, queue);
+    consume(address, queue, health_port);
 
     if (onesdk_init_result == ONESDK_SUCCESS){
         onesdk_shutdown();

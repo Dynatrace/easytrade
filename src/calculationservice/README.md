@@ -8,6 +8,19 @@ C++ service that reads some data from RabbitMQ and puts the result on the defaul
 - C++
 - RabbitMQ
 
+## Environment variables
+
+- `RABBITMQ_USER`
+- `RABBITMQ_PASSWORD`
+- `RABBITMQ_HOST`
+- `RABBITMQ_PORT` 
+- `RABBITMQ_QUEUE` — Queue name to consume from 
+- `HEALTH_PORT` — Health endpoint listen port 
+
+## Health endpoints
+
+The service exposes `/livez` (always `200 OK` while the process is running) and `/readyz` (`200 OK` once the RabbitMQ consume is established, `503` otherwise) on port `HEALTH_PORT`.
+
 ## Local build instructions
 
 ```bash
