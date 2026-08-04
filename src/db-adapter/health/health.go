@@ -25,7 +25,11 @@ func NewServer(port string, backend repository.DBBackend) *http.Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/livez", livez)
 	mux.HandleFunc("/readyz", readyz(backend))
-	return &http.Server{Addr: fmt.Sprintf(":%s", port), Handler: mux}
+	return &http.Server{
+		Addr:              fmt.Sprintf(":%s", port),
+		Handler:           mux,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
 }
 
 func livez(w http.ResponseWriter, _ *http.Request) {
