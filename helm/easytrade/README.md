@@ -68,6 +68,7 @@ The easytrade chart includes the following microservices:
 - `calculationservice` - Calculation engine
 - `credit-card-order-service` - Credit card order processing
 - `db` - Microsoft SQL Server database (StatefulSet)
+- `db-adapter` - gRPC service exposing the database behind a stable interface (pluggable backend: MSSQL/Postgres)
 - `feature-flag-service` - Feature flag management
 - `frontend` - React frontend application
 - `frontendreverseproxy` - Nginx reverse proxy

@@ -321,7 +321,7 @@ user-service:
   enabled: true
   env:
     PROXY_PREFIX: "user-service"
-    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
       cpu: 20m
