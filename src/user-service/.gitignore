@@ -1,0 +1,6 @@
+# VS Code
+.vscode
+
+# Binaries
+user-service
+*.exe

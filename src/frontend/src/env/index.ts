@@ -7,12 +7,8 @@ export class EnvProxy {
         return `${window.location.origin}/feature-flag-service/v1`
     }
 
-    static getAccountServiceUrl(): string {
-        return `${window.location.origin}/accountservice/api`
-    }
-
-    static getLoginServiceUrl(): string {
-        return `${window.location.origin}/loginservice/api`
+    static getUserServiceUrl(): string {
+        return `${window.location.origin}/user-service/api`
     }
 
     static getBrokerServiceUrl(): string {
