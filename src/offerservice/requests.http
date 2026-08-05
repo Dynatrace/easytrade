@@ -39,7 +39,7 @@ Content-Type: application/json
     "lastName": "Doe",
     "username": "johndoe",
     "email": "john.doe@example.com",
-    "hashedPassword": "password123",
+    "password": "password123",
     "address": "Fantasy Lane 34 Chicago USA",
     "origin": "offerservice"
 }
