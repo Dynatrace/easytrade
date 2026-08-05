@@ -15,7 +15,7 @@
         "dataSource": "request.path"
       },
       "type": "EQUALS",
-      "value": "/accountservice/api/accounts/presets",
+      "value": "/user-service/api/accounts/presets",
       "caseSensitive": true
     }
   ],

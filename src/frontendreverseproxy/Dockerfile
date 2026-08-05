@@ -7,9 +7,8 @@ COPY nginx.conf /etc/nginx/templates/nginx.conf.template
 EXPOSE 80
 
 # Set default values for environment variables
-ENV LOGIN_SERVICE_URL=http://loginservice:8080 \
-    BROKER_SERVICE_URL=http://broker-service:8080 \
-    ACCOUNT_SERVICE_URL=http://accountservice:8080 \
+ENV BROKER_SERVICE_URL=http://broker-service:8080 \
+    USER_SERVICE_URL=http://user-service:8080 \
     PRICING_SERVICE_URL=http://pricing-service:8080 \
     OFFER_SERVICE_URL=http://offerservice:8080 \
     CREDIT_CARD_ORDER_SERVICE_URL=http://credit-card-order-service:8080 \

@@ -62,18 +62,13 @@ export default function UserPanel() {
 
     const queryClient = useQueryClient()
     const { mutate } = useMutation({
+        // eslint-disable-next-line @typescript-eslint/require-await -- useMutation requires an async mutationFn
         mutationFn: async () => {
-            const { error } = await logoutHandler(userId ?? "")
-            if (error !== undefined) {
-                throw error
-            }
+            logoutHandler()
         },
         onMutate: handleClose,
         onSuccess: () => {
             logoutInvalidateQuery(queryClient)
-        },
-        onError: (error) => {
-            console.error(`There was an error during logout: ${error}`)
         },
     })
 

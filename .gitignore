@@ -3,3 +3,6 @@
 
 ### Go binaries ###
 src/feature-flag-service/feature-flag-service
+
+### proto generation tooling (downloaded, not checked in) ###
+src/proto/.tools/
