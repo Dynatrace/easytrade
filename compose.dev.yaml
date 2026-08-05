@@ -100,13 +100,7 @@ services:
     <<: *default-service
     build:
       context: src/frontend
-      dockerfile: Dockerfile.dev
-      # dockerfile: Dockerfile
-    # depends_on:
-    #   - broker-service
-    #   - user-service
-    #   - pricing-service
-    #   - credit-card-order-service
+      dockerfile: Dockerfile
     ports:
       - 8092:3000
     volumes:
@@ -132,8 +126,11 @@ services:
     build: src/loadgen
     depends_on:
       - frontendreverseproxy
+    ports:
+      - 8097:8080
     environment:
       EASYTRADE_URL: http://frontendreverseproxy
+      HEALTH_PORT: 8080
 
   offerservice:
     <<: *default-service

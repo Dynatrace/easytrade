@@ -31,6 +31,7 @@ function getProviderConfig(): ProviderConfig {
 
 export function getConfig(): Config {
     return {
+        healthPort: EnvConfig.ensureNumber("HEALTH_PORT", 8080),
         concurrent_visits: EnvConfig.ensureNumber("CONCURRENCY", 5),
         concurrent_browsers: EnvConfig.ensureNumber("BROWSERS", 1),
         browserTimeToLiveMinutes: EnvConfig.ensureNumber(

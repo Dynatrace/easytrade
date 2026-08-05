@@ -12,9 +12,11 @@ import {
     StatsRunner,
 } from "@demoability/loadgen-core/lib/stats"
 import { TIME_UNITS } from "@demoability/loadgen-core/lib/time"
+import { HealthServer } from "./healthServer"
 
 async function main() {
     const config = getConfig()
+    const server = new HealthServer(config.healthPort)
 
     const provider = getProvider(config)
     const headless = config.headlessMode === "headless"
@@ -60,6 +62,7 @@ async function main() {
         statsRunner: statRunner,
     })
 
+    server.setReady()
     await loadgen.run()
 }
 
