@@ -6,10 +6,10 @@
 
 | Technology                     | Services                                                                                                                 |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| Java 21 / Spring Boot / Gradle | `accountservice`, `credit-card-order-service`, `feature-flag-service`                                                    |
-| Go / Go Modules                | `background-service`, `pricing-service`                                                                                 |
+| Java 21 / Spring Boot / Gradle | `credit-card-order-service`, `feature-flag-service`          |
+| Go / Go Modules                | `pricing-service`, `background-service`                                                        |
 | TypeScript / Node.js / npm     | `frontend`, `loadgen`, `offerservice`                                                                                    |
-| C# / .NET 8 / NuGet            | `broker-service`, `loginservice`, `manager`                                                                              |
+| C# / .NET 8 / NuGet            | `broker-service`, `manager`                                                                                             |
 | Python / Poetry                | `db/user-generator` (local utility script, not a service)                                                                |
 | Config only (no packages)      | `calculationservice` (C++, built in Dockerfile), `frontendreverseproxy` (nginx), `rabbitmq`, `db` (MSSQL)                |
 

@@ -59,10 +59,6 @@
       "definition": "{{ .loginReferenceCount }}"
     },
     {
-      "name": "logoutReferenceCount",
-      "definition": "{{ .logoutReferenceCount }}"
-    },
-    {
       "name": "priceReferenceCount",
       "definition": "{{ .priceReferenceCount }}"
     },
@@ -160,14 +156,6 @@
       "name": "Bizevent type [login] count",
       "objectiveType": "DQL",
       "dqlQuery": "{{ .queryLogin }}",
-      "comparisonOperator": "GREATER_THAN_OR_EQUAL",
-      "autoAdaptiveThresholdEnabled": false,
-      "target": 1.0
-    },
-    {
-      "name": "Bizevent type [logout] count",
-      "objectiveType": "DQL",
-      "dqlQuery": "{{ .queryLogout }}",
       "comparisonOperator": "GREATER_THAN_OR_EQUAL",
       "autoAdaptiveThresholdEnabled": false,
       "target": 1.0

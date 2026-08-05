@@ -1,0 +1,46 @@
+@baseUrl = http://localhost:8089
+
+### Login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "demouser",
+  "password": "demopass"
+}
+
+### Login - preset account
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "james_norton",
+  "password": "pass_james_123"
+}
+
+### Signup
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "packageId": "a0000000-0000-4000-8000-000000000001",
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "username": "jane_doe",
+  "email": "jane.doe@example.com",
+  "password": "securepassword",
+  "origin": "WEB",
+  "address": "123 Main St, Springfield"
+}
+
+### Get account by ID
+GET {{baseUrl}}/api/accounts/c2a70e99-436a-4e4a-9b98-2d4e73135c66
+
+### Get preset accounts
+GET {{baseUrl}}/api/accounts/presets
+
+### Get preset accounts with limit
+GET {{baseUrl}}/api/accounts/presets?limit=5
+
+### Get version
+GET {{baseUrl}}/api/version

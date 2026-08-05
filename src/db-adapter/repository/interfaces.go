@@ -69,6 +69,7 @@ type PricingRepository interface {
 }
 
 type ProductRepository interface {
+	GetByID(ctx context.Context, id string) (*pb.ProductMessage, error)
 	GetAll(ctx context.Context) ([]*pb.ProductMessage, error)
 }
 

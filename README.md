@@ -18,7 +18,6 @@ EasyTrade consists of the following services/components:
 
 | Service                                                              | Proxy port | Proxy endpoint               |
 | -------------------------------------------------------------------- | ---------- | ---------------------------- |
-| [Account service](src/accountservice/README.md)                      | 80         | `/accountservice`            |
 | [Background service](src/background-service/README.md)               | 80         | `/third-party-service`       |
 | [Broker service](src/broker-service/README.md)                       | 80         | `/broker-service`            |
 | [Calculation service](src/calculationservice/README.md)              | 80         | `---`                        |
@@ -28,12 +27,10 @@ EasyTrade consists of the following services/components:
 | [Frontend](src/frontend/README.md)                                   | 80         | `/`                          |
 | [Frontend reverse-proxy](src/frontendreverseproxy/README.md)         | 80         | `---`                        |
 | [Loadgen](src/loadgen/README.md)                                     | --         | `---`                        |
-| [Login service](src/loginservice/README.md)                          | 80         | `/loginservice`              |
 | [Manager](src/manager/easyTradeManager/README.md)                    | 80         | `/manager`                   |
 | [Offer service](src/offerservice/README.md)                          | 80         | `/offerservice`              |
 | [Pricing service](src/pricing-service/README.md)                     | 80         | `/pricing-service`           |
 | [RabbitMQ](src/rabbitmq/README.md)                                   | 80         | `---`                        |
-
 > To learn more about endpoints / swagger for the services go to their respective readmes
 
 ## Docker compose
@@ -161,7 +158,6 @@ can also handle XML requests. Data types are negotiated based on `Accept` and `C
 
 | Service                                                           | Accepted XML MIME types                            |
 | ----------------------------------------------------------------- | -------------------------------------------------- |
-| [LoginService](src/loginservice/README.md)                        | `application/xml`; `text/xml`; `application/*+xml` |
 | [CreditCardOrderService](src/credit-card-order-service/README.md) | `application/xml`                                  |
 | [OfferService](src/offerservice/README.md)                        | `application/xml`; `text/xml`                      |
 | [PricingService](src/pricing-service/README.md)                   | `application/xml`                                  |

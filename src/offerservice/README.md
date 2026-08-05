@@ -1,6 +1,6 @@
 # easyTradeOfferService
 
-A Node.js/Express service that acts as the public-facing API for product and package information, and for new user registration. It primarily exists to serve the aggregator service, acting as the gateway between it and the internal backend services (manager, loginservice).
+A Node.js/Express service that acts as the public-facing API for product and package information, and for new user registration. It primarily exists to serve the aggregator service, acting as the gateway between it and the internal backend services (manager, user-service).
 
 ## Technologies used
 
@@ -34,9 +34,9 @@ npm start       # runs ./dist/app.js
 | `MANAGER_PROTOCOL`               | `http`      | Protocol for manager service                       |
 | `MANAGER_BASE_URL`               | `localhost` | Hostname for manager service                       |
 | `MANAGER_PORT`                   | `8081`      | Port for manager service                           |
-| `LOGIN_SERVICE_PROTOCOL`         | `http`      | Protocol for loginservice                          |
-| `LOGIN_SERVICE_BASE_URL`         | `localhost` | Hostname for loginservice                          |
-| `LOGIN_SERVICE_PORT`             | `8081`      | Port for loginservice                              |
+| `USER_SERVICE_PROTOCOL`          | `http`      | Protocol for user-service                          |
+| `USER_SERVICE_BASE_URL`          | `localhost` | Hostname for user-service                          |
+| `USER_SERVICE_PORT`              | `8080`      | Port for user-service                              |
 | `FEATURE_FLAG_SERVICE_PROTOCOL`  | `http`      | Protocol for feature flag service                  |
 | `FEATURE_FLAG_SERVICE_BASE_URL`  | `localhost` | Hostname for feature flag service                  |
 | `FEATURE_FLAG_SERVICE_PORT`      | `80`        | Port for feature flag service                      |
@@ -50,7 +50,7 @@ See [`requests.http`](./requests.http) for ready-to-run example requests coverin
 | Method | Path                        | Description                                          |
 | ------ | --------------------------- | ---------------------------------------------------- |
 | GET    | `/api/offers/:platform`     | Returns packages and products available for a given aggregator platform. Accepts optional query filters. Responds with JSON by default; set `Accept: application/xml` for XML. |
-| POST   | `/api/signup`               | Creates a new user account via loginservice. Proxies the request body directly. |
+| POST   | `/api/signup`               | Creates a new user account via user-service. Proxies the request body directly. |
 | GET    | `/version`                  | Returns the service version as plain text or JSON.   |
 
 ### Offer filters

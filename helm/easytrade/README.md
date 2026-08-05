@@ -63,7 +63,6 @@ Each service can be configured individually. All services share the same configu
 
 The easytrade chart includes the following microservices:
 
-- `accountservice` - Account management service
 - `background-service` - Consolidated data aggregation, content/pricing generation, credit-card manufacture/courier simulation, and (Kubernetes-only) problem-pattern operator
 - `broker-service` - Trading broker service
 - `calculationservice` - Calculation engine
@@ -73,11 +72,11 @@ The easytrade chart includes the following microservices:
 - `frontend` - React frontend application
 - `frontendreverseproxy` - Nginx reverse proxy
 - `loadgen` - Load generator
-- `loginservice` - Authentication service
 - `manager` - Management service
 - `offerservice` - Offer management
 - `pricing-service` - Pricing calculation
 - `rabbitmq` - RabbitMQ message broker
+- `user-service` - Account and authentication service
 
 ### Example Configurations
 
@@ -89,7 +88,7 @@ global:
     tag: "v1.0.0"
 
 # Enable only core services
-accountservice:
+user-service:
   enabled: true
 broker-service:
   enabled: true

@@ -20,6 +20,11 @@ message ProductsResponse {
   repeated ProductMessage products = 1;
 }
 
+message GetProductRequest {
+  string id = 1;
+}
+
 service ProductService {
   rpc GetProducts(google.protobuf.Empty) returns (ProductsResponse) {}
+  rpc GetProductById(GetProductRequest) returns (ProductMessage) {}
 }
