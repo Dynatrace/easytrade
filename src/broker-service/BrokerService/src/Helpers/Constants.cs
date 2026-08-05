@@ -5,8 +5,6 @@
         public const string PricingService = "PRICINGSERVICE_HOSTANDPORT";
         public const string DbAdapterService = "DBADAPTER_HOSTANDPORT";
         public const string UserService = "USER_SERVICE_HOSTANDPORT";
-        public const string ProxyPrefix = "PROXY_PREFIX";
-        public const string MsSqlConnectionString = "MSSQL_CONNECTIONSTRING";
         public const string FeatureFlagServiceProtocol = "FEATURE_FLAG_SERVICE_PROTOCOL";
         public const string FeatureFlagServiceBaseUrl = "FEATURE_FLAG_SERVICE_BASE_URL";
         public const string FeatureFlagServicePort = "FEATURE_FLAG_SERVICE_PORT";
