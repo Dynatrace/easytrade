@@ -78,7 +78,7 @@ func signupTick(ctx context.Context, p *Platform, packageProb PackageProbability
 	l := logger.GetSugar().Named(p.Name)
 	l.Info("Signing up a user...")
 
-	sr := createFakeSignupRequest(p.Name, packageProb)
+	sr := newSignupRequest(p.Name, packageProb)
 
 	if err := p.Service.Signup(ctx, p.Name, sr); err != nil {
 		l.Error("Signing up a user failed")

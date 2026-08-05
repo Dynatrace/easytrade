@@ -49,7 +49,7 @@ func (h *OfferServiceClient) Signup(ctx context.Context, platformName string, re
 	return nil
 }
 
-func createFakeSignupRequest(platformName string, packageProb PackageProbability) *SignupRequest {
+func newSignupRequest(platformName string, packageProb PackageProbability) *SignupRequest {
 	sr := &SignupRequest{}
 
 	sr.PackageId = randomPackageID(packageProb)

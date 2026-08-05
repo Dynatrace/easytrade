@@ -16,7 +16,7 @@ const (
 )
 
 type OfferService interface {
-	GetOffers(ctx context.Context, platformName string, filter string, maxFee float32, format offerFormat) (time.Duration, error)
+	GetOffers(ctx context.Context, platformName string, filter string, maxFee *float32, format offerFormat) (time.Duration, error)
 	Signup(ctx context.Context, platformName string, request *SignupRequest) error
 }
 

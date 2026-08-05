@@ -14,7 +14,7 @@ type offerServiceStub struct {
 	xmlCallCount  int
 }
 
-func (op *offerServiceStub) GetOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32, format offerFormat) (time.Duration, error) {
+func (op *offerServiceStub) GetOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter *float32, format offerFormat) (time.Duration, error) {
 	if format == xmlOfferFormat {
 		op.xmlCallCount++
 	} else {

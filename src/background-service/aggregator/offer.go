@@ -38,7 +38,7 @@ type OfferServiceClient struct {
 	http    *httpclient.Client
 }
 
-func (c *OfferServiceClient) GetOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter float32, format offerFormat) (time.Duration, error) {
+func (c *OfferServiceClient) GetOffers(ctx context.Context, platformName, productFilter string, maxYearlyFeeFilter *float32, format offerFormat) (time.Duration, error) {
 	l := logger.GetSugar().Named(platformName)
 
 	url := fmt.Sprintf(offersEndpoint, c.baseURL, platformName)
@@ -51,7 +51,9 @@ func (c *OfferServiceClient) GetOffers(ctx context.Context, platformName, produc
 	}
 	q := req.URL.Query()
 	q.Add("productFilter", productFilter)
-	q.Add("maxYearlyFeeFilter", fmt.Sprint(maxYearlyFeeFilter))
+	if maxYearlyFeeFilter != nil {
+		q.Add("maxYearlyFeeFilter", fmt.Sprint(*maxYearlyFeeFilter))
+	}
 	req.URL.RawQuery = q.Encode()
 
 	l.Infow("Sending offer request", "productFilter", productFilter, "maxYearlyFeeFilter", maxYearlyFeeFilter)
