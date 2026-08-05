@@ -64,7 +64,6 @@ services:
     environment:
       USER_SERVICE_HOSTANDPORT: user-service:8080
       PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
-      ENGINE_HOSTANDPORT: engine:8080
       <<: *feature-flag-service-env
       PROXY_PREFIX: broker-service
       MSSQL_CONNECTIONSTRING: *dotnet-connection-string
@@ -140,15 +139,6 @@ services:
     environment:
       DBADAPTER_HOSTANDPORT: db-adapter:50051
       PROXY_PREFIX: accountservice
-
-  engine:
-    <<: *default-service
-    image: ${REGISTRY}/engine:${TAG}
-    depends_on:
-      - broker-service
-    environment:
-      BROKER_HOSTANDPORT: broker-service:8080
-      PROXY_PREFIX: engine
 
   credit-card-order-service:
     <<: *default-service
