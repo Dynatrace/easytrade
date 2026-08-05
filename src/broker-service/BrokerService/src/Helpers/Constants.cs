@@ -3,8 +3,8 @@
     public static class Constants
     {
         public const string PricingService = "PRICINGSERVICE_HOSTANDPORT";
-        public const string AccountService = "ACCOUNTSERVICE_HOSTANDPORT";
         public const string DbAdapterService = "DBADAPTER_HOSTANDPORT";
+        public const string UserService = "USER_SERVICE_HOSTANDPORT";
         public const string ProxyPrefix = "PROXY_PREFIX";
         public const string MsSqlConnectionString = "MSSQL_CONNECTIONSTRING";
         public const string FeatureFlagServiceProtocol = "FEATURE_FLAG_SERVICE_PROTOCOL";

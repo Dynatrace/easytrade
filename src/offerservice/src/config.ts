@@ -17,14 +17,14 @@ export const config = {
 
     dbAdapterHostAndPort: env("DBADAPTER_HOSTANDPORT", "localhost:50051"),
 
-    loginServiceUrl: `${env("LOGIN_SERVICE_PROTOCOL", "http")}://${env("LOGIN_SERVICE_BASE_URL", "localhost")}:${env("LOGIN_SERVICE_PORT", "8081")}`,
+    userServiceUrl: `${env("USER_SERVICE_PROTOCOL", "http")}://${env("USER_SERVICE_BASE_URL", "localhost")}:${env("USER_SERVICE_PORT", "8080")}`,
 
     featureFlagServiceUrl: `${env("FEATURE_FLAG_SERVICE_PROTOCOL", "http")}://${env("FEATURE_FLAG_SERVICE_BASE_URL", "localhost")}:${env("FEATURE_FLAG_SERVICE_PORT", "80")}`,
 } as const
 
 export const urls = {
     createAccount: () =>
-        `${config.loginServiceUrl}/api/Accounts/CreateNewAccount`,
+        `${config.userServiceUrl}/api/auth/signup`,
     getFeatureFlag: (flagId: string) =>
         `${config.featureFlagServiceUrl}/v1/flags/${flagId}`,
 } as const

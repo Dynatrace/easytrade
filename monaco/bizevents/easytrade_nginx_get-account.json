@@ -23,7 +23,7 @@
         "dataSource": "request.path"
       },
       "type": "STARTS_WITH",
-      "value": "/accountservice/api/accounts",
+      "value": "/user-service/api/accounts",
       "caseSensitive": true
     }
   ],
