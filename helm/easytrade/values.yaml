@@ -166,6 +166,23 @@ feature-flag-service:
 
 frontend:
   enabled: true
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 5
+    timeoutSeconds: 3
+    periodSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
   resources:
     requests:
       cpu: 10m
@@ -190,6 +207,23 @@ frontendreverseproxy:
     PRICING_SERVICE_URL: "http://{{ .Release.Name }}-pricing-service:8080"
     THIRD_PARTY_SERVICE_URL: "http://{{ .Release.Name }}-third-party-service:8080"
     USER_SERVICE_URL: "http://{{ .Release.Name }}-user-service:8080"
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 5
+    timeoutSeconds: 3
+    periodSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
   resources:
     requests:
       cpu: 50m
