@@ -7,7 +7,7 @@ Of course it is all fake data and the price has a 24 hour cycle...
 ## Architecture diagram
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"fontSize": "14px", "background": "#ffffff"}}}%%
+%%{init: {"theme": "neutral", "themeVariables": {"fontSize": "14px"}}}%%
 graph TD
     %% ── Language / role colours ──────────────────────────────────────────
     classDef java     fill:#E74C3C,stroke:#C0392B,color:#fff
@@ -110,7 +110,7 @@ graph TD
 ## Database diagram
 
 ```mermaid
-%%{init: {"theme": "base", "themeVariables": {"fontSize": "14px", "background": "#ffffff"}}}%%
+%%{init: {"theme": "neutral", "themeVariables": {"fontSize": "14px"}}}%%
 erDiagram
 
     Packages {
