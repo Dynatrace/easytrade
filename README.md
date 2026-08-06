@@ -20,43 +20,42 @@ graph TD
     classDef external fill:#FDFEFE,stroke:#85929E,color:#2C3E50,stroke-dasharray:4 3
 
     %% ── Infrastructure ───────────────────────────────────────────────────
-    db[(db\nMSSQL or PostgreSQL\nselected by DB_TYPE\nport 1433 / 5432)]:::dbnode
+    db[(db\nMSSQL or PostgreSQL\nport 1433 / 5432)]:::dbnode
     rabbitmq([rabbitmq\nqueue Trade_Data_Raw\nport 5672]):::mqnode
 
     %% ── Entry points ─────────────────────────────────────────────────────
-    loadgen["loadgen\nTypeScript · Puppeteer\n(drives the UI in a browser)"]:::ts
+    loadgen["loadgen\nTypeScript"]:::ts
     proxy["frontendreverseproxy\nnginx · port 80"]:::nginx
-    frontend["frontend\nTypeScript · React + Vite\nport 3000"]:::ts
+    frontend["frontend\nTypeScript · static SPA\nport 3000"]:::ts
 
     %% ── Services ─────────────────────────────────────────────────────────
-    offerservice["offerservice\nTypeScript · Express"]:::ts
+    offerservice["offerservice\nTypeScript"]:::ts
 
     manager["manager\nC# · .NET 8"]:::dotnet
-    brokerservice["broker-service\nC# · .NET 8 · EF Core"]:::dotnet
+    brokerservice["broker-service\nC# · .NET 8"]:::dotnet
 
-    contentcreator["contentcreator\nJava 21 · Spring Boot\n(no inbound API)"]:::java
-    ccservice["credit-card-order-service\nJava 21 · Spring Boot"]:::java
-    thirdparty["third-party-service\nJava 21 · Spring Boot"]:::java
-    featureflag["feature-flag-service\nJava 21 · Spring Boot"]:::java
+    contentcreator["contentcreator\nJava 21"]:::java
+    ccservice["credit-card-order-service\nJava 21"]:::java
+    thirdparty["third-party-service\nJava 21"]:::java
+    featureflag["feature-flag-service\nJava 21"]:::java
 
-    pricingservice["pricing-service\nGo · Gin + GORM"]:::golang
-    userservice["user-service\nGo · Gin"]:::golang
-    dbadapter["db-adapter\nGo · gRPC server\nport 50051"]:::golang
-    aggregator["aggregator-service\nGo\n50% JSON · 50% XML"]:::golang
-    problemoperator["problem-operator\nGo · client-go\n(Kubernetes only)"]:::golang
+    pricingservice["pricing-service\nGo"]:::golang
+    userservice["user-service\nGo"]:::golang
+    dbadapter["db-adapter\nGo · port 50051"]:::golang
+    aggregator["aggregator-service\nGo"]:::golang
+    problemoperator["problem-operator\nGo · Kubernetes only"]:::golang
 
-    calculationservice["calculationservice\nC++ binary\n(no inbound API)"]:::cpp
+    calculationservice["calculationservice\nC++"]:::cpp
 
     %% ── External / optional ──────────────────────────────────────────────
     k8sapi["Kubernetes API"]:::external
-    mainframe["mainframe · z/OS Connect\nexternal, optional\nMAINFRAME_SERVICE_URL"]:::external
+    mainframe["mainframe\nexternal · optional"]:::external
 
     %% ── Entry traffic ────────────────────────────────────────────────────
-    loadgen         -->|HTTP| proxy
-    frontend        -.->|"HTTP\nSPA calls back through the proxy"| proxy
+    loadgen         -->|"HTTP\nbrowser session"| proxy
 
     %% ── Reverse proxy → services ─────────────────────────────────────────
-    proxy           -->|"HTTP  /"| frontend
+    proxy           -->|"HTTP  /\nstatic assets only"| frontend
     proxy           -->|"HTTP  /broker-service"| brokerservice
     proxy           -->|"HTTP  /user-service"| userservice
     proxy           -->|"HTTP  /pricing-service"| pricingservice
@@ -70,7 +69,7 @@ graph TD
     brokerservice   -->|HTTP| userservice
     brokerservice   -->|HTTP| pricingservice
     brokerservice   -->|HTTP| featureflag
-    brokerservice   -->|"EF Core"| db
+    brokerservice   -->|SQL| db
     brokerservice   -.->|"HTTP\ncredit card validation"| mainframe
 
     %% ── offerservice ─────────────────────────────────────────────────────
@@ -83,7 +82,7 @@ graph TD
     dbadapter       -->|SQL| db
 
     %% ── pricing-service ──────────────────────────────────────────────────
-    pricingservice  -->|GORM| db
+    pricingservice  -->|SQL| db
     pricingservice  -->|"AMQP\npublish"| rabbitmq
 
     %% ── calculationservice ───────────────────────────────────────────────
@@ -92,17 +91,17 @@ graph TD
     %% ── credit-card-order-service ────────────────────────────────────────
     ccservice       -->|HTTP| thirdparty
     ccservice       -->|HTTP| featureflag
-    ccservice       -->|JDBC| db
+    ccservice       -->|SQL| db
 
     %% ── third-party-service ──────────────────────────────────────────────
     thirdparty      -->|HTTP| ccservice
     thirdparty      -->|HTTP| featureflag
 
     %% ── manager ──────────────────────────────────────────────────────────
-    manager         -->|"EF Core"| db
+    manager         -->|SQL| db
 
     %% ── contentcreator ───────────────────────────────────────────────────
-    contentcreator  -->|JDBC| db
+    contentcreator  -->|SQL| db
 
     %% ── aggregator-service ───────────────────────────────────────────────
     aggregator      -->|"HTTP\n(50% JSON / 50% XML)"| offerservice
