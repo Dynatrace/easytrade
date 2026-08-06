@@ -60,6 +60,19 @@ calculationservice:
     RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
     RABBITMQ_PORT: "5672"
     RABBITMQ_QUEUE: Trade_Data_Raw
+    HEALTH_PORT: "8080"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 10m
