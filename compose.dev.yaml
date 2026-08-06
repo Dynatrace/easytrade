@@ -151,11 +151,15 @@ services:
   user-service:
     <<: *default-service
     build: src/user-service
+    depends_on:
+      - db-adapter
     ports:
       - 8089:8080
     environment:
       # db-adapter is not part of the compose stack yet; user-service is prepared to call it.
       DB_ADAPTER_ADDRESS: db-adapter:50051
+      HEALTH_PORT: 8080
+      GIN_MODE: debug
       
   credit-card-order-service:
     <<: *default-service
