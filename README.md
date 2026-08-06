@@ -6,11 +6,237 @@ Of course it is all fake data and the price has a 24 hour cycle...
 
 ## Architecture diagram
 
-![EasyTrade architecture](./img/architecture.jpg)
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "14px"}}}%%
+graph TD
+    %% ── Language / role colours ──────────────────────────────────────────
+    classDef java     fill:#E74C3C,stroke:#C0392B,color:#fff
+    classDef golang   fill:#00ACD7,stroke:#007D9C,color:#fff
+    classDef ts       fill:#F0DB4F,stroke:#B8A200,color:#000
+    classDef dotnet   fill:#9B59B6,stroke:#7D3C98,color:#fff
+    classDef cpp      fill:#E67E22,stroke:#CA6F1E,color:#fff
+    classDef nginx    fill:#27AE60,stroke:#1E8449,color:#fff
+    classDef dbnode   fill:#566573,stroke:#2C3E50,color:#fff
+    classDef mqnode   fill:#D35400,stroke:#A04000,color:#fff
+
+    %% ── Infrastructure ───────────────────────────────────────────────────
+    db[(db\nMSSQL / PostgreSQL\nport 1433 / 5432)]:::dbnode
+    rabbitmq([rabbitmq\nRabbitMQ\nport 5672]):::mqnode
+
+    %% ── Services ─────────────────────────────────────────────────────────
+    proxy["frontendreverseproxy\nnginx\nport 80"]:::nginx
+    loadgen["loadgen\nTypeScript / Node.js"]:::ts
+    frontend["frontend\nTypeScript / React\nVite  port 3000"]:::ts
+    offerservice["offerservice\nTypeScript / Express\nport 8087"]:::ts
+
+    manager["manager\nC# / .NET 8\nport 8081"]:::dotnet
+    brokerservice["broker-service\nC# / .NET 8\nport 8084"]:::dotnet
+
+    contentcreator["contentcreator\nJava 21 / Spring Boot"]:::java
+    ccservice["credit-card-order-service\nJava 21 / Spring Boot\nport 8091"]:::java
+    thirdparty["third-party-service\nJava 21 / Spring Boot\nport 8093"]:::java
+    featureflag["feature-flag-service\nJava 21 / Spring Boot\nport 8094"]:::java
+    engine["engine\nJava 21 / Spring Boot\n⚠ compose.yaml only"]:::java
+
+    pricingservice["pricing-service\nGo / Gin + GORM\nport 8083"]:::golang
+    userservice["user-service\nGo\nport 8089"]:::golang
+    dbadapter["db-adapter\nGo / gRPC server\nport 50051"]:::golang
+    aggregator["aggregator-service\nGo\n50% JSON · 50% XML"]:::golang
+
+    calculationservice["calculationservice\nC++ binary\n(RabbitMQ consumer)"]:::cpp
+
+    %% ── External traffic ─────────────────────────────────────────────────
+    loadgen         -->|HTTP| proxy
+
+    %% ── Reverse proxy → services ─────────────────────────────────────────
+    proxy           -->|HTTP| frontend
+    proxy           -->|HTTP| brokerservice
+    proxy           -->|HTTP| pricingservice
+    proxy           -->|HTTP| featureflag
+    proxy           -->|HTTP| offerservice
+    proxy           -->|HTTP| ccservice
+    proxy           -->|HTTP| thirdparty
+    proxy           -->|HTTP| userservice
+    proxy           -->|HTTP| manager
+
+    %% ── broker-service ───────────────────────────────────────────────────
+    brokerservice   -->|HTTP| userservice
+    brokerservice   -->|HTTP| pricingservice
+    brokerservice   -->|HTTP| featureflag
+    brokerservice   -->|"HTTP\n⚠ prod only"| engine
+    brokerservice   -->|MSSQL| db
+
+    %% ── engine (compose.yaml / prod only) ────────────────────────────────
+    engine          -->|"HTTP\n⚠ prod only"| brokerservice
+
+    %% ── offerservice ─────────────────────────────────────────────────────
+    offerservice    -->|HTTP| userservice
+    offerservice    -->|HTTP| manager
+    offerservice    -->|HTTP| featureflag
+
+    %% ── user-service (dev vs prod) ───────────────────────────────────────
+    userservice     -->|"gRPC\n(dev)"| dbadapter
+    userservice     -->|"HTTP\n(prod)"| manager
+
+    %% ── db-adapter ───────────────────────────────────────────────────────
+    dbadapter       -->|SQL| db
+
+    %% ── pricing-service ──────────────────────────────────────────────────
+    pricingservice  -->|MSSQL| db
+    pricingservice  -->|"AMQP\npublish"| rabbitmq
+
+    %% ── calculationservice ───────────────────────────────────────────────
+    rabbitmq        -->|"AMQP\nconsume"| calculationservice
+
+    %% ── credit-card-order-service ────────────────────────────────────────
+    ccservice       -->|HTTP| thirdparty
+    ccservice       -->|HTTP| featureflag
+    ccservice       -->|MSSQL| db
+
+    %% ── third-party-service ──────────────────────────────────────────────
+    thirdparty      -->|HTTP| ccservice
+    thirdparty      -->|HTTP| featureflag
+
+    %% ── manager ──────────────────────────────────────────────────────────
+    manager         -->|MSSQL| db
+
+    %% ── contentcreator ───────────────────────────────────────────────────
+    contentcreator  -->|MSSQL| db
+
+    %% ── aggregator-service ───────────────────────────────────────────────
+    aggregator      -->|"HTTP\n(50% JSON / 50% XML)"| offerservice
+```
 
 ## Database diagram
 
-![EasyTrade database](./img/database.jpg)
+```mermaid
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "14px"}}}%%
+erDiagram
+
+    Packages {
+        uuid    Id      PK
+        varchar Name
+        decimal Price
+        varchar Support
+    }
+
+    Accounts {
+        uuid        Id                    PK
+        uuid        PackageId             FK
+        varchar     FirstName
+        varchar     LastName
+        varchar     Username
+        varchar     Email
+        varchar     HashedPassword
+        varchar     Origin
+        timestamptz CreationDate
+        timestamptz PackageActivationDate
+        bit         AccountActive
+        varchar     Address
+    }
+
+    Balance {
+        uuid    AccountId   PK "FK CASCADE"
+        decimal Value
+    }
+
+    Balancehistory {
+        uuid        Id          PK
+        uuid        AccountId   FK "CASCADE"
+        decimal     OldValue
+        decimal     ValueChange
+        varchar     ActionType
+        timestamptz ActionDate
+    }
+
+    Products {
+        uuid    Id       PK
+        varchar Name
+        decimal Ppt
+        varchar Currency
+    }
+
+    Instruments {
+        uuid    Id          PK
+        uuid    ProductId   FK
+        varchar Code
+        varchar Name
+        varchar Description
+    }
+
+    Pricing {
+        uuid        Id           PK
+        uuid        InstrumentId FK
+        timestamptz Timestamp
+        decimal     Open
+        decimal     High
+        decimal     Low
+        decimal     Close
+    }
+
+    Ownedinstruments {
+        uuid        Id                   PK
+        uuid        AccountId            FK "CASCADE"
+        uuid        InstrumentId         FK
+        decimal     Quantity
+        timestamptz LastModificationDate
+    }
+
+    Trades {
+        uuid        Id                  PK
+        uuid        AccountId           FK "CASCADE"
+        uuid        InstrumentId        FK
+        varchar     Direction
+        decimal     Quantity
+        decimal     EntryPrice
+        timestamptz TimestampOpen
+        timestamptz TimestampClose
+        bit         TradeClosed
+        bit         TransactionHappened
+        varchar     Status
+    }
+
+    CreditCardOrders {
+        uuid    Id              PK
+        uuid    AccountId       FK
+        varchar Email
+        varchar Name
+        varchar ShippingId
+        varchar ShippingAddress
+        varchar CardLevel
+    }
+
+    CreditCardOrderStatus {
+        uuid        Id                PK
+        uuid        CreditCardOrderId FK "CASCADE"
+        timestamptz Timestamp
+        varchar     Status
+        varchar     Details
+    }
+
+    CreditCards {
+        uuid        Id                PK
+        uuid        CreditCardOrderId FK "CASCADE"
+        varchar     Level
+        varchar     Number
+        varchar     Cvs
+        timestamptz ValidDate
+    }
+
+    %% ── Relationships ─────────────────────────────────────────────────────
+    Packages          ||--o{ Accounts             : "PackageId"
+    Accounts          ||--||  Balance              : "AccountId CASCADE"
+    Accounts          ||--o{ Balancehistory        : "AccountId CASCADE"
+    Accounts          ||--o{ Ownedinstruments      : "AccountId CASCADE"
+    Accounts          ||--o{ Trades                : "AccountId CASCADE"
+    Accounts          ||--o{ CreditCardOrders      : "AccountId"
+    Products          ||--o{ Instruments           : "ProductId"
+    Instruments       ||--o{ Pricing               : "InstrumentId"
+    Instruments       ||--o{ Ownedinstruments      : "InstrumentId"
+    Instruments       ||--o{ Trades                : "InstrumentId"
+    CreditCardOrders  ||--o{ CreditCardOrderStatus : "CreditCardOrderId CASCADE"
+    CreditCardOrders  ||--o{ CreditCards           : "CreditCardOrderId CASCADE"
+```
 
 ## Service list
 
