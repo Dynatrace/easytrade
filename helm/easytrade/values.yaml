@@ -312,6 +312,28 @@ rabbitmq:
     RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
     RABBITMQ_PORT: "5672"
     RABBITMQ_QUEUE: Trade_Data_Raw
+  livenessProbe:
+    exec:
+      command:
+        - /bin/bash
+        - -ec
+        - rabbitmq-diagnostics -q ping
+    initialDelaySeconds: 120
+    timeoutSeconds: 20
+    periodSeconds: 30
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    exec:
+      command:
+        - /bin/bash
+        - -ec
+        - rabbitmq-diagnostics -q check_running && rabbitmq-diagnostics -q check_local_alarms
+    initialDelaySeconds: 10
+    timeoutSeconds: 20
+    periodSeconds: 30
+    failureThreshold: 3
+    successThreshold: 1
   resources:
     requests:
       cpu: 10m
