@@ -14,6 +14,8 @@ Fake stock-broking demo application for Dynatrace showcases. 18 microservices co
 
 All services share one MSSQL database (`db`, port 1433). Connection string format differs by tech stack — see `compose.yaml` for the three variants (Java/JDBC, .NET, Go/sqlserver).
 
+For a visual overview of all services and their communication flows, see the **Architecture diagram** in [README.md](./README.md).
+
 ## Tech stacks
 
 | Stack | Services |
