@@ -17,71 +17,73 @@ graph TD
     classDef nginx    fill:#27AE60,stroke:#1E8449,color:#fff
     classDef dbnode   fill:#566573,stroke:#2C3E50,color:#fff
     classDef mqnode   fill:#D35400,stroke:#A04000,color:#fff
+    classDef external fill:#FDFEFE,stroke:#85929E,color:#2C3E50,stroke-dasharray:4 3
 
     %% ── Infrastructure ───────────────────────────────────────────────────
-    db[(db\nMSSQL / PostgreSQL\nport 1433 / 5432)]:::dbnode
-    rabbitmq([rabbitmq\nRabbitMQ\nport 5672]):::mqnode
+    db[(db\nMSSQL or PostgreSQL\nselected by DB_TYPE\nport 1433 / 5432)]:::dbnode
+    rabbitmq([rabbitmq\nqueue Trade_Data_Raw\nport 5672]):::mqnode
+
+    %% ── Entry points ─────────────────────────────────────────────────────
+    loadgen["loadgen\nTypeScript · Puppeteer\n(drives the UI in a browser)"]:::ts
+    proxy["frontendreverseproxy\nnginx · port 80"]:::nginx
+    frontend["frontend\nTypeScript · React + Vite\nport 3000"]:::ts
 
     %% ── Services ─────────────────────────────────────────────────────────
-    proxy["frontendreverseproxy\nnginx\nport 80"]:::nginx
-    loadgen["loadgen\nTypeScript / Node.js"]:::ts
-    frontend["frontend\nTypeScript / React\nVite  port 3000"]:::ts
-    offerservice["offerservice\nTypeScript / Express\nport 8087"]:::ts
+    offerservice["offerservice\nTypeScript · Express"]:::ts
 
-    manager["manager\nC# / .NET 8\nport 8081"]:::dotnet
-    brokerservice["broker-service\nC# / .NET 8\nport 8084"]:::dotnet
+    manager["manager\nC# · .NET 8"]:::dotnet
+    brokerservice["broker-service\nC# · .NET 8 · EF Core"]:::dotnet
 
-    contentcreator["contentcreator\nJava 21 / Spring Boot"]:::java
-    ccservice["credit-card-order-service\nJava 21 / Spring Boot\nport 8091"]:::java
-    thirdparty["third-party-service\nJava 21 / Spring Boot\nport 8093"]:::java
-    featureflag["feature-flag-service\nJava 21 / Spring Boot\nport 8094"]:::java
-    engine["engine\nJava 21 / Spring Boot\n⚠ compose.yaml only"]:::java
+    contentcreator["contentcreator\nJava 21 · Spring Boot\n(no inbound API)"]:::java
+    ccservice["credit-card-order-service\nJava 21 · Spring Boot"]:::java
+    thirdparty["third-party-service\nJava 21 · Spring Boot"]:::java
+    featureflag["feature-flag-service\nJava 21 · Spring Boot"]:::java
 
-    pricingservice["pricing-service\nGo / Gin + GORM\nport 8083"]:::golang
-    userservice["user-service\nGo\nport 8089"]:::golang
-    dbadapter["db-adapter\nGo / gRPC server\nport 50051"]:::golang
+    pricingservice["pricing-service\nGo · Gin + GORM"]:::golang
+    userservice["user-service\nGo · Gin"]:::golang
+    dbadapter["db-adapter\nGo · gRPC server\nport 50051"]:::golang
     aggregator["aggregator-service\nGo\n50% JSON · 50% XML"]:::golang
+    problemoperator["problem-operator\nGo · client-go\n(Kubernetes only)"]:::golang
 
-    calculationservice["calculationservice\nC++ binary\n(RabbitMQ consumer)"]:::cpp
+    calculationservice["calculationservice\nC++ binary\n(no inbound API)"]:::cpp
 
-    %% ── External traffic ─────────────────────────────────────────────────
+    %% ── External / optional ──────────────────────────────────────────────
+    k8sapi["Kubernetes API"]:::external
+    mainframe["mainframe · z/OS Connect\nexternal, optional\nMAINFRAME_SERVICE_URL"]:::external
+
+    %% ── Entry traffic ────────────────────────────────────────────────────
     loadgen         -->|HTTP| proxy
+    frontend        -.->|"HTTP\nSPA calls back through the proxy"| proxy
 
     %% ── Reverse proxy → services ─────────────────────────────────────────
-    proxy           -->|HTTP| frontend
-    proxy           -->|HTTP| brokerservice
-    proxy           -->|HTTP| pricingservice
-    proxy           -->|HTTP| featureflag
-    proxy           -->|HTTP| offerservice
-    proxy           -->|HTTP| ccservice
-    proxy           -->|HTTP| thirdparty
-    proxy           -->|HTTP| userservice
-    proxy           -->|HTTP| manager
+    proxy           -->|"HTTP  /"| frontend
+    proxy           -->|"HTTP  /broker-service"| brokerservice
+    proxy           -->|"HTTP  /user-service"| userservice
+    proxy           -->|"HTTP  /pricing-service"| pricingservice
+    proxy           -->|"HTTP  /offerservice"| offerservice
+    proxy           -->|"HTTP  /manager"| manager
+    proxy           -->|"HTTP  /credit-card-order-service"| ccservice
+    proxy           -->|"HTTP  /third-party-service"| thirdparty
+    proxy           -->|"HTTP  /feature-flag-service"| featureflag
 
     %% ── broker-service ───────────────────────────────────────────────────
     brokerservice   -->|HTTP| userservice
     brokerservice   -->|HTTP| pricingservice
     brokerservice   -->|HTTP| featureflag
-    brokerservice   -->|"HTTP\n⚠ prod only"| engine
-    brokerservice   -->|MSSQL| db
-
-    %% ── engine (compose.yaml / prod only) ────────────────────────────────
-    engine          -->|"HTTP\n⚠ prod only"| brokerservice
+    brokerservice   -->|"EF Core"| db
+    brokerservice   -.->|"HTTP\ncredit card validation"| mainframe
 
     %% ── offerservice ─────────────────────────────────────────────────────
     offerservice    -->|HTTP| userservice
     offerservice    -->|HTTP| manager
     offerservice    -->|HTTP| featureflag
 
-    %% ── user-service (dev vs prod) ───────────────────────────────────────
-    userservice     -->|"gRPC\n(dev)"| dbadapter
-    userservice     -->|"HTTP\n(prod)"| manager
-
-    %% ── db-adapter ───────────────────────────────────────────────────────
+    %% ── user-service → db-adapter → db ───────────────────────────────────
+    userservice     -->|gRPC| dbadapter
     dbadapter       -->|SQL| db
 
     %% ── pricing-service ──────────────────────────────────────────────────
-    pricingservice  -->|MSSQL| db
+    pricingservice  -->|GORM| db
     pricingservice  -->|"AMQP\npublish"| rabbitmq
 
     %% ── calculationservice ───────────────────────────────────────────────
@@ -90,20 +92,24 @@ graph TD
     %% ── credit-card-order-service ────────────────────────────────────────
     ccservice       -->|HTTP| thirdparty
     ccservice       -->|HTTP| featureflag
-    ccservice       -->|MSSQL| db
+    ccservice       -->|JDBC| db
 
     %% ── third-party-service ──────────────────────────────────────────────
     thirdparty      -->|HTTP| ccservice
     thirdparty      -->|HTTP| featureflag
 
     %% ── manager ──────────────────────────────────────────────────────────
-    manager         -->|MSSQL| db
+    manager         -->|"EF Core"| db
 
     %% ── contentcreator ───────────────────────────────────────────────────
-    contentcreator  -->|MSSQL| db
+    contentcreator  -->|JDBC| db
 
     %% ── aggregator-service ───────────────────────────────────────────────
     aggregator      -->|"HTTP\n(50% JSON / 50% XML)"| offerservice
+
+    %% ── problem-operator (Kubernetes only) ───────────────────────────────
+    problemoperator -->|"HTTP\npolls flags"| featureflag
+    problemoperator -->|"applies chaos patterns"| k8sapi
 ```
 
 ## Service list
@@ -118,6 +124,7 @@ EasyTrade consists of the following services/components:
 | [Content creator](src/contentcreator/README.md)                      | 80         | `---`                        |
 | [Credit card order service](src/credit-card-order-service/README.md) | 80         | `/credit-card-order-service` |
 | [Db](src/db/postgres/README.md)                                      | 80         | `---`                        |
+| [Db adapter](src/db-adapter/README.md)                               | 80         | `---`                        |
 | [Feature flag service](src/feature-flag-service/README.md)           | 80         | `/feature-flag-service`      |
 | [Frontend](src/frontend/README.md)                                   | 80         | `/`                          |
 | [Frontend reverse-proxy](src/frontendreverseproxy/README.md)         | 80         | `---`                        |
