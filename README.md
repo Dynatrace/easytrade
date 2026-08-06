@@ -7,7 +7,6 @@ Of course it is all fake data and the price has a 24 hour cycle...
 ## Architecture diagram
 
 ```mermaid
-%%{init: {"theme": "neutral", "themeVariables": {"fontSize": "14px"}}}%%
 graph TD
     %% ── Language / role colours ──────────────────────────────────────────
     classDef java     fill:#E74C3C,stroke:#C0392B,color:#fff
@@ -19,104 +18,97 @@ graph TD
     classDef dbnode   fill:#566573,stroke:#2C3E50,color:#fff
     classDef mqnode   fill:#D35400,stroke:#A04000,color:#fff
 
-    subgraph bg[" "]
-        direction TD
+    %% ── Infrastructure ───────────────────────────────────────────────────
+    db[(db\nMSSQL / PostgreSQL\nport 1433 / 5432)]:::dbnode
+    rabbitmq([rabbitmq\nRabbitMQ\nport 5672]):::mqnode
 
-        %% ── Infrastructure ───────────────────────────────────────────────────
-        db[(db\nMSSQL / PostgreSQL\nport 1433 / 5432)]:::dbnode
-        rabbitmq([rabbitmq\nRabbitMQ\nport 5672]):::mqnode
+    %% ── Services ─────────────────────────────────────────────────────────
+    proxy["frontendreverseproxy\nnginx\nport 80"]:::nginx
+    loadgen["loadgen\nTypeScript / Node.js"]:::ts
+    frontend["frontend\nTypeScript / React\nVite  port 3000"]:::ts
+    offerservice["offerservice\nTypeScript / Express\nport 8087"]:::ts
 
-        %% ── Services ─────────────────────────────────────────────────────────
-        proxy["frontendreverseproxy\nnginx\nport 80"]:::nginx
-        loadgen["loadgen\nTypeScript / Node.js"]:::ts
-        frontend["frontend\nTypeScript / React\nVite  port 3000"]:::ts
-        offerservice["offerservice\nTypeScript / Express\nport 8087"]:::ts
+    manager["manager\nC# / .NET 8\nport 8081"]:::dotnet
+    brokerservice["broker-service\nC# / .NET 8\nport 8084"]:::dotnet
 
-        manager["manager\nC# / .NET 8\nport 8081"]:::dotnet
-        brokerservice["broker-service\nC# / .NET 8\nport 8084"]:::dotnet
+    contentcreator["contentcreator\nJava 21 / Spring Boot"]:::java
+    ccservice["credit-card-order-service\nJava 21 / Spring Boot\nport 8091"]:::java
+    thirdparty["third-party-service\nJava 21 / Spring Boot\nport 8093"]:::java
+    featureflag["feature-flag-service\nJava 21 / Spring Boot\nport 8094"]:::java
+    engine["engine\nJava 21 / Spring Boot\n⚠ compose.yaml only"]:::java
 
-        contentcreator["contentcreator\nJava 21 / Spring Boot"]:::java
-        ccservice["credit-card-order-service\nJava 21 / Spring Boot\nport 8091"]:::java
-        thirdparty["third-party-service\nJava 21 / Spring Boot\nport 8093"]:::java
-        featureflag["feature-flag-service\nJava 21 / Spring Boot\nport 8094"]:::java
-        engine["engine\nJava 21 / Spring Boot\n⚠ compose.yaml only"]:::java
+    pricingservice["pricing-service\nGo / Gin + GORM\nport 8083"]:::golang
+    userservice["user-service\nGo\nport 8089"]:::golang
+    dbadapter["db-adapter\nGo / gRPC server\nport 50051"]:::golang
+    aggregator["aggregator-service\nGo\n50% JSON · 50% XML"]:::golang
 
-        pricingservice["pricing-service\nGo / Gin + GORM\nport 8083"]:::golang
-        userservice["user-service\nGo\nport 8089"]:::golang
-        dbadapter["db-adapter\nGo / gRPC server\nport 50051"]:::golang
-        aggregator["aggregator-service\nGo\n50% JSON · 50% XML"]:::golang
+    calculationservice["calculationservice\nC++ binary\n(RabbitMQ consumer)"]:::cpp
 
-        calculationservice["calculationservice\nC++ binary\n(RabbitMQ consumer)"]:::cpp
+    %% ── External traffic ─────────────────────────────────────────────────
+    loadgen         -->|HTTP| proxy
 
-        %% ── External traffic ─────────────────────────────────────────────────
-        loadgen         -->|HTTP| proxy
+    %% ── Reverse proxy → services ─────────────────────────────────────────
+    proxy           -->|HTTP| frontend
+    proxy           -->|HTTP| brokerservice
+    proxy           -->|HTTP| pricingservice
+    proxy           -->|HTTP| featureflag
+    proxy           -->|HTTP| offerservice
+    proxy           -->|HTTP| ccservice
+    proxy           -->|HTTP| thirdparty
+    proxy           -->|HTTP| userservice
+    proxy           -->|HTTP| manager
 
-        %% ── Reverse proxy → services ─────────────────────────────────────────
-        proxy           -->|HTTP| frontend
-        proxy           -->|HTTP| brokerservice
-        proxy           -->|HTTP| pricingservice
-        proxy           -->|HTTP| featureflag
-        proxy           -->|HTTP| offerservice
-        proxy           -->|HTTP| ccservice
-        proxy           -->|HTTP| thirdparty
-        proxy           -->|HTTP| userservice
-        proxy           -->|HTTP| manager
+    %% ── broker-service ───────────────────────────────────────────────────
+    brokerservice   -->|HTTP| userservice
+    brokerservice   -->|HTTP| pricingservice
+    brokerservice   -->|HTTP| featureflag
+    brokerservice   -->|"HTTP\n⚠ prod only"| engine
+    brokerservice   -->|MSSQL| db
 
-        %% ── broker-service ───────────────────────────────────────────────────
-        brokerservice   -->|HTTP| userservice
-        brokerservice   -->|HTTP| pricingservice
-        brokerservice   -->|HTTP| featureflag
-        brokerservice   -->|"HTTP\n⚠ prod only"| engine
-        brokerservice   -->|MSSQL| db
+    %% ── engine (compose.yaml / prod only) ────────────────────────────────
+    engine          -->|"HTTP\n⚠ prod only"| brokerservice
 
-        %% ── engine (compose.yaml / prod only) ────────────────────────────────
-        engine          -->|"HTTP\n⚠ prod only"| brokerservice
+    %% ── offerservice ─────────────────────────────────────────────────────
+    offerservice    -->|HTTP| userservice
+    offerservice    -->|HTTP| manager
+    offerservice    -->|HTTP| featureflag
 
-        %% ── offerservice ─────────────────────────────────────────────────────
-        offerservice    -->|HTTP| userservice
-        offerservice    -->|HTTP| manager
-        offerservice    -->|HTTP| featureflag
+    %% ── user-service (dev vs prod) ───────────────────────────────────────
+    userservice     -->|"gRPC\n(dev)"| dbadapter
+    userservice     -->|"HTTP\n(prod)"| manager
 
-        %% ── user-service (dev vs prod) ───────────────────────────────────────
-        userservice     -->|"gRPC\n(dev)"| dbadapter
-        userservice     -->|"HTTP\n(prod)"| manager
+    %% ── db-adapter ───────────────────────────────────────────────────────
+    dbadapter       -->|SQL| db
 
-        %% ── db-adapter ───────────────────────────────────────────────────────
-        dbadapter       -->|SQL| db
+    %% ── pricing-service ──────────────────────────────────────────────────
+    pricingservice  -->|MSSQL| db
+    pricingservice  -->|"AMQP\npublish"| rabbitmq
 
-        %% ── pricing-service ──────────────────────────────────────────────────
-        pricingservice  -->|MSSQL| db
-        pricingservice  -->|"AMQP\npublish"| rabbitmq
+    %% ── calculationservice ───────────────────────────────────────────────
+    rabbitmq        -->|"AMQP\nconsume"| calculationservice
 
-        %% ── calculationservice ───────────────────────────────────────────────
-        rabbitmq        -->|"AMQP\nconsume"| calculationservice
+    %% ── credit-card-order-service ────────────────────────────────────────
+    ccservice       -->|HTTP| thirdparty
+    ccservice       -->|HTTP| featureflag
+    ccservice       -->|MSSQL| db
 
-        %% ── credit-card-order-service ────────────────────────────────────────
-        ccservice       -->|HTTP| thirdparty
-        ccservice       -->|HTTP| featureflag
-        ccservice       -->|MSSQL| db
+    %% ── third-party-service ──────────────────────────────────────────────
+    thirdparty      -->|HTTP| ccservice
+    thirdparty      -->|HTTP| featureflag
 
-        %% ── third-party-service ──────────────────────────────────────────────
-        thirdparty      -->|HTTP| ccservice
-        thirdparty      -->|HTTP| featureflag
+    %% ── manager ──────────────────────────────────────────────────────────
+    manager         -->|MSSQL| db
 
-        %% ── manager ──────────────────────────────────────────────────────────
-        manager         -->|MSSQL| db
+    %% ── contentcreator ───────────────────────────────────────────────────
+    contentcreator  -->|MSSQL| db
 
-        %% ── contentcreator ───────────────────────────────────────────────────
-        contentcreator  -->|MSSQL| db
-
-        %% ── aggregator-service ───────────────────────────────────────────────
-        aggregator      -->|"HTTP\n(50% JSON / 50% XML)"| offerservice
-    end
-
-    style bg fill:#ffffff,stroke:#ffffff,color:#ffffff
+    %% ── aggregator-service ───────────────────────────────────────────────
+    aggregator      -->|"HTTP\n(50% JSON / 50% XML)"| offerservice
 ```
 
 ## Database diagram
 
 ```mermaid
-%%{init: {"theme": "neutral", "themeVariables": {"fontSize": "14px"}}}%%
 erDiagram
 
     Packages {
