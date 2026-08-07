@@ -133,7 +133,7 @@ func TestDoEachHour_DeletesAccountsExcludingPresetOrigin(t *testing.T) {
 		t.Fatalf("expected exactly 1 DeleteAccountsOlderThan call, got %d", len(account.accountDeleteCalls))
 	}
 	if got := account.accountDeleteCalls[0].excludeOrigin; got != "AGGREGATOR" {
-		t.Fatalf("expected excludeOrigin %q, got %q", "PRESET", got)
+		t.Fatalf("expected excludeOrigin %q, got %q", "AGGREGATOR", got)
 	}
 }
 
