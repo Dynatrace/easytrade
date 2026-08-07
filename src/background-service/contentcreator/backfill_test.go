@@ -53,9 +53,10 @@ func TestRunBackfill_WalksStrictlyBackwardsFromAnchor(t *testing.T) {
 	}
 }
 
-// TestRunBackfill_DeterministicGivenSameAnchor mirrors the seeding rule in
-// runBackfill (rng derived from anchor.UnixNano()): calling it twice with the
-// same anchor must produce identical candle values, not just identical shape.
+// TestRunBackfill_DeterministicGivenSameAnchor relies on newTestHandler
+// seeding every Handler.rng identically: calling runBackfill twice with the
+// same anchor on separately constructed handlers must produce identical
+// candle values, not just identical shape.
 func TestRunBackfill_DeterministicGivenSameAnchor(t *testing.T) {
 	h1, pricing1, _, _, _ := newTestHandler()
 	h2, pricing2, _, _, _ := newTestHandler()

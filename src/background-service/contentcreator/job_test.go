@@ -2,6 +2,7 @@ package contentcreator
 
 import (
 	"context"
+	"math/rand"
 	"testing"
 	"time"
 
@@ -75,7 +76,7 @@ func newTestHandler() (*Handler, *fakePricingClient, *fakeTradeClient, *fakeBala
 	trade := &fakeTradeClient{}
 	balance := &fakeBalanceClient{}
 	account := &fakeAccountClient{}
-	h := &Handler{pricing: pricing, trade: trade, balance: balance, account: account}
+	h := &Handler{pricing: pricing, trade: trade, balance: balance, account: account, rng: rand.New(rand.NewSource(1))}
 	return h, pricing, trade, balance, account
 }
 
