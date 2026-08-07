@@ -438,7 +438,7 @@ rabbitmq:
       memory: 175Mi
     limits:
       cpu: 200m
-      memory: 175Mi
+      memory: 195Mi
   service:
     enabled: true
     ports:
