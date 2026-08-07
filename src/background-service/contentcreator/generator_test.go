@@ -3,55 +3,87 @@ package contentcreator
 import (
 	"math/rand"
 	"testing"
+	"time"
 )
 
-// TestGenerateCandle_ContinuityBetweenMinutes mirrors
-// PricingDataGeneratorTest's continuity check: consecutive minutes' candles
-// must chain (this minute's close == next minute's open), since both are
-// computed from the same underlying interpolation at adjacent seconds.
-func TestGenerateCandle_ContinuityBetweenMinutes(t *testing.T) {
+// TestNewCandle_OpenChainsFromPreviousClose asserts each candle's open equals
+// the instrument's price left off by the previous candle's close — the OU
+// walk must continue from where it left off, not reset.
+func TestNewCandle_OpenChainsFromPreviousClose(t *testing.T) {
 	rng := rand.New(rand.NewSource(1))
-	instr := Instruments[0]
+	instr := newInstrument("test-instrument", 100, 0.003, 0.005)
 
-	for sec := 0; sec < 86400; sec += 60 {
-		a := generateCandle(sec, instr, rng)
-		b := generateCandle((sec+60)%86400, instr, rng)
-		if a.Close != b.Open {
-			t.Fatalf("expected candle close to chain into next candle's open at sec=%d: close=%v, nextOpen=%v", sec, a.Close, b.Open)
-		}
+	first := instr.newCandle(rng)
+	second := instr.newCandle(rng)
+
+	if second.Open != first.Close {
+		t.Fatalf("expected second candle's open (%v) to equal first candle's close (%v)", second.Open, first.Close)
 	}
 }
 
-// TestGenerateCandle_AnchorPointsExact mirrors the anchor-point exactness
-// check: at exactly H0, the interpolated price must equal the instrument's
-// Time0 anchor with no interpolation error.
-func TestGenerateCandle_AnchorPointsExact(t *testing.T) {
-	for _, instr := range Instruments {
-		if got := interpolate(secH0, instr); got != instr.Time0 {
-			t.Fatalf("instrument %d: expected H0 to equal Time0 (%v), got %v", instr.ID, instr.Time0, got)
-		}
-		if got := interpolate(secH24, instr); got != instr.Time0 {
-			t.Fatalf("instrument %d: expected H24 to wrap to Time0 (%v), got %v", instr.ID, instr.Time0, got)
-		}
-		if got := interpolate(secH3, instr); got != instr.Time3 {
-			t.Fatalf("instrument %d: expected H3 to equal Time3 (%v), got %v", instr.ID, instr.Time3, got)
-		}
-	}
-}
-
-// TestGenerateCandle_HighLowBoundOpenClose mirrors the high/low randomness
-// check: high must never be below open/close, low must never be above them.
-func TestGenerateCandle_HighLowBoundOpenClose(t *testing.T) {
+// TestNewCandle_HighLowBoundOpenClose mirrors the high/low randomness check:
+// high must never be below open/close, low must never be above them.
+func TestNewCandle_HighLowBoundOpenClose(t *testing.T) {
 	rng := rand.New(rand.NewSource(42))
-	for _, instr := range Instruments {
-		for sec := 0; sec < 86400; sec += 3600 {
-			c := generateCandle(sec, instr, rng)
+
+	for _, base := range Instruments {
+		instr := newInstrument(base.ID, base.BasePrice, base.Volatility, base.Reversion)
+		for i := 0; i < 24; i++ {
+			c := instr.newCandle(rng)
 			if c.High < c.Open || c.High < c.Close {
-				t.Fatalf("instrument %d sec %d: high %v below open/close (%v/%v)", instr.ID, sec, c.High, c.Open, c.Close)
+				t.Fatalf("instrument %s tick %d: high %v below open/close (%v/%v)", base.ID, i, c.High, c.Open, c.Close)
 			}
 			if c.Low > c.Open || c.Low > c.Close {
-				t.Fatalf("instrument %d sec %d: low %v above open/close (%v/%v)", instr.ID, sec, c.Low, c.Open, c.Close)
+				t.Fatalf("instrument %s tick %d: low %v above open/close (%v/%v)", base.ID, i, c.Low, c.Open, c.Close)
 			}
 		}
+	}
+}
+
+// TestNewCandle_ReturnsInstrumentID guards the InstrumentID plumbing: the
+// candle must carry the originating instrument's ID unchanged.
+func TestNewCandle_ReturnsInstrumentID(t *testing.T) {
+	rng := rand.New(rand.NewSource(7))
+	instr := newInstrument("c0000000-0000-4000-8000-000000000099", 50, 0.003, 0.005)
+
+	c := instr.newCandle(rng)
+
+	if c.InstrumentID != instr.ID {
+		t.Fatalf("expected InstrumentID %q, got %q", instr.ID, c.InstrumentID)
+	}
+}
+
+// TestNewCandle_RevertsTowardBasePriceOnAverage asserts the mean-reversion
+// drift term: displaced far from BasePrice with volatility disabled, the walk
+// must always step back toward BasePrice rather than away from it.
+func TestNewCandle_RevertsTowardBasePriceOnAverage(t *testing.T) {
+	rng := rand.New(rand.NewSource(3))
+	instr := newInstrument("test-instrument", 100, 0, 0.005)
+	instr.currentPrice = 200
+
+	c := instr.newCandle(rng)
+
+	if c.Close >= 200 {
+		t.Fatalf("expected close (%v) to move below displaced price 200 toward BasePrice 100", c.Close)
+	}
+	if c.Close < 100 {
+		t.Fatalf("expected close (%v) not to overshoot past BasePrice 100 in a single tick", c.Close)
+	}
+}
+
+// TestNewCandlesForTime_MutatesInstrumentsByIndexNotCopy guards against the
+// classic range-over-array bug: newCandlesForTime must persist each
+// instrument's currentPrice across calls, not silently reset it every tick.
+func TestNewCandlesForTime_MutatesInstrumentsByIndexNotCopy(t *testing.T) {
+	instruments := []Instrument{newInstrument("test-instrument", 100, 0.05, 0.005)}
+
+	rng := rand.New(rand.NewSource(9))
+	now := time.Now().UTC()
+
+	first := newCandlesForTime(instruments, now, rng)
+	second := newCandlesForTime(instruments, now, rng)
+
+	if second[0].Open != first[0].Close {
+		t.Fatalf("expected second batch's open (%v) to continue from first batch's close (%v); currentPrice was not persisted across calls", second[0].Open, first[0].Close)
 	}
 }

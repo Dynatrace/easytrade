@@ -2,7 +2,6 @@ package contentcreator
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -12,7 +11,7 @@ import (
 
 const aggregatorOrigin = "AGGREGATOR"
 
-func (h *Handler) insertPricingBatch(ctx context.Context, rows []pricingRow) error {
+func (h *Handler) insertPricingBatch(ctx context.Context, rows []candle) error {
 	if len(rows) == 0 {
 		return nil
 	}
@@ -20,7 +19,7 @@ func (h *Handler) insertPricingBatch(ctx context.Context, rows []pricingRow) err
 	for i, r := range rows {
 		pbRows[i] = &proto.PricingRow{
 			Timestamp:    timestamppb.New(r.Timestamp),
-			InstrumentId: fmt.Sprintf("c0000000-0000-4000-8000-%012d", r.InstrumentID),
+			InstrumentId: r.InstrumentID,
 			Open:         r.Open,
 			High:         r.High,
 			Low:          r.Low,

@@ -1,37 +1,37 @@
 package contentcreator
 
 type Instrument struct {
-	ID                                                         int
-	Time0, Time3, Time6, Time9, Time12, Time15, Time18, Time21 float64
-	BaseDifference                                             float64
+	ID           string
+	BasePrice    float64 // long-run equilibrium the OU walk reverts to
+	Volatility   float64 // per-minute noise as fraction of price, e.g. 0.003
+	Reversion    float64 // mean-reversion strength per minute, e.g. 0.005
+	currentPrice float64 // unexported; initialized to BasePrice before first use
+}
+
+func newInstrument(id string, basePrice, volatility, reversion float64) Instrument {
+	return Instrument{
+		ID:           id,
+		BasePrice:    basePrice,
+		Volatility:   volatility,
+		Reversion:    reversion,
+		currentPrice: basePrice,
+	}
 }
 
 var Instruments = [15]Instrument{
-	{1, 150, 157.5, 165, 142.5, 135, 142.5, 135, 157.5, 0.7},                     // EASYTRAVEL
-	{2, 73, 80, 87, 94, 92, 100, 50, 60, 0.3},                                    // EASYPLANES
-	{3, 25, 24, 26, 20, 17, 20, 30, 35, 0.1},                                     // EASYHOTELS
-	{4, 0.2170, 0.2370, 0.2270, 0.2070, 0.2370, 0.2170, 0.2370, 0.2070, 0.001},   // JANGRP
-	{5, 0.2440, 0.2565, 0.2690, 0.2815, 0.2690, 0.2815, 0.2440, 0.2315, 0.001},   // CORFIG
-	{6, 2.1740, 2.0740, 1.9740, 2.0740, 1.8740, 2.0740, 2.2740, 2.3740, 0.01},    // CMRTIN
-	{7, 1.1270, 1.1770, 1.2270, 1.2770, 1.3270, 1.2770, 1.2270, 1.1770, 0.01},    // CHAMAT
-	{8, 10.0210, 9.5210, 9.0210, 8.5210, 8.0210, 8.5210, 9.0210, 9.5210, 0.04},   // BLSTCR
-	{9, 4.6130, 4.7830, 4.6130, 4.4430, 4.6130, 4.9530, 4.6130, 4.2730, 0.02},    // CAFGAL
-	{10, 0.8870, 0.8470, 0.9270, 0.8070, 0.9670, 0.7670, 1.0070, 0.7270, 0.005},  // DECGRP
-	{11, 4.0950, 3.6950, 4.2950, 4.2950, 3.6950, 3.4950, 3.4950, 3.8950, 0.02},   // PETBAN
-	{12, 8.8910, 9.6910, 8.4910, 8.4910, 8.0910, 9.2910, 9.2910, 8.4910, 0.04},   // BATBAT
-	{13, 0.4620, 0.4820, 0.4420, 0.5020, 0.4220, 0.4820, 0.4420, 0.5020, 0.002},  // STOLLC
-	{14, 0.1120, 0.0820, 0.1020, 0.0820, 0.0920, 0.0820, 0.0820, 0.1220, 0.0007}, // LEBRGA
-	{15, 0.0997, 0.1047, 0.1097, 0.1047, 0.1097, 0.1147, 0.1097, 0.1147, 0.0007}, // MOROBA
+	newInstrument("c0000000-0000-4000-8000-000000000001", 150, 0.003, 0.005),    // EASYTRAVEL
+	newInstrument("c0000000-0000-4000-8000-000000000002", 73, 0.003, 0.005),     // EASYPLANES
+	newInstrument("c0000000-0000-4000-8000-000000000003", 25, 0.003, 0.005),     // EASYHOTELS
+	newInstrument("c0000000-0000-4000-8000-000000000004", 0.217, 0.003, 0.005),  // JANGRP
+	newInstrument("c0000000-0000-4000-8000-000000000005", 0.244, 0.003, 0.005),  // CORFIG
+	newInstrument("c0000000-0000-4000-8000-000000000006", 2.174, 0.003, 0.005),  // CMRTIN
+	newInstrument("c0000000-0000-4000-8000-000000000007", 1.127, 0.003, 0.005),  // CHAMAT
+	newInstrument("c0000000-0000-4000-8000-000000000008", 10.021, 0.003, 0.005), // BLSTCR
+	newInstrument("c0000000-0000-4000-8000-000000000009", 4.613, 0.003, 0.005),  // CAFGAL
+	newInstrument("c0000000-0000-4000-8000-000000000010", 0.887, 0.003, 0.005),  // DECGRP
+	newInstrument("c0000000-0000-4000-8000-000000000011", 4.095, 0.003, 0.005),  // PETBAN
+	newInstrument("c0000000-0000-4000-8000-000000000012", 8.891, 0.003, 0.005),  // BATBAT
+	newInstrument("c0000000-0000-4000-8000-000000000013", 0.462, 0.003, 0.005),  // STOLLC
+	newInstrument("c0000000-0000-4000-8000-000000000014", 0.112, 0.003, 0.005),  // LEBRGA
+	newInstrument("c0000000-0000-4000-8000-000000000015", 0.0997, 0.003, 0.005), // MOROBA
 }
-
-const (
-	secH0  = 0
-	secH3  = 3 * 60 * 60
-	secH6  = 6 * 60 * 60
-	secH9  = 9 * 60 * 60
-	secH12 = 12 * 60 * 60
-	secH15 = 15 * 60 * 60
-	secH18 = 18 * 60 * 60
-	secH21 = 21 * 60 * 60
-	secH24 = 24 * 60 * 60
-)

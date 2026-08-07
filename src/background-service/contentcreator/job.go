@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	cleanupInterval = 60             // ticks (minutes) between hourly cleanups
+	cleanupInterval = 60
 	staleAfter      = 24 * time.Hour
-	dailyPeriod     = 1440           // always 24h, independent of cleanupInterval
+	dailyPeriod     = 1440
 )
 
 var l = logger.GetSugar().Named("contentcreator")
@@ -28,7 +28,7 @@ func (h *Handler) initializePricingData(ctx context.Context, now time.Time) {
 	rng := rand.New(rand.NewSource(now.UnixNano()))
 
 	l.Infow("Inserting initial pricing data for current minute.")
-	if err := h.insertPricingBatch(ctx, generateAllForTime(now, rng)); err != nil {
+	if err := h.insertPricingBatch(ctx, newCandlesForTime(Instruments[:], now, rng)); err != nil {
 		l.Errorw("Failed to insert initial pricing data", "err", err)
 	}
 
@@ -51,7 +51,7 @@ func (h *Handler) generatePricingData(ctx context.Context, cal time.Time) {
 		cal = cal.Add(time.Minute)
 
 		l.Infow("Generating and inserting pricing data", "time", cal)
-		if err := h.insertPricingBatch(ctx, generateAllForTime(cal, rng)); err != nil {
+		if err := h.insertPricingBatch(ctx, newCandlesForTime(Instruments[:], cal, rng)); err != nil {
 			l.Errorw("Failed to insert pricing data", "err", err)
 		}
 
