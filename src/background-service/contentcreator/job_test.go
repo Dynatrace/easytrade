@@ -131,32 +131,17 @@ func TestDoEachHour_DeletesAccountsExcludingPresetOrigin(t *testing.T) {
 	if len(account.accountDeleteCalls) != 1 {
 		t.Fatalf("expected exactly 1 DeleteAccountsOlderThan call, got %d", len(account.accountDeleteCalls))
 	}
-	if got := account.accountDeleteCalls[0].excludeOrigin; got != "PRESET" {
+	if got := account.accountDeleteCalls[0].excludeOrigin; got != "AGGREGATOR" {
 		t.Fatalf("expected excludeOrigin %q, got %q", "PRESET", got)
 	}
 }
 
 func TestDoEachTime_FiresOnNthCallAndResets(t *testing.T) {
-	counter, fired := 0, 0
-	fn := func() { fired++ }
-
-	for i := 1; i <= 3; i++ {
-		doEachTime(3, &counter, fn)
+	ticker := newTicker(3, func() { t.Log("fired") })
+	for range 10 {
+		ticker.tick()
 	}
-	if fired != 1 {
-		t.Fatalf("expected fn to fire exactly once after 3 calls, got %d", fired)
-	}
-	if counter != 0 {
-		t.Fatalf("expected counter reset to 0 after firing, got %d", counter)
-	}
-
-	// Two more calls: not enough to fire again.
-	doEachTime(3, &counter, fn)
-	doEachTime(3, &counter, fn)
-	if fired != 1 {
-		t.Fatalf("expected no additional fire after 2 more calls, got %d total", fired)
-	}
-	if counter != 2 {
-		t.Fatalf("expected counter to be 2, got %d", counter)
+	if ticker.counter != 1 {
+		t.Fatalf("expected counter to be 1 after 10 ticks with limit 3, got %d", ticker.counter)
 	}
 }

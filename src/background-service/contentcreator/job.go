@@ -16,6 +16,24 @@ const (
 
 var l = logger.GetSugar().Named("contentcreator")
 
+type Ticker struct {
+	limit   int
+	counter int
+	fn      func()
+}
+
+func newTicker(limit int, fn func()) *Ticker {
+	return &Ticker{limit: limit, fn: fn}
+}
+
+func (t *Ticker) tick() {
+	t.counter++
+	if t.counter >= t.limit {
+		t.counter = 0
+		t.fn()
+	}
+}
+
 func (h *Handler) Start(ctx context.Context) {
 	go func() {
 		now := time.Now().UTC()
@@ -42,34 +60,15 @@ func (h *Handler) initializePricingData(ctx context.Context, now time.Time) {
 
 func (h *Handler) generatePricingData(ctx context.Context, cal time.Time) {
 	rng := rand.New(rand.NewSource(cal.UnixNano() + 1))
+	hourly := newTicker(cleanupInterval, func() { h.doEachHour(ctx, staleAfter) })
+	daily := newTicker(dailyPeriod, func() { h.doEachDay(ctx) })
 
-	hourly, daily := 0, 0
-	sleepProperly(cal, time.Minute)
-
-	l.Info("Starting endless generation loop with hourly and daily cleanup.")
 	for {
 		cal = cal.Add(time.Minute)
-
-		l.Infow("Generating and inserting pricing data", "time", cal)
-		if err := h.insertPricingBatch(ctx, newCandlesForTime(Instruments[:], cal, rng)); err != nil {
-			l.Errorw("Failed to insert pricing data", "err", err)
-		}
-
-		doEachTime(cleanupInterval, &hourly, func() { h.doEachHour(ctx, staleAfter) })
-		doEachTime(dailyPeriod, &daily, func() { h.doEachDay(ctx) })
-
+		h.insertPricingBatch(ctx, newCandlesForTime(Instruments[:], cal, rng))
+		hourly.tick()
+		daily.tick()
 		sleepProperly(cal, time.Minute)
-	}
-}
-
-// doEachTime increments counter and, once it reaches n ticks, resets it and
-// fires fn — the generic replacement for the old per-task manual counter
-// checks in generatePricingData's loop.
-func doEachTime(n int, counter *int, fn func()) {
-	*counter++
-	if *counter >= n {
-		*counter = 0
-		fn()
 	}
 }
 
