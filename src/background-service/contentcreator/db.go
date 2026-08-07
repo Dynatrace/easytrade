@@ -10,7 +10,7 @@ import (
 	proto "dynatrace.com/easytrade/background-service/db-adapter/proto"
 )
 
-const presetOrigin = "PRESET"
+const aggregatorOrigin = "AGGREGATOR"
 
 func (h *Handler) insertPricingBatch(ctx context.Context, rows []pricingRow) error {
 	if len(rows) == 0 {
@@ -55,7 +55,7 @@ func (h *Handler) deleteBalanceHistoryBeforeDate(ctx context.Context, before tim
 func (h *Handler) deleteStaleAccounts(ctx context.Context, before time.Time) error {
 	_, err := h.account.DeleteAccountsOlderThan(ctx, &proto.DeleteAccountsOlderThanRequest{
 		Before: timestamppb.New(before),
-		Origin: presetOrigin,
+		Origin: aggregatorOrigin,
 	})
 	return err
 }

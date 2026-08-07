@@ -49,7 +49,7 @@ func (h *OfferServiceClient) Signup(ctx context.Context, platformName string, re
 	return nil
 }
 
-func newSignupRequest(platformName string, packageProb PackageProbability) *SignupRequest {
+func newSignupRequest(packageProb PackageProbability) *SignupRequest {
 	sr := &SignupRequest{}
 
 	sr.PackageId = randomPackageID(packageProb)
@@ -59,7 +59,7 @@ func newSignupRequest(platformName string, packageProb PackageProbability) *Sign
 	sr.Email = sr.Username + "@" + faker.DomainName()
 	sr.Address = faker.GetRealAddress().Address
 	sr.Password = faker.Password()
-	sr.Origin = platformName
+	sr.Origin = "AGGREGATOR"
 
 	return sr
 }
