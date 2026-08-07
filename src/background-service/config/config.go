@@ -29,8 +29,6 @@ var Registry = []VarSpec{
 
 	// contentcreator
 	{Name: "DB_ADAPTER_SERVICE_ADDRESS", Required: true, Default: "db-adapter:50051"},
-	{Name: "CONTENT_CLEANUP_INTERVAL", Required: true, Default: "60"},
-	{Name: "CONTENT_STALE_AFTER_HOURS", Required: true, Default: "24"},
 
 	// problem-operator
 	{Name: "FEATURE_FLAG_SERVICE_ADDRESS", Required: true,

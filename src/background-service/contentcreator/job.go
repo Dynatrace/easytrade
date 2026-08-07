@@ -9,16 +9,18 @@ import (
 )
 
 const (
-	minutesInHalfDay = 720
+	cleanupInterval = 60             // ticks (minutes) between hourly cleanups
+	staleAfter      = 24 * time.Hour
+	dailyPeriod     = 1440           // always 24h, independent of cleanupInterval
 )
 
 var l = logger.GetSugar().Named("contentcreator")
 
-func (h *Handler) Start(ctx context.Context, cleanupInterval int, staleAfter time.Duration) {
+func (h *Handler) Start(ctx context.Context) {
 	go func() {
 		now := time.Now().UTC()
 		h.initializePricingData(ctx, now)
-		h.generatePricingData(ctx, now, cleanupInterval, staleAfter)
+		h.generatePricingData(ctx, now)
 	}()
 }
 
@@ -35,10 +37,10 @@ func (h *Handler) initializePricingData(ctx context.Context, now time.Time) {
 		l.Errorw("Failed to delete pre-startup seed rows", "err", err)
 	}
 
-	go h.runBackfill(ctx, now, minutesInHalfDay)
+	go h.runBackfill(ctx, now, dailyPeriod/2)
 }
 
-func (h *Handler) generatePricingData(ctx context.Context, cal time.Time, cleanupInterval int, staleAfter time.Duration) {
+func (h *Handler) generatePricingData(ctx context.Context, cal time.Time) {
 	rng := rand.New(rand.NewSource(cal.UnixNano() + 1))
 
 	hourly, daily := 0, 0
@@ -54,7 +56,7 @@ func (h *Handler) generatePricingData(ctx context.Context, cal time.Time, cleanu
 		}
 
 		doEachTime(cleanupInterval, &hourly, func() { h.doEachHour(ctx, staleAfter) })
-		doEachTime(cleanupInterval*24, &daily, func() { h.doEachDay(ctx) })
+		doEachTime(dailyPeriod, &daily, func() { h.doEachDay(ctx) })
 
 		sleepProperly(cal, time.Minute)
 	}

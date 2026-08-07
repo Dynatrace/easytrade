@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/open-feature/go-sdk/openfeature"
 	"google.golang.org/grpc"
@@ -22,8 +21,6 @@ import (
 
 const (
 	dbAdapterServiceAddress = "DB_ADAPTER_SERVICE_ADDRESS"
-	contentCleanupInterval  = "CONTENT_CLEANUP_INTERVAL"
-	contentStaleAfterHours  = "CONTENT_STALE_AFTER_HOURS"
 )
 
 func main() {
@@ -55,9 +52,7 @@ func main() {
 	}
 	defer conn.Close()
 
-	cleanupInterval := values.MustInt(contentCleanupInterval)
-	staleAfter := time.Duration(values.MustInt(contentStaleAfterHours)) * time.Hour
-	contentcreator.NewHandler(conn).Start(ctx, cleanupInterval, staleAfter)
+	contentcreator.NewHandler(conn).Start(ctx)
 
 	// third-party-service: manufacture + courier schedulers
 	thirdpartyHandlers := thirdparty.Start(ctx, values, flagClient)

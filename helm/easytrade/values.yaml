@@ -41,8 +41,6 @@ background-service:
     HIGH_CPU_USAGE_BROKER_SERVICE_NAME: "{{ .Release.Name }}-broker-service"
     DB_ADAPTER_SERVICE_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
     MANUFACTURE_DELAY_CHANCE_PERCENT: "20"
-    CONTENT_CLEANUP_INTERVAL: "60"
-    CONTENT_STALE_AFTER_HOURS: "24"
   resources:
     requests:
       cpu: 30m
