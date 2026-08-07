@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"dynatrace.com/easytrade/background-service/config"
-	"dynatrace.com/easytrade/background-service/featureflag"
 )
 
 const (
@@ -34,7 +33,7 @@ func (j *jitterSleeper) sleep(rateSeconds int) {
 	time.Sleep(time.Duration(rateSeconds+extra) * time.Second)
 }
 
-func Start(ctx context.Context, values config.Values, flags *featureflag.Client) Handlers {
+func Start(ctx context.Context, values config.Values, flags flagChecker) Handlers {
 	svc := newCreditCardOrderClient(values.Get(creditCardOrderServiceAddress))
 
 	mQueue := newManufactureQueue()

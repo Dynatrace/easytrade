@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/open-feature/go-sdk/openfeature"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -34,7 +35,10 @@ func main() {
 
 	ctx := context.Background()
 
-	flagClient := featureflag.NewFromEnv(values)
+	if err := openfeature.SetProviderAndWait(featureflag.NewProviderFromEnv(values)); err != nil {
+		l.Errorw("Failed to initialize feature flag provider", "err", err)
+	}
+	flagClient := featureflag.NewAdapter(openfeature.NewClient("background-service"))
 
 	// aggregator-service: 5 platforms x (check-offers + signup) jobs
 	aggCfg := aggregator.LoadConfig(values)
