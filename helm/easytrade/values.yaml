@@ -11,6 +11,7 @@ global:
     # supports: ["mssql", "postgres"]
     type: mssql
     port: 1433  # 5432 for postgres
+  healthPort: "8080"
 
   # Global labels to be added to all resources
   labels: {}
@@ -60,7 +61,7 @@ calculationservice:
     RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
     RABBITMQ_PORT: "5672"
     RABBITMQ_QUEUE: Trade_Data_Raw
-    HEALTH_PORT: "8080"
+    HEALTH_PORT: "{{ .Values.global.healthPort }}"
   livenessProbe:
     httpGet:
       path: /livez
@@ -121,6 +122,7 @@ db:
   workloadType: statefulset
   image:
     repository: "{{ .Values.global.image.baseRepository }}/db-{{ .Values.global.database.type }}"
+    tag: "{{ .Values.global.image.tag }}"
   env:
     SA_PASSWORD: "{{ .Values.global.database.password }}"
     POSTGRES_PASSWORD: "{{ .Values.global.database.password }}"
@@ -155,6 +157,7 @@ db-adapter:
   enabled: true
   env:
     DB_TYPE: "{{ .Values.global.database.type }}"
+    HEALTH_PORT: "{{ .Values.global.healthPort }}"
   envFromSecret:
     DB_URL:
       name: "{{ .Release.Name }}-connection-strings"
@@ -188,6 +191,7 @@ feature-flag-service:
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
+    HEALTH_PORT: "{{ .Values.global.healthPort }}"
   livenessProbe:
     httpGet:
       path: /livez
@@ -291,6 +295,7 @@ loadgen:
   env:
     EASYTRADE_URL: "http://{{ .Release.Name }}-frontendreverseproxy:8080"
     RARE_VISITS_INTERVAL_MINUTES: "60"
+    HEALTH_PORT: "{{ .Values.global.healthPort }}"
   livenessProbe:
     httpGet:
       path: /livez
@@ -473,7 +478,8 @@ user-service:
   enabled: true
   env:
     PROXY_PREFIX: "user-service"
-    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+    HEALTH_PORT: "{{ .Values.global.healthPort }}"
   livenessProbe:
     httpGet:
       path: /livez/
