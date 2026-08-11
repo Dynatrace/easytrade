@@ -3,11 +3,10 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
-
 	"github.com/open-feature/go-sdk/openfeature"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"os"
 
 	"dynatrace.com/easytrade/background-service/aggregator"
 	"dynatrace.com/easytrade/background-service/config"
@@ -15,7 +14,6 @@ import (
 	"dynatrace.com/easytrade/background-service/featureflag"
 	"dynatrace.com/easytrade/background-service/logger"
 	"dynatrace.com/easytrade/background-service/operator"
-	"dynatrace.com/easytrade/background-service/server"
 	"dynatrace.com/easytrade/background-service/thirdparty"
 )
 
@@ -26,8 +24,8 @@ const (
 func main() {
 	config.LoadLocalEnv()
 	values := config.CheckEnv()
-
 	l := logger.GetSugar()
+
 	defer l.Sync()
 
 	ctx := context.Background()
@@ -71,8 +69,8 @@ func main() {
 		l.Info("POD_NAMESPACE not set; operator subsystem disabled")
 	}
 
-	srv := server.New(thirdpartyHandlers)
-	go server.Run(ctx, srv)
+	srv := New(thirdpartyHandlers)
+	go Run(ctx, srv)
 
 	select {}
 }

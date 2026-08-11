@@ -1,16 +1,15 @@
-package server
+package main
 
 import (
 	"context"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
 
 	"dynatrace.com/easytrade/background-service/logger"
 	"dynatrace.com/easytrade/background-service/thirdparty"
-	"github.com/gin-gonic/gin"
+	"dynatrace.com/easytrade/background-service/version"
 )
-
-const addr = ":8080"
 
 func requestLogger() gin.HandlerFunc {
 	l := logger.GetSugar()
@@ -31,10 +30,10 @@ func New(handlers thirdparty.Handlers) *http.Server {
 	router.Use(gin.Recovery())
 	router.Use(requestLogger())
 
-	router.GET("/version", getVersion)
+	router.GET("/version", version.GetVersion)
 	router.POST("/v1/manufacturer", handlers.PostManufacturer)
 
-	return &http.Server{Addr: addr, Handler: router}
+	return &http.Server{Addr: ":8080", Handler: router}
 }
 
 func Run(ctx context.Context, srv *http.Server) {

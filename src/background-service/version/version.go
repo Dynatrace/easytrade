@@ -1,4 +1,4 @@
-package server
+package version
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 // time, matching the exact convention already used by src/pricing-service's
 // version package (see its Dockerfile/version.go).
 var (
-	VersionTemplate = "EasyTrade Background Service Version: %s\n\nBuild date: %s, git commit: %s"
+	versionTemplate = "EasyTrade Background Service Version: %s\n\nBuild date: %s, git commit: %s"
 	buildVersion    = "{{BUILD_VERSION}}"
 	buildDate       = "{{BUILD_DATE}}"
 	buildCommit     = "{{BUILD_COMMIT}}"
@@ -23,10 +23,10 @@ type version struct {
 }
 
 func (v version) toString() string {
-	return fmt.Sprintf(VersionTemplate, v.BuildVersion, v.BuildDate, v.BuildCommit)
+	return fmt.Sprintf(versionTemplate, v.BuildVersion, v.BuildDate, v.BuildCommit)
 }
 
-func getVersion(ctx *gin.Context) {
+func GetVersion(ctx *gin.Context) {
 	v := version{BuildVersion: buildVersion, BuildDate: buildDate, BuildCommit: buildCommit}
 	accept := ctx.NegotiateFormat("text/plain", "application/json")
 
