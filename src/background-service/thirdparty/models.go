@@ -5,22 +5,6 @@ import (
 	"time"
 )
 
-type ManufactureStatus int
-
-const (
-	Issuing ManufactureStatus = iota
-	ManufactureError
-	CardCreated
-)
-
-type CourierStatus int
-
-const (
-	NewCardReceived CourierStatus = iota
-	CardSent
-	CardDelivered
-)
-
 type OrderStatus string
 
 const (
@@ -84,15 +68,10 @@ type StatusRequest struct {
 	Details   any       `json:"details,omitempty"`
 }
 
-type ManufactureProcess struct {
+type Order struct {
 	Request     CreditCardRequest
-	Status      ManufactureStatus
+	Status      OrderStatus
 	CardDetails *CreditCardBody
-}
-
-type CourierProcess struct {
-	CreditCardOrderID string
-	Status            CourierStatus
-	Address           *ShippingAddress
-	ShippingID        string
+	Address     *ShippingAddress
+	ShippingID  string
 }

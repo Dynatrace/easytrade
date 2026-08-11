@@ -21,11 +21,9 @@ var Registry = []VarSpec{
 	// third-party-service
 	{Name: "CREDIT_CARD_ORDER_SERVICE_ADDRESS", Required: true,
 		Default: "http://credit-card-order-service:8080"},
-	{Name: "COURIER_DELAY", Required: true},
-	{Name: "COURIER_RATE", Required: true},
-	{Name: "MANUFACTURE_DELAY", Required: true},
-	{Name: "MANUFACTURE_RATE", Required: true},
-	{Name: "MANUFACTURE_DELAY_CHANCE_PERCENT", Required: true, Default: "20"},
+	{Name: "THIRD_PARTY_DELAY", Required: true},
+	{Name: "THIRD_PARTY_RATE", Required: true},
+	{Name: "DELAY_CHANCE_PERCENT", Required: true, Default: "20"},
 
 	// contentcreator
 	{Name: "DB_ADAPTER_SERVICE_ADDRESS", Required: true, Default: "db-adapter:50051"},

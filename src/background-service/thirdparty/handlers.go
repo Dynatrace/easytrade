@@ -7,7 +7,7 @@ import (
 )
 
 type Handlers struct {
-	queue *manufactureQueue
+	runner *runner
 }
 
 func (h Handlers) PostManufacturer(ctx *gin.Context) {
@@ -21,7 +21,7 @@ func (h Handlers) PostManufacturer(ctx *gin.Context) {
 		return
 	}
 
-	h.queue.add(&ManufactureProcess{Request: req, Status: Issuing})
+	h.runner.Submit(req)
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"statusCode": http.StatusOK,
