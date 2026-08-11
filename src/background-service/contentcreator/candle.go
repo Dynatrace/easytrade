@@ -15,7 +15,7 @@ type candle struct {
 	Close        float64
 }
 
-func (instr *Instrument) newCandle(rng *rand.Rand) candle {
+func (instr *Instrument) newCandle(t time.Time, rng *rand.Rand) candle {
 	open := instr.currentPrice
 
 	drift := instr.Reversion * (instr.BasePrice - instr.currentPrice)
@@ -27,15 +27,13 @@ func (instr *Instrument) newCandle(rng *rand.Rand) candle {
 	low := math.Min(open, close) - math.Abs(rng.NormFloat64())*wickScale
 
 	instr.currentPrice = close
-	return candle{InstrumentID: instr.ID, Open: open, High: high, Low: low, Close: close}
+	return candle{Timestamp: t, InstrumentID: instr.ID, Open: open, High: high, Low: low, Close: close}
 }
 
-
-func newCandlesForTime(instruments []Instrument, cal time.Time, rng *rand.Rand) []candle {
+func newCandlesForTime(instruments []Instrument, t time.Time, rng *rand.Rand) []candle {
 	candles := make([]candle, len(instruments))
 	for i := range instruments {
-		c := instruments[i].newCandle(rng)
-		c.Timestamp = cal
+		c := instruments[i].newCandle(t, rng)
 		candles[i] = c
 	}
 	return candles

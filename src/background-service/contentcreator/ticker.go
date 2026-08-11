@@ -32,12 +32,8 @@ func (t *Ticker) tick() {
 	}
 }
 
-// sleepProperly reproduces ContentCreator.sleepProperly: sleep base minus
-// however long has already elapsed since cal, floored at zero, so the loop
-// lands on the real minute boundary regardless of processing time — not a
-// plain fixed-interval sleep.
-func sleepProperly(cal time.Time, base time.Duration) {
-	elapsed := time.Since(cal)
+func sleepProperly(tick time.Time, base time.Duration) {
+	elapsed := time.Since(tick)
 	timeout := max(base-elapsed, 0)
 	time.Sleep(timeout)
 }

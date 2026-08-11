@@ -49,16 +49,16 @@ func (h *Handler) initializePricingData(ctx context.Context, now time.Time) {
 	go h.runBackfill(ctx, now, dailyPeriod/2)
 }
 
-func (h *Handler) generatePricingData(ctx context.Context, cal time.Time) {
+func (h *Handler) generatePricingData(ctx context.Context, now time.Time) {
 	hourly := newTicker(cleanupInterval, func() { h.doEachHour(ctx, staleAfter) })
 	daily := newTicker(dailyPeriod, func() { h.doEachDay(ctx) })
 
 	for {
-		cal = cal.Add(time.Minute)
-		h.insertPricingBatch(ctx, newCandlesForTime(Instruments[:], cal, h.rng))
+		now = now.Add(time.Minute)
+		h.insertPricingBatch(ctx, newCandlesForTime(Instruments[:], now, h.rng))
 		hourly.tick()
 		daily.tick()
-		sleepProperly(cal, time.Minute)
+		sleepProperly(now, time.Minute)
 	}
 }
 

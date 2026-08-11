@@ -6,15 +6,31 @@ import (
 	"time"
 )
 
+// TestNewCandle_SetsTimestamp guards newCandle's self-containment: the
+// returned candle must carry the timestamp it was given, not a zero value
+// left for the caller to fill in.
+func TestNewCandle_SetsTimestamp(t *testing.T) {
+	rng := rand.New(rand.NewSource(1))
+	instr := newInstrument("test-instrument", 100, 0.003, 0.005)
+	now := time.Now().UTC()
+
+	c := instr.newCandle(now, rng)
+
+	if !c.Timestamp.Equal(now) {
+		t.Fatalf("expected candle timestamp %v, got %v", now, c.Timestamp)
+	}
+}
+
 // TestNewCandle_OpenChainsFromPreviousClose asserts each candle's open equals
 // the instrument's price left off by the previous candle's close — the OU
 // walk must continue from where it left off, not reset.
 func TestNewCandle_OpenChainsFromPreviousClose(t *testing.T) {
 	rng := rand.New(rand.NewSource(1))
 	instr := newInstrument("test-instrument", 100, 0.003, 0.005)
+	now := time.Now().UTC()
 
-	first := instr.newCandle(rng)
-	second := instr.newCandle(rng)
+	first := instr.newCandle(now, rng)
+	second := instr.newCandle(now.Add(time.Minute), rng)
 
 	if second.Open != first.Close {
 		t.Fatalf("expected second candle's open (%v) to equal first candle's close (%v)", second.Open, first.Close)
@@ -25,11 +41,12 @@ func TestNewCandle_OpenChainsFromPreviousClose(t *testing.T) {
 // high must never be below open/close, low must never be above them.
 func TestNewCandle_HighLowBoundOpenClose(t *testing.T) {
 	rng := rand.New(rand.NewSource(42))
+	now := time.Now().UTC()
 
 	for _, base := range Instruments {
 		instr := newInstrument(base.ID, base.BasePrice, base.Volatility, base.Reversion)
 		for i := 0; i < 24; i++ {
-			c := instr.newCandle(rng)
+			c := instr.newCandle(now.Add(time.Duration(i)*time.Minute), rng)
 			if c.High < c.Open || c.High < c.Close {
 				t.Fatalf("instrument %s tick %d: high %v below open/close (%v/%v)", base.ID, i, c.High, c.Open, c.Close)
 			}
@@ -46,7 +63,7 @@ func TestNewCandle_ReturnsInstrumentID(t *testing.T) {
 	rng := rand.New(rand.NewSource(7))
 	instr := newInstrument("c0000000-0000-4000-8000-000000000099", 50, 0.003, 0.005)
 
-	c := instr.newCandle(rng)
+	c := instr.newCandle(time.Now().UTC(), rng)
 
 	if c.InstrumentID != instr.ID {
 		t.Fatalf("expected InstrumentID %q, got %q", instr.ID, c.InstrumentID)
@@ -61,7 +78,7 @@ func TestNewCandle_RevertsTowardBasePriceOnAverage(t *testing.T) {
 	instr := newInstrument("test-instrument", 100, 0, 0.005)
 	instr.currentPrice = 200
 
-	c := instr.newCandle(rng)
+	c := instr.newCandle(time.Now().UTC(), rng)
 
 	if c.Close >= 200 {
 		t.Fatalf("expected close (%v) to move below displaced price 200 toward BasePrice 100", c.Close)

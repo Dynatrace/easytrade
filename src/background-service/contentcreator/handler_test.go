@@ -137,7 +137,7 @@ func TestDoEachHour_DeletesAccountsExcludingPresetOrigin(t *testing.T) {
 	}
 }
 
-func TestDoEachTime_FiresOnNthCallAndResets(t *testing.T) {
+func TestTicker_FiresOnNthCallAndResets(t *testing.T) {
 	ticker := newTicker(3, func() { t.Log("fired") })
 	for range 10 {
 		ticker.tick()
