@@ -7,7 +7,7 @@ public class LongTradeSchedulerService(
     ILogger<LongTradeSchedulerService> logger
 ) : BackgroundService
 {
-    private static readonly TimeSpan Rate = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan Rate = TimeSpan.FromMinutes(1);
 
     private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
     private readonly ILogger _logger = logger;
