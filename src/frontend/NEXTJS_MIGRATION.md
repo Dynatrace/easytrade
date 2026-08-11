@@ -1,5 +1,7 @@
 # EasyTrade Frontend — Next.js Migration Notes
 
+> Part of the refactoring research. Start with [PLAN.md](PLAN.md) for the full picture.
+
 ## Should we migrate to Next.js?
 
 ### The argument for migration

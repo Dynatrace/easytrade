@@ -1,5 +1,7 @@
 # Frontend Dependency Audit
 
+> Part of the refactoring research. Start with [PLAN.md](PLAN.md) for the full picture.
+
 Requirements driving this analysis:
 - No UI elements library — build a small bespoke set instead
 - Single dark theme — no dynamic theming needed

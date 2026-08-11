@@ -2,6 +2,11 @@
 
 Goal: strip the frontend to a minimal, bespoke dark-theme UI with no general-purpose UI library, as few dependencies as possible, and no broken-requirement churn.
 
+**Background reading** (context behind the decisions in this plan):
+- [DEPENDENCIES.md](DEPENDENCIES.md) — full audit of every runtime dependency: what it does, where it is used, and whether it should be removed
+- [SIMPLIFYING_UI.md](SIMPLIFYING_UI.md) — measured data showing that UI simplification (no animations, no dropdowns) does not reduce headless browser resource usage; the cost is Chrome itself
+- [NEXTJS_MIGRATION.md](NEXTJS_MIGRATION.md) — why migrating to Next.js was evaluated and rejected; also covers the Puppeteer → Playwright question
+
 ---
 
 ## Stage 1 — Dead weight removal (no UI changes)

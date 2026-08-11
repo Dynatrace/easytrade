@@ -1,5 +1,7 @@
 # Headless Browser Resource Cost
 
+> Part of the refactoring research. Start with [PLAN.md](PLAN.md) for the full picture.
+
 Measured on a single machine with 1 Chrome instance (`BROWSERS=1`) and 5 concurrent visits (`CONCURRENCY=5`).
 
 ## Results
