@@ -3,10 +3,8 @@ package price
 import (
 	"net/http"
 	"strconv"
-	"strings"
 
 	"dynatrace.com/easytrade/pricing-service/services"
-	"dynatrace.com/easytrade/pricing-service/utils"
 	"github.com/gin-gonic/gin"
 
 	log "github.com/sirupsen/logrus"
@@ -30,7 +28,6 @@ func GetCurrentPrices(ctx *gin.Context) {
 	negotiateResponse(ctx, http.StatusOK, &pricesResult{
 		Results: priceList,
 	})
-	services.SendDataToRabbitQueue(prepareCSV(priceList, utils.RandomIntProvider{}))
 }
 
 // @Summary		Get instrument price
@@ -49,7 +46,6 @@ func GetLastPrice(ctx *gin.Context) {
 	services.DB.Last(&lastPrice)
 
 	negotiateResponse(ctx, http.StatusOK, &lastPrice)
-	services.SendDataToRabbitQueue(prepareCSV([]price{lastPrice}, utils.RandomIntProvider{}))
 }
 
 // @Summary		Get prices of a particular instrument
@@ -78,18 +74,6 @@ func GetPricingDataForInstrument(ctx *gin.Context) {
 	negotiateResponse(ctx, http.StatusOK, &pricesResult{
 		Results: priceList,
 	})
-	services.SendDataToRabbitQueue(prepareCSV(priceList, utils.RandomIntProvider{}))
-}
-
-func prepareCSV(priceList []price, provider utils.IntProvider) string {
-	var stringBuilder strings.Builder
-	stringBuilder.WriteString("date, open, high, low, close, volume\n")
-
-	for _, item := range priceList {
-		stringBuilder.WriteString(item.toCSV(provider.Intn(100) + 100))
-	}
-
-	return stringBuilder.String()
 }
 
 func negotiateResponse(ctx *gin.Context, status int, data any) {

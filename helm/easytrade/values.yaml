@@ -52,22 +52,6 @@ broker-service:
     enabled: true
     port: 8080
 
-calculationservice:
-  enabled: true
-  env:
-    RABBITMQ_USER: userxxx
-    RABBITMQ_PASSWORD: passxxx
-    RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
-    RABBITMQ_PORT: "5672"
-    RABBITMQ_QUEUE: Trade_Data_Raw
-  resources:
-    requests:
-      cpu: 10m
-      memory: 25Mi
-    limits:
-      cpu: 100m
-      memory: 25Mi
-
 contentcreator:
   enabled: true
   env:
@@ -242,11 +226,6 @@ pricing-service:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/pricing-service
   env:
     PROXY_PREFIX: "pricing-service"
-    RABBITMQ_USER: userxxx
-    RABBITMQ_PASSWORD: passxxx
-    RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
-    RABBITMQ_PORT: "5672"
-    RABBITMQ_QUEUE: Trade_Data_Raw
     DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
@@ -284,33 +263,6 @@ problem-operator:
     limits:
       cpu: 100m
       memory: 15Mi
-
-rabbitmq:
-  enabled: true
-  env:
-    RABBITMQ_USER: userxxx
-    RABBITMQ_PASSWORD: passxxx
-    RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
-    RABBITMQ_PORT: "5672"
-    RABBITMQ_QUEUE: Trade_Data_Raw
-  resources:
-    requests:
-      cpu: 10m
-      memory: 175Mi
-    limits:
-      cpu: 200m
-      memory: 175Mi
-  service:
-    enabled: true
-    ports:
-      - port: 5672
-        targetPort: 5672
-        protocol: TCP
-        name: listener
-      - port: 15672
-        targetPort: 15672
-        protocol: TCP
-        name: ui
 
 third-party-service:
   enabled: true

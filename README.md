@@ -20,7 +20,6 @@ EasyTrade consists of the following services/components:
 | -------------------------------------------------------------------- | ---------- | ---------------------------- |
 | [Aggregator service](src/aggregator-service/README.md)               | 80         | `---`                        |
 | [Broker service](src/broker-service/README.md)                       | 80         | `/broker-service`            |
-| [Calculation service](src/calculationservice/README.md)              | 80         | `---`                        |
 | [Content creator](src/contentcreator/README.md)                      | 80         | `---`                        |
 | [Credit card order service](src/credit-card-order-service/README.md) | 80         | `/credit-card-order-service` |
 | [Db](src/db/README.md)                                               | 80         | `---`                        |
@@ -31,7 +30,6 @@ EasyTrade consists of the following services/components:
 | [Offer service](src/offerservice/README.md)                          | 80         | `/offerservice`              |
 | [Pricing service](src/pricing-service/README.md)                     | 80         | `/pricing-service`           |
 | [Problem operator](src/problem-operator/README.md)                   | 80         | `---`                        |
-| [RabbitMQ](src/rabbitmq/README.md)                                   | 80         | `---`                        |
 | [Third party service](src/third-party-service/README.md)             | 80         | `/third-party-service`       |
 | [User service](src/user-service/README.md)                           | 80         | `/user-service`               |
 

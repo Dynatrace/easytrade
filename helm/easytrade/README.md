@@ -65,7 +65,6 @@ The easytrade chart includes the following microservices:
 
 - `aggregator-service` - Data aggregation service
 - `broker-service` - Trading broker service
-- `calculationservice` - Calculation engine
 - `contentcreator` - Content creation service
 - `credit-card-order-service` - Credit card order processing
 - `db` - Microsoft SQL Server database (StatefulSet)
@@ -76,7 +75,6 @@ The easytrade chart includes the following microservices:
 - `offerservice` - Offer management
 - `pricing-service` - Pricing calculation
 - `problem-operator` - Problem pattern simulator
-- `rabbitmq` - RabbitMQ message broker
 - `third-party-service` - Third-party integration service
 - `user-service` - Account and authentication service
 
@@ -104,7 +102,7 @@ frontendreverseproxy:
 # Disable all other services
 aggregator-service:
   enabled: false
-calculationservice:
+loadgen:
   enabled: false
 # ... etc
 ```
@@ -165,19 +163,19 @@ problem-operator:
 #### Multiple ports configuration
 
 ```yaml
-rabbitmq:
+<service>:
   enabled: true
   service:
     enabled: true
     ports:
-      - port: 5672
-        targetPort: 5672
+      - port: 8080
+        targetPort: 8080
         protocol: TCP
-        name: listener
-      - port: 15672
-        targetPort: 15672
+        name: http
+      - port: 9090
+        targetPort: 9090
         protocol: TCP
-        name: ui
+        name: metrics
 ```
 
 ## Upgrading
