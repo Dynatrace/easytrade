@@ -17,11 +17,6 @@ dependencies:
     version: "0.1.0"
     condition: broker-service.enabled
   - name: app
-    alias: calculationservice
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: calculationservice.enabled
-  - name: app
     alias: contentcreator
     repository: "file://./charts/app"
     version: "0.1.0"
@@ -81,11 +76,6 @@ dependencies:
     repository: "file://./charts/app"
     version: "0.1.0"
     condition: problem-operator.enabled
-  - name: app
-    alias: rabbitmq
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: rabbitmq.enabled
   - name: app
     alias: third-party-service
     repository: "file://./charts/app"

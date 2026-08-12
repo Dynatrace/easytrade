@@ -2,7 +2,7 @@
 
 ## Repository structure
 
-`src/` contains 18 services grouped by technology:
+`src/` contains 16 services grouped by technology:
 
 | Technology                     | Services                                                                                                                 |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
@@ -11,13 +11,13 @@
 | TypeScript / Node.js / npm     | `frontend`, `loadgen`, `offerservice`                                                                                    |
 | C# / .NET 8 / NuGet            | `broker-service`, `manager`                                                                                             |
 | Python / Poetry                | `db/user-generator` (local utility script, not a service)                                                                |
-| Config only (no packages)      | `calculationservice` (C++, built in Dockerfile), `frontendreverseproxy` (nginx), `rabbitmq`, `db` (MSSQL)                |
+| Config only (no packages)      | `frontendreverseproxy` (nginx), `db` (MSSQL)                                                              |
 
 ## Vulnerability remediation process
 
 ### Scanning
 
-Run `snyk test --json --all-projects` from within each service directory that has a package manifest. Services without manifests (`calculationservice`, `frontendreverseproxy`, `rabbitmq`) cannot be scanned this way.
+Run `snyk test --json --all-projects` from within each service directory that has a package manifest. Services without manifests (`frontendreverseproxy`) cannot be scanned this way.
 
 Run scans in parallel across all services to save time.
 

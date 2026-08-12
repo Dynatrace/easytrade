@@ -9,7 +9,6 @@ import (
 
 	pb "dynatrace.com/easytrade/pricing-service/proto"
 	"dynatrace.com/easytrade/pricing-service/services"
-	"dynatrace.com/easytrade/pricing-service/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
@@ -42,7 +41,6 @@ func GetLastPrice(ctx *gin.Context) {
 		return
 	}
 	negotiateResponse(ctx, http.StatusOK, &lastPrice)
-	services.SendDataToRabbitQueue(buildPricesCSV([]price{lastPrice}, utils.RandomIntProvider{}))
 }
 
 func GetPricingDataForInstrument(ctx *gin.Context) {

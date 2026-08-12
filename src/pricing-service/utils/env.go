@@ -14,10 +14,6 @@ func LoadLocalEnv() {
 }
 
 func CheckEnv() {
-	checkSingleEnv(RabbitmqHost)
-	checkSingleEnv(RabbitmqUser)
-	checkSingleEnv(RabbitmqPassword)
-	checkSingleEnv(RabbitmqQueueName)
 	checkSingleEnv(DbAdapterHostAndPort)
 }
 
