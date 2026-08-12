@@ -52,11 +52,6 @@ services:
     build:
       context: src/loadgen
 
-  manager:
-    image: ${REGISTRY}/manager:${TAG}
-    build:
-      context: src/manager/easyTradeManager
-
   offerservice:
     image: ${REGISTRY}/offerservice:${TAG}
     build:

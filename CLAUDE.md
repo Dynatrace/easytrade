@@ -18,7 +18,7 @@ All services share one MSSQL database (`db`, port 1433). Connection string forma
 
 | Stack | Services |
 |---|---|
-| Java 21 / Spring Boot / Gradle | `contentcreator`, `credit-card-order-service`, `engine`, `feature-flag-service`, `third-party-service` |
+| Java 21 / Spring Boot / Gradle | `contentcreator`, `credit-card-order-service`, `feature-flag-service`, `third-party-service` |
 | Go + Go Modules | `aggregator-service`, `pricing-service`, `problem-operator`, `user-service` |
 | TypeScript / Node.js / npm | `frontend` (React + Vite), `loadgen`, `offerservice` (Express) |
 | C# / .NET 8 | `broker-service`, `manager` |
@@ -61,8 +61,8 @@ dotnet build
 dotnet test                        # runs xunit tests in test/ project
 dotnet test --filter "FullyQualifiedName~SomeTest"
 ```
-Solution paths: `src/broker-service/BrokerService/`, `src/loginservice/`, `src/manager/easyTradeManager/`.
-Only `broker-service` has a test project; `loginservice` and `manager` have no unit tests.
+Solution paths: `src/broker-service/BrokerService/`, `src/loginservice/`.
+Only `broker-service` has a test project; `loginservice` has no unit tests.
 
 ## Running locally
 
