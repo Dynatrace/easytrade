@@ -37,7 +37,7 @@ func newTestDeployment(annotations map[string]string, cpuLimit string) *appsv1.D
 
 	return &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:        brokerServiceDefault,
+			Name:        brokerService,
 			Namespace:   testNamespace,
 			Annotations: annotations,
 		},
@@ -83,7 +83,7 @@ func newTestReplicaSet(revision string, cpuLimit string) *appsv1.ReplicaSet {
 func getDeployment(t *testing.T, client kubernetes.Interface) *appsv1.Deployment {
 	t.Helper()
 
-	deployment, err := client.AppsV1().Deployments(testNamespace).Get(context.Background(), brokerServiceDefault, metav1.GetOptions{})
+	deployment, err := client.AppsV1().Deployments(testNamespace).Get(context.Background(), brokerService, metav1.GetOptions{})
 	if err != nil {
 		t.Fatalf("failed to fetch the test deployment: %s", err)
 	}
@@ -116,7 +116,7 @@ func TestOperator_UpdateState_AppliesChangeWhenFlagEnabled(t *testing.T) {
 	client := fake.NewClientset(newTestDeployment(nil, ""))
 
 	flagService := &fakeFlagConnector{}
-	flagService.addFlag(&Flag{ID: flagNameDefault, Enabled: true})
+	flagService.addFlag(&Flag{ID: flagName, Enabled: true})
 
 	op := getTestOperator(flagService, client)
 
@@ -131,7 +131,7 @@ func TestOperator_UpdateState_AppliesChangeWhenFlagEnabled(t *testing.T) {
 		t.Errorf("Expected cpu limit %q, got %q", cpuLimitDefault, limit.String())
 	}
 
-	annotationName := "problem-operator/" + flagNameDefault
+	annotationName := "problem-operator/" + flagName
 	if got := deployment.Annotations[annotationName]; got != string(annotationValueOn) {
 		t.Errorf("Expected annotation %q, got %q", annotationValueOn, got)
 	}
@@ -140,7 +140,7 @@ func TestOperator_UpdateState_AppliesChangeWhenFlagEnabled(t *testing.T) {
 func TestOperator_UpdateState_RollsBackChangeWhenFlagDisabled(t *testing.T) {
 	t.Parallel()
 
-	annotationName := "problem-operator/" + flagNameDefault
+	annotationName := "problem-operator/" + flagName
 	deployment := newTestDeployment(map[string]string{
 		annotationName:     string(annotationValueOn),
 		revisionAnnotation: "2",
@@ -150,7 +150,7 @@ func TestOperator_UpdateState_RollsBackChangeWhenFlagDisabled(t *testing.T) {
 	client := fake.NewClientset(deployment, previousReplicaSet)
 
 	flagService := &fakeFlagConnector{}
-	flagService.addFlag(&Flag{ID: flagNameDefault, Enabled: false})
+	flagService.addFlag(&Flag{ID: flagName, Enabled: false})
 
 	op := getTestOperator(flagService, client)
 
@@ -172,11 +172,11 @@ func TestOperator_UpdateState_RollsBackChangeWhenFlagDisabled(t *testing.T) {
 func TestOperator_UpdateState_NoopWhenSynchronized(t *testing.T) {
 	t.Parallel()
 
-	annotationName := "problem-operator/" + flagNameDefault
+	annotationName := "problem-operator/" + flagName
 	client := fake.NewClientset(newTestDeployment(map[string]string{annotationName: string(annotationValueOff)}, ""))
 
 	flagService := &fakeFlagConnector{}
-	flagService.addFlag(&Flag{ID: flagNameDefault, Enabled: false})
+	flagService.addFlag(&Flag{ID: flagName, Enabled: false})
 
 	op := getTestOperator(flagService, client)
 
@@ -202,7 +202,7 @@ func TestOperator_UpdateState_ErrorFromFlagService(t *testing.T) {
 	client := fake.NewClientset(newTestDeployment(nil, ""))
 
 	flagService := &fakeFlagConnector{err: errFakeFlagService}
-	flagService.addFlag(&Flag{ID: flagNameDefault})
+	flagService.addFlag(&Flag{ID: flagName})
 
 	op := getTestOperator(flagService, client)
 
@@ -217,7 +217,7 @@ func TestOperator_UpdateState_ErrorWhenDeploymentMissing(t *testing.T) {
 	client := fake.NewClientset()
 
 	flagService := &fakeFlagConnector{}
-	flagService.addFlag(&Flag{ID: flagNameDefault, Enabled: true})
+	flagService.addFlag(&Flag{ID: flagName, Enabled: true})
 
 	op := getTestOperator(flagService, client)
 
@@ -229,7 +229,7 @@ func TestOperator_UpdateState_ErrorWhenDeploymentMissing(t *testing.T) {
 func TestOperator_UpdateState_ErrorWhenNoPreviousReplicaSet(t *testing.T) {
 	t.Parallel()
 
-	annotationName := "problem-operator/" + flagNameDefault
+	annotationName := "problem-operator/" + flagName
 	deployment := newTestDeployment(map[string]string{
 		annotationName:     string(annotationValueOn),
 		revisionAnnotation: "1",
@@ -238,7 +238,7 @@ func TestOperator_UpdateState_ErrorWhenNoPreviousReplicaSet(t *testing.T) {
 	client := fake.NewClientset(deployment)
 
 	flagService := &fakeFlagConnector{}
-	flagService.addFlag(&Flag{ID: flagNameDefault, Enabled: false})
+	flagService.addFlag(&Flag{ID: flagName, Enabled: false})
 
 	op := getTestOperator(flagService, client)
 
@@ -253,7 +253,7 @@ func TestOperator_UpdateState_ContextTimeout(t *testing.T) {
 	client := fake.NewClientset(newTestDeployment(nil, ""))
 
 	flagService := &fakeFlagConnector{}
-	flagService.addFlag(&Flag{ID: flagNameDefault})
+	flagService.addFlag(&Flag{ID: flagName})
 
 	op := getTestOperator(flagService, client)
 

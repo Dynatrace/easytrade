@@ -20,16 +20,14 @@ const timeoutIntervalMultiplier = 1.1
 
 type (
 	Operator struct {
-		logger        *zap.SugaredLogger
-		client        kubernetes.Interface
-		flagService   FlagService
-		broadcaster   record.EventBroadcaster
-		recorder      record.EventRecorder
-		namespace     string
-		interval      time.Duration
-		brokerService string
-		flagName      string
-		cpuLimit      string
+		logger      *zap.SugaredLogger
+		client      kubernetes.Interface
+		flagService FlagService
+		broadcaster record.EventBroadcaster
+		recorder    record.EventRecorder
+		namespace   string
+		interval    time.Duration
+		cpuLimit    string
 	}
 
 	FlagService interface {
@@ -44,8 +42,6 @@ func New(
 	flagService FlagService,
 	namespace string,
 	interval time.Duration,
-	brokerService string,
-	flagName string,
 	cpuLimit string,
 ) *Operator {
 	eventBroadcaster := record.NewBroadcaster()
@@ -53,16 +49,14 @@ func New(
 	eventRecorder := eventBroadcaster.NewRecorder(scheme.Scheme, corev1.EventSource{Component: "background-service-operator"})
 
 	return &Operator{
-		logger:        logger,
-		flagService:   flagService,
-		client:        client,
-		broadcaster:   eventBroadcaster,
-		recorder:      eventRecorder,
-		namespace:     namespace,
-		interval:      interval,
-		brokerService: brokerService,
-		flagName:      flagName,
-		cpuLimit:      cpuLimit,
+		logger:      logger,
+		flagService: flagService,
+		client:      client,
+		broadcaster: eventBroadcaster,
+		recorder:    eventRecorder,
+		namespace:   namespace,
+		interval:    interval,
+		cpuLimit:    cpuLimit,
 	}
 }
 
@@ -117,9 +111,9 @@ func (o *Operator) updateState(ctx context.Context) error {
 	ctx, cancel := context.WithTimeout(ctx, o.interval)
 	defer cancel()
 
-	flag, err := o.flagService.GetFlag(ctx, o.flagName)
+	flag, err := o.flagService.GetFlag(ctx, flagName)
 	if err != nil {
-		o.logger.Errorf("An error occurred while fetching the %q flag - %s", o.flagName, err)
+		o.logger.Errorf("An error occurred while fetching the %q flag - %s", flagName, err)
 		return err
 	}
 

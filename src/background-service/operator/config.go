@@ -14,11 +14,9 @@ const (
 	syncIntervalEnv = "SYNC_INTERVAL"
 	defaultInterval = 5 * time.Second
 
-	brokerServiceEnv     = "HIGH_CPU_USAGE_BROKER_SERVICE_NAME"
-	brokerServiceDefault = "broker-service"
+	brokerService = "broker-service"
 
-	flagNameEnv     = "HIGH_CPU_USAGE_FLAG_NAME"
-	flagNameDefault = "high_cpu_usage"
+	flagName = "high_cpu_usage"
 
 	cpuLimitEnv     = "HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT"
 	cpuLimitDefault = "300m"
@@ -27,31 +25,23 @@ const (
 var ErrNamespaceEnvNotFound = fmt.Errorf("pod namespace not found in the %s environment variable", podNamespaceEnv)
 
 type Config struct {
-	Logger        *zap.SugaredLogger
-	Client        kubernetes.Interface
-	FlagService   FlagService
-	Namespace     string
-	Interval      time.Duration
-	BrokerService string
-	FlagName      string
-	CPULimit      string
+	Logger      *zap.SugaredLogger
+	Client      kubernetes.Interface
+	FlagService FlagService
+	Namespace   string
+	Interval    time.Duration
+	CPULimit    string
 }
 
 func (c Config) Build() *Operator {
 	if c.Interval <= 0 {
 		c.Interval = defaultInterval
 	}
-	if c.BrokerService == "" {
-		c.BrokerService = brokerServiceDefault
-	}
-	if c.FlagName == "" {
-		c.FlagName = flagNameDefault
-	}
 	if c.CPULimit == "" {
 		c.CPULimit = cpuLimitDefault
 	}
 
-	return New(c.Logger, c.Client, c.FlagService, c.Namespace, c.Interval, c.BrokerService, c.FlagName, c.CPULimit)
+	return New(c.Logger, c.Client, c.FlagService, c.Namespace, c.Interval, c.CPULimit)
 }
 
 func (c *Config) loadInClusterConfig() error {
@@ -98,14 +88,6 @@ func (c *Config) loadIntervalFromEnv() error {
 	return nil
 }
 
-func (c *Config) loadBrokerServiceFromEnv() {
-	c.BrokerService = os.Getenv(brokerServiceEnv)
-}
-
-func (c *Config) loadFlagNameFromEnv() {
-	c.FlagName = os.Getenv(flagNameEnv)
-}
-
 func (c *Config) loadCPULimitFromEnv() {
 	c.CPULimit = os.Getenv(cpuLimitEnv)
 }
@@ -123,8 +105,6 @@ func NewDefaultConfig(logger *zap.SugaredLogger, flagService FlagService) (*Conf
 		return nil, err
 	}
 
-	config.loadBrokerServiceFromEnv()
-	config.loadFlagNameFromEnv()
 	config.loadCPULimitFromEnv()
 
 	return config, nil

@@ -15,7 +15,7 @@ import (
 
 const (
 	revisionAnnotation = "deployment.kubernetes.io/revision"
-	appLabel           = "app.kubernetes.io/name=broker-service"
+	appLabel           = "app.kubernetes.io/name=" + brokerService
 )
 
 var (
@@ -34,7 +34,7 @@ func (o *Operator) reconcileOnce(ctx context.Context, flag *Flag) error {
 		return fmt.Errorf("context cancelled while reconciling: %w", err)
 	}
 
-	deployment, err := o.client.AppsV1().Deployments(o.namespace).Get(ctx, o.brokerService, metav1.GetOptions{})
+	deployment, err := o.client.AppsV1().Deployments(o.namespace).Get(ctx, brokerService, metav1.GetOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to get the deployment for the %q flag: %w", flag.ID, err)
 	}
