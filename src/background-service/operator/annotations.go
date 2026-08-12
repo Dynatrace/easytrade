@@ -26,14 +26,13 @@ func getObjectState(flag *Flag, deployment *appsv1.Deployment) StateAction {
 	flagState := flag.Enabled
 	state := getFlagAnnotation(flag, deployment).Bool()
 
-	switch flagState {
-	case state:
+	if flagState == state {
 		return Synchronized
-	case true:
-		return ShouldApply
-	default:
-		return ShouldRollback
 	}
+	if flagState {
+		return ShouldApply
+	}
+	return ShouldRollback
 }
 
 func setFlagAnnotation(flag *Flag, deployment *appsv1.Deployment, lv annotationValue) {
