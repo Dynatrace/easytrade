@@ -18,28 +18,21 @@ import (
 
 const timeoutIntervalMultiplier = 1.1
 
-type (
-	Operator struct {
-		logger      *zap.SugaredLogger
-		client      kubernetes.Interface
-		flagService FlagService
-		broadcaster record.EventBroadcaster
-		recorder    record.EventRecorder
-		namespace   string
-		interval    time.Duration
-		cpuLimit    string
-	}
-
-	FlagService interface {
-		GetFlag(ctx context.Context, flagName string) (*Flag, error)
-	}
-	Flag = featureflag.Flag
-)
+type Operator struct {
+	logger      *zap.SugaredLogger
+	client      kubernetes.Interface
+	flagService featureflag.FlagService
+	broadcaster record.EventBroadcaster
+	recorder    record.EventRecorder
+	namespace   string
+	interval    time.Duration
+	cpuLimit    string
+}
 
 func New(
 	logger *zap.SugaredLogger,
 	client kubernetes.Interface,
-	flagService FlagService,
+	flagService featureflag.FlagService,
 	namespace string,
 	interval time.Duration,
 	cpuLimit string,
@@ -111,14 +104,14 @@ func (o *Operator) updateState(ctx context.Context) error {
 	ctx, cancel := context.WithTimeout(ctx, o.interval)
 	defer cancel()
 
-	flag, err := o.flagService.GetFlag(ctx, flagName)
+	enabled, err := o.flagService.GetBool(ctx, flagName, false)
 	if err != nil {
 		o.logger.Errorf("An error occurred while fetching the %q flag - %s", flagName, err)
 		return err
 	}
 
-	if err := o.reconcile(ctx, flag); err != nil {
-		o.logger.Errorf("An error occurred while updating state for the %q flag - %s", flag.ID, err)
+	if err := o.reconcile(ctx, enabled); err != nil {
+		o.logger.Errorf("An error occurred while updating state for the %q flag - %s", flagName, err)
 		return err
 	}
 

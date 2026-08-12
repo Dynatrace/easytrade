@@ -21,6 +21,11 @@ type creditCardOrderClient struct {
 	http    *httpclient.Client
 }
 
+type creditCardOrderService interface {
+	GetShippingAddress(ctx context.Context, orderID string) (*ShippingAddress, error)
+	UpdateStatus(ctx context.Context, status OrderStatus, orderID string, details any) error
+}
+
 func newCreditCardOrderClient(baseURL string) *creditCardOrderClient {
 	return &creditCardOrderClient{baseURL: baseURL, http: httpclient.New()}
 }

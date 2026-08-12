@@ -43,12 +43,12 @@ func (s *stubCreditCardOrderService) callCountForStatus(status OrderStatus) int 
 	return n
 }
 
-type stubFlagChecker struct {
+type stubFlagService struct {
 	enabled bool
 }
 
-func (s *stubFlagChecker) GetBool(ctx context.Context, id string, defaultVal bool) bool {
-	return s.enabled
+func (s *stubFlagService) GetBool(ctx context.Context, id string, defaultVal bool) (bool, error) {
+	return s.enabled, nil
 }
 
 // TestRunner_CrisisDedupGuard is the load-bearing regression test called out
@@ -59,7 +59,7 @@ func (s *stubFlagChecker) GetBool(ctx context.Context, id string, defaultVal boo
 // order stuck in the error state.
 func TestRunner_CrisisDedupGuard(t *testing.T) {
 	svc := &stubCreditCardOrderService{}
-	flags := &stubFlagChecker{enabled: true}
+	flags := &stubFlagService{enabled: true}
 	r := newRunner(svc, flags, 0)
 
 	order := &Order{Request: CreditCardRequest{CreditCardOrderID: "order-1", Name: "Alice", CardLevel: "gold"}, Status: OrderCardOrdered}
@@ -83,7 +83,7 @@ func TestRunner_CrisisDedupGuard(t *testing.T) {
 // card details populated, and is reported exactly once.
 func TestRunner_ManufactureSuccess(t *testing.T) {
 	svc := &stubCreditCardOrderService{}
-	flags := &stubFlagChecker{enabled: false}
+	flags := &stubFlagService{enabled: false}
 	r := newRunner(svc, flags, 0)
 
 	order := &Order{Request: CreditCardRequest{CreditCardOrderID: "order-2", Name: "Bob", CardLevel: "silver"}, Status: OrderCardOrdered}
@@ -107,7 +107,7 @@ func TestRunner_ManufactureSuccess(t *testing.T) {
 // change, to be retried on a later tick — not treated as an error or removed.
 func TestRunner_ShippingNotFound_LeavesOrderUntouched(t *testing.T) {
 	svc := &stubCreditCardOrderService{shippingAddr: nil}
-	r := newRunner(svc, &stubFlagChecker{}, 0)
+	r := newRunner(svc, &stubFlagService{}, 0)
 
 	order := &Order{Request: CreditCardRequest{CreditCardOrderID: "order-3"}, Status: OrderCardCreated}
 	r.orders = append(r.orders, order)
@@ -126,7 +126,7 @@ func TestRunner_ShippingNotFound_LeavesOrderUntouched(t *testing.T) {
 // OrderCardCreated -> OrderCardShipped -> OrderCardDelivered -> removed.
 func TestRunner_FullLifecycle(t *testing.T) {
 	svc := &stubCreditCardOrderService{shippingAddr: &ShippingAddress{Name: "Carol", Email: "carol@example.com"}}
-	r := newRunner(svc, &stubFlagChecker{}, 0)
+	r := newRunner(svc, &stubFlagService{}, 0)
 
 	order := &Order{Request: CreditCardRequest{CreditCardOrderID: "order-4"}, Status: OrderCardCreated}
 	r.orders = append(r.orders, order)
@@ -178,7 +178,7 @@ func TestRunner_FullLifecycle(t *testing.T) {
 // drainIncoming without blocking the caller.
 func TestRunner_Submit(t *testing.T) {
 	svc := &stubCreditCardOrderService{}
-	r := newRunner(svc, &stubFlagChecker{}, 0)
+	r := newRunner(svc, &stubFlagService{}, 0)
 
 	r.Submit(CreditCardRequest{CreditCardOrderID: "order-5", Name: "Dave", CardLevel: "bronze"})
 	r.drainIncoming()

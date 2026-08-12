@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"dynatrace.com/easytrade/background-service/config"
+	"dynatrace.com/easytrade/background-service/featureflag"
 )
 
 const (
@@ -14,7 +15,7 @@ const (
 	delayChancePercent            = "DELAY_CHANCE_PERCENT"
 )
 
-func Start(ctx context.Context, values config.Values, flags flagChecker) Handlers {
+func Start(ctx context.Context, values config.Values, flags featureflag.FlagService) Handlers {
 	svc := newCreditCardOrderClient(values.Get(creditCardOrderServiceAddress))
 	r := newRunner(svc, flags, values.MustInt(delayChancePercent))
 	delay := time.Duration(values.MustInt(thirdPartyDelay)) * time.Second

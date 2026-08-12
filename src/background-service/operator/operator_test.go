@@ -12,6 +12,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
+
+	"dynatrace.com/easytrade/background-service/featureflag"
 )
 
 const testNamespace = "test"
@@ -20,7 +22,7 @@ func getTestLogger() *zap.SugaredLogger {
 	return zap.Must(zap.NewDevelopment()).Sugar()
 }
 
-func getTestOperator(flagService FlagService, client kubernetes.Interface) *Operator {
+func getTestOperator(flagService featureflag.FlagService, client kubernetes.Interface) *Operator {
 	return Config{
 		Logger:      getTestLogger(),
 		Client:      client,
@@ -95,17 +97,16 @@ func TestAnnotations_SetGetAnnotation(t *testing.T) {
 	t.Parallel()
 
 	deployment := newTestDeployment(nil, "")
-	flag := &Flag{ID: "test"}
 
-	setFlagAnnotation(flag, deployment, annotationValueOn)
+	setFlagAnnotation(deployment, annotationValueOn)
 
-	if annotation := getFlagAnnotation(flag, deployment); annotation != annotationValueOn {
+	if annotation := getFlagAnnotation(deployment); annotation != annotationValueOn {
 		t.Errorf("Expected %q annotation, got %q", annotationValueOn, annotation)
 	}
 
-	setFlagAnnotation(flag, deployment, annotationValueOff)
+	setFlagAnnotation(deployment, annotationValueOff)
 
-	if annotation := getFlagAnnotation(flag, deployment); annotation != annotationValueOff {
+	if annotation := getFlagAnnotation(deployment); annotation != annotationValueOff {
 		t.Errorf("Expected %q annotation, got %q", annotationValueOff, annotation)
 	}
 }
@@ -115,8 +116,7 @@ func TestOperator_UpdateState_AppliesChangeWhenFlagEnabled(t *testing.T) {
 
 	client := fake.NewClientset(newTestDeployment(nil, ""))
 
-	flagService := &fakeFlagConnector{}
-	flagService.addFlag(&Flag{ID: flagName, Enabled: true})
+	flagService := &fakeFlagConnector{enabled: true}
 
 	op := getTestOperator(flagService, client)
 
@@ -149,8 +149,7 @@ func TestOperator_UpdateState_RollsBackChangeWhenFlagDisabled(t *testing.T) {
 
 	client := fake.NewClientset(deployment, previousReplicaSet)
 
-	flagService := &fakeFlagConnector{}
-	flagService.addFlag(&Flag{ID: flagName, Enabled: false})
+	flagService := &fakeFlagConnector{enabled: false}
 
 	op := getTestOperator(flagService, client)
 
@@ -175,8 +174,7 @@ func TestOperator_UpdateState_NoopWhenSynchronized(t *testing.T) {
 	annotationName := "problem-operator/" + flagName
 	client := fake.NewClientset(newTestDeployment(map[string]string{annotationName: string(annotationValueOff)}, ""))
 
-	flagService := &fakeFlagConnector{}
-	flagService.addFlag(&Flag{ID: flagName, Enabled: false})
+	flagService := &fakeFlagConnector{enabled: false}
 
 	op := getTestOperator(flagService, client)
 
@@ -202,7 +200,6 @@ func TestOperator_UpdateState_ErrorFromFlagService(t *testing.T) {
 	client := fake.NewClientset(newTestDeployment(nil, ""))
 
 	flagService := &fakeFlagConnector{err: errFakeFlagService}
-	flagService.addFlag(&Flag{ID: flagName})
 
 	op := getTestOperator(flagService, client)
 
@@ -216,8 +213,7 @@ func TestOperator_UpdateState_ErrorWhenDeploymentMissing(t *testing.T) {
 
 	client := fake.NewClientset()
 
-	flagService := &fakeFlagConnector{}
-	flagService.addFlag(&Flag{ID: flagName, Enabled: true})
+	flagService := &fakeFlagConnector{enabled: true}
 
 	op := getTestOperator(flagService, client)
 
@@ -237,8 +233,7 @@ func TestOperator_UpdateState_ErrorWhenNoPreviousReplicaSet(t *testing.T) {
 
 	client := fake.NewClientset(deployment)
 
-	flagService := &fakeFlagConnector{}
-	flagService.addFlag(&Flag{ID: flagName, Enabled: false})
+	flagService := &fakeFlagConnector{enabled: false}
 
 	op := getTestOperator(flagService, client)
 
@@ -253,7 +248,6 @@ func TestOperator_UpdateState_ContextTimeout(t *testing.T) {
 	client := fake.NewClientset(newTestDeployment(nil, ""))
 
 	flagService := &fakeFlagConnector{}
-	flagService.addFlag(&Flag{ID: flagName})
 
 	op := getTestOperator(flagService, client)
 
@@ -266,22 +260,14 @@ func TestOperator_UpdateState_ContextTimeout(t *testing.T) {
 }
 
 type fakeFlagConnector struct {
-	flags map[string]*Flag
-	err   error
+	enabled bool
+	err     error
 }
 
-func (c *fakeFlagConnector) GetFlag(_ context.Context, flagName string) (*Flag, error) {
+func (c *fakeFlagConnector) GetBool(_ context.Context, _ string, _ bool) (bool, error) {
 	if c.err != nil {
-		return nil, c.err
+		return false, c.err
 	}
 
-	return c.flags[flagName], nil
-}
-
-func (c *fakeFlagConnector) addFlag(flag *Flag) {
-	if c.flags == nil {
-		c.flags = make(map[string]*Flag)
-	}
-
-	c.flags[flag.ID] = flag
+	return c.enabled, nil
 }

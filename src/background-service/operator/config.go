@@ -8,6 +8,8 @@ import (
 	"go.uber.org/zap"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+
+	"dynatrace.com/easytrade/background-service/featureflag"
 )
 
 const (
@@ -27,7 +29,7 @@ var ErrNamespaceEnvNotFound = fmt.Errorf("pod namespace not found in the %s envi
 type Config struct {
 	Logger      *zap.SugaredLogger
 	Client      kubernetes.Interface
-	FlagService FlagService
+	FlagService featureflag.FlagService
 	Namespace   string
 	Interval    time.Duration
 	CPULimit    string
@@ -92,7 +94,7 @@ func (c *Config) loadCPULimitFromEnv() {
 	c.CPULimit = os.Getenv(cpuLimitEnv)
 }
 
-func NewDefaultConfig(logger *zap.SugaredLogger, flagService FlagService) (*Config, error) {
+func NewDefaultConfig(logger *zap.SugaredLogger, flagService featureflag.FlagService) (*Config, error) {
 	config := &Config{Logger: logger, FlagService: flagService}
 
 	if err := config.loadInClusterConfig(); err != nil {

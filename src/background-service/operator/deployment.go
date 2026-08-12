@@ -23,39 +23,39 @@ var (
 	ErrNoPreviousReplicaSet       = errors.New("no previous replicaset found")
 )
 
-func (o *Operator) reconcile(ctx context.Context, flag *Flag) error {
+func (o *Operator) reconcile(ctx context.Context, enabled bool) error {
 	return retry.RetryOnConflict(retry.DefaultRetry, func() error {
-		return o.reconcileOnce(ctx, flag)
+		return o.reconcileOnce(ctx, enabled)
 	})
 }
 
-func (o *Operator) reconcileOnce(ctx context.Context, flag *Flag) error {
+func (o *Operator) reconcileOnce(ctx context.Context, enabled bool) error {
 	if err := ctx.Err(); err != nil {
 		return fmt.Errorf("context cancelled while reconciling: %w", err)
 	}
 
 	deployment, err := o.client.AppsV1().Deployments(o.namespace).Get(ctx, brokerService, metav1.GetOptions{})
 	if err != nil {
-		return fmt.Errorf("failed to get the deployment for the %q flag: %w", flag.ID, err)
+		return fmt.Errorf("failed to get the deployment for the %q flag: %w", flagName, err)
 	}
 
-	state := getObjectState(flag, deployment)
+	state := getObjectState(enabled, deployment)
 
-	l := o.logger.With("flag", flag.ID, "enabled", flag.Enabled)
+	l := o.logger.With("flag", flagName, "enabled", enabled)
 
 	switch state {
 	case ShouldApply:
 		l.Infof("Applying changes to the %s", deployment.GetName())
-		o.recordEvent(deployment, "FlagApply", fmt.Sprintf("Applying changes from the %q flag", flag.ID))
+		o.recordEvent(deployment, "FlagApply", fmt.Sprintf("Applying changes from the %q flag", flagName))
 
-		setFlagAnnotation(flag, deployment, annotationValueOn)
+		setFlagAnnotation(deployment, annotationValueOn)
 		err = o.applyChange(deployment)
 
 	case ShouldRollback:
 		l.Infof("Rolling back changes of the %s", deployment.GetName())
-		o.recordEvent(deployment, "FlagRollback", fmt.Sprintf("Rolling back changes from the %q flag", flag.ID))
+		o.recordEvent(deployment, "FlagRollback", fmt.Sprintf("Rolling back changes from the %q flag", flagName))
 
-		setFlagAnnotation(flag, deployment, annotationValueOff)
+		setFlagAnnotation(deployment, annotationValueOff)
 		err = o.rollbackChange(ctx, deployment)
 
 	case Synchronized:

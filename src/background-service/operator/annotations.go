@@ -22,25 +22,24 @@ func (lv annotationValue) Bool() bool {
 	return lv == annotationValueOn
 }
 
-func getObjectState(flag *Flag, deployment *appsv1.Deployment) StateAction {
-	flagState := flag.Enabled
-	state := getFlagAnnotation(flag, deployment).Bool()
+func getObjectState(enabled bool, deployment *appsv1.Deployment) StateAction {
+	state := getFlagAnnotation(deployment).Bool()
 
-	if flagState == state {
+	if enabled == state {
 		return Synchronized
 	}
-	if flagState {
+	if enabled {
 		return ShouldApply
 	}
 	return ShouldRollback
 }
 
-func setFlagAnnotation(flag *Flag, deployment *appsv1.Deployment, lv annotationValue) {
-	getAllAnnotations(deployment)[getAnnotationName(flag)] = string(lv)
+func setFlagAnnotation(deployment *appsv1.Deployment, lv annotationValue) {
+	getAllAnnotations(deployment)[getAnnotationName()] = string(lv)
 }
 
-func getFlagAnnotation(flag *Flag, deployment *appsv1.Deployment) annotationValue {
-	labelName := getAnnotationName(flag)
+func getFlagAnnotation(deployment *appsv1.Deployment) annotationValue {
+	labelName := getAnnotationName()
 
 	strValue, ok := getAllAnnotations(deployment)[labelName]
 	if ok && strValue == string(annotationValueOn) {
@@ -48,14 +47,14 @@ func getFlagAnnotation(flag *Flag, deployment *appsv1.Deployment) annotationValu
 	}
 
 	if !ok {
-		setFlagAnnotation(flag, deployment, annotationValueOff)
+		setFlagAnnotation(deployment, annotationValueOff)
 	}
 
 	return annotationValueOff
 }
 
-func getAnnotationName(flag *Flag) string {
-	return annotationPrefix + flag.ID
+func getAnnotationName() string {
+	return annotationPrefix + flagName
 }
 
 func getAllAnnotations(deployment *appsv1.Deployment) map[string]string {

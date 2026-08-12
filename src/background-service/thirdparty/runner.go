@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"time"
 
+	"dynatrace.com/easytrade/background-service/featureflag"
 	"dynatrace.com/easytrade/background-service/logger"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
@@ -16,12 +17,12 @@ type runner struct {
 	orders   []*Order
 
 	svc                creditCardOrderService
-	flags              flagChecker
+	flags              featureflag.FlagService
 	delayChancePercent int
 	rng                *rand.Rand
 }
 
-func newRunner(svc creditCardOrderService, flags flagChecker, delayChancePercent int) *runner {
+func newRunner(svc creditCardOrderService, flags featureflag.FlagService, delayChancePercent int) *runner {
 	return &runner{
 		incoming:           make(chan *Order, 100),
 		svc:                svc,
@@ -86,7 +87,10 @@ func (r *runner) tick(ctx context.Context) {
 }
 
 func (r *runner) processManufacture(ctx context.Context, l *zap.SugaredLogger, o *Order) {
-	crisis := r.flags.GetBool(ctx, "factory_crisis", false)
+	crisis, error := r.flags.GetBool(ctx, "factory_crisis", false)
+	if error != nil {
+		l.Errorw("Failed to check factory crisis flag", "err", error)
+	}
 
 	if crisis {
 		// Dedup guard, load-bearing: only act the FIRST tick an order enters
