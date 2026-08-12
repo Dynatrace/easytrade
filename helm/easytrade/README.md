@@ -65,7 +65,7 @@ The easytrade chart includes the following microservices:
 
 - `background-service` - Consolidated data aggregation, content/pricing generation, credit-card manufacture/courier simulation, and (Kubernetes-only) problem-pattern operator
 - `broker-service` - Trading broker service
-- `calculationservice` - Calculation engine
+- `contentcreator` - Content creation service
 - `credit-card-order-service` - Credit card order processing
 - `db` - Microsoft SQL Server database (StatefulSet)
 - `db-adapter` - gRPC service exposing the database behind a stable interface (pluggable backend: MSSQL/Postgres)
@@ -76,7 +76,7 @@ The easytrade chart includes the following microservices:
 - `manager` - Management service
 - `offerservice` - Offer management
 - `pricing-service` - Pricing calculation
-- `rabbitmq` - RabbitMQ message broker
+- `problem-operator` - Problem pattern simulator
 - `user-service` - Account and authentication service
 
 ### Example Configurations
@@ -103,7 +103,7 @@ frontendreverseproxy:
 # Disable all other services
 background-service:
   enabled: false
-calculationservice:
+loadgen:
   enabled: false
 # ... etc
 ```
@@ -164,19 +164,19 @@ background-service:
 #### Multiple ports configuration
 
 ```yaml
-rabbitmq:
+<service>:
   enabled: true
   service:
     enabled: true
     ports:
-      - port: 5672
-        targetPort: 5672
+      - port: 8080
+        targetPort: 8080
         protocol: TCP
-        name: listener
-      - port: 15672
-        targetPort: 15672
+        name: http
+      - port: 9090
+        targetPort: 9090
         protocol: TCP
-        name: ui
+        name: metrics
 ```
 
 ## Upgrading

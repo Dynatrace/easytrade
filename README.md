@@ -20,7 +20,7 @@ EasyTrade consists of the following services/components:
 | -------------------------------------------------------------------- | ---------- | ---------------------------- |
 | [Background service](src/background-service/README.md)               | 80         | `/background-service`        |
 | [Broker service](src/broker-service/README.md)                       | 80         | `/broker-service`            |
-| [Calculation service](src/calculationservice/README.md)              | 80         | `---`                        |
+| [Content creator](src/contentcreator/README.md)                      | 80         | `---`                        |
 | [Credit card order service](src/credit-card-order-service/README.md) | 80         | `/credit-card-order-service` |
 | [Db](src/db/README.md)                                               | 80         | `---`                        |
 | [Db adapter](src/db-adapter/README.md)                               | --         | `---`                        |
@@ -31,8 +31,9 @@ EasyTrade consists of the following services/components:
 | [Manager](src/manager/easyTradeManager/README.md)                    | 80         | `/manager`                   |
 | [Offer service](src/offerservice/README.md)                          | 80         | `/offerservice`              |
 | [Pricing service](src/pricing-service/README.md)                     | 80         | `/pricing-service`           |
-| [RabbitMQ](src/rabbitmq/README.md)                                   | 80         | `---`                        |
-| [User service](src/user-service/README.md)                           | 80         | `/user-service`              |
+| [Problem operator](src/problem-operator/README.md)                   | 80         | `---`                        |
+| [User service](src/user-service/README.md)                           | 80         | `/user-service`               |
+
 > To learn more about endpoints / swagger for the services go to their respective readmes
 
 ## Docker compose

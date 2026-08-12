@@ -18,13 +18,6 @@ x-connection-strings:
   DOTNET_CONNECTION_STRING: &dotnet-connection-string Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
   GO_CONNECTION_STRING: &go-connection-string sqlserver://sa:yourStrong(!)Password@db:1433?database=TradeManagement&connection+encrypt=false&connection+TrustServerCertificate=false&connection+loginTimeout=30
 
-x-rabbit-vars: &rabbit-vars
-  RABBITMQ_USER: userxxx
-  RABBITMQ_PASSWORD: passxxx
-  RABBITMQ_PORT: "5672"
-  RABBITMQ_HOST: rabbitmq
-  RABBITMQ_QUEUE: Trade_Data_Raw
-
 services:
   db:
     <<: *default-service
@@ -48,11 +41,9 @@ services:
     image: ${REGISTRY}/pricing-service:${TAG}
     depends_on:
       - db
-      - rabbitmq
     environment:
       MSSQL_CONNECTIONSTRING: *go-connection-string
       PROXY_PREFIX: pricing-service
-      <<: *rabbit-vars
 
   broker-service:
     <<: *default-service
@@ -69,18 +60,6 @@ services:
       <<: *feature-flag-service-env
       PROXY_PREFIX: broker-service
       MSSQL_CONNECTIONSTRING: *dotnet-connection-string
-
-  rabbitmq:
-    <<: *default-service
-    image: ${REGISTRY}/rabbitmq:${TAG}
-
-  calculationservice:
-    <<: *default-service
-    image: ${REGISTRY}/calculationservice:${TAG}
-    depends_on:
-      - rabbitmq
-    environment:
-      <<: *rabbit-vars
 
   frontend:
     <<: *default-service
