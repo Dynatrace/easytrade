@@ -66,19 +66,25 @@ Only `broker-service` has a test project; `loginservice` and `manager` have no u
 
 ## Running locally
 
-Use `compose.dev.yaml` via the helper script:
+Use the root `Makefile` (`make help` lists every target):
 ```bash
-./runDev.sh start       # proxy + contentcreator (minimal)
-./runDev.sh start-all   # all services
-./runDev.sh build [service...]  # rebuild images
-./runDev.sh stop
+make start                     # all services, built from local source (compose.dev.yaml)
+make start service="frontendreverseproxy contentcreator"   # subset
+make build [service=NAME]      # rebuild images; omit service= to build all
+make redeploy service=NAME     # rebuild + recreate one service after a code change
+make stop
 ```
+
+Every compose target takes an optional `service=` (a single name or a quoted,
+space-separated list). Omitting it means *all services*. `restart` and `redeploy`
+require it. `SERVICE=` works as an alias.
 
 Or directly:
 ```bash
 docker compose -f compose.dev.yaml up -d
 docker compose up          # uses pre-built images from registry (compose.yaml)
 ```
+`make start-registry` is the Makefile equivalent of the second form.
 
 App available at `http://localhost`. Dev credentials: `demouser/demopass`, `james_norton/pass_james_123`.
 
@@ -114,6 +120,18 @@ Key DQL rule: always use `timeseries` for metrics — never `fetch <metric-key>`
 
 ## Helm / Kubernetes
 
+Via the Makefile (release and namespace both default to `easytrade`):
+```bash
+make helm-install          # install/upgrade from the local chart in helm/easytrade
+make helm-install-remote   # install/upgrade from the published OCI chart
+make helm-uninstall
+```
+
+`helm dependency update` is required before linting, templating or installing the
+local chart — the umbrella chart pulls in 16 `file://./charts/app` subchart deps.
+The `helm-*` targets run it for you (`make helm-deps`).
+
+Underlying commands:
 ```bash
 helm install easytrade oci://europe-docker.pkg.dev/dynatrace-demoability/helm/easytrade \
   --create-namespace --namespace easytrade
