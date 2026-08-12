@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	pb "dynatrace.com/easytrade/pricing-service/proto"
@@ -24,7 +23,7 @@ func GetCurrentPrices(ctx *gin.Context) {
 	if !ok {
 		return
 	}
-	respondWithPricesAndPublish(ctx, &pricesResult{Results: prices}, prices)
+	negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: prices})
 }
 
 func GetLastPrice(ctx *gin.Context) {
@@ -58,7 +57,7 @@ func GetPricingDataForInstrument(ctx *gin.Context) {
 	if !ok {
 		return
 	}
-	respondWithPricesAndPublish(ctx, &pricesResult{Results: prices}, prices)
+	negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: prices})
 }
 
 func parseRecordsLimit(ctx *gin.Context) int32 {
@@ -90,11 +89,6 @@ func parseUUID(ctx *gin.Context, param string, extract func(string) string) (uui
 		return uuid.Nil, false
 	}
 	return id, true
-}
-
-func respondWithPricesAndPublish(ctx *gin.Context, response any, prices []price) {
-	negotiateResponse(ctx, http.StatusOK, response)
-	services.SendDataToRabbitQueue(buildPricesCSV(prices, utils.RandomIntProvider{}))
 }
 
 func handleInternalError(ctx *gin.Context, err error) bool {
@@ -132,15 +126,6 @@ func pricesFromProto(msgs []*pb.PriceMessage) []price {
 		result = append(result, priceFromProto(m))
 	}
 	return result
-}
-
-func buildPricesCSV(priceList []price, provider utils.IntProvider) string {
-	var stringBuilder strings.Builder
-	stringBuilder.WriteString("date, open, high, low, close, volume\n")
-	for _, item := range priceList {
-		stringBuilder.WriteString(item.toCSV(provider.Intn(100) + 100))
-	}
-	return stringBuilder.String()
 }
 
 func negotiateResponse(ctx *gin.Context, status int, data any) {
