@@ -73,7 +73,6 @@ The easytrade chart includes the following microservices:
 - `frontend` - React frontend application
 - `frontendreverseproxy` - Nginx reverse proxy
 - `loadgen` - Load generator
-- `manager` - Management service
 - `offerservice` - Offer management
 - `pricing-service` - Pricing calculation
 - `problem-operator` - Problem pattern simulator

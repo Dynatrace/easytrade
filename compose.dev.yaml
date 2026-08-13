@@ -23,17 +23,6 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
 
-  manager:
-    <<: *default-service
-    build: src/manager/easyTradeManager
-    depends_on:
-      - db
-    ports:
-      - 8081:8080
-    environment:
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
-      PROXY_PREFIX: manager
-
   pricing-service:
     <<: *default-service
     build: src/pricing-service
@@ -119,10 +108,11 @@ services:
   user-service:
     <<: *default-service
     build: src/user-service
+    depends_on:
+      - db-adapter
     ports:
       - 8089:8080
     environment:
-      # db-adapter is not part of the compose stack yet; user-service is prepared to call it.
       DB_ADAPTER_ADDRESS: db-adapter:50051
       
   credit-card-order-service:

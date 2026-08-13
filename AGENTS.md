@@ -9,7 +9,7 @@
 | Java 21 / Spring Boot / Gradle | `credit-card-order-service`, `feature-flag-service`          |
 | Go / Go Modules                | `background-service`, `db-adapter`, `pricing-service`, `user-service`                          |
 | TypeScript / Node.js / npm     | `frontend`, `loadgen`, `offerservice`                                                                                    |
-| C# / .NET 8 / NuGet            | `broker-service`, `manager`                                                                                             |
+| C# / .NET 8 / NuGet            | `broker-service`                                                                                            |
 | Python / Poetry                | `db/user-generator` (local utility script, not a service)                                                                |
 | Config only (no packages)      | `frontendreverseproxy` (nginx), `db` (MSSQL)                                                              |
 

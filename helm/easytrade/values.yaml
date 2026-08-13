@@ -188,7 +188,6 @@ frontendreverseproxy:
     CREDIT_CARD_ORDER_SERVICE_URL: "http://{{ .Release.Name }}-credit-card-order-service:8080"
     FEATURE_FLAG_SERVICE_URL: "http://{{ .Release.Name }}-feature-flag-service:8080"
     FRONTEND_URL: "http://{{ .Release.Name }}-frontend:3000"
-    MANAGER_URL: "http://{{ .Release.Name }}-manager:8080"
     OFFER_SERVICE_URL: "http://{{ .Release.Name }}-offerservice:8080"
     PRICING_SERVICE_URL: "http://{{ .Release.Name }}-pricing-service:8080"
     BACKGROUND_SERVICE_URL: "http://{{ .Release.Name }}-background-service:8080"
@@ -221,29 +220,11 @@ loadgen:
       cpu: "3"
       memory: 3Gi
 
-manager:
-  enabled: true
-  env:
-    PROXY_PREFIX: "manager"
-    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
-  resources:
-    requests:
-      cpu: 50m
-      memory: 600Mi
-    limits:
-      cpu: 500m
-      memory: 600Mi
-  service:
-    enabled: true
-    port: 8080
-
 offerservice:
   enabled: true
   env:
     USER_SERVICE_PORT: "8080"
     USER_SERVICE_BASE_URL: "{{ .Release.Name }}-user-service"
-    MANAGER_BASE_URL: "{{ .Release.Name }}-manager"
-    MANAGER_PORT: "8080"
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
