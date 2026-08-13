@@ -52,7 +52,17 @@ The previous frontend was designed with MUI in mind, resulting in a layout and c
 - **Balance display** — read-only field `id="currentBalance"`. Loadgen reads this value before calculating trade amounts. Keep as a plain, always-visible text element.
 - **Owned instruments table** — plain `<table>` with columns: Code, Name, Amount, Price, Total. Replaces `DataGrid`. No column-visibility picker or quick-search — the loadgen never uses those controls.
 - **Transactions table** — plain `<table>` with columns: Direction, Status, Instrument, Amount, Price, Total, End time. Paginated. Replaces `DataGrid`.
-- **Charts** — bar chart for owned instrument values + two pie charts for transaction status/direction breakdown. Replace recharts with Lightweight Charts or uplot (see Stage 3).
+- **Charts** — replace the current snapshot bar chart (amount + value per stock at this moment) with a **portfolio value over time** line chart, defaulting to a 1-day window. Two implementation options depending on scope:
+
+  **Option A — no schema change (derive from existing data)**
+  Replay `Trades` (timestamped buy/sell records already in the DB) to compute running quantity per instrument at each point, then multiply by `Pricing.Close` at that timestamp. 100% accurate, zero DB changes. The computation is heavier but acceptable for demo-scale data volumes. New broker-service endpoint only.
+
+  **Option B — add `OwnedInstrumentsHistory` table (write-through cache)**
+  On every trade, broker-service inserts a row `(AccountId, InstrumentId, Quantity, Timestamp)` alongside the existing `OwnedInstruments` upsert. The portfolio history endpoint becomes a single join against pricing instead of a trade replay. Preferred if the endpoint becomes a hot path.
+
+  Either option uses the same frontend contract — `GET /broker-service/v1/portfolio/history/{accountId}?period=1d` returning `{ timestamp, totalValue }[]`. The default period is **1 day**; the frontend passes a configurable window (1d / 7d / 30d). The response shape does not change between options, so the frontend only needs to be built once.
+
+  The two pie charts (transaction status + direction breakdown) are lower priority and can be kept as-is or dropped.
 
 *Instruments*
 - **Instruments grid** — grid of clickable instrument cards. Each card must keep CSS classes `instrument-card` (all cards) and `owned-instrument` (cards where amount > 0) — the loadgen's XPath targets `//div[contains(@class, "instrument-card")]` and `//div[contains(@class, "owned-instrument")]`.
