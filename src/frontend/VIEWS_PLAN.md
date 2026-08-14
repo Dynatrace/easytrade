@@ -12,15 +12,24 @@ Legend:
 
 ---
 
-## Visit flows (reference)
+## Views
 
-| Visit | Page sequence |
-|-------|---------------|
-| `deposit_and_buy` | Login → Deposit → Instruments List → Instrument Detail (Quick Buy) → Credit Card → Logout |
-| `deposit_and_long_buy` | Login → Deposit → Instruments List → Instrument Detail (Quick Buy → Buy) → Credit Card → Logout |
-| `long_sell` | Login → Instruments List → Instrument Detail (Quick Sell → Sell) → Credit Card → Logout |
-| `sell_and_withdraw` | Login → Instruments List → Instrument Detail (Quick Sell) → Withdraw → Credit Card → Logout |
-| `order_credit_card` | Login → Credit Card → Logout |
+1. [Login Page](#view-1--login-page) — `/`
+2. [Navigation Shell](#view-2--navigation-shell-sidebar--header) — persistent shell on all authenticated pages
+3. [Home / Dashboard](#view-3--home--dashboard-page) — `/home`
+4. [Instruments List](#view-4--instruments-list-page) — `/instruments`
+5. [Instrument Detail](#view-5--instrument-detail-page) — `/instruments/:id`
+6. [Deposit](#view-6--deposit-page) — `/deposit`
+7. [Withdraw](#view-7--withdraw-page) — `/withdraw`
+8. [Credit Card](#view-8--credit-card-page) — `/credit-card`
+9. [Feature Flags](#view-9--feature-flags-page) — `/feature-flags`
+
+---
+
+## Visit flows
+
+- [NEW_FLOW.md](NEW_FLOW.md) — step-by-step loadgen actions against the new frontend (updated selectors, static sidebar, native `<select>`)
+- [OLD_FLOW.md](OLD_FLOW.md) — step-by-step loadgen actions against the current MUI frontend (reference / regression baseline)
 
 ---
 
