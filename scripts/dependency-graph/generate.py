@@ -43,17 +43,37 @@ def discover_off_compose_services(compose_services: dict) -> list:
     return sorted(src_services - compose_services.keys())
 
 
+def infer_env_edges(compose_services: dict, node_names: set) -> set:
+    """Edges inferred from a service's environment values referencing another
+    node's name, e.g. `user-service:8080` or `http://frontendreverseproxy`."""
+    patterns = {
+        node: re.compile(rf"(?<![A-Za-z0-9_-]){re.escape(node)}(?![A-Za-z0-9_-])")
+        for node in node_names
+    }
+    edges = set()
+    for name, spec in compose_services.items():
+        for value in ((spec or {}).get("environment") or {}).values():
+            if not isinstance(value, str):
+                continue
+            for other, pattern in patterns.items():
+                if other != name and pattern.search(value):
+                    edges.add((name, other))
+    return edges
+
+
 def build_graph(compose_services: dict):
     node_names = set(compose_services.keys())
     off_compose = discover_off_compose_services(compose_services)
     node_names |= set(off_compose)
 
-    edges = set()
+    depends_on_edges = set()
     for name, spec in compose_services.items():
         for dep in (spec or {}).get("depends_on") or []:
-            edges.add((name, dep))
+            depends_on_edges.add((name, dep))
 
-    return sorted(node_names), sorted(edges), off_compose
+    env_edges = infer_env_edges(compose_services, node_names) - depends_on_edges
+
+    return sorted(node_names), sorted(depends_on_edges), sorted(env_edges), off_compose
 
 
 def resolve_service_dir(name: str, spec: dict) -> Path:
@@ -96,12 +116,15 @@ def language_style(key: str):
     return OTHER_LANGUAGE[1], OTHER_LANGUAGE[2], OTHER_LANGUAGE[3]
 
 
-def render_mermaid(nodes, edges, off_compose, languages) -> str:
+def render_mermaid(nodes, depends_on_edges, env_edges, off_compose, languages) -> str:
     lines = ["flowchart TD"]
-    for src, dst in edges:
+    for src, dst in depends_on_edges:
         lines.append(f"    {src} --> {dst}")
+    for src, dst in env_edges:
+        lines.append(f"    {src} -.-> {dst}")
 
-    connected = {n for edge in edges for n in edge}
+    connected = {n for edge in depends_on_edges for n in edge}
+    connected |= {n for edge in env_edges for n in edge}
     off_compose_set = set(off_compose)
     for node in nodes:
         if node not in connected and node not in off_compose_set:
@@ -161,9 +184,9 @@ def inject_into_readme(mermaid_body: str) -> None:
 
 def main() -> None:
     compose_services = load_compose_services()
-    nodes, edges, off_compose = build_graph(compose_services)
+    nodes, depends_on_edges, env_edges, off_compose = build_graph(compose_services)
     languages = detect_languages(compose_services, nodes)
-    mermaid_body = render_mermaid(nodes, edges, off_compose, languages)
+    mermaid_body = render_mermaid(nodes, depends_on_edges, env_edges, off_compose, languages)
     inject_into_readme(mermaid_body)
     print(f"Updated dependency graph in {README_FILE.relative_to(REPO_ROOT)}")
 
