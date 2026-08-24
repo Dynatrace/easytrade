@@ -299,7 +299,7 @@ public class TradeTests
         await Assert.ThrowsAsync<NotEnoughAssetsException>(
             () => tradeService.SellAssets(userId, instrumentId1, sellQuantity)
         );
-        await Assert.ThrowsAsync<NotEnoughAssetsException>(
+        await Assert.ThrowsAsync<InstrumentNotFoundException>(
             () => tradeService.SellAssets(userId, instrumentId2, sellQuantity)
         );
     }
