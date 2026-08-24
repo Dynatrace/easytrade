@@ -102,6 +102,35 @@ public class InstrumentTests
         Assert.Equal(_instruments[1].Name, second.Name);
     }
 
+    [Fact]
+    public async Task GetInstruments_WhenSomeInstrumentsAbsentFromSnapshot_ShouldReturnOnlyResolvableInstruments()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var orphanedProductId = Guid.NewGuid();
+        var missingPriceInstrumentId = Guid.NewGuid();
+        Instrument[] instruments =
+        {
+            new Instrument(_instrumentId1, _productId, "code1", "name1", "desc1"),
+            new Instrument(_instrumentId2, orphanedProductId, "code2", "name2", "desc2"), // product missing
+            new Instrument(missingPriceInstrumentId, _productId, "code3", "name3", "desc3"), // price missing
+        };
+        Price[] prices = { new Price(_instrumentId1, _time, 3, 5, 1, 4.5M) }; // only _instrumentId1 has a price
+        var instrumentService = BuildFakeInstrumentService(
+            instruments,
+            Array.Empty<OwnedInstrument>(),
+            _products,
+            prices
+        );
+
+        // Act
+        var result = (await instrumentService.GetInstruments(userId)).ToList();
+
+        // Assert
+        Assert.Single(result);
+        Assert.Equal(_instrumentId1, result[0].Id);
+    }
+
     private InstrumentService BuildFakeInstrumentService(
         Instrument[] instruments,
         OwnedInstrument[] ownedInstruments,
