@@ -1,5 +1,4 @@
-﻿using EasyTrade.BrokerService.Entities.Accounts.ServiceConnector;
-using EasyTrade.BrokerService.Entities.Balances.Repository;
+﻿using EasyTrade.BrokerService.Entities.Balances.Repository;
 using EasyTrade.BrokerService.Entities.Balances.Service;
 using EasyTrade.BrokerService.Entities.Instruments.Repository;
 using EasyTrade.BrokerService.Entities.Instruments.Service;
@@ -26,7 +25,6 @@ public static class BrokerServiceDependencyExtension
     )
     {
         services
-            .AddAccountDependency()
             .AddInstrumentDependency()
             .AddBalanceDependency()
             .AddPriceDependency()
@@ -36,9 +34,6 @@ public static class BrokerServiceDependencyExtension
             .AddMiddlewareDependency();
         return services;
     }
-
-    private static IServiceCollection AddAccountDependency(this IServiceCollection services) =>
-        services.AddTransient<IUserServiceConnector, UserServiceConnector>();
 
     private static IServiceCollection AddBalanceDependency(this IServiceCollection services) =>
         services

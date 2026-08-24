@@ -41,7 +41,7 @@ public class BalanceTests
         );
 
         // Act & Assert
-        await Assert.ThrowsAsync<AccountNotFoundException>(
+        await Assert.ThrowsAsync<BalanceNotFoundException>(
             async () => await balanceService.GetBalanceOfAccount(id)
         );
     }
@@ -128,10 +128,10 @@ public class BalanceTests
         );
 
         // Act & Assert
-        await Assert.ThrowsAsync<AccountNotFoundException>(
+        await Assert.ThrowsAsync<BalanceNotFoundException>(
             async () => await balanceService.Deposit(id, amount)
         );
-        await Assert.ThrowsAsync<AccountNotFoundException>(
+        await Assert.ThrowsAsync<BalanceNotFoundException>(
             async () => await balanceService.Withdraw(id, amount)
         );
     }

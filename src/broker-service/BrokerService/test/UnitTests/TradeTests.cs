@@ -201,10 +201,10 @@ public class TradeTests
             Array.Empty<Trade>()
         );
         // Act & Assert
-        await Assert.ThrowsAsync<AccountNotFoundException>(
+        await Assert.ThrowsAsync<BalanceNotFoundException>(
             () => tradeService.BuyAssets(userId, instrumentId, 1)
         );
-        await Assert.ThrowsAsync<AccountNotFoundException>(
+        await Assert.ThrowsAsync<BalanceNotFoundException>(
             () => tradeService.SellAssets(userId, instrumentId, 1)
         );
     }

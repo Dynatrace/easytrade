@@ -178,10 +178,10 @@ public class LongTradeTests
             Array.Empty<Trade>()
         );
         // Act & Assert
-        await Assert.ThrowsAsync<AccountNotFoundException>(
+        await Assert.ThrowsAsync<BalanceNotFoundException>(
             () => tradeService.BuyAssets(userId, instrumentId, 1, 1, 1)
         );
-        await Assert.ThrowsAsync<AccountNotFoundException>(
+        await Assert.ThrowsAsync<BalanceNotFoundException>(
             () => tradeService.SellAssets(userId, instrumentId, 1, 1, 1)
         );
     }

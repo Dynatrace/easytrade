@@ -16,8 +16,7 @@ public class BrokerExceptionFilter(ILogger<BrokerExceptionFilter> logger) : IExc
     private static int GetStatusCode(Exception exception) =>
         exception switch
         {
-            AccountNotFoundException
-            or BalanceNotFoundException
+            BalanceNotFoundException
             or InstrumentNotFoundException
             or ProductNotFoundException
             or PriceNotFoundException
