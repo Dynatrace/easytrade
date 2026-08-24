@@ -71,6 +71,5 @@ public class InstrumentService(
             (await productRepository.GetProductsAsync()).ToDictionary(x => x.Id, x => x)
         );
 
-    private record InstrumentSnapshot(List<Instrument> Instruments, Dictionary<Guid, OwnedInstrument> OwnedInstruments,Dictionary<Guid, Price> Prices, Dictionary<Guid, Product> Products);
+    private record InstrumentSnapshot(List<Instrument> Instruments, Dictionary<Guid, OwnedInstrument> OwnedInstruments, Dictionary<Guid, Price> Prices, Dictionary<Guid, Product> Products);
 }
-

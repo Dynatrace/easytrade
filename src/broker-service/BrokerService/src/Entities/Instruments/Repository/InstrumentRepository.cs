@@ -1,7 +1,6 @@
 using EasyTrade.BrokerService.Connectors;
 using EasyTrade.BrokerService.Helpers;
 using EasyTrade.DbAdapter.Instrument.Grpc;
-using EasyTrade.DbAdapter.Common.Grpc;
 using Google.Protobuf.WellKnownTypes;
 
 namespace EasyTrade.BrokerService.Entities.Instruments.Repository;

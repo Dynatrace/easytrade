@@ -5,11 +5,13 @@ namespace EasyTrade.BrokerService.Test.Fakes;
 
 public class FakeBalanceRepository : IBalanceRepository
 {
-    private readonly List<Balance> _balances = new();
-    private readonly List<BalanceHistory> _balanceHistories = new();
+    private readonly List<Balance> _balances = [];
+    private readonly List<BalanceHistory> _balanceHistories = [];
 
-    public FakeBalanceRepository(List<Balance> balances, List<BalanceHistory> balanceHistories) =>
+    public FakeBalanceRepository(List<Balance> balances, List<BalanceHistory> balanceHistories)
+    {
         (_balances, _balanceHistories) = (balances, balanceHistories);
+    }
 
     public FakeBalanceRepository() { }
 
@@ -21,10 +23,7 @@ public class FakeBalanceRepository : IBalanceRepository
 
     public List<BalanceHistory> GetBalanceHistories() => _balanceHistories;
 
-    public Balance? GetBalanceOfAccount(Guid accountId)
-    {
-        return _balances.Find(x => x.AccountId == accountId);
-    }
+    public Balance? GetBalanceOfAccount(Guid accountId) => _balances.Find(x => x.AccountId == accountId);
 
     public Task<Balance?> GetBalanceOfAccountAsync(Guid accountId)
     {

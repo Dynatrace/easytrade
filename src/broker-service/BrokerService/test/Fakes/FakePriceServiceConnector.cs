@@ -5,9 +5,12 @@ namespace EasyTrade.BrokerService.Test.Fakes;
 
 public class FakePriceServiceConnector : IPriceServiceConnector
 {
-    private readonly List<Price> _prices = new();
+    private readonly List<Price> _prices = [];
 
-    public FakePriceServiceConnector(List<Price> prices) => _prices = prices;
+    public FakePriceServiceConnector(List<Price> prices)
+    {
+        _prices = prices;
+    }
 
     public FakePriceServiceConnector() { }
 

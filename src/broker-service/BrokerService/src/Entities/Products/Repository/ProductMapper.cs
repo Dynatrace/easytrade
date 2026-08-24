@@ -14,8 +14,5 @@ public static class ProductMapper
         );
     }
 
-    public static List<Product> FromProto(IEnumerable<ProductMessage> proto)
-    {
-        return [.. proto.Select(FromProto)];
-    }
+    public static List<Product> FromProto(IEnumerable<ProductMessage> proto) => [.. proto.Select(FromProto)];
 }

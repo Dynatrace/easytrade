@@ -1,5 +1,5 @@
-using Google.Protobuf.WellKnownTypes;
 using EasyTrade.DbAdapter.Trade.Grpc;
+using Google.Protobuf.WellKnownTypes;
 
 namespace EasyTrade.BrokerService.Entities.Trades.Repository;
 
@@ -42,15 +42,12 @@ public static class TradeMapper
         {
             Id = trade.Id.ToString(),
             TradeClosed = trade.TradeClosed,
-            TimestampClose = trade.TimestampClose.HasValue 
+            TimestampClose = trade.TimestampClose.HasValue
                 ? Timestamp.FromDateTimeOffset(trade.TimestampClose.Value)
                 : null,
             Status = trade.Status
         };
     }
 
-    public static List<Trade> FromProto(IEnumerable<TradeMessage> protos)
-    {
-        return [.. protos.Select(FromProto)];
-    }
+    public static List<Trade> FromProto(IEnumerable<TradeMessage> protos) => [.. protos.Select(FromProto)];
 }

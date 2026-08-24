@@ -1,6 +1,6 @@
-﻿using System.Net;
-using EasyTrade.BrokerService.Entities.Prices.DTO;
+﻿using EasyTrade.BrokerService.Entities.Prices.DTO;
 using EasyTrade.BrokerService.Helpers;
+using System.Net;
 
 namespace EasyTrade.BrokerService.Entities.Prices.ServiceConnector;
 

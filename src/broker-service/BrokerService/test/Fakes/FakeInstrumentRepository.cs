@@ -5,13 +5,16 @@ namespace EasyTrade.BrokerService.Test.Fakes;
 
 public class FakeInstrumentRepository : IInstrumentRepository
 {
-    private readonly List<Instrument> _instruments = new();
-    private readonly List<OwnedInstrument> _ownedInstruments = new();
+    private readonly List<Instrument> _instruments = [];
+    private readonly List<OwnedInstrument> _ownedInstruments = [];
 
     public FakeInstrumentRepository(
         List<Instrument> instruments,
         List<OwnedInstrument> ownedInstruments
-    ) => (_instruments, _ownedInstruments) = (instruments, ownedInstruments);
+    )
+    {
+        (_instruments, _ownedInstruments) = (instruments, ownedInstruments);
+    }
 
     public FakeInstrumentRepository() { }
 

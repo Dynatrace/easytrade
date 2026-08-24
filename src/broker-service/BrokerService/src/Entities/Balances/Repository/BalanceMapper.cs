@@ -1,15 +1,11 @@
 using EasyTrade.DbAdapter.Balance.Grpc;
-using EasyTrade.DbAdapter.Common.Grpc;
 using Google.Protobuf.WellKnownTypes;
 
 namespace EasyTrade.BrokerService.Entities.Balances.Repository;
 
 public static class BalanceMapper
 {
-    public static Balance FromProto(BalanceMessage grpcBalance)
-    {
-        return new Balance(Guid.Parse(grpcBalance.AccountId), (decimal)grpcBalance.Value);
-    }
+    public static Balance FromProto(BalanceMessage grpcBalance) => new(Guid.Parse(grpcBalance.AccountId), (decimal)grpcBalance.Value);
 
     public static BalanceHistory FromProto(BalanceHistoryMessage proto)
     {

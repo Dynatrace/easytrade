@@ -1,5 +1,4 @@
 using EasyTrade.DbAdapter.Instrument.Grpc;
-using EasyTrade.DbAdapter.Common.Grpc;
 using Google.Protobuf.WellKnownTypes;
 
 namespace EasyTrade.BrokerService.Entities.Instruments.Repository;
@@ -17,10 +16,7 @@ public static class InstrumentMapper
         );
     }
 
-    public static List<Instrument> FromProto(IEnumerable<InstrumentMessage> proto)
-    {
-        return [.. proto.Select(FromProto)];
-    }
+    public static List<Instrument> FromProto(IEnumerable<InstrumentMessage> proto) => [.. proto.Select(FromProto)];
 
     public static OwnedInstrument FromProto(OwnedInstrumentMessage proto)
     {
@@ -35,10 +31,7 @@ public static class InstrumentMapper
         };
     }
 
-    public static List<OwnedInstrument> FromProto(IEnumerable<OwnedInstrumentMessage> proto)
-    {
-        return [.. proto.Select(FromProto)];
-    }
+    public static List<OwnedInstrument> FromProto(IEnumerable<OwnedInstrumentMessage> proto) => [.. proto.Select(FromProto)];
 
     public static AddOwnedInstrumentRequest AddToProto(OwnedInstrument ownedInstrument)
     {

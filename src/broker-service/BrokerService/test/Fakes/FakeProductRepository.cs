@@ -5,9 +5,12 @@ namespace EasyTrade.BrokerService.Test.Fakes;
 
 public class FakeProductRepository : IProductRepository
 {
-    private readonly List<Product> _products = new();
+    private readonly List<Product> _products = [];
 
-    public FakeProductRepository(List<Product> products) => _products = products;
+    public FakeProductRepository(List<Product> products)
+    {
+        _products = products;
+    }
 
     public FakeProductRepository() { }
 

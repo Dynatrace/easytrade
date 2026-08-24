@@ -5,9 +5,12 @@ namespace EasyTrade.BrokerService.Test.Fakes;
 
 public class FakeTradeRepository : ITradeRepository
 {
-    private readonly List<Trade> _trades = new();
+    private readonly List<Trade> _trades = [];
 
-    public FakeTradeRepository(List<Trade> trades) => _trades = trades;
+    public FakeTradeRepository(List<Trade> trades)
+    {
+        _trades = trades;
+    }
 
     public FakeTradeRepository() { }
 

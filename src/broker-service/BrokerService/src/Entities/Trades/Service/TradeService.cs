@@ -1,8 +1,8 @@
 ﻿using EasyTrade.BrokerService.Entities.Balances;
 using EasyTrade.BrokerService.Entities.Balances.Repository;
 using EasyTrade.BrokerService.Entities.Instruments.Repository;
-using EasyTrade.BrokerService.Entities.Products;
 using EasyTrade.BrokerService.Entities.Prices.ServiceConnector;
+using EasyTrade.BrokerService.Entities.Products;
 using EasyTrade.BrokerService.Entities.Products.Repository;
 using EasyTrade.BrokerService.Entities.Trades.Repository;
 using EasyTrade.BrokerService.ExceptionHandling.Exceptions;

@@ -1,6 +1,6 @@
+using EasyTrade.BrokerService.ExceptionHandling.Exceptions;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using EasyTrade.BrokerService.ExceptionHandling.Exceptions;
 
 namespace EasyTrade.BrokerService.Entities.Balances;
 

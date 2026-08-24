@@ -51,7 +51,10 @@ public class Trade(
             tradeClosed,
             transactionHappened,
             status
-        ) => Id = id;
+        )
+    {
+        Id = id;
+    }
 
     public static Trade QuickTrade(
         Guid accountId,

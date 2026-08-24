@@ -27,19 +27,19 @@ public class InstrumentTests
         _instrumentId1 = Guid.NewGuid();
         _instrumentId2 = Guid.NewGuid();
         _productId = Guid.NewGuid();
-        _instruments = new Instrument[]
-        {
+        _instruments =
+        [
             new Instrument(_instrumentId1, _productId, "code1", "name1", "desc1"),
             new Instrument(_instrumentId2, _productId, "code2", "name2", "desc2")
-        };
-        _products = new Product[] { new Product(_productId, "prod1", 2.5M, "curr1") };
-        _prices = new Price[]
-        {
+        ];
+        _products = [new Product(_productId, "prod1", 2.5M, "curr1")];
+        _prices =
+        [
             new Price(_instrumentId1, _time.AddDays(-1), 2, 4, 1, 3),
             new Price(_instrumentId2, _time.AddDays(-1), 0.5M, 7, 0.25M, 4),
             new Price(_instrumentId1, _time, 3, 5, 1, 4.5M),
             new Price(_instrumentId2, _time, 4, 5, 1.5M, 2)
-        };
+        ];
     }
 
     [Fact]
@@ -48,10 +48,10 @@ public class InstrumentTests
         // Arrange
         var userId = Guid.NewGuid();
         OwnedInstrument[] ownedInstruments =
-        {
+        [
             new OwnedInstrument(userId, _instrumentId1, 22.5M, _time),
             new OwnedInstrument(userId, _instrumentId2, 59.28M, _time.AddDays(-1))
-        };
+        ];
 
         var instrumentService = BuildFakeInstrumentService(
             _instruments,
@@ -82,7 +82,7 @@ public class InstrumentTests
         var accountId = Guid.NewGuid();
         var instrumentService = BuildFakeInstrumentService(
             _instruments,
-            Array.Empty<OwnedInstrument>(),
+            [],
             _products,
             _prices
         );
@@ -110,15 +110,15 @@ public class InstrumentTests
         var orphanedProductId = Guid.NewGuid();
         var missingPriceInstrumentId = Guid.NewGuid();
         Instrument[] instruments =
-        {
+        [
             new Instrument(_instrumentId1, _productId, "code1", "name1", "desc1"),
             new Instrument(_instrumentId2, orphanedProductId, "code2", "name2", "desc2"), // product missing
             new Instrument(missingPriceInstrumentId, _productId, "code3", "name3", "desc3"), // price missing
-        };
-        Price[] prices = { new Price(_instrumentId1, _time, 3, 5, 1, 4.5M) }; // only _instrumentId1 has a price
+        ];
+        Price[] prices = [new Price(_instrumentId1, _time, 3, 5, 1, 4.5M)]; // only _instrumentId1 has a price
         var instrumentService = BuildFakeInstrumentService(
             instruments,
-            Array.Empty<OwnedInstrument>(),
+            [],
             _products,
             prices
         );
@@ -139,11 +139,11 @@ public class InstrumentTests
     )
     {
         _instrumentRepository = new FakeInstrumentRepository(
-            instruments.ToList(),
-            ownedInstruments.ToList()
+            [.. instruments],
+            [.. ownedInstruments]
         );
-        _priceServiceConnector = new FakePriceServiceConnector(prices.ToList());
-        _productRepository = new FakeProductRepository(products.ToList());
+        _priceServiceConnector = new FakePriceServiceConnector([.. prices]);
+        _productRepository = new FakeProductRepository([.. products]);
         var logger = new Mock<ILogger<InstrumentService>>().Object;
         return new InstrumentService(
             _instrumentRepository,

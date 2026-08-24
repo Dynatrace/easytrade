@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using EasyTrade.BrokerService.Helpers;
+﻿using EasyTrade.BrokerService.Helpers;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EasyTrade.BrokerService.Entities.Balances;
 
@@ -31,5 +31,6 @@ public class BalanceHistory(
             valueChange,
             actionType.ToString().ToLower(),
             DateTimeOffset.Now
-        ) { }
+        )
+    { }
 }

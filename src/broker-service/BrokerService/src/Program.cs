@@ -1,9 +1,8 @@
-using EasyTrade.BrokerService;
+using EasyTrade.BrokerService.Connectors;
 using EasyTrade.BrokerService.Helpers;
 using EasyTrade.BrokerService.Helpers.Logging;
 using EasyTrade.BrokerService.Middleware.CreditCardValidation;
 using EasyTrade.BrokerService.ProblemPatterns.HighCpuUsage;
-using EasyTrade.BrokerService.Connectors;
 
 var builder = WebApplication.CreateBuilder(args);
 

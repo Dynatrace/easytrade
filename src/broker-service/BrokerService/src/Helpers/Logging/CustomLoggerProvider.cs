@@ -1,5 +1,5 @@
-using System.Collections.Concurrent;
 using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
 
 namespace EasyTrade.BrokerService.Helpers.Logging;
 

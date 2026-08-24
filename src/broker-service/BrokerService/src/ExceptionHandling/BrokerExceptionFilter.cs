@@ -8,10 +8,7 @@ public class BrokerExceptionFilter(ILogger<BrokerExceptionFilter> logger) : IExc
 {
     private readonly ILogger _logger = logger;
 
-    public void OnException(ExceptionContext context)
-    {
-        UpdateContext(context, GetStatusCode(context.Exception));
-    }
+    public void OnException(ExceptionContext context) => UpdateContext(context, GetStatusCode(context.Exception));
 
     private static int GetStatusCode(Exception exception) =>
         exception switch

@@ -7,14 +7,11 @@ public class DbAdapterConnector : IDbAdapterConnector
 {
     private readonly GrpcChannel _channel;
 
-     public DbAdapterConnector(IConfiguration configuration)
+    public DbAdapterConnector(IConfiguration configuration)
     {
         var hostAndPort = configuration[Constants.DbAdapterService] ?? throw new InvalidOperationException($"{Constants.DbAdapterService} is not configured.");
         _channel = GrpcChannel.ForAddress($"http://{hostAndPort}");
     }
 
-    public GrpcChannel GetChannel()
-    {
-        return _channel;
-    }
+    public GrpcChannel GetChannel() => _channel;
 }
