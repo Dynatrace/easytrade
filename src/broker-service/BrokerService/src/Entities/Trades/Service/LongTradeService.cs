@@ -1,3 +1,4 @@
+using EasyTrade.BrokerService.Entities.Balances;
 using EasyTrade.BrokerService.Entities.Balances.Repository;
 using EasyTrade.BrokerService.Entities.Instruments;
 using EasyTrade.BrokerService.Entities.Instruments.Repository;
@@ -64,53 +65,51 @@ public class LongTradeService(
 
         await CloseOverdueTrades();
 
-        var openTrades = await _tradeRepository.GetOpenTradesAsync();
-        var instruments = (await _instrumentRepository.GetAllInstrumentsAsync()).ToDictionary(
-            x => x.Id,
-            x => x
-        );
-        var prices = (await _priceService.GetLatestPrices()).ToDictionary(
-            x => x.InstrumentId,
-            x => x
-        );
-        var products = (await _productRepository.GetProductsAsync()).ToDictionary(
-            x => x.Id,
-            x => x
-        );
-
-        foreach (var openTrade in openTrades)
+        var snapshot = await FetchMarketSnapshot();
+        foreach (var openTrade in snapshot.OpenTrades)
         {
             _logger.LogDebug("Processing trade with ID [{tradeId}]", openTrade.Id);
+            await ProcessOpenTrade(openTrade, snapshot);
+        }
+    }
 
-            var instrument = instruments[openTrade.InstrumentId];
-            var price = prices[instrument.Id];
-            var product = products[instrument.ProductId];
-            if (
-                openTrade.Direction.Equals(
-                    nameof(ActionType.LongBuy),
-                    StringComparison.OrdinalIgnoreCase
-                )
+    private async Task ProcessOpenTrade(Trade trade, MarketSnapshot snapshot)
+    {
+        var context = ResolveTradeContext(trade, snapshot);
+        if (context is null)
+        {
+            _logger.LogWarning(
+                "Skipping trade [{tradeId}]: missing instrument, price, or product data",
+                trade.Id
+            );
+            return;
+        }
+
+        if (
+            trade.Direction.Equals(
+                nameof(ActionType.LongBuy),
+                StringComparison.OrdinalIgnoreCase
             )
-            {
-                await ProcessLongBuy(openTrade, instrument, price, product);
-            }
-            else if (
-                openTrade.Direction.Equals(
-                    nameof(ActionType.LongSell),
-                    StringComparison.OrdinalIgnoreCase
-                )
+        )
+        {
+            await ProcessLongBuy(trade, context.Instrument, context.Price, context.Product);
+        }
+        else if (
+            trade.Direction.Equals(
+                nameof(ActionType.LongSell),
+                StringComparison.OrdinalIgnoreCase
             )
-            {
-                await ProcessLongSell(openTrade, instrument, price, product);
-            }
-            else
-            {
-                await CloseTrade(
-                    openTrade,
-                    "This is not a long running transcation! Trade failed!",
-                    false
-                );
-            }
+        )
+        {
+            await ProcessLongSell(trade, context.Instrument, context.Price, context.Product);
+        }
+        else
+        {
+            await CloseTrade(
+                trade,
+                "This is not a long running transcation! Trade failed!",
+                false
+            );
         }
     }
 
@@ -121,17 +120,27 @@ public class LongTradeService(
         Product product
     )
     {
-        if (trade.EntryPrice < price.Low)
+        if (!IsBuyEligible(trade, price))
             return;
 
         var balance = (await _balanceRepository.GetBalanceOfAccountAsync(trade.AccountId))!;
-        var cost = trade.Quantity * trade.EntryPrice;
-        var totalCost = cost + product.Ppt;
-        if (totalCost > balance.Value)
+        if (!HasSufficientFunds(balance, trade.Quantity * trade.EntryPrice, product.Ppt))
         {
             await CloseTrade(trade, "Not enough money to buy stocks! Trade failed!", false);
             return;
         }
+
+        await ExecuteLongBuy(trade, instrument, balance, product);
+    }
+
+    private async Task ExecuteLongBuy(
+        Trade trade,
+        Instrument instrument,
+        Balance balance,
+        Product product
+    )
+    {
+        var cost = trade.Quantity * trade.EntryPrice;
         await UpdateBalance(balance, cost, product.Ppt, ActionType.LongBuy);
         await UpdateOwnedInstrument(trade.AccountId, instrument.Id, trade.Quantity);
 
@@ -145,19 +154,30 @@ public class LongTradeService(
         Product product
     )
     {
-        if (trade.EntryPrice > price.High)
+        if (!IsSellEligible(trade, price))
             return;
 
         var ownedInstrument = await _instrumentRepository.GetOwnedInstrumentAsync(
             trade.AccountId,
             instrument.Id
         );
-        if (ownedInstrument is null || ownedInstrument.Quantity < trade.Quantity)
+        if (!HasSufficientStock(ownedInstrument, trade.Quantity))
         {
             await CloseTrade(trade, "Not enough stocks to sell! Trade failed!", false);
             return;
         }
+
         var balance = (await _balanceRepository.GetBalanceOfAccountAsync(trade.AccountId))!;
+        await ExecuteLongSell(trade, ownedInstrument!, balance, product);
+    }
+
+    private async Task ExecuteLongSell(
+        Trade trade,
+        OwnedInstrument ownedInstrument,
+        Balance balance,
+        Product product
+    )
+    {
         var income = trade.EntryPrice * trade.Quantity;
         await UpdateBalance(balance, income, product.Ppt, ActionType.LongSell);
         await UpdateOwnedInstrument(ownedInstrument, -trade.Quantity);
@@ -186,6 +206,15 @@ public class LongTradeService(
         );
 
         ValidateInput(amount, price, duration);
+        await ValidateTransactionEntities(accountId, instrumentId);
+
+        return await _tradeRepository.CreateTradeAsync(
+            Trade.LongTrade(accountId, instrumentId, type, price, amount, duration)
+        );
+    }
+
+    private async Task ValidateTransactionEntities(Guid accountId, Guid instrumentId)
+    {
         if (await _balanceRepository.GetBalanceOfAccountAsync(accountId) is null)
         {
             throw new AccountNotFoundException(accountId);
@@ -194,10 +223,6 @@ public class LongTradeService(
         {
             throw new InstrumentNotFoundException(instrumentId);
         }
-
-        return await _tradeRepository.CreateTradeAsync(
-            Trade.LongTrade(accountId, instrumentId, type, price, amount, duration)
-        );
     }
 
     private async Task CloseTrade(Trade trade, string status, bool transactionHappened)
@@ -228,6 +253,37 @@ public class LongTradeService(
         }
     }
 
+    private async Task<MarketSnapshot> FetchMarketSnapshot() =>
+        new(
+            await _tradeRepository.GetOpenTradesAsync(),
+            (await _instrumentRepository.GetAllInstrumentsAsync()).ToDictionary(x => x.Id, x => x),
+            (await _priceService.GetLatestPrices()).ToDictionary(x => x.InstrumentId, x => x),
+            (await _productRepository.GetProductsAsync()).ToDictionary(x => x.Id, x => x)
+        );
+
+    private static bool IsBuyEligible(Trade trade, Price price) =>
+        trade.EntryPrice >= price.Low;
+
+    private static bool IsSellEligible(Trade trade, Price price) =>
+        trade.EntryPrice <= price.High;
+
+    private static bool HasSufficientFunds(Balance balance, decimal cost, decimal ppt) =>
+        cost + ppt <= balance.Value;
+
+    private static bool HasSufficientStock(OwnedInstrument? ownedInstrument, decimal quantity) =>
+        ownedInstrument is not null && ownedInstrument.Quantity >= quantity;
+
+    private static TradeContext? ResolveTradeContext(Trade trade, MarketSnapshot snapshot)
+    {
+        if (!snapshot.Instruments.TryGetValue(trade.InstrumentId, out var instrument))
+            return null;
+        if (!snapshot.Prices.TryGetValue(instrument.Id, out var price))
+            return null;
+        if (!snapshot.Products.TryGetValue(instrument.ProductId, out var product))
+            return null;
+        return new TradeContext(instrument, price, product);
+    }
+
     private static bool ValidateInput(decimal amount, decimal price, int duration)
     {
         if (amount < 0)
@@ -244,4 +300,7 @@ public class LongTradeService(
         }
         return true;
     }
+
+    private record TradeContext(Instrument Instrument, Price Price, Product Product);
+    private record MarketSnapshot(List<Trade> OpenTrades, Dictionary<Guid, Instrument> Instruments, Dictionary<Guid, Price> Prices, Dictionary<Guid, Product> Products);
 }

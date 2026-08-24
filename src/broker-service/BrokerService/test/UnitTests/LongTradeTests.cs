@@ -430,6 +430,74 @@ public class LongTradeTests
         Assert.Equal(expectedAmount, userOwnedInstruments[0].Quantity);
     }
 
+    [Fact]
+    public async Task ProcessLongRunningTransactions_WhenOneTradeHasOrphanedInstrument_ShouldProcessRemainingTrades()
+    {
+        // Arrange
+        var time = DateTimeOffset.Now;
+        var userId = Guid.NewGuid();
+        var productId = Guid.NewGuid();
+        var validInstrumentId = Guid.NewGuid();
+        var orphanedInstrumentId = Guid.NewGuid(); // not present in instruments/prices/products
+        const decimal balance = 100000;
+        const decimal quantity = 1;
+        const decimal entryPrice = 5;
+        const decimal low = 4, high = 7, open = 5, close = 5;
+
+        Trade[] trades =
+        {
+            new Trade(
+                Guid.NewGuid(),
+                userId,
+                orphanedInstrumentId,
+                nameof(ActionType.LongBuy).ToLower(),
+                quantity,
+                entryPrice,
+                time.AddDays(-1),
+                time.AddDays(1),
+                false,
+                false,
+                ""
+            ),
+            new Trade(
+                Guid.NewGuid(),
+                userId,
+                validInstrumentId,
+                nameof(ActionType.LongBuy).ToLower(),
+                quantity,
+                entryPrice,
+                time.AddDays(-1),
+                time.AddDays(1),
+                false,
+                false,
+                ""
+            )
+        };
+        Balance[] balances = { new Balance(Constants.OwnerId, 0), new Balance(userId, balance) };
+        Instrument[] instruments = { new Instrument(validInstrumentId, productId, "code1", "name1", "desc1") };
+        Price[] prices = { new Price(validInstrumentId, time, open, high, low, close) };
+        Product[] products = { new Product(productId, "prod1", 0, "curr1") };
+        var tradeService = BuildFakeLongTradeService(
+            balances,
+            Array.Empty<BalanceHistory>(),
+            instruments,
+            Array.Empty<OwnedInstrument>(),
+            products,
+            prices,
+            trades
+        );
+
+        // Act
+        await tradeService.ProcessLongRunningTransactions();
+
+        // Assert — the valid trade must be closed; the orphaned one must remain open (skipped)
+        var allTrades = _tradeRepository!.GetAllTrades().ToList();
+        var validTrade = allTrades.Single(t => t.InstrumentId == validInstrumentId);
+        var orphanedTrade = allTrades.Single(t => t.InstrumentId == orphanedInstrumentId);
+        Assert.True(validTrade.TradeClosed, "valid trade should have been processed");
+        Assert.False(orphanedTrade.TradeClosed, "orphaned trade should be skipped, not close the whole tick");
+    }
+
     private LongTradeService BuildFakeLongTradeService(
         Balance[] balances,
         BalanceHistory[] balanceHistories,
