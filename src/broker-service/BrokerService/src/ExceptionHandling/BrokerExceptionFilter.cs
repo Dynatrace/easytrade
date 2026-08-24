@@ -17,7 +17,10 @@ public class BrokerExceptionFilter(ILogger<BrokerExceptionFilter> logger) : IExc
         exception switch
         {
             AccountNotFoundException
+            or BalanceNotFoundException
             or InstrumentNotFoundException
+            or ProductNotFoundException
+            or PriceNotFoundException
                 => StatusCodes.Status404NotFound,
             NotEnoughMoneyException
             or NotEnoughAssetsException

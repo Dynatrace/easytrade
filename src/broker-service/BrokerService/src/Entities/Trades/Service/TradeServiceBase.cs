@@ -2,7 +2,9 @@ using EasyTrade.BrokerService.Entities.Balances;
 using EasyTrade.BrokerService.Entities.Balances.Repository;
 using EasyTrade.BrokerService.Entities.Instruments;
 using EasyTrade.BrokerService.Entities.Instruments.Repository;
+using EasyTrade.BrokerService.Entities.Prices;
 using EasyTrade.BrokerService.Entities.Prices.ServiceConnector;
+using EasyTrade.BrokerService.Entities.Products;
 using EasyTrade.BrokerService.Entities.Products.Repository;
 using EasyTrade.BrokerService.Entities.Trades.Repository;
 using EasyTrade.BrokerService.ExceptionHandling.Exceptions;
@@ -92,11 +94,34 @@ public abstract class TradeServiceBase(
         await CollectFee(ppt);
     }
 
+    protected async Task<Product> GetProductOrThrow(Guid productId) =>
+        await _productRepository.GetProductAsync(productId)
+        ?? throw new ProductNotFoundException(productId);
+
+    protected async Task<Price> GetLastPriceOrThrow(Guid instrumentId) =>
+        await _priceService.GetLastPriceByInstrumentId(instrumentId)
+        ?? throw new PriceNotFoundException(instrumentId);
+
+    protected async Task<Balance> GetBalanceOrThrow(Guid accountId) =>
+        await _balanceRepository.GetBalanceOfAccountAsync(accountId)
+        ?? throw new BalanceNotFoundException(accountId);
+
+    protected async Task<Instrument> GetInstrumentOrThrow(Guid instrumentId) =>
+        await _instrumentRepository.GetInstrumentAsync(instrumentId)
+        ?? throw new InstrumentNotFoundException(instrumentId);
+
+    protected async Task<OwnedInstrument> GetOwnedInstrumentOrThrow(
+        Guid accountId,
+        Guid instrumentId
+    ) =>
+        await _instrumentRepository.GetOwnedInstrumentAsync(accountId, instrumentId)
+        ?? throw new InstrumentNotFoundException(instrumentId);
+
     private async Task CollectFee(decimal fee)
     {
         _logger.LogDebug("Collecting owner fee [{fee}]", fee);
 
-        var ownerBalance = (await _balanceRepository.GetBalanceOfAccountAsync(Constants.OwnerId))!;
+        var ownerBalance = await GetBalanceOrThrow(Constants.OwnerId);
         await _balanceRepository.AddBalanceHistoryAsync(
             new BalanceHistory(Constants.OwnerId, ownerBalance.Value, fee, ActionType.CollectFee)
         );

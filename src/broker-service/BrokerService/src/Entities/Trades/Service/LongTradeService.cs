@@ -123,7 +123,7 @@ public class LongTradeService(
         if (!IsBuyEligible(trade, price))
             return;
 
-        var balance = (await _balanceRepository.GetBalanceOfAccountAsync(trade.AccountId))!;
+        var balance = await GetBalanceOrThrow(trade.AccountId);
         if (!HasSufficientFunds(balance, trade.Quantity * trade.EntryPrice, product.Ppt))
         {
             await CloseTrade(trade, "Not enough money to buy stocks! Trade failed!", false);
@@ -157,18 +157,15 @@ public class LongTradeService(
         if (!IsSellEligible(trade, price))
             return;
 
-        var ownedInstrument = await _instrumentRepository.GetOwnedInstrumentAsync(
-            trade.AccountId,
-            instrument.Id
-        );
+        var ownedInstrument = await GetOwnedInstrumentOrThrow(trade.AccountId, instrument.Id);
         if (!HasSufficientStock(ownedInstrument, trade.Quantity))
         {
             await CloseTrade(trade, "Not enough stocks to sell! Trade failed!", false);
             return;
         }
 
-        var balance = (await _balanceRepository.GetBalanceOfAccountAsync(trade.AccountId))!;
-        await ExecuteLongSell(trade, ownedInstrument!, balance, product);
+        var balance = await GetBalanceOrThrow(trade.AccountId);
+        await ExecuteLongSell(trade, ownedInstrument, balance, product);
     }
 
     private async Task ExecuteLongSell(
@@ -215,14 +212,8 @@ public class LongTradeService(
 
     private async Task ValidateTransactionEntities(Guid accountId, Guid instrumentId)
     {
-        if (await _balanceRepository.GetBalanceOfAccountAsync(accountId) is null)
-        {
-            throw new AccountNotFoundException(accountId);
-        }
-        if (await _instrumentRepository.GetInstrumentAsync(instrumentId) is null)
-        {
-            throw new InstrumentNotFoundException(instrumentId);
-        }
+        await GetBalanceOrThrow(accountId);
+        await GetInstrumentOrThrow(instrumentId);
     }
 
     private async Task CloseTrade(Trade trade, string status, bool transactionHappened)
@@ -270,7 +261,7 @@ public class LongTradeService(
     private static bool HasSufficientFunds(Balance balance, decimal cost, decimal ppt) =>
         cost + ppt <= balance.Value;
 
-    private static bool HasSufficientStock(OwnedInstrument? ownedInstrument, decimal quantity) =>
+    private static bool HasSufficientStock(OwnedInstrument ownedInstrument, decimal quantity) =>
         ownedInstrument is not null && ownedInstrument.Quantity >= quantity;
 
     private static TradeContext? ResolveTradeContext(Trade trade, MarketSnapshot snapshot)

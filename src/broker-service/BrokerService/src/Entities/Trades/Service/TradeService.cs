@@ -45,12 +45,11 @@ public class TradeService(
         );
 
         var trades = await _tradeRepository.GetAccountTradesAsync(accountId, onlyOpen, onlyLong);
-        return trades
+        return [.. trades
             .OrderByDescending(x => x.TimestampClose)
             .ThenByDescending(x => x.Id)
             .Skip(count * page)
-            .Take(count)
-            .ToList();
+            .Take(count)];
     }
 
     public async Task<Trade> BuyAssets(Guid accountId, Guid instrumentId, decimal amount)
@@ -63,14 +62,10 @@ public class TradeService(
         );
 
         ValidateInput(amount);
-        var balance =
-            await _balanceRepository.GetBalanceOfAccountAsync(accountId)
-            ?? throw new AccountNotFoundException(accountId);
-        var instrument =
-            await _instrumentRepository.GetInstrumentAsync(instrumentId)
-            ?? throw new InstrumentNotFoundException(instrumentId);
-        var price = (await _priceService.GetLastPriceByInstrumentId(instrumentId))!.Open;
-        var product = (await _productRepository.GetProductAsync(instrument.ProductId))!;
+        var balance = await GetBalanceOrThrow(accountId);
+        var instrument = await GetInstrumentOrThrow(instrumentId);
+        var price = (await GetLastPriceOrThrow(instrumentId)).Open;
+        var product = await GetProductOrThrow(instrument.ProductId);
 
         var cost = amount * price;
         var totalCost = cost + product.Ppt;
@@ -100,14 +95,10 @@ public class TradeService(
         );
 
         ValidateInput(amount);
-        var balance =
-            await _balanceRepository.GetBalanceOfAccountAsync(accountId)
-            ?? throw new AccountNotFoundException(accountId);
-        var instrument =
-            await _instrumentRepository.GetInstrumentAsync(instrumentId)
-            ?? throw new InstrumentNotFoundException(instrumentId);
-        var price = (await _priceService.GetLastPriceByInstrumentId(instrumentId))!.Open;
-        var product = (await _productRepository.GetProductAsync(instrument.ProductId))!;
+        var balance = await GetBalanceOrThrow(accountId);
+        var instrument = await GetInstrumentOrThrow(instrumentId);
+        var price = (await GetLastPriceOrThrow(instrumentId)).Open;
+        var product = await GetProductOrThrow(instrument.ProductId);
         var ownedInstrument = await _instrumentRepository.GetOwnedInstrumentAsync(
             accountId,
             instrumentId

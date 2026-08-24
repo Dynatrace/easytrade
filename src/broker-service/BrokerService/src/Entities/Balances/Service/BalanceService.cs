@@ -27,7 +27,7 @@ public class BalanceService(IBalanceRepository balanceRepository, ILogger<Balanc
 
         var balance =
             await _balanceRepository.GetBalanceOfAccountAsync(accountId)
-            ?? throw new AccountNotFoundException(accountId);
+            ?? throw new BalanceNotFoundException(accountId);
         var balanceDifference = actionType is ActionType.Withdraw ? -amount : amount;
         var balanceHistory = new BalanceHistory(
             accountId,
@@ -60,7 +60,7 @@ public class BalanceService(IBalanceRepository balanceRepository, ILogger<Balanc
 
         var balance =
             await _balanceRepository.GetBalanceOfAccountAsync(accountId)
-            ?? throw new AccountNotFoundException(accountId);
+            ?? throw new BalanceNotFoundException(accountId);
         _logger.LogDebug("Found balance: {balance}", balance.ToJson());
 
         return balance;
