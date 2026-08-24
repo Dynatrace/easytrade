@@ -22,9 +22,9 @@
   </ItemGroup>
   <ItemGroup>
     <Protobuf Include="..\..\..\proto\common.proto" GrpcServices="Client" />
-    <Protobuf Include="..\..\..\proto\balance_service.proto" GrpcServices="Both" />
-    <Protobuf Include="..\..\..\proto\instrument_service.proto" GrpcServices="Both" />
-    <Protobuf Include="..\..\..\proto\product_service.proto" GrpcServices="Both" />
-    <Protobuf Include="..\..\..\proto\trade_service.proto" GrpcServices="Both" />
+    <Protobuf Include="..\..\..\proto\balance_service.proto" GrpcServices="Client" />
+    <Protobuf Include="..\..\..\proto\instrument_service.proto" GrpcServices="Client" />
+    <Protobuf Include="..\..\..\proto\product_service.proto" GrpcServices="Client" />
+    <Protobuf Include="..\..\..\proto\trade_service.proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>
