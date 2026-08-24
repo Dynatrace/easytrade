@@ -11,20 +11,12 @@ public class TradeRepositoryWithDbNotResponding(
 {
     private readonly IPluginManager _pluginManager = pluginManager;
 
-    public override Task<Trade> CreateTradeAsync(Trade trade)
+    public override async Task<Trade> CreateTradeAsync(Trade trade)
     {
-        if (CheckIfProblemPatternIsOn())
+        if (await _pluginManager.GetPluginState(Constants.DbNotResponding, false))
         {
             trade.Id = Constants.InvalidTradeId;
         }
-        return base.CreateTradeAsync(trade);
-    }
-
-    private bool CheckIfProblemPatternIsOn()
-    {
-        var task = Task.Run(
-            async () => await _pluginManager.GetPluginState(Constants.DbNotResponding, false)
-        );
-        return task.Result;
+        return await base.CreateTradeAsync(trade);
     }
 }
