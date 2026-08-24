@@ -7,17 +7,20 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
+
+const defaultTimeout = 15 * time.Second
 
 type Client struct {
 	HTTP *http.Client
 }
 
 func New() *Client {
-	return &Client{HTTP: http.DefaultClient}
+	return &Client{HTTP: &http.Client{Timeout: defaultTimeout}}
 }
 
-func Do(ctx context.Context, c *Client, method, url string, headers map[string]string, body any, wantStatus int) ([]byte, error) {
+func (c *Client) Do(ctx context.Context, method, url string, headers map[string]string, body any, wantStatus int) ([]byte, error) {
 	bodyReader, err := EncodeJSON(body)
 	if err != nil {
 		return nil, err
@@ -39,7 +42,7 @@ func Do(ctx context.Context, c *Client, method, url string, headers map[string]s
 }
 
 func DoJSON[T any](ctx context.Context, c *Client, method, url string, headers map[string]string, body any, wantStatus int) (*T, error) {
-	respBody, err := Do(ctx, c, method, url, headers, body, wantStatus)
+	respBody, err := c.Do(ctx, method, url, headers, body, wantStatus)
 	if err != nil {
 		return nil, err
 	}

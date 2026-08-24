@@ -9,7 +9,6 @@ import (
 	"github.com/go-faker/faker/v4"
 	"github.com/google/uuid"
 
-	"dynatrace.com/easytrade/background-service/httpclient"
 	"dynatrace.com/easytrade/background-service/logger"
 )
 
@@ -39,7 +38,7 @@ func (h *OfferServiceClient) Signup(ctx context.Context, platformName string, re
 	}
 
 	url := fmt.Sprintf(signupEndpoint, h.baseURL)
-	_, err := httpclient.Do(ctx, h.http, http.MethodPost, url, headers, request, http.StatusCreated)
+	_, err := h.http.Do(ctx, http.MethodPost, url, headers, request, http.StatusCreated)
 	if err != nil {
 		l.Error(err)
 		return err

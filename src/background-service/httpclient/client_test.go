@@ -5,10 +5,39 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 type payload struct {
 	Name string `json:"name"`
+}
+
+func TestNew_ReturnsClientWithTimeout_TimeoutIsSet(t *testing.T) {
+	c := New()
+
+	if c.HTTP.Timeout <= 0 {
+		t.Fatalf("expected a positive timeout, got %v", c.HTTP.Timeout)
+	}
+}
+
+func TestSend_ServerExceedsTimeout_ReturnsError(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(200 * time.Millisecond)
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer server.Close()
+
+	c := New()
+	c.HTTP.Timeout = 50 * time.Millisecond
+
+	req, err := c.BuildRequest(context.Background(), http.MethodGet, server.URL, nil, nil)
+	if err != nil {
+		t.Fatalf("unexpected error building request: %v", err)
+	}
+
+	if _, _, err := c.Send(req); err == nil {
+		t.Fatal("expected an error when the server exceeds the client timeout, got nil")
+	}
 }
 
 func TestBuildRequest_GivenHeaders_AppliesAllOfThemToRequest(t *testing.T) {
@@ -138,7 +167,7 @@ func TestDo_ServerReturnsWantedStatus_ReturnsBody(t *testing.T) {
 	}))
 	defer server.Close()
 
-	body, err := Do(context.Background(), New(), http.MethodPost, server.URL, nil, payload{Name: "trade"}, http.StatusCreated)
+	body, err := New().Do(context.Background(), http.MethodPost, server.URL, nil, payload{Name: "trade"}, http.StatusCreated)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -153,7 +182,7 @@ func TestDo_ServerReturnsUnexpectedStatus_ReturnsError(t *testing.T) {
 	}))
 	defer server.Close()
 
-	if _, err := Do(context.Background(), New(), http.MethodGet, server.URL, nil, nil, http.StatusOK); err == nil {
+	if _, err := New().Do(context.Background(), http.MethodGet, server.URL, nil, nil, http.StatusOK); err == nil {
 		t.Fatal("expected an error for unexpected status code, got nil")
 	}
 }
