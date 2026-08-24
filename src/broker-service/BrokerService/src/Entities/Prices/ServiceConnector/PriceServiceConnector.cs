@@ -30,7 +30,7 @@ public class PriceServiceConnector(
         if (response.StatusCode == HttpStatusCode.OK)
         {
             var pricesResult = await response.Content.ReadFromJsonAsync<PricesResultDto>();
-            var prices = pricesResult?.Results!;
+            var prices = pricesResult?.Results ?? [];
             _logger.LogDebug("Fetched prices: {content}", prices.ToJson());
             return prices;
         }
@@ -48,7 +48,7 @@ public class PriceServiceConnector(
         if (response.StatusCode == HttpStatusCode.OK)
         {
             var pricesResult = await response.Content.ReadFromJsonAsync<PricesResultDto>();
-            var prices = pricesResult?.Results!;
+            var prices = pricesResult?.Results ?? [];
             _logger.LogDebug("Fetched prices: {content}", prices.ToJson());
             return prices;
         }
@@ -69,7 +69,7 @@ public class PriceServiceConnector(
         if (response.StatusCode == HttpStatusCode.OK)
         {
             var price = await response.Content.ReadFromJsonAsync<Price>();
-            _logger.LogDebug("Fetched price: {content}", price!.ToJson());
+            _logger.LogDebug("Fetched price: {content}", price?.ToJson());
             return price;
         }
         _logger.LogError("Fetch failed with status code [{statusCode}]", response.StatusCode);
