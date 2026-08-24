@@ -16,21 +16,19 @@ type VarSpec struct {
 
 var Registry = []VarSpec{
 	// aggregator-service
-	{Name: "OFFER_SERVICE_ADDRESS", Default: "http://offerservice:8080"},
+	{Name: "OFFER_SERVICE_ADDRESS", Required: true},
 
 	// third-party-service
-	{Name: "CREDIT_CARD_ORDER_SERVICE_ADDRESS", Required: true,
-		Default: "http://credit-card-order-service:8080"},
-	{Name: "THIRD_PARTY_DELAY", Required: true},
-	{Name: "THIRD_PARTY_RATE", Required: true},
-	{Name: "DELAY_CHANCE_PERCENT", Required: true, Default: "20"},
+	{Name: "CREDIT_CARD_ORDER_SERVICE_ADDRESS", Required: true},
+	{Name: "THIRD_PARTY_DELAY", Default: "10"},
+	{Name: "THIRD_PARTY_RATE", Default: "10"},
+	{Name: "DELAY_CHANCE_PERCENT", Default: "20"},
 
 	// contentcreator
-	{Name: "DB_ADAPTER_SERVICE_ADDRESS", Required: true, Default: "db-adapter:50051"},
+	{Name: "DB_ADAPTER_SERVICE_ADDRESS", Required: true},
 
 	// problem-operator
-	{Name: "FEATURE_FLAG_SERVICE_ADDRESS", Required: true,
-		Default: "http://feature-flag-service:8080"},
+	{Name: "FEATURE_FLAG_SERVICE_ADDRESS", Required: true},
 
 	// problem-operator, only consulted when operator.Enabled() is true
 	{Name: "SYNC_INTERVAL", Default: "5s"},
