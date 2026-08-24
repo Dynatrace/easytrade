@@ -65,10 +65,10 @@ dependencies {
 	implementation 'tools.jackson.core:jackson-databind:3.1.5'
 
 	// Source: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
-	implementation 'com.fasterxml.jackson.core:jackson-core:2.21.2'
+	implementation 'com.fasterxml.jackson.core:jackson-core:2.21.6'
 
 	// Source: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
-	implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.5'
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.21.6'
 }
 
 tasks.named('test') {
