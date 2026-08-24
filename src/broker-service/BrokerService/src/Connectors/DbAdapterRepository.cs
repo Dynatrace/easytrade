@@ -4,6 +4,6 @@ namespace EasyTrade.BrokerService.Connectors;
 
 public abstract class DbAdapterRepository<TClient>(IDbAdapterConnector connector, Func<ChannelBase, TClient> factory)
 {
-    private TClient? _client;
-    protected TClient GetClient() => _client ??= factory(connector.GetChannel());
+    private readonly Lazy<TClient> _client = new(() => factory(connector.GetChannel()));
+    protected TClient GetClient() => _client.Value;
 }
