@@ -23,9 +23,9 @@ docker run -p 8087:8080 offerservice
 
 ```bash
 npm install
-make proto      # generates gRPC client code from proto files
-npm run build   # compiles to ./dist
-npm start       # runs ./dist/app.js
+npm run generate:proto   # generates gRPC client code from proto files
+npm run build            # compiles to ./dist
+npm start                # runs ./dist/app.js
 ```
 
 ## Proto code generation
@@ -33,7 +33,7 @@ npm start       # runs ./dist/app.js
 The service uses gRPC to communicate with the db-adapter service. Proto files live in `../proto/` and are compiled by:
 
 ```bash
-make proto
+npm run generate:proto
 ```
 
 This generates TypeScript client classes in `src/proto/` (which are gitignored and regenerated on each build).

@@ -18,11 +18,11 @@ docker run -d --name SERVICE_NAME IMAGE_NAME
 ### Run locally without Docker
 
 ```bash
-make proto   # regenerate gRPC stubs from src/proto/ → proto/*.pb.go (requires protoc + protoc-gen-go + protoc-gen-go-grpc)
-make run     # go run .
+sh generate-proto.sh   # regenerate gRPC stubs from src/proto/ → proto/*.pb.go (requires protoc + protoc-gen-go + protoc-gen-go-grpc)
+go run .
 ```
 
-`make proto` invokes `generate-proto.sh`, which reads `../proto/pricing_service.proto` and `../proto/common.proto` and writes generated Go files into `proto/`; re-run it whenever the shared proto files change.
+`generate-proto.sh` reads `../proto/pricing_service.proto` and `../proto/common.proto` and writes generated Go files into `proto/`; re-run it whenever the shared proto files change.
 
 ## Endpoints or logic
 
