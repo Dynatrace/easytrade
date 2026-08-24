@@ -53,9 +53,17 @@ func New(
 	}
 }
 
-func (o *Operator) Start(ctx context.Context) {
+func Start(ctx context.Context, logger *zap.SugaredLogger, flagClient *featureflag.Adapter) error {
+	opCfg, err := NewDefaultConfig(logger.Named("operator"), flagClient)
+	if err != nil {
+		return err
+	}
+
+	o := opCfg.Build()
+
 	go func() {
 		o.logger.Infow("Starting the operator...", "interval", o.interval, "namespace", o.namespace)
+		defer o.Shutdown()
 
 		ticker := time.NewTicker(o.interval)
 		defer ticker.Stop()
@@ -76,6 +84,8 @@ func (o *Operator) Start(ctx context.Context) {
 			}
 		}
 	}()
+
+	return nil
 }
 
 func (o *Operator) backoff(err error, current time.Duration) time.Duration {

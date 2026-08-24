@@ -37,7 +37,17 @@ func New(handlers thirdparty.Handlers) *http.Server {
 }
 
 func Run(ctx context.Context, srv *http.Server) {
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		logger.GetSugar().Errorw("HTTP server stopped", "err", err)
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			logger.GetSugar().Errorw("HTTP server stopped", "err", err)
+		}
+	}()
+
+	<-ctx.Done()
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(shutdownCtx); err != nil {
+		logger.GetSugar().Errorw("HTTP server graceful shutdown failed", "err", err)
 	}
 }

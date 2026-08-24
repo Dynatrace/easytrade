@@ -3,9 +3,6 @@ package thirdparty
 import (
 	"context"
 	"time"
-
-	"dynatrace.com/easytrade/background-service/config"
-	"dynatrace.com/easytrade/background-service/featureflag"
 )
 
 const (
@@ -15,11 +12,8 @@ const (
 	delayChancePercent            = "DELAY_CHANCE_PERCENT"
 )
 
-func Start(ctx context.Context, values config.Values, flags featureflag.FlagService) Handlers {
-	svc := newCreditCardOrderClient(values.Get(creditCardOrderServiceAddress))
-	r := newRunner(svc, flags, values.MustInt(delayChancePercent))
-	delay := time.Duration(values.MustInt(thirdPartyDelay)) * time.Second
-	rate := values.MustInt(thirdPartyRate)
-	go r.loop(ctx, delay, rate)
-	return Handlers{runner: r}
+func (h *Handlers) Start(ctx context.Context) {
+	delay := time.Duration(h.values.MustInt(thirdPartyDelay)) * time.Second
+	rate := h.values.MustInt(thirdPartyRate)
+	go h.runner.loop(ctx, delay, rate)
 }

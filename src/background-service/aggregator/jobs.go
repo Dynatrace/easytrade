@@ -5,13 +5,15 @@ import (
 	"math/rand"
 	"time"
 
+	"dynatrace.com/easytrade/background-service/config"
 	"dynatrace.com/easytrade/background-service/httpclient"
 	"dynatrace.com/easytrade/background-service/logger"
 )
 
 const xmlProbability = 0.5
 
-func Start(ctx context.Context, cfg *Config) {
+func Start(ctx context.Context, values config.Values) {
+	cfg := LoadConfig(values)
 
 	handler := &OfferServiceClient{
 		baseURL: cfg.OfferServiceAddress,

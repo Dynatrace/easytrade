@@ -5,8 +5,16 @@ import (
 	"math/rand"
 	"time"
 
-	proto "dynatrace.com/easytrade/background-service/db-adapter/proto"
+	"dynatrace.com/easytrade/background-service/config"
+
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
+	proto "dynatrace.com/easytrade/background-service/db-adapter/proto"
+)
+
+const (
+	dbAdapterServiceAddress = "DB_ADAPTER_SERVICE_ADDRESS"
 )
 
 type Handler struct {
@@ -27,7 +35,22 @@ func NewHandler(conn *grpc.ClientConn) *Handler {
 	}
 }
 
-func (h *Handler) Start(ctx context.Context) {
+func Start(ctx context.Context, values config.Values) {
+	conn, err := grpc.NewClient(
+		values.Get(dbAdapterServiceAddress),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		l.Errorw("Failed to connect to DB adapter service", "err", err)
+		return
+	}
+	go func() {
+		<-ctx.Done()
+		conn.Close()
+	}()
+
+	h := NewHandler(conn)
+
 	go func() {
 		now := time.Now().UTC()
 		h.initializePricingData(ctx, now)
