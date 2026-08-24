@@ -8,7 +8,7 @@ public class BalanceRepository(IDbAdapterConnector connector)
     : DbAdapterRepository<BalanceService.BalanceServiceClient>(connector, channel => new(channel)), IBalanceRepository
 {
     public async Task<Balance?> GetBalanceOfAccountAsync(Guid accountId) =>
-        await GrpcHelper.ExecuteAsync(
+        await GrpcHelper.ExecuteOrNullAsync(
             async () => BalanceMapper.FromProto(await GetClient().GetBalanceByAccountIdAsync(new GetBalanceRequest { AccountId = accountId.ToString() }))
         );
 
