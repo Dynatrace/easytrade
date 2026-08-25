@@ -22,7 +22,11 @@ Remove four dependencies that are either unused or trivially inlineable. No comp
 
 The previous frontend was designed with MUI in mind, resulting in a layout and component structure that inherited MUI's assumptions. The goal is **not** to port that design into custom components — it is to write a new UI starting from what the app actually needs to do.
 
-**Design constraints (loadgen-first):**
+**Design constraints (loadgen-aware, not loadgen-hostage):**
+
+The frontend should be designed well first, with the understanding that **loadgen can and should be changed** to match the new UI. This means the frontend is not constrained to preserve element tags, selectors, or patterns just to minimize loadgen churn. Loadgen changes are acceptable and expected if they result in a cleaner, faster, more maintainable frontend design.
+
+Key expectations for loadgen compatibility:
 - Every interactive element the loadgen targets must have a stable, unambiguous `id` or `data-testid` — no relying on text content or positional selectors
 - No animations, transitions, or elements that overlap or animate into position — these cause Puppeteer to click the wrong target or wait unnecessarily
 - Forms use plain `<input>`, `<select>`, `<button>` — no custom dropdowns, no floating labels, no date pickers
@@ -82,13 +86,13 @@ The previous frontend was designed with MUI in mind, resulting in a layout and c
 - **Feature flags page** — list of toggleable flags with enable/disable buttons. Not loadgen-critical; can be a simple list with inline status text instead of MUI accordion + Snackbar.
 
 *Shared*
-- **Inline SVG icons** — 11 icons currently used (menu, home, wallet, card, euro, flag, dark/light mode, logout, build, check, close, sync). Inline as React components or a single sprite.
+- **Inline SVG icons** — 10 icons currently used (menu, home, wallet, card, euro, flag, logout, build, check, close, sync). Inline as React components or a single sprite. Note: dark/light mode toggle icon is not needed since the frontend uses a single hardcoded dark theme.
 - **Status/error display** — inline text element for form feedback. No toast or Snackbar.
 
 **What not to carry over:**
 - No Drawer/AppBar pattern — sidebar nav can be static
 - No Snackbar/toast system — inline status messages suffice for the loadgen's interaction flow
-- No `CircularProgress` spinner abstraction — a CSS `@keyframes` rule is enough
+- No `CircularProgress` spinner abstraction — a simple CSS `@keyframes` rule can replace it if needed; recreating the spinner is optional and not required
 
 **Removed packages:**
 `@mui/material`, `@mui/icons-material`, `@mui/lab`, `@mui/system`, `@mui/x-data-grid`, `@emotion/react`, `@emotion/styled`, `react-hook-form-mui`, `react-hook-form`, `@hookform/resolvers`, `zod`
