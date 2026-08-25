@@ -2,7 +2,7 @@
 
 | Adapter | Operations | Consuming Services |
 |---|---|---|
-| **AccountService** | 1. CreateAccount 2.GetAccountByUsername 3. GetAccountById 4. GetAccounts 5. DeleteAccountsOlderThan | Account, Login, Manager, Content-Creator |
+| **AccountService** | 1. CreateAccount 2.GetAccountByUsername 3. GetAccountById 4. GetAccounts 5. DeleteAccountsOlderThan | Account, Login, Manager, Background-Service |
 | **BalanceService** | 1. CreateBalance 2. GetBalanceByAccountId 3. UpdateBalance 4. AddBalanceHistory 5. DeleteBalanceHistoryOlderThan | Broker, Login, Content-Creator |
 | **ProductService** | 1. GetProducts 2. GetProductById | Broker, Manager |
 | **PackageService** | 1. GetPackages | Manager |

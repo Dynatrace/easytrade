@@ -63,11 +63,12 @@ Each service can be configured individually. All services share the same configu
 
 The easytrade chart includes the following microservices:
 
-- `aggregator-service` - Data aggregation service
+- `background-service` - Consolidated data aggregation, content/pricing generation, credit-card manufacture/courier simulation, and (Kubernetes-only) problem-pattern operator
 - `broker-service` - Trading broker service
 - `contentcreator` - Content creation service
 - `credit-card-order-service` - Credit card order processing
 - `db` - Microsoft SQL Server database (StatefulSet)
+- `db-adapter` - gRPC service exposing the database behind a stable interface (pluggable backend: MSSQL/Postgres)
 - `feature-flag-service` - Feature flag management
 - `frontend` - React frontend application
 - `frontendreverseproxy` - Nginx reverse proxy
@@ -75,7 +76,6 @@ The easytrade chart includes the following microservices:
 - `offerservice` - Offer management
 - `pricing-service` - Pricing calculation
 - `problem-operator` - Problem pattern simulator
-- `third-party-service` - Third-party integration service
 - `user-service` - Account and authentication service
 
 ### Example Configurations
@@ -100,7 +100,7 @@ frontendreverseproxy:
   enabled: true
 
 # Disable all other services
-aggregator-service:
+background-service:
   enabled: false
 loadgen:
   enabled: false
@@ -147,7 +147,7 @@ db:
 #### Service with RBAC
 
 ```yaml
-problem-operator:
+background-service:
   enabled: true
   rbac:
     create: true
@@ -192,12 +192,29 @@ helm uninstall easytrade -n easytrade
 
 ## Development
 
-### Update dependencies
+The root `Makefile` wraps the commands below. Each `helm-*` target resolves the
+subchart dependencies first, so you can't forget that step:
 
 ```bash
-cd helm/easytrade
-helm dependency update
+make helm-template   # deps + render manifests to stdout
+make helm-install    # deps + upgrade --install from this local chart
+make helm-uninstall
 ```
+
+Release name, namespace and chart path are overridable:
+`make helm-lint HELM_CHART=helm/easytrade`.
+
+### Update dependencies
+
+Required before linting, templating or installing — the umbrella chart declares 16
+`file://./charts/app` dependencies that must be packaged into `charts/` first.
+
+```bash
+helm dependency update helm/easytrade
+```
+
+This writes `Chart.lock` and `charts/app-0.1.0.tgz`; both are build artifacts and
+are gitignored.
 
 ### Lint the chart
 

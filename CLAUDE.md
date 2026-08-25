@@ -10,7 +10,7 @@ Detailed per-language conventions live in `.claude/rules/`.
 
 ## What is EasyTrade
 
-Fake stock-broking demo application for Dynatrace showcases. 16 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`frontendreverseproxy`) on port 80.
+Fake stock-broking demo application for Dynatrace showcases. 15 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`frontendreverseproxy`) on port 80.
 
 All services share one MSSQL database (`db`, port 1433). Connection string format differs by tech stack — see `compose.yaml` for the three variants (Java/JDBC, .NET, Go/sqlserver).
 
@@ -18,15 +18,16 @@ All services share one MSSQL database (`db`, port 1433). Connection string forma
 
 | Stack | Services |
 |---|---|
-| Java 21 / Spring Boot / Gradle | `contentcreator`, `credit-card-order-service`, `feature-flag-service`, `third-party-service` |
-| Go + Go Modules | `aggregator-service`, `pricing-service`, `problem-operator`, `user-service` |
+| Java 21 / Spring Boot / Gradle | `credit-card-order-service` |
+| Go + Go Modules | `background-service`, `db-adapter`, `pricing-service`, `user-service`, `feature-flag-service` |
 | TypeScript / Node.js / npm | `frontend` (React + Vite), `loadgen`, `offerservice` (Express) |
 | C# / .NET 8 | `broker-service`, `manager` |
 | Config only | `frontendreverseproxy` (nginx), `db` (MSSQL) |
 
 Key roles:
-- `aggregator-service`: generates synthetic traffic by calling other services over REST (50% JSON, 50% XML); no direct DB access
 - `pricing-service`: REST API (Gin + GORM); Swagger at `/pricing-service/swagger-ui/index.html`
+- `background-service`: consolidates four former services into one Go binary — see `src/background-service/README.md`. Sub-components: synthetic traffic generation, pricing candle generation + DB cleanup, credit-card manufacture/courier simulation + its `/v1/manufacturer` and `/version` HTTP endpoints, and a Kubernetes-only chaos-pattern controller (ex-`problem-operator`, `k8s.io/client-go`, gated on `POD_NAMESPACE` so it no-ops outside Kubernetes — not present in `compose.yaml`)
+- `pricing-service`: REST API (Gin + GORM) + RabbitMQ publisher; Swagger at `/pricing-service/swagger-ui/index.html`
 - `broker-service`: core trading engine (engine service was merged into it on branch `DREL-7889`); uses EF Core + feature-flag-driven middleware (`HighCpuUsageMiddleware`, `CreditCardValidationMiddleware`)
 - `problem-operator`: Kubernetes-only controller (`k8s.io/client-go`); watches feature flags and applies chaos patterns to the cluster — not present in `compose.yaml`
 
@@ -61,24 +62,30 @@ dotnet build
 dotnet test                        # runs xunit tests in test/ project
 dotnet test --filter "FullyQualifiedName~SomeTest"
 ```
-Solution paths: `src/broker-service/BrokerService/`, `src/loginservice/`.
-Only `broker-service` has a test project; `loginservice` has no unit tests.
+Solution paths: `src/broker-service/BrokerService/.
+Only `broker-service` has a test project;
 
 ## Running locally
 
-Use `compose.dev.yaml` via the helper script:
+Use the root `Makefile` (`make help` lists every target):
 ```bash
-./runDev.sh start       # proxy + contentcreator (minimal)
-./runDev.sh start-all   # all services
-./runDev.sh build [service...]  # rebuild images
-./runDev.sh stop
+make start                                          # all services, built from local source (compose.dev.yaml)
+make start services="frontend reverseproxy contentcreator"   # subset
+make build [services=NAME]                          # rebuild images; omit services= to build all
+make redeploy services=NAME                         # rebuild + recreate one service after a code change
+make stop
 ```
+
+Every compose target takes an optional `services=` (a single name or a quoted,
+space-separated list). Omitting it means *all services*. `restart` and `redeploy`
+require it. `SERVICES=` works as an alias.
 
 Or directly:
 ```bash
 docker compose -f compose.dev.yaml up -d
 docker compose up          # uses pre-built images from registry (compose.yaml)
 ```
+`make start-remote` is the Makefile equivalent of the second form.
 
 App available at `http://localhost`. Dev credentials: `demouser/demopass`, `james_norton/pass_james_123`.
 
@@ -114,6 +121,14 @@ Key DQL rule: always use `timeseries` for metrics — never `fetch <metric-key>`
 
 ## Helm / Kubernetes
 
+Via the Makefile (release and namespace both default to `easytrade`):
+```bash
+make k8s-install          # install/upgrade from the local chart in helm/easytrade
+make k8s-install-remote   # install/upgrade from the published OCI chart
+make k8s-uninstall
+```
+
+Underlying commands:
 ```bash
 helm install easytrade oci://europe-docker.pkg.dev/dynatrace-demoability/helm/easytrade \
   --create-namespace --namespace easytrade
