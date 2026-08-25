@@ -69,10 +69,10 @@ Only `broker-service` has a test project;
 
 Use the root `Makefile` (`make help` lists every target):
 ```bash
-make start                     # all services, built from local source (compose.dev.yaml)
+make start                                          # all services, built from local source (compose.dev.yaml)
 make start services="frontend reverseproxy contentcreator"   # subset
-make build [services=NAME]      # rebuild images; omit services= to build all
-make redeploy services=NAME     # rebuild + recreate one service after a code change
+make build [services=NAME]                          # rebuild images; omit services= to build all
+make redeploy services=NAME                         # rebuild + recreate one service after a code change
 make stop
 ```
 
@@ -85,7 +85,7 @@ Or directly:
 docker compose -f compose.dev.yaml up -d
 docker compose up          # uses pre-built images from registry (compose.yaml)
 ```
-`make start-registry` is the Makefile equivalent of the second form.
+`make start-remote` is the Makefile equivalent of the second form.
 
 App available at `http://localhost`. Dev credentials: `demouser/demopass`, `james_norton/pass_james_123`.
 
@@ -123,14 +123,10 @@ Key DQL rule: always use `timeseries` for metrics — never `fetch <metric-key>`
 
 Via the Makefile (release and namespace both default to `easytrade`):
 ```bash
-make helm-install          # install/upgrade from the local chart in helm/easytrade
-make helm-install-remote   # install/upgrade from the published OCI chart
-make helm-uninstall
+make k8s-install          # install/upgrade from the local chart in helm/easytrade
+make k8s-install-remote   # install/upgrade from the published OCI chart
+make k8s-uninstall
 ```
-
-`helm dependency update` is required before linting, templating or installing the
-local chart — the umbrella chart pulls in 16 `file://./charts/app` subchart deps.
-The `helm-*` targets run it for you (`make helm-deps`).
 
 Underlying commands:
 ```bash

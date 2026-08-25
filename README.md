@@ -140,19 +140,19 @@ make stop             # stop the stack and remove its containers
 make clean            # ...and also drop volumes and locally built images
 ```
 
-Every compose target accepts an optional `service=` to narrow the scope — a single
+Every compose target accepts an optional `services=` to narrow the scope — a single
 name, or a quoted space-separated list. Omit it to act on the whole stack:
 
 ```bash
-make build service=pricing-service
-make start service="db frontendreverseproxy contentcreator"
+make build services=pricing-service
+make start services="db frontendreverseproxy contentcreator"
 ```
 
-Two targets act on exactly one service and therefore require `service=`:
+Two targets act on exactly one service and therefore require `services=`:
 
 ```bash
-make restart  service=frontend   # recreate the container, no rebuild
-make redeploy service=frontend   # rebuild the image, then recreate — use after a code change
+make restart  services=frontend   # recreate the container, no rebuild
+make redeploy services=frontend   # rebuild the image, then recreate — use after a code change
 ```
 
 The dev stack publishes each service on its own host port (`manager` 8081,
@@ -162,8 +162,7 @@ The dev stack publishes each service on its own host port (`manager` 8081,
 `db` 1433/5432), so you can hit a service directly instead of going through nginx.
 
 To run the pre-built registry images through the Makefile instead, use
-`make start-registry`. To build registry-tagged images the way CI does, use
-`make build-registry`.
+`make start-remote`.
 
 ## Kubernetes instructions
 
@@ -180,20 +179,20 @@ Using the Makefile (release name and namespace both default to `easytrade`):
 
 ```bash
 # create namespace and deploy easytrade from the published chart
-make helm-install-remote
+make k8s-install-remote
 
 # ...or from the chart in this repo, e.g. to test local chart changes
-make helm-install
+make k8s-install
 
 # uninstall easytrade
-make helm-uninstall
+make k8s-uninstall
 ```
 
 Both install targets are idempotent (`helm upgrade --install`), so re-running one
 upgrades an existing release. Override the defaults per invocation:
 
 ```bash
-make helm-install HELM_RELEASE=easytrade-test HELM_NAMESPACE=easytrade-test
+make k8s-install HELM_RELEASE=easytrade-test HELM_NAMESPACE=easytrade-test
 ```
 
 The equivalent raw commands:
