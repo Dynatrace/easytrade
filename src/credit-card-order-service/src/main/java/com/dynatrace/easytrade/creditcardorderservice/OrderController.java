@@ -33,11 +33,12 @@ import dev.openfeature.sdk.Client;
 import dev.openfeature.sdk.OpenFeatureAPI;
 
 @RestController
-@RequestMapping(value="/v1/orders",
-        produces={"application/json", "application/xml"})
+@RequestMapping(value = "/v1/orders", produces = { "application/json", "application/xml" })
 @CrossOrigin
 public class OrderController {
     private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+    private static final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+
     public static final String ORDER_IDS_DO_NOT_MATCH = "Credit card order found in path and request body don't match!";
     public static final String NO_STATUS_FOR_ID = "There does not exist a status for the credit card order: %s";
     public static final String STATUS_UPDATED = "Credit card order status updated successfully.";
@@ -53,7 +54,7 @@ public class OrderController {
         this.openFeatureAPI = openFeatureAPI;
     }
 
-    @PostMapping(value="", consumes={"application/json", "application/xml"})
+    @PostMapping(value = "", consumes = { "application/json", "application/xml" })
     public ResponseEntity<StandardResponse> createCreditCardOrder(@RequestBody CreditCardOrderRequest request) {
         logger.info("Starting to create a credit card order for data: " + request);
         try {
@@ -125,16 +126,10 @@ public class OrderController {
         logger.info("Deleting order and/or card for accountId: " + accountId);
         try {
             dbAdapterClient.deleteOrdersByAccountId(accountId);
-            return buildResponseEntity(HttpStatus.OK, "Order and/or card successfully deleted.",
-                    null, null, null);
+            return buildResponseEntity(HttpStatus.OK, "Order and/or card successfully deleted.");
         } catch (RuntimeException e) {
             return handleException(e);
         }
-    }
-
-    @PostMapping(value="/{id}/status", consumes={"application/json", "application/xml"})
-    public ResponseEntity<StandardResponse> updateStatus(@PathVariable String id, @RequestBody StatusRequest request) {
-        return handleNewStatus(id, request);
     }
 
     /**
@@ -175,7 +170,8 @@ public class OrderController {
      * }
      * }
      **/
-    private ResponseEntity<StandardResponse> handleNewStatus(String id, StatusRequest request) {
+    @PostMapping(value = "/{id}/status", consumes = { "application/json", "application/xml" })
+    public ResponseEntity<StandardResponse> updateStatus(@PathVariable String id, @RequestBody StatusRequest request) {
         logger.info("Handling a status update of: " + request);
         if (!id.equals(request.orderId())) {
             return buildResponseEntity(HttpStatus.BAD_REQUEST, ORDER_IDS_DO_NOT_MATCH,
@@ -189,31 +185,30 @@ public class OrderController {
     }
 
     private ResponseEntity<StandardResponse> actOnNewStatus(StatusRequest request) {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
+        StatusType newStatusType = StatusType.valueOf(request.type().toUpperCase());
 
         try {
-            Optional<CreditCardOrderStatus> currentStatus = dbAdapterClient.getLastOrderStatusByOrderId(request.orderId());
+            Optional<CreditCardOrderStatus> currentStatus = dbAdapterClient
+                    .getLastOrderStatusByOrderId(request.orderId());
             if (currentStatus.isEmpty()) {
-                return buildResponseEntity(HttpStatus.BAD_REQUEST, String.format(NO_STATUS_FOR_ID, request.orderId()),
-                        null, null, null);
+                return buildResponseEntity(HttpStatus.BAD_REQUEST, String.format(NO_STATUS_FOR_ID, request.orderId()));
             }
 
-            StatusType newStatusType = StatusType.valueOf(request.type().toUpperCase());
             StatusType oldStatusType = StatusType.valueOf(currentStatus.get().status().toUpperCase());
 
             if (newStatusType.getSequence() <= oldStatusType.getSequence()) {
-                String message = String.format(WRONG_SEQUENCE,
-                        StatusType.SEQUENCE_ERROR.getDescription(),
-                        oldStatusType.getType(),
-                        newStatusType.getType());
-                return buildResponseEntity(HttpStatus.BAD_REQUEST, message, null, null, null);
+                String message = String.format(WRONG_SEQUENCE, StatusType.SEQUENCE_ERROR.getDescription(),
+                        oldStatusType.getType(), newStatusType.getType());
+                return buildResponseEntity(HttpStatus.BAD_REQUEST, message);
             }
         } catch (RuntimeException e) {
             return handleException(e);
         }
 
-        StatusType newStatusType = StatusType.valueOf(request.type().toUpperCase());
+        return applyStatusChange(request, newStatusType);
+    }
+
+    private ResponseEntity<StandardResponse> applyStatusChange(StatusRequest request, StatusType newStatusType) {
         switch (newStatusType) {
             case CARD_ORDERED:
             case CARD_DELIVERED:
@@ -239,10 +234,9 @@ public class OrderController {
                 break;
             default:
                 return buildResponseEntity(HttpStatus.BAD_REQUEST,
-                        String.format(UNKNOWN_STATUS_CHANGE, newStatusType.getType()), null, null, null);
+                        String.format(UNKNOWN_STATUS_CHANGE, newStatusType.getType()));
         }
-
-        return buildResponseEntity(HttpStatus.OK, STATUS_UPDATED, null, null, null);
+        return buildResponseEntity(HttpStatus.OK, STATUS_UPDATED);
     }
 
     private ResponseEntity<StandardResponse> buildResponseEntity(HttpStatus status, String message) {
@@ -281,8 +275,7 @@ public class OrderController {
                 null, null, e.getMessage(), true);
     }
 
-    private int CountSequenceTotal(int firstElement, int step, int count)
-    {
+    private int CountSequenceTotal(int firstElement, int step, int count) {
         int tmpFirstElement = firstElement + 7;
         int tmpStep = step + 2;
         int tmpCount = count + 13;
@@ -290,9 +283,9 @@ public class OrderController {
         return CountArythmeticSequenceTotal(tmpFirstElement, tmpStep, tmpCount);
     }
 
-    private int CountArythmeticSequenceTotal(int firstElement, int step, int count)
-    {
-        // this has a wrong value (normally would be 2), because we want to create an exception!
+    private int CountArythmeticSequenceTotal(int firstElement, int step, int count) {
+        // this has a wrong value (normally would be 2), because we want to create an
+        // exception!
         int theGreatDivider = 0;
 
         int lastElement = firstElement + (step * (count - 1));
