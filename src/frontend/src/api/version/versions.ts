@@ -24,8 +24,8 @@ const services: ServiceVersionUrl[] = [
     { serviceName: "Offer Service", versionUrl: "/offerservice/api/version" },
     { serviceName: "Pricing Service", versionUrl: "/pricing-service/version" },
     {
-        serviceName: "Third Party Service",
-        versionUrl: "/third-party-service/version",
+        serviceName: "Background Service",
+        versionUrl: "/background-service/version",
     },
 ]
 

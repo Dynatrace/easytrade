@@ -7,10 +7,10 @@ appVersion: "1.16.0"
 
 dependencies:
   - name: app
-    alias: aggregator-service
+    alias: background-service
     repository: "file://./charts/app"
     version: "0.1.0"
-    condition: aggregator-service.enabled
+    condition: background-service.enabled
   - name: app
     alias: broker-service
     repository: "file://./charts/app"
@@ -71,11 +71,6 @@ dependencies:
     repository: "file://./charts/app"
     version: "0.1.0"
     condition: problem-operator.enabled
-  - name: app
-    alias: third-party-service
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: third-party-service.enabled
   - name: app
     alias: user-service
     repository: "file://./charts/app"

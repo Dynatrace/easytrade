@@ -10,7 +10,7 @@ Detailed per-language conventions live in `.claude/rules/`.
 
 ## What is EasyTrade
 
-Fake stock-broking demo application for Dynatrace showcases. 16 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`frontendreverseproxy`) on port 80.
+Fake stock-broking demo application for Dynatrace showcases. 15 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`frontendreverseproxy`) on port 80.
 
 All services share one MSSQL database (`db`, port 1433). Connection string format differs by tech stack — see `compose.yaml` for the three variants (Java/JDBC, .NET, Go/sqlserver).
 
@@ -18,15 +18,16 @@ All services share one MSSQL database (`db`, port 1433). Connection string forma
 
 | Stack | Services |
 |---|---|
-| Java 21 / Spring Boot / Gradle | `contentcreator`, `credit-card-order-service`, `feature-flag-service`, `third-party-service` |
-| Go + Go Modules | `aggregator-service`, `pricing-service`, `problem-operator`, `user-service` |
+| Java 21 / Spring Boot / Gradle | `credit-card-order-service` |
+| Go + Go Modules | `background-service`, `db-adapter`, `pricing-service`, `user-service`, `feature-flag-service` |
 | TypeScript / Node.js / npm | `frontend` (React + Vite), `loadgen`, `offerservice` (Express) |
 | C# / .NET 8 | `broker-service`, `manager` |
 | Config only | `frontendreverseproxy` (nginx), `db` (MSSQL) |
 
 Key roles:
-- `aggregator-service`: generates synthetic traffic by calling other services over REST (50% JSON, 50% XML); no direct DB access
 - `pricing-service`: REST API (Gin + GORM); Swagger at `/pricing-service/swagger-ui/index.html`
+- `background-service`: consolidates four former services into one Go binary — see `src/background-service/README.md`. Sub-components: synthetic traffic generation, pricing candle generation + DB cleanup, credit-card manufacture/courier simulation + its `/v1/manufacturer` and `/version` HTTP endpoints, and a Kubernetes-only chaos-pattern controller (ex-`problem-operator`, `k8s.io/client-go`, gated on `POD_NAMESPACE` so it no-ops outside Kubernetes — not present in `compose.yaml`)
+- `pricing-service`: REST API (Gin + GORM) + RabbitMQ publisher; Swagger at `/pricing-service/swagger-ui/index.html`
 - `broker-service`: core trading engine (engine service was merged into it on branch `DREL-7889`); uses EF Core + feature-flag-driven middleware (`HighCpuUsageMiddleware`, `CreditCardValidationMiddleware`)
 - `problem-operator`: Kubernetes-only controller (`k8s.io/client-go`); watches feature flags and applies chaos patterns to the cluster — not present in `compose.yaml`
 
@@ -61,14 +62,14 @@ dotnet build
 dotnet test                        # runs xunit tests in test/ project
 dotnet test --filter "FullyQualifiedName~SomeTest"
 ```
-Solution paths: `src/broker-service/BrokerService/`, `src/loginservice/`.
-Only `broker-service` has a test project; `loginservice` has no unit tests.
+Solution paths: `src/broker-service/BrokerService/.
+Only `broker-service` has a test project;
 
 ## Running locally
 
 Use `compose.dev.yaml` via the helper script:
 ```bash
-./runDev.sh start       # proxy + contentcreator (minimal)
+./runDev.sh start       # proxy + background-service (minimal)
 ./runDev.sh start-all   # all services
 ./runDev.sh build [service...]  # rebuild images
 ./runDev.sh stop

@@ -1,8 +1,8 @@
 services:
-  aggregator-service:
-    image: ${REGISTRY}/aggregator-service:${TAG}
+  background-service:
+    image: ${REGISTRY}/background-service:${TAG}
     build:
-      context: src/aggregator-service
+      context: src/background-service
 
   broker-service:
     image: ${REGISTRY}/broker-service:${TAG}
