@@ -105,8 +105,18 @@ message DeleteOrdersRequest {
   string account_id = 1;
 }
 
+message ExistsByAccountIdRequest {
+  string account_id = 1;
+}
+
+message OrderExistsResponse {
+  bool exists = 1;
+}
+
 service CreditCardOrderService {
   rpc CreateCreditCardOrder(CreateCreditCardOrderRequest) returns (CreditCardOrderMessage) {}
+
+  rpc ExistsByAccountId(ExistsByAccountIdRequest) returns (OrderExistsResponse) {}
 
   rpc GetShippingAddressByOrderId(GetShippingAddressRequest) returns (ShippingAddressMessage) {}
 

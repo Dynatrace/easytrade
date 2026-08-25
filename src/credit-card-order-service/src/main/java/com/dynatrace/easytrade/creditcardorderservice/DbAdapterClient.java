@@ -29,10 +29,9 @@ public class DbAdapterClient {
 
     public boolean hasExistingOrder(Integer accountId) {
         try {
-            stub.getLastOrderStatusByAccountId(lastOrderStatusToProto(accountId));
-            return true;
+            return stub.existsByAccountId(existsByAccountIdToProto(accountId)).getExists();
         } catch (StatusRuntimeException e) {
-            return handleNotFound(e, false);
+            throw handleGrpcError("existsByAccountId", e);
         }
     }
 
@@ -141,6 +140,12 @@ public class DbAdapterClient {
                 .setName(request.name())
                 .setShippingAddress(request.shippingAddress())
                 .setCardLevel(request.cardLevel())
+                .build();
+    }
+
+    private ExistsByAccountIdRequest existsByAccountIdToProto(Integer accountId) {
+        return ExistsByAccountIdRequest.newBuilder()
+                .setAccountId(accountId.toString())
                 .build();
     }
 

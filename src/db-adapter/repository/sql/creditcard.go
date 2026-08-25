@@ -66,6 +66,12 @@ func (repo *CreditCardOrderRepository) GetShippingAddress(ctx context.Context, o
 	return firstOptional(repo.db.WithContext(ctx).Where(q(repository.ColID)+" = ?", orderID), (*CreditCardOrder).toShippingAddressProto)
 }
 
+func (repo *CreditCardOrderRepository) ExistsByAccountID(ctx context.Context, accountID string) (bool, error) {
+	var count int64
+	err := repo.db.WithContext(ctx).Model(&CreditCardOrder{}).Where(q(repository.ColAccountID)+" = ?", accountID).Count(&count).Error
+	return count > 0, err
+}
+
 func (repo *CreditCardOrderRepository) GetStatusListByAccountID(ctx context.Context, accountID string) ([]*pb.CreditCardOrderStatusMessage, error) {
 	order, err := repo.findOrderByAccountID(ctx, accountID)
 	if errors.Is(err, repository.ErrNotFound) {
