@@ -1,7 +1,6 @@
 package price
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -19,8 +18,4 @@ type price struct {
 
 type pricesResult struct {
 	Results []price `json:"results" xml:"results"`
-}
-
-func (p *price) toCSV(volume int) string {
-	return fmt.Sprintf("%s,%f,%f,%f,%f,%d\n", p.Timestamp.Format(time.RFC3339), p.Open, p.High, p.Low, p.Close, volume)
 }

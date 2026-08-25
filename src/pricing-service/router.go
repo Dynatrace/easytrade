@@ -5,10 +5,10 @@ import (
 	"time"
 
 	"dynatrace.com/easytrade/pricing-service/price"
+	"dynatrace.com/easytrade/pricing-service/utils"
 	"dynatrace.com/easytrade/pricing-service/version"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 )
 
 func Logger() gin.HandlerFunc {
@@ -20,16 +20,16 @@ func Logger() gin.HandlerFunc {
 		latency := time.Since(startTime)
 		requestString := fmt.Sprintf("%s %s", ctx.Request.Method, ctx.Request.URL)
 
-		log.WithFields(log.Fields{
-			"request": requestString,
-			"status":  ctx.Writer.Status(),
-			"latency": latency,
-			"ip":      ctx.ClientIP(),
-		}).Info("Request finished")
+		utils.GetSugar().Infow("Request finished",
+			"request", requestString,
+			"status", ctx.Writer.Status(),
+			"latency", latency,
+			"ip", ctx.ClientIP(),
+		)
 	}
 }
 
-func CreateRouter() *gin.Engine {
+func CreateRouter(handler *price.Handler) *gin.Engine {
 	router := gin.New()
 
 	router.Use(cors.Default())
@@ -40,9 +40,9 @@ func CreateRouter() *gin.Engine {
 	{
 		pricesRoute := v1.Group("/prices")
 		{
-			pricesRoute.GET("/latest", price.GetCurrentPrices)
-			pricesRoute.GET("/last", price.GetLastPrice)
-			pricesRoute.GET("/instrument/:instrumentId", price.GetPricingDataForInstrument)
+			pricesRoute.GET("/latest", handler.GetCurrentPrices)
+			pricesRoute.GET("/last", handler.GetLastPrice)
+			pricesRoute.GET("/instrument/:instrumentId", handler.GetPricingDataForInstrument)
 		}
 	}
 	router.GET("/version", version.GetVersion)

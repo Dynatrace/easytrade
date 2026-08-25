@@ -7,71 +7,64 @@ import (
 	"time"
 
 	pb "dynatrace.com/easytrade/pricing-service/proto"
-	"dynatrace.com/easytrade/pricing-service/services"
+	"dynatrace.com/easytrade/pricing-service/utils"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func GetCurrentPrices(ctx *gin.Context) {
-	prices, ok := fetchAndMap(ctx, func() (*pb.PricesResponse, error) {
-		return services.PricingClient.GetLatestPrices(context.Background(), &emptypb.Empty{})
-	}, func(r *pb.PricesResponse) []price { return pricesFromProto(r.GetPrices()) })
-	if !ok {
-		return
-	}
-	negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: prices})
+type Handler struct {
+	client pb.PricingServiceClient
 }
 
-func GetLastPrice(ctx *gin.Context) {
+func NewHandler(client pb.PricingServiceClient) *Handler {
+	return &Handler{client: client}
+}
+
+func (h *Handler) GetCurrentPrices(ctx *gin.Context) {
+	resp, err := h.client.GetLatestPrices(context.Background(), &emptypb.Empty{})
+	if handleInternalError(ctx, err) {
+		return
+	}
+	negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: pricesFromProto(resp.GetPrices())})
+}
+
+func (h *Handler) GetLastPrice(ctx *gin.Context) {
 	instrumentId, ok := parseUUIDQuery(ctx, "instrumentId")
 	if !ok {
 		return
 	}
-	lastPrice, ok := fetchAndMap(ctx, func() (*pb.PriceMessage, error) {
-		return services.PricingClient.GetLatestPriceForInstrument(context.Background(), &pb.GetLatestPriceForInstrumentRequest{
-			InstrumentId: instrumentId.String(),
-		})
-	}, priceFromProto)
-	if !ok {
+	resp, err := h.client.GetLatestPriceForInstrument(context.Background(), &pb.GetLatestPriceForInstrumentRequest{
+		InstrumentId: instrumentId.String(),
+	})
+	if handleInternalError(ctx, err) {
 		return
 	}
-	negotiateResponse(ctx, http.StatusOK, &lastPrice)
+	p := priceFromProto(resp)
+	negotiateResponse(ctx, http.StatusOK, &p)
 }
 
-func GetPricingDataForInstrument(ctx *gin.Context) {
+func (h *Handler) GetPricingDataForInstrument(ctx *gin.Context) {
 	instrumentId, ok := parseUUIDParam(ctx, "instrumentId")
 	if !ok {
 		return
 	}
 	recordsI32 := parseRecordsLimit(ctx)
-	prices, ok := fetchAndMap(ctx, func() (*pb.PricesResponse, error) {
-		return services.PricingClient.GetPricesForInstrument(context.Background(), &pb.GetPricesForInstrumentRequest{
-			InstrumentId: instrumentId.String(),
-			Limit:        &recordsI32,
-		})
-	}, func(r *pb.PricesResponse) []price { return pricesFromProto(r.GetPrices()) })
-	if !ok {
+	resp, err := h.client.GetPricesForInstrument(context.Background(), &pb.GetPricesForInstrumentRequest{
+		InstrumentId: instrumentId.String(),
+		Limit:        &recordsI32,
+	})
+	if handleInternalError(ctx, err) {
 		return
 	}
-	negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: prices})
+	negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: pricesFromProto(resp.GetPrices())})
 }
 
 func parseRecordsLimit(ctx *gin.Context) int32 {
 	n, _ := strconv.Atoi(ctx.DefaultQuery("records", "100"))
 	return int32(n)
-}
-
-func fetchAndMap[R, T any](ctx *gin.Context, call func() (R, error), mapper func(R) T) (T, bool) {
-	resp, err := call()
-	if handleInternalError(ctx, err) {
-		var zero T
-		return zero, false
-	}
-	return mapper(resp), true
 }
 
 func parseUUIDParam(ctx *gin.Context, param string) (uuid.UUID, bool) {
@@ -95,7 +88,7 @@ func handleInternalError(ctx *gin.Context, err error) bool {
 	if err == nil {
 		return false
 	}
-	log.Error(err)
+	utils.GetSugar().Error(err)
 	if st, ok := status.FromError(err); ok && st.Code() == codes.NotFound {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
 	} else {
