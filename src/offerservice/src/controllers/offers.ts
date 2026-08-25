@@ -2,7 +2,7 @@ import { ParamsDictionary, Request } from "express-serve-static-core"
 import { Response } from "express"
 import { logger } from "../logger"
 import { toXml } from "../utils"
-import { packageClient, productClient } from "../services/db-adapter"
+import { getPackages, getProducts } from "../services/db-adapter"
 import { PackageMessage } from "../proto/package_service"
 import { ProductMessage } from "../proto/product_service"
 import { Empty } from "../proto/google/protobuf/empty"
@@ -41,7 +41,10 @@ export async function getOffers(
     let products: ProductMessage[]
 
     try {
-        [packages, products] = await Promise.all([fetchPackages(), fetchProducts()])
+        [{ packages }, { products }] = await Promise.all([
+            getPackages(Empty.create()),
+            getProducts(Empty.create()),
+        ])
     } catch (err) {
         logger.error(`Error fetching data from db-adapter`, err)
         res.status(502).json(`Error fetching data from db-adapter [${err}]`)
@@ -68,24 +71,6 @@ function sendOfferResponse(
     } else {
         res.status(200).json(data)
     }
-}
-
-function fetchPackages(): Promise<PackageMessage[]> {
-    return new Promise((resolve, reject) => {
-        packageClient.getPackages(Empty.create(), (err, response) => {
-            if (err) reject(err)
-            else resolve(response.packages)
-        })
-    })
-}
-
-function fetchProducts(): Promise<ProductMessage[]> {
-    return new Promise((resolve, reject) => {
-        productClient.getProducts(Empty.create(), (err, response) => {
-            if (err) reject(err)
-            else resolve(response.products)
-        })
-    })
 }
 
 

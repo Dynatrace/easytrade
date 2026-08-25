@@ -1,6 +1,8 @@
 import * as grpc from "@grpc/grpc-js"
-import { PackageServiceClient } from "../proto/package_service"
-import { ProductServiceClient } from "../proto/product_service"
+import { promisify } from "util"
+import { PackageServiceClient, PackagesResponse } from "../proto/package_service"
+import { ProductServiceClient, ProductsResponse } from "../proto/product_service"
+import { Empty } from "../proto/google/protobuf/empty"
 import { config } from "../config"
 
 function createInsecureClient<T extends grpc.Client>(
@@ -16,5 +18,8 @@ function createInsecureClient<T extends grpc.Client>(
     )
 }
 
-export const packageClient: PackageServiceClient =createInsecureClient(PackageServiceClient)
-export const productClient: ProductServiceClient = createInsecureClient(ProductServiceClient)
+const packageClient = createInsecureClient(PackageServiceClient)
+const productClient = createInsecureClient(ProductServiceClient)
+
+export const getPackages = promisify(packageClient.getPackages.bind(packageClient)) as (request: Empty) => Promise<PackagesResponse>
+export const getProducts = promisify(productClient.getProducts.bind(productClient)) as (request: Empty) => Promise<ProductsResponse>
