@@ -92,13 +92,10 @@ services:
     image: ${REGISTRY}/offerservice:${TAG}
     depends_on:
       - user-service
-      - manager
     environment:
       <<: *feature-flag-service-env
       USER_SERVICE_PORT: 8080
       USER_SERVICE_BASE_URL: user-service
-      MANAGER_BASE_URL: manager
-      MANAGER_PORT: 8080
 
   feature-flag-service:
     <<: *default-service
@@ -146,4 +143,5 @@ services:
       THIRD_PARTY_DELAY: 10
       THIRD_PARTY_RATE: 10
       DELAY_CHANCE_PERCENT: 20
+      HEALTH_PORT: 8080
 

@@ -20,6 +20,20 @@ global:
 
 background-service:
   enabled: true
+  env:
+    HEALTH_PORT: "{{ .Values.global.healthPort }}"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   rbac:
     create: true
     rules:

@@ -32,6 +32,7 @@ func New(handlers thirdparty.Handlers) *http.Server {
 
 	router.GET("/version", version.GetVersion)
 	router.POST("/v1/manufacturer", handlers.PostManufacturer)
+	setupHealth(router)
 
 	return &http.Server{Addr: ":8080", Handler: router}
 }
