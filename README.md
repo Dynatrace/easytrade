@@ -13,47 +13,45 @@ Generated from `compose.dev.yaml` via `make update-graph` — do not edit the bl
 <!-- dependency-graph:start -->
 ```mermaid
 flowchart TD
-    aggregator-service --> offerservice
+    background-service --> db-adapter
+    background-service --> offerservice
     broker-service --> db
     broker-service --> feature-flag-service
     broker-service --> pricing-service
     broker-service --> user-service
-    contentcreator --> db
+    credit-card-order-service --> background-service
     credit-card-order-service --> db
-    credit-card-order-service --> third-party-service
     db-adapter --> db
+    frontendreverseproxy --> background-service
     frontendreverseproxy --> broker-service
     frontendreverseproxy --> credit-card-order-service
     frontendreverseproxy --> feature-flag-service
     frontendreverseproxy --> frontend
     frontendreverseproxy --> offerservice
     frontendreverseproxy --> pricing-service
-    frontendreverseproxy --> third-party-service
-    frontendreverseproxy --> user-service
     loadgen --> frontendreverseproxy
-    manager --> db
     offerservice --> feature-flag-service
     offerservice --> manager
     offerservice --> user-service
     pricing-service --> db
+    user-service --> db-adapter
+    background-service -.-> credit-card-order-service
+    background-service -.-> feature-flag-service
     credit-card-order-service -.-> feature-flag-service
-    third-party-service -.-> credit-card-order-service
-    third-party-service -.-> feature-flag-service
-    user-service -.-> db-adapter
 
-    class broker-service,manager dotnet
-    class aggregator-service,db-adapter,feature-flag-service,pricing-service,user-service go
-    class problem-operator goOffCompose
-    class contentcreator,credit-card-order-service,third-party-service java
+    class broker-service dotnet
+    class background-service,db-adapter,feature-flag-service,pricing-service,user-service go
+    class credit-card-order-service java
     class frontend,loadgen,offerservice node
     class db,frontendreverseproxy other
+    class manager otherOffCompose
 
     classDef dotnet fill:#d2b4de,stroke:#6c3483,color:#1a1a1a,stroke-width:1px
     classDef go fill:#a9cce3,stroke:#1f618d,color:#1a1a1a,stroke-width:1px
     classDef java fill:#f8b4b4,stroke:#c0392b,color:#1a1a1a,stroke-width:1px
     classDef node fill:#a9dfbf,stroke:#1e8449,color:#1a1a1a,stroke-width:1px
     classDef other fill:#d5d8dc,stroke:#5d6d7e,color:#1a1a1a,stroke-width:1px
-    classDef goOffCompose fill:#a9cce3,stroke:#1f618d,color:#1a1a1a,stroke-width:1px,stroke-dasharray:5 5
+    classDef otherOffCompose fill:#d5d8dc,stroke:#5d6d7e,color:#1a1a1a,stroke-width:1px,stroke-dasharray:5 5
 
     subgraph Legend[Legend: implementation language]
         direction LR
