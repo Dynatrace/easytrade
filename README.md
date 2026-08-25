@@ -6,11 +6,70 @@ Of course it is all fake data and the price has a 24 hour cycle...
 
 ## Architecture diagram
 
-![EasyTrade architecture](./img/architecture.jpg)
+## Dependency graph
 
-## Database diagram
+Generated from `compose.dev.yaml` via `make update-graph` — do not edit the block below by hand.
 
-![EasyTrade database](./img/database.jpg)
+<!-- dependency-graph:start -->
+```mermaid
+flowchart TD
+    aggregator-service --> offerservice
+    broker-service --> db
+    broker-service --> feature-flag-service
+    broker-service --> pricing-service
+    broker-service --> user-service
+    contentcreator --> db
+    credit-card-order-service --> db
+    credit-card-order-service --> third-party-service
+    db-adapter --> db
+    frontendreverseproxy --> broker-service
+    frontendreverseproxy --> credit-card-order-service
+    frontendreverseproxy --> feature-flag-service
+    frontendreverseproxy --> frontend
+    frontendreverseproxy --> offerservice
+    frontendreverseproxy --> pricing-service
+    frontendreverseproxy --> third-party-service
+    frontendreverseproxy --> user-service
+    loadgen --> frontendreverseproxy
+    manager --> db
+    offerservice --> feature-flag-service
+    offerservice --> manager
+    offerservice --> user-service
+    pricing-service --> db
+    credit-card-order-service -.-> feature-flag-service
+    third-party-service -.-> credit-card-order-service
+    third-party-service -.-> feature-flag-service
+    user-service -.-> db-adapter
+
+    class broker-service,manager dotnet
+    class aggregator-service,db-adapter,feature-flag-service,pricing-service,user-service go
+    class problem-operator goOffCompose
+    class contentcreator,credit-card-order-service,third-party-service java
+    class frontend,loadgen,offerservice node
+    class db,frontendreverseproxy other
+
+    classDef dotnet fill:#d2b4de,stroke:#6c3483,color:#1a1a1a,stroke-width:1px
+    classDef go fill:#a9cce3,stroke:#1f618d,color:#1a1a1a,stroke-width:1px
+    classDef java fill:#f8b4b4,stroke:#c0392b,color:#1a1a1a,stroke-width:1px
+    classDef node fill:#a9dfbf,stroke:#1e8449,color:#1a1a1a,stroke-width:1px
+    classDef other fill:#d5d8dc,stroke:#5d6d7e,color:#1a1a1a,stroke-width:1px
+    classDef goOffCompose fill:#a9cce3,stroke:#1f618d,color:#1a1a1a,stroke-width:1px,stroke-dasharray:5 5
+
+    subgraph Legend[Legend: implementation language]
+        direction LR
+        legend_dotnet["C# / .NET"]:::dotnet
+        legend_go["Go"]:::go
+        legend_java["Java"]:::java
+        legend_node["TypeScript / Node.js"]:::node
+        legend_other["Other / config (no language manifest)"]:::other
+    end
+```
+<!-- dependency-graph:end -->
+
+- solid arrow: `depends_on` in compose
+- dashed arrow: inferred from an environment variable value referencing another service
+- dashed border: no entry in `compose.dev.yaml` (e.g. Kubernetes-only or build-only service)
+- node color: implementation language, detected from the service's manifest file (see the "Legend" group inside the diagram)
 
 ## Service list
 
@@ -18,22 +77,19 @@ EasyTrade consists of the following services/components:
 
 | Service                                                              | Proxy port | Proxy endpoint               |
 | -------------------------------------------------------------------- | ---------- | ---------------------------- |
-| [Aggregator service](src/aggregator-service/README.md)               | 80         | `---`                        |
+| [Background service](src/background-service/README.md)               | 80         | `/background-service`        |
 | [Broker service](src/broker-service/README.md)                       | 80         | `/broker-service`            |
-| [Calculation service](src/calculationservice/README.md)              | 80         | `---`                        |
 | [Content creator](src/contentcreator/README.md)                      | 80         | `---`                        |
 | [Credit card order service](src/credit-card-order-service/README.md) | 80         | `/credit-card-order-service` |
 | [Db](src/db/README.md)                                               | 80         | `---`                        |
+| [Db adapter](src/db-adapter/README.md)                               | --         | `---`                        |
 | [Feature flag service](src/feature-flag-service/README.md)           | 80         | `/feature-flag-service`      |
 | [Frontend](src/frontend/README.md)                                   | 80         | `/`                          |
 | [Frontend reverse-proxy](src/frontendreverseproxy/README.md)         | 80         | `---`                        |
 | [Loadgen](src/loadgen/README.md)                                     | --         | `---`                        |
-| [Manager](src/manager/easyTradeManager/README.md)                    | 80         | `/manager`                   |
 | [Offer service](src/offerservice/README.md)                          | 80         | `/offerservice`              |
 | [Pricing service](src/pricing-service/README.md)                     | 80         | `/pricing-service`           |
 | [Problem operator](src/problem-operator/README.md)                   | 80         | `---`                        |
-| [RabbitMQ](src/rabbitmq/README.md)                                   | 80         | `---`                        |
-| [Third party service](src/third-party-service/README.md)             | 80         | `/third-party-service`       |
 | [User service](src/user-service/README.md)                           | 80         | `/user-service`               |
 
 > To learn more about endpoints / swagger for the services go to their respective readmes
@@ -67,6 +123,47 @@ You should be able to access the app at `localhost:80` or simply `localhost`.
 
 > **NOTE:** Docker Compose V1 which came as a separate binary (`docker-compose`) will not work with this version. You can check this [guide](https://www.howtogeek.com/devops/how-to-upgrade-to-docker-compose-v2/) on how to upgrade.
 
+## Local development
+
+The root `Makefile` wraps the compose and Helm commands you need while working on
+the code. It builds images from local source (`compose.dev.yaml`) rather than
+pulling them from the registry.
+
+```bash
+make help    # list every target
+```
+
+```bash
+make build            # build all images from local source
+make start            # start the whole stack, building anything missing
+make stop             # stop the stack and remove its containers
+make clean            # ...and also drop volumes and locally built images
+```
+
+Every compose target accepts an optional `services=` to narrow the scope — a single
+name, or a quoted space-separated list. Omit it to act on the whole stack:
+
+```bash
+make build services=pricing-service
+make start services="db frontendreverseproxy contentcreator"
+```
+
+Two targets act on exactly one service and therefore require `services=`:
+
+```bash
+make restart  services=frontend   # recreate the container, no rebuild
+make redeploy services=frontend   # rebuild the image, then recreate — use after a code change
+```
+
+The dev stack publishes each service on its own host port (`manager` 8081,
+`pricing-service` 8083, `broker-service` 8084, `offerservice` 8087,
+`user-service` 8089, `credit-card-order-service` 8091, `frontend` 8092,
+`third-party-service` 8093, `feature-flag-service` 8094, `db-adapter` 50051,
+`db` 1433/5432), so you can hit a service directly instead of going through nginx.
+
+To run the pre-built registry images through the Makefile instead, use
+`make start-remote`.
+
 ## Kubernetes instructions
 
 To deploy Easytrade in kubernetes you need to have:
@@ -77,6 +174,28 @@ To deploy Easytrade in kubernetes you need to have:
   - install [guide](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 - `kubeconfig` to access the cluster you want to deploy it on
   - more info on it [here](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/)
+
+Using the Makefile (release name and namespace both default to `easytrade`):
+
+```bash
+# create namespace and deploy easytrade from the published chart
+make k8s-install-remote
+
+# ...or from the chart in this repo, e.g. to test local chart changes
+make k8s-install
+
+# uninstall easytrade
+make k8s-uninstall
+```
+
+Both install targets are idempotent (`helm upgrade --install`), so re-running one
+upgrades an existing release. Override the defaults per invocation:
+
+```bash
+make k8s-install HELM_RELEASE=easytrade-test HELM_NAMESPACE=easytrade-test
+```
+
+The equivalent raw commands:
 
 ```bash
 # create namespace and deploy easytrade
@@ -121,9 +240,9 @@ Currently there are 4 problem patterns supported in easyTrade:
    - 15 min - then we will notice a small slowdown (for 150 seconds) followed by 40% lower traffic for 15 minutes on some requests
    - 20 min - then we will notice a small slowdown (for 150 seconds) followed by 40% lower traffic for 30 minutes on some requests
 
-3. FactoryCrisis - when enabled, the factory won't produce new cards, which will cause the Third party service not to process credit card orders. This will block the Credit Card Order service.
+3. FactoryCrisis - when enabled, the factory won't produce new cards, which will cause background-service's manufacture scheduler not to process credit card orders. This will block the Credit Card Order service.
 
-4. HighCpuUsage - this problem pattern causes a slowdown of broker-service response time and highly increases CPU usage during that time. If the app is deployed on K8s, a CPU resource limit is also applied by the problem operator. This should generate CPU throttling on the pod.
+4. HighCpuUsage - this problem pattern causes a slowdown of broker-service response time and highly increases CPU usage during that time. If the app is deployed on K8s, a CPU resource limit is also applied by background-service's operator subsystem. This should generate CPU throttling on the pod.
 
 To turn a plugin on/off send a request similar to the following:
 

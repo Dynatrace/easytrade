@@ -11,13 +11,6 @@ x-connection-strings:
   DOTNET_CONNECTION_STRING: &dotnet-connection-string Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
   GO_CONNECTION_STRING: &go-connection-string sqlserver://sa:yourStrong(!)Password@db:1433?database=TradeManagement&connection+encrypt=false&connection+TrustServerCertificate=false&connection+loginTimeout=30
 
-x-rabbit-vars: &rabbit-vars
-  RABBITMQ_USER: userxxx
-  RABBITMQ_PASSWORD: passxxx
-  RABBITMQ_PORT: "5672"
-  RABBITMQ_HOST: rabbitmq
-  RABBITMQ_QUEUE: Trade_Data_Raw
-
 services:
   db:
     <<: *default-service
@@ -30,37 +23,16 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
 
-  contentcreator:
-    <<: *default-service
-    build: src/contentcreator
-    depends_on:
-      - db
-    environment:
-      MSSQL_CONNECTIONSTRING: *java-connection-string
-
-  manager:
-    <<: *default-service
-    build: src/manager/easyTradeManager
-    depends_on:
-      - db
-    ports:
-      - 8081:8080
-    environment:
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
-      PROXY_PREFIX: manager
-
   pricing-service:
     <<: *default-service
     build: src/pricing-service
     depends_on:
       - db
-      - rabbitmq
     ports:
       - 8083:8080
     environment:
       MSSQL_CONNECTIONSTRING: *go-connection-string
       PROXY_PREFIX: pricing-service
-      <<: *rabbit-vars
 
   broker-service:
     <<: *default-service
@@ -79,28 +51,18 @@ services:
       PROXY_PREFIX: broker-service
       MSSQL_CONNECTIONSTRING: *dotnet-connection-string
 
-  rabbitmq:
-    <<: *default-service
-    build: src/rabbitmq
-    ports:
-      - 8082:15672
-
-  calculationservice:
-    <<: *default-service
-    build: src/calculationservice
-    depends_on:
-      - rabbitmq
-    environment:
-      <<: *rabbit-vars
-      HEALTH_PORT: "8080"
-    ports:
-      - "8085:8080"
-
   frontend:
     <<: *default-service
     build:
       context: src/frontend
-      dockerfile: Dockerfile
+      # dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
+      # dockerfile: Dockerfile
+    # depends_on:
+    #   - broker-service
+    #   - user-service
+    #   - pricing-service
+    #   - credit-card-order-service
     ports:
       - 8092:3000
     volumes:
@@ -116,8 +78,8 @@ services:
       - feature-flag-service
       - offerservice
       - credit-card-order-service
-      - third-party-service
       - user-service
+      - background-service
     ports:
       - 80:80
 
@@ -156,7 +118,6 @@ services:
     ports:
       - 8089:8080
     environment:
-      # db-adapter is not part of the compose stack yet; user-service is prepared to call it.
       DB_ADAPTER_ADDRESS: db-adapter:50051
       HEALTH_PORT: 8080
       GIN_MODE: debug
@@ -166,31 +127,17 @@ services:
     build: src/credit-card-order-service
     depends_on:
       - db
-      - third-party-service
+      - background-service
     ports:
       - 8091:8080
     environment:
       PROXY_PREFIX: credit-card-order-service
       MSSQL_CONNECTIONSTRING: *java-connection-string
-      THIRD_PARTY_SERVICE_HOSTANDPORT: third-party-service:8080
+      THIRD_PARTY_SERVICE_HOSTANDPORT: background-service:8080
       <<: *feature-flag-service-env
       WORK_DELAY: 30
       WORK_RATE: 30
       JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
-
-  third-party-service:
-    <<: *default-service
-    build: src/third-party-service
-    ports:
-      - 8093:8080
-    environment:
-      <<: *feature-flag-service-env
-      PROXY_PREFIX: third-party-service
-      CREDIT_CARD_ORDER_SERVICE_HOSTANDPORT: credit-card-order-service:8080
-      COURIER_DELAY: 10
-      COURIER_RATE: 10
-      MANUFACTURE_DELAY: 10
-      MANUFACTURE_RATE: 10
 
   feature-flag-service:
     <<: *default-service
@@ -216,12 +163,21 @@ services:
       DB_URL: ${DB_URL}
       HEALTH_PORT: "8080"
 
-  aggregator-service:
+  background-service:
     <<: *default-service
-    build: src/aggregator-service
+    build: src/background-service
     depends_on:
       - offerservice
+      - db-adapter
+    ports:
+      - 8095:8080
     environment:
-      OFFER_SERVICE_PROTOCOL: http
-      OFFER_SERVICE_HOST: offerservice
-      OFFER_SERVICE_PORT: 8080
+      OFFER_SERVICE_ADDRESS: http://offerservice:8080
+      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
+      CREDIT_CARD_ORDER_SERVICE_ADDRESS: http://credit-card-order-service:8080
+      DB_ADAPTER_SERVICE_ADDRESS: db-adapter:50051
+      THIRD_PARTY_DELAY: 10
+      THIRD_PARTY_RATE: 10
+      DELAY_CHANCE_PERCENT: 20
+
+

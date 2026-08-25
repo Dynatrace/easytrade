@@ -2,22 +2,22 @@
 
 ## Repository structure
 
-`src/` contains 18 services grouped by technology:
+`src/` contains 15 services grouped by technology:
 
 | Technology                     | Services                                                                                                                 |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| Java 21 / Spring Boot / Gradle | `contentcreator`, `credit-card-order-service`, `feature-flag-service`, `third-party-service`                  |
-| Go / Go Modules                | `aggregator-service`, `pricing-service`, `problem-operator`, `user-service`                                              |
+| Java 21 / Spring Boot / Gradle | `credit-card-order-service`, `feature-flag-service`          |
+| Go / Go Modules                | `background-service`, `db-adapter`, `pricing-service`, `user-service`                          |
 | TypeScript / Node.js / npm     | `frontend`, `loadgen`, `offerservice`                                                                                    |
-| C# / .NET 8 / NuGet            | `broker-service`, `manager`                                                                                             |
+| C# / .NET 8 / NuGet            | `broker-service`                                                                                            |
 | Python / Poetry                | `db/user-generator` (local utility script, not a service)                                                                |
-| Config only (no packages)      | `calculationservice` (C++, built in Dockerfile), `frontendreverseproxy` (nginx), `rabbitmq`, `db` (MSSQL)                |
+| Config only (no packages)      | `frontendreverseproxy` (nginx), `db` (MSSQL)                                                              |
 
 ## Vulnerability remediation process
 
 ### Scanning
 
-Run `snyk test --json --all-projects` from within each service directory that has a package manifest. Services without manifests (`calculationservice`, `frontendreverseproxy`, `rabbitmq`) cannot be scanned this way.
+Run `snyk test --json --all-projects` from within each service directory that has a package manifest. Services without manifests (`frontendreverseproxy`) cannot be scanned this way.
 
 Run scans in parallel across all services to save time.
 
@@ -44,7 +44,7 @@ Bump versions in this block across **all** affected `build.gradle` files in one 
 - Pin transitive dependencies using the `overrides` field in `package.json`.
 - Run `npm install` after editing `package.json` to regenerate `package-lock.json`.
 
-#### Go (services: `pricing-service`, `problem-operator`)
+#### Go (services: `background-service`, `db-adapter`, `pricing-service`, `user-service`)
 
 Go stdlib vulnerabilities are fixed by upgrading the Go toolchain version, not by changing individual module dependencies. Three files must be updated in sync for each service:
 

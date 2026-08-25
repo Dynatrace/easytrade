@@ -1,18 +1,13 @@
 services:
-  aggregator-service:
-    image: ${REGISTRY}/aggregator-service:${TAG}
+  background-service:
+    image: ${REGISTRY}/background-service:${TAG}
     build:
-      context: src/aggregator-service
+      context: src/background-service
 
   broker-service:
     image: ${REGISTRY}/broker-service:${TAG}
     build:
       context: src/broker-service
-
-  calculationservice:
-    image: ${REGISTRY}/calculationservice:${TAG}
-    build:
-      context: src/calculationservice
 
   contentcreator:
     image: ${REGISTRY}/contentcreator:${TAG}
@@ -54,11 +49,6 @@ services:
     build:
       context: src/loadgen
 
-  manager:
-    image: ${REGISTRY}/manager:${TAG}
-    build:
-      context: src/manager/easyTradeManager
-
   offerservice:
     image: ${REGISTRY}/offerservice:${TAG}
     build:
@@ -73,11 +63,6 @@ services:
     image: ${REGISTRY}/problem-operator:${TAG}
     build:
       context: src/problem-operator
-
-  rabbitmq:
-    image: ${REGISTRY}/rabbitmq:${TAG}
-    build:
-      context: src/rabbitmq
 
   third-party-service:
     image: ${REGISTRY}/third-party-service:${TAG}
