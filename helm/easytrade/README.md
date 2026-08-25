@@ -192,12 +192,29 @@ helm uninstall easytrade -n easytrade
 
 ## Development
 
-### Update dependencies
+The root `Makefile` wraps the commands below. Each `helm-*` target resolves the
+subchart dependencies first, so you can't forget that step:
 
 ```bash
-cd helm/easytrade
-helm dependency update
+make helm-template   # deps + render manifests to stdout
+make helm-install    # deps + upgrade --install from this local chart
+make helm-uninstall
 ```
+
+Release name, namespace and chart path are overridable:
+`make helm-lint HELM_CHART=helm/easytrade`.
+
+### Update dependencies
+
+Required before linting, templating or installing — the umbrella chart declares 16
+`file://./charts/app` dependencies that must be packaged into `charts/` first.
+
+```bash
+helm dependency update helm/easytrade
+```
+
+This writes `Chart.lock` and `charts/app-0.1.0.tgz`; both are build artifacts and
+are gitignored.
 
 ### Lint the chart
 

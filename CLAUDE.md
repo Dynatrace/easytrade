@@ -67,19 +67,25 @@ Only `broker-service` has a test project;
 
 ## Running locally
 
-Use `compose.dev.yaml` via the helper script:
+Use the root `Makefile` (`make help` lists every target):
 ```bash
-./runDev.sh start       # proxy + background-service (minimal)
-./runDev.sh start-all   # all services
-./runDev.sh build [service...]  # rebuild images
-./runDev.sh stop
+make start                                          # all services, built from local source (compose.dev.yaml)
+make start services="frontend reverseproxy contentcreator"   # subset
+make build [services=NAME]                          # rebuild images; omit services= to build all
+make redeploy services=NAME                         # rebuild + recreate one service after a code change
+make stop
 ```
+
+Every compose target takes an optional `services=` (a single name or a quoted,
+space-separated list). Omitting it means *all services*. `restart` and `redeploy`
+require it. `SERVICES=` works as an alias.
 
 Or directly:
 ```bash
 docker compose -f compose.dev.yaml up -d
 docker compose up          # uses pre-built images from registry (compose.yaml)
 ```
+`make start-remote` is the Makefile equivalent of the second form.
 
 App available at `http://localhost`. Dev credentials: `demouser/demopass`, `james_norton/pass_james_123`.
 
@@ -115,6 +121,14 @@ Key DQL rule: always use `timeseries` for metrics — never `fetch <metric-key>`
 
 ## Helm / Kubernetes
 
+Via the Makefile (release and namespace both default to `easytrade`):
+```bash
+make k8s-install          # install/upgrade from the local chart in helm/easytrade
+make k8s-install-remote   # install/upgrade from the published OCI chart
+make k8s-uninstall
+```
+
+Underlying commands:
 ```bash
 helm install easytrade oci://europe-docker.pkg.dev/dynatrace-demoability/helm/easytrade \
   --create-namespace --namespace easytrade
