@@ -17,19 +17,38 @@ global:
   # Environment variables to be added to all pods
   env: {}
 
-aggregator-service:
+background-service:
   enabled: true
+  rbac:
+    create: true
+    rules:
+      - apiGroups: [""]
+        resources: ["services", "pods", "events"]
+        verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+      - apiGroups: ["apps"]
+        resources: ["deployments", "replicasets"]
+        verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
   env:
-    OFFER_SERVICE_PROTOCOL: "http"
-    OFFER_SERVICE_HOST: "{{ .Release.Name }}-offerservice"
-    OFFER_SERVICE_PORT: "8080"
+    OFFER_SERVICE_ADDRESS: "http://{{ .Release.Name }}-offerservice:8080"
+    CREDIT_CARD_ORDER_SERVICE_ADDRESS: "http://{{ .Release.Name }}-credit-card-order-service:8080"
+    THIRD_PARTY_DELAY: "500"
+    THIRD_PARTY_RATE: "900"
+    FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
+    POD_NAMESPACE: "{{ .Release.Namespace }}"
+    HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT: "300m"
+    HIGH_CPU_USAGE_BROKER_SERVICE_NAME: "{{ .Release.Name }}-broker-service"
+    DB_ADAPTER_SERVICE_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+    DELAY_CHANCE_PERCENT: "20"
   resources:
     requests:
-      cpu: 10m
-      memory: 30Mi
+      cpu: 30m
+      memory: 128Mi
     limits:
-      cpu: 200m
-      memory: 30Mi
+      cpu: 300m
+      memory: 256Mi
+  service:
+    enabled: true
+    port: 8080
 
 broker-service:
   enabled: true
@@ -68,7 +87,7 @@ credit-card-order-service:
   enabled: true
   env:
     PROXY_PREFIX: "credit-card-order-service"
-    THIRD_PARTY_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-third-party-service:8080"
+    THIRD_PARTY_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-background-service:8080"
     WORK_DELAY: "300"
     WORK_RATE: "900"
     JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
@@ -169,10 +188,9 @@ frontendreverseproxy:
     CREDIT_CARD_ORDER_SERVICE_URL: "http://{{ .Release.Name }}-credit-card-order-service:8080"
     FEATURE_FLAG_SERVICE_URL: "http://{{ .Release.Name }}-feature-flag-service:8080"
     FRONTEND_URL: "http://{{ .Release.Name }}-frontend:3000"
-    MANAGER_URL: "http://{{ .Release.Name }}-manager:8080"
     OFFER_SERVICE_URL: "http://{{ .Release.Name }}-offerservice:8080"
     PRICING_SERVICE_URL: "http://{{ .Release.Name }}-pricing-service:8080"
-    THIRD_PARTY_SERVICE_URL: "http://{{ .Release.Name }}-third-party-service:8080"
+    BACKGROUND_SERVICE_URL: "http://{{ .Release.Name }}-background-service:8080"
     USER_SERVICE_URL: "http://{{ .Release.Name }}-user-service:8080"
   resources:
     requests:
@@ -202,29 +220,11 @@ loadgen:
       cpu: "3"
       memory: 3Gi
 
-manager:
-  enabled: true
-  env:
-    PROXY_PREFIX: "manager"
-    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
-  resources:
-    requests:
-      cpu: 50m
-      memory: 600Mi
-    limits:
-      cpu: 500m
-      memory: 600Mi
-  service:
-    enabled: true
-    port: 8080
-
 offerservice:
   enabled: true
   env:
     USER_SERVICE_PORT: "8080"
     USER_SERVICE_BASE_URL: "{{ .Release.Name }}-user-service"
-    MANAGER_BASE_URL: "{{ .Release.Name }}-manager"
-    MANAGER_PORT: "8080"
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
@@ -283,34 +283,11 @@ problem-operator:
       cpu: 100m
       memory: 15Mi
 
-third-party-service:
-  enabled: true
-  env:
-    CREDIT_CARD_ORDER_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-credit-card-order-service:8080"
-    PROXY_PREFIX: "third-party-service"
-    COURIER_DELAY: "400"
-    COURIER_RATE: "900"
-    MANUFACTURE_DELAY: "500"
-    MANUFACTURE_RATE: "900"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
-  resources:
-    requests:
-      cpu: 10m
-      memory: 450Mi
-    limits:
-      cpu: 200m
-      memory: 450Mi
-  service:
-    enabled: true
-    port: 8080
-
 user-service:
   enabled: true
   env:
     PROXY_PREFIX: "user-service"
-    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
       cpu: 20m
