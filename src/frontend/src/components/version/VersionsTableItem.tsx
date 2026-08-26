@@ -1,5 +1,4 @@
 import React from "react"
-import { TableRow, TableCell, Alert } from "@mui/material"
 import { ServiceVersion } from "../../api/version/types"
 import { getFrontendVersion } from "../../api/version/versions"
 
@@ -12,48 +11,51 @@ interface DifferenceAlertProps {
     expectedValue: string
 }
 
-function DifferenceWarning(props: DifferenceAlertProps) {
-    return props.value === props.expectedValue ? (
-        props.value
-    ) : (
-        <Alert severity="warning">{props.value}</Alert>
+function DifferenceWarning({ value, expectedValue }: DifferenceAlertProps) {
+    if (value === expectedValue) return <>{value}</>
+    return (
+        <span className="status-message status-error" style={{ padding: "0.2rem 0.5rem", display: "inline-block" }}>
+            {value}
+        </span>
     )
 }
 
-export default function VersionsTabelItem(props: VersionListItemProps) {
-    if (!props.service.success) {
+export default function VersionsTabelItem({ service }: VersionListItemProps) {
+    if (!service.success) {
         return (
-            <TableRow>
-                <TableCell>{props.service.serviceName}</TableCell>
-                <TableCell colSpan={3}>
-                    <Alert severity="error">{props.service.message}</Alert>
-                </TableCell>
-            </TableRow>
+            <tr>
+                <td>{service.serviceName}</td>
+                <td colSpan={3}>
+                    <span className="status-message status-error" style={{ padding: "0.2rem 0.5rem", display: "inline-block" }}>
+                        {service.message}
+                    </span>
+                </td>
+            </tr>
         )
     }
 
     const frontendVersion = getFrontendVersion()
     return (
-        <TableRow>
-            <TableCell>{props.service.serviceName}</TableCell>
-            <TableCell>
+        <tr>
+            <td>{service.serviceName}</td>
+            <td>
                 <DifferenceWarning
-                    value={props.service.data.buildVersion}
+                    value={service.data.buildVersion}
                     expectedValue={frontendVersion.data.buildVersion}
                 />
-            </TableCell>
-            <TableCell>
+            </td>
+            <td>
                 <DifferenceWarning
-                    value={props.service.data.buildDate}
+                    value={service.data.buildDate}
                     expectedValue={frontendVersion.data.buildDate}
                 />
-            </TableCell>
-            <TableCell>
+            </td>
+            <td>
                 <DifferenceWarning
-                    value={props.service.data.buildCommit}
+                    value={service.data.buildCommit}
                     expectedValue={frontendVersion.data.buildCommit}
                 />
-            </TableCell>
-        </TableRow>
+            </td>
+        </tr>
     )
 }
