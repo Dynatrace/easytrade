@@ -19,7 +19,6 @@ export async function gotoInstrumentPage(
 export async function getRandomInstrument(
     pageActions: IPageActions
 ): Promise<IHandleWrapper | undefined> {
-    await waitForInstruments(pageActions)
     const instrumentCards = await pageActions.getAllHandles(
         selectors.instrumentsPage_instrumentCard
     )
@@ -29,7 +28,6 @@ export async function getRandomInstrument(
 export async function getRandomOwnedInstrument(
     pageActions: IPageActions
 ): Promise<IHandleWrapper | undefined> {
-    await waitForInstruments(pageActions)
     const instrumentCards = await pageActions.getAllHandles(
         selectors.instrumentsPage_ownedInstrument
     )
@@ -60,17 +58,21 @@ export async function gotoRandomOwnedInstrument(
 
 export async function selectQuickBuy(pageActions: IPageActions): Promise<void> {
     await pageActions.click(selectors.instrumentPage_quickBuyForm)
+    await pageActions.getHandle(selectors.instrumentPage_amountInput) // wait for panel to render
 }
 export async function selectQuickSell(
     pageActions: IPageActions
 ): Promise<void> {
     await pageActions.click(selectors.instrumentPage_quickSellForm)
+    await pageActions.getHandle(selectors.instrumentPage_possessedAmount) // wait for panel to render
 }
 export async function selectBuy(pageActions: IPageActions): Promise<void> {
     await pageActions.click(selectors.instrumentPage_buyForm)
+    await pageActions.getHandle(selectors.instrumentPage_timeInput) // wait for panel to render
 }
 export async function selectSell(pageActions: IPageActions): Promise<void> {
     await pageActions.click(selectors.instrumentPage_sellForm)
+    await pageActions.getHandle(selectors.instrumentPage_timeInput) // wait for panel to render
 }
 
 export async function getInstrumentName(
@@ -144,6 +146,3 @@ export async function trade(
     await pageActions.click(selectors.instrumentPage_submitButton)
 }
 
-async function waitForInstruments(pageActions: IPageActions): Promise<void> {
-    await pageActions.getHandle(selectors.instrumentsPage_instrumentCard)
-}

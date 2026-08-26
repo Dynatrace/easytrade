@@ -9,6 +9,6 @@ import { selectors } from "../selectors"
  */
 export async function logout(pageActions: IPageActions): Promise<void> {
     await pageActions.click(selectors.navigation_dropdownToggler)
-    await pageActions.shortDelay()
+    await pageActions.getHandle(selectors.navigation_logout)
     await pageActions.navigate(selectors.navigation_logout)
 }

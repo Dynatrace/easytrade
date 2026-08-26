@@ -18,4 +18,5 @@ export async function login(
     await pageActions.input(selectors.loginPage_password, user.password)
     await pageActions.shortDelay()
     await pageActions.navigate(selectors.loginPage_loginButton)
+    await pageActions.getHandle(selectors.navigation_homePage)
 }

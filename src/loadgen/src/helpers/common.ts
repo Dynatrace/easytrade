@@ -15,10 +15,10 @@ export async function selectCardProvider(
     cardProvider: string
 ): Promise<void> {
     await pageActions.click(cardProviderSelector)
+    await pageActions.shortDelay()
     const providerHandle = await pageActions.getHandle(
         selectors.depositPage_cardType_provider(cardProvider)
     )
-    await pageActions.shortDelay()
     await pageActions.clickHandle(providerHandle)
 }
 
@@ -32,7 +32,7 @@ export async function showNavbar(pageActions: IPageActions): Promise<void> {
         return
     }
     await pageActions.click(selectors.navigation_sidebarToggler)
-    await pageActions.shortDelay()
+    await pageActions.getHandle(selectors.navigation_homePage)
 }
 
 export async function hideNavbar(pageActions: IPageActions): Promise<void> {
@@ -53,6 +53,12 @@ export async function gotoPageWithNavBar(
     navBarSelector: ISelector
 ): Promise<void> {
     await showNavbar(pageActions)
+    // showNavbar only checks the home link; if it returned a false positive
+    // (drawer mid-transition), the target link may still be hidden.
+    if (!(await pageActions.isSelectorPresent(navBarSelector))) {
+        await pageActions.click(selectors.navigation_sidebarToggler)
+        await pageActions.getHandle(navBarSelector)
+    }
     await pageActions.navigate(navBarSelector)
     await pageActions.standardDelay()
 }

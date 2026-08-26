@@ -24,10 +24,10 @@ export async function orderCard(
     await pageActions.input(selectors.creditCardPage_emailInput, user.email)
     await pageActions.standardDelay()
     await pageActions.click(selectors.creditCardPage_cardTypeInput)
+    await pageActions.shortDelay()
     const typeHandle = await pageActions.getHandle(
         selectors.creditCardPage_cardType_type(cardType)
     )
-    await pageActions.shortDelay()
     await pageActions.clickHandle(typeHandle)
     await pageActions.standardDelay()
     await pageActions.click(selectors.creditCardPage_acceptTerms)
