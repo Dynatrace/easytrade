@@ -1,5 +1,4 @@
 import React from "react"
-import Grid2 from "@mui/material/Grid2"
 import { Navigate, useParams, useRouteLoaderData } from "react-router"
 import FullInstrumentCard from "../../components/instrument/FullInstrumentCard"
 import InstrumentTransactions from "../../components/instrument/InstrumentTransactions"
@@ -13,12 +12,9 @@ import { useInstrumentsQuery } from "../../contexts/QueryContext/instrument/hook
 export default function Instrument() {
     const { id } = useParams()
     const { userId } = useAuthUser()
-    const instrumentData = useRouteLoaderData(
-        LoaderIds.instruments
-    ) as InstrumentType[]
+    const instrumentData = useRouteLoaderData(LoaderIds.instruments) as InstrumentType[]
 
-    const instruments = useInstrumentsQuery(userId, instrumentData)
-        .data as InstrumentType[]
+    const instruments = useInstrumentsQuery(userId, instrumentData).data as InstrumentType[]
 
     const instrument = instruments.find((x) => x.id == id)
 
@@ -35,14 +31,10 @@ export default function Instrument() {
             sellHandler={sell}
             buyHandler={buy}
         >
-            <Grid2 container rowSpacing={3}>
-                <Grid2 size={{ xs: 12, md: 10 }} offset={{ md: 1 }}>
-                    <FullInstrumentCard />
-                </Grid2>
-                <Grid2 size={{ xs: 12, md: 10 }} offset={{ md: 1 }}>
-                    <InstrumentTransactions />
-                </Grid2>
-            </Grid2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+                <FullInstrumentCard />
+                <InstrumentTransactions />
+            </div>
         </InstrumentProvider>
     )
 }

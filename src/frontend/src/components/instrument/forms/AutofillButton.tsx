@@ -1,6 +1,4 @@
-import React from "react"
-import { Button, Menu, MenuItem } from "@mui/material"
-import { useState } from "react"
+import React, { useState } from "react"
 
 interface AutofillButtonProps {
     setSuccessTransaction: () => void
@@ -13,37 +11,65 @@ export function AutofillButton({
     setFailTransaction,
     setTimeoutTransaction,
 }: AutofillButtonProps) {
-    const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null)
-
-    function handleClose() {
-        setMenuAnchor(null)
-    }
+    const [open, setOpen] = useState(false)
 
     return (
-        <>
-            <Button
+        <div style={{ position: "relative" }}>
+            <button
                 type="button"
-                variant="outlined"
-                onClick={({ currentTarget }) => setMenuAnchor(currentTarget)}
+                className="btn btn-secondary"
+                onClick={() => setOpen((v) => !v)}
             >
                 Autofill
-            </Button>
-            <Menu
-                open={!!menuAnchor}
-                anchorEl={menuAnchor}
-                onClose={handleClose}
-                onClick={handleClose}
-            >
-                <MenuItem onClick={setSuccessTransaction}>
-                    Success transaction
-                </MenuItem>
-                <MenuItem onClick={setFailTransaction}>
-                    Fail transaction
-                </MenuItem>
-                <MenuItem onClick={setTimeoutTransaction}>
-                    Timeout transaction
-                </MenuItem>
-            </Menu>
-        </>
+            </button>
+            {open && (
+                <>
+                    <div
+                        style={{ position: "fixed", inset: 0, zIndex: 99 }}
+                        onClick={() => setOpen(false)}
+                    />
+                    <div
+                        className="profile-dropdown"
+                        style={{ left: 0, right: "auto", zIndex: 100 }}
+                    >
+                        <ul>
+                            <li>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setSuccessTransaction()
+                                        setOpen(false)
+                                    }}
+                                >
+                                    Success transaction
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setFailTransaction()
+                                        setOpen(false)
+                                    }}
+                                >
+                                    Fail transaction
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setTimeoutTransaction()
+                                        setOpen(false)
+                                    }}
+                                >
+                                    Timeout transaction
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                </>
+            )}
+        </div>
     )
 }
