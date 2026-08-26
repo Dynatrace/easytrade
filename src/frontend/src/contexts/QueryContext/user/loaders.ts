@@ -5,11 +5,11 @@ import { transform } from "../QueryContext"
 import { balanceQuery, presetUsersQuery, userQuery } from "./queries"
 
 export function sessionUserProvider() {
-    const userId = sessionStorage.getItem("user-id")
-    // strings coming from session storage are wrapped in ""
-    // using json to parse it removes them and feels like better solution
-    // than using string replacements
-    return userId !== null ? (JSON.parse(userId) as string) : null
+    // sessionStorage.setItem stores the raw string value (no JSON wrapper);
+    // the old usehooks-ts implementation JSON-serialised the value, requiring
+    // JSON.parse here — that is no longer needed after the Stage 1 rewrite of
+    // storage.ts.
+    return sessionStorage.getItem("user-id")
 }
 
 export function loadWithUser<T = unknown>(
