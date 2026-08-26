@@ -1,34 +1,13 @@
-import React from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import {
-    Button,
-    CardActions,
-    IconButton,
-    InputAdornment,
-    TextField,
-    Typography,
-} from "@mui/material"
-import { useForm } from "react-hook-form"
-import {
-    CheckboxElement,
-    FormContainer,
-    SelectElement,
-    TextFieldElement,
-} from "react-hook-form-mui"
-import { z } from "zod"
-import { useEffect } from "react"
-import { NumberFormField } from "../NumberFormField"
-import CheckboxLabel from "../CheckboxLabel"
+import React, { useState } from "react"
 import { useAuthUserData } from "../../contexts/UserContext/hooks"
 import useStatusDisplay from "../../hooks/useStatusDisplay"
 import StatusDisplay from "../StatusDisplay"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuthUser } from "../../contexts/UserContext/context"
 import { DepositHandler } from "../../api/creditCard/deposit/types"
-import { Edit } from "@mui/icons-material"
 import { balanceInvalidateQuery } from "../../contexts/QueryContext/user/queries"
-import { Stack } from "@mui/system"
 import { useFormatter } from "../../contexts/FormatterContext/context"
+import { EditIcon } from "../icons"
 
 function isCreditCardValid(value: string): boolean {
     const digits = value.replace(/\D/g, "")
@@ -47,39 +26,6 @@ function isCreditCardValid(value: string): boolean {
     return sum % 10 === 0
 }
 
-const cvvRegex = new RegExp(/^[0-9]{3,4}$/)
-
-const formSchema = z.object({
-    amount: z
-        .number("Amount is required")
-        .positive("Amount must be greater than 0"),
-    cardholderName: z.string().min(1, "Cardholder name is required"),
-    address: z.string().min(1, "Address is required"),
-    email: z.email("Invalid email"),
-    cardNumber: z
-        .string()
-        .min(1, "Card number is required")
-        .refine(isCreditCardValid, "Invalid credit card number"),
-    cardType: z.string().min(1, "Must set card type"),
-    cvv: z.string().min(1, "CVV is required").regex(cvvRegex, "Invalid CVV"),
-    agreementCheck: z
-        .boolean()
-        .refine((checked) => checked, "Must agree to terms and conditions"),
-})
-
-export type FormData = z.infer<typeof formSchema>
-
-const defaultValues: FormData = {
-    amount: 0,
-    cardholderName: "",
-    address: "",
-    email: "",
-    cardNumber: "",
-    cardType: "",
-    cvv: "",
-    agreementCheck: false,
-}
-
 type DepositFormProps = {
     submitHandler: DepositHandler
 }
@@ -89,241 +35,205 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
     const { userId } = useAuthUser()
     const { formatCurrency } = useFormatter()
 
-    const formContext = useForm<FormData>({
-        defaultValues,
-        resolver: zodResolver(formSchema),
-        resetOptions: { keepDefaultValues: true },
-    })
-    const { watch, reset, setValue, getValues } = formContext
-    const { setError, setSuccess, resetStatus, statusContext } =
-        useStatusDisplay()
+    const [amount, setAmount] = useState(0)
+    const [cardholderName, setCardholderName] = useState("")
+    const [address, setAddress] = useState("")
+    const [email, setEmail] = useState("")
+    const [cardNumber, setCardNumber] = useState("")
+    const [cardType, setCardType] = useState("")
+    const [cvv, setCvv] = useState("")
+    const [agreementCheck, setAgreementCheck] = useState(false)
+    const [validationError, setValidationError] = useState<string | null>(null)
+
+    const { setError, setSuccess, resetStatus, statusContext } = useStatusDisplay()
 
     function autofillForm() {
-        if (getValues().amount === defaultValues.amount) {
-            setValue("amount", 1000, {
-                shouldValidate: false,
-            })
-        }
-        setValue("cardholderName", user?.firstName + " " + user?.lastName, {
-            shouldValidate: false,
-        })
-        setValue("address", user?.address ?? "Kochweg 4 01510 Kronach", {
-            shouldValidate: false,
-        })
-        setValue("email", user?.email ?? "mockemail@mail.com", {
-            shouldValidate: false,
-        })
-        setValue("cardNumber", "2293562484488276", {
-            shouldValidate: false,
-        })
-        setValue("cardType", "visaDebit", {
-            shouldValidate: false,
-        })
-        setValue("cvv", "123", {
-            shouldValidate: false,
-        })
-        setValue("agreementCheck", true, {
-            shouldValidate: false,
-        })
+        if (amount === 0) setAmount(1000)
+        setCardholderName((user?.firstName ?? "") + " " + (user?.lastName ?? ""))
+        setAddress(user?.address ?? "Kochweg 4 01510 Kronach")
+        setEmail(user?.email ?? "mockemail@mail.com")
+        setCardNumber("2293562484488276")
+        setCardType("visaDebit")
+        setCvv("123")
+        setAgreementCheck(true)
+        setValidationError(null)
+        resetStatus()
     }
 
     function autofillCardNumber() {
-        setValue("cardNumber", "2293562484488276", {
-            shouldValidate: false,
-        })
+        setCardNumber("2293562484488276")
+        resetStatus()
+    }
+
+    function validate(): string | null {
+        if (amount <= 0) return "Amount must be greater than 0"
+        if (!cardholderName.trim()) return "Cardholder name is required"
+        if (!address.trim()) return "Address is required"
+        if (!email.trim() || !email.includes("@")) return "Invalid email"
+        if (!cardNumber.trim()) return "Card number is required"
+        if (!isCreditCardValid(cardNumber)) return "Invalid credit card number"
+        if (!cardType) return "Must set card type"
+        if (!/^[0-9]{3,4}$/.test(cvv)) return "Invalid CVV"
+        if (!agreementCheck) return "Must agree to terms and conditions"
+        return null
     }
 
     const queryClient = useQueryClient()
     const { mutate, isPending } = useMutation({
-        mutationFn: async ({
-            cardholderName: name,
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            agreementCheck,
-            ...rest
-        }: FormData) => {
+        mutationFn: async () => {
+            const err = validate()
+            if (err) { setValidationError(err); throw err }
+            setValidationError(null)
             const { error } = await submitHandler({
-                name,
+                name: cardholderName,
                 accountId: Number(userId),
-                ...rest,
+                amount,
+                address,
+                email,
+                cardNumber,
+                cardType,
+                cvv,
             })
-            if (error !== undefined) {
-                throw error
-            }
+            if (error !== undefined) throw error
         },
         onMutate: resetStatus,
         onSuccess: async () => {
             setSuccess("Deposit successful")
             await balanceInvalidateQuery(queryClient)
-            reset()
+            setAmount(0); setCardholderName(""); setAddress(""); setEmail("")
+            setCardNumber(""); setCardType(""); setCvv(""); setAgreementCheck(false)
+            setValidationError(null)
         },
-        onError: setError,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        onError: (e: any) => {
+            if (typeof e === "string" && validationError === e) return
+            setError(typeof e === "string" ? e : (e?.message ?? String(e)))
+        },
     })
 
-    useEffect(() => {
-        const { unsubscribe } = watch(() => {
-            resetStatus()
-        })
-        return unsubscribe
-    }, [watch])
+    function handleSubmit(e: React.FormEvent) {
+        e.preventDefault()
+        mutate()
+    }
+
+    const currentBalance = balance?.value === undefined
+        ? "Loading..."
+        : formatCurrency(balance.value)
 
     return (
-        <FormContainer
-            onSuccess={(data: FormData) => mutate(data)}
-            formContext={formContext}
-        >
-            <Stack direction={"column"} spacing={2}>
-                <TextField
-                    name="balance"
-                    label="Current balance"
-                    value={
-                        balance?.value === undefined
-                            ? "Loading..."
-                            : formatCurrency(balance.value)
-                    }
-                    disabled
-                    fullWidth
-                    slotProps={{
-                        htmlInput: { "data-dt-content": true },
-                    }}
-                />
-                <NumberFormField
+        <form className="form" onSubmit={handleSubmit} style={{ width: "100%", maxWidth: 420 }}>
+            <div className="form-group">
+                <label className="form-label">Current balance</label>
+                <input type="text" value={currentBalance} readOnly data-dt-content />
+            </div>
+            <div className="form-group">
+                <label className="form-label" htmlFor="amount">Amount *</label>
+                <input
                     id="amount"
-                    name="amount"
-                    label="Amount"
                     type="number"
-                    required
+                    min={0}
+                    step={0.01}
+                    value={amount}
                     autoFocus
-                    fullWidth
-                    slotProps={{
-                        htmlInput: { "data-dt-content": true },
-                    }}
+                    onChange={(e) => { setAmount(Number(e.target.value)); resetStatus(); setValidationError(null) }}
+                    data-dt-content
                 />
-                <TextFieldElement
+            </div>
+            <div className="form-group">
+                <label className="form-label" htmlFor="cardholderName">Cardholder name *</label>
+                <input
                     id="cardholderName"
-                    name="cardholderName"
-                    label="Cardholder name"
-                    required
-                    fullWidth
-                    slotProps={{
-                        htmlInput: { "data-dt-content": true },
-                    }}
+                    type="text"
+                    value={cardholderName}
+                    onChange={(e) => { setCardholderName(e.target.value); resetStatus(); setValidationError(null) }}
+                    data-dt-content
                 />
-                <TextFieldElement
+            </div>
+            <div className="form-group">
+                <label className="form-label" htmlFor="address">Address *</label>
+                <input
                     id="address"
-                    name="address"
-                    label="Address"
-                    required
-                    fullWidth
-                    slotProps={{
-                        htmlInput: { "data-dt-content": true },
-                    }}
+                    type="text"
+                    value={address}
+                    onChange={(e) => { setAddress(e.target.value); resetStatus(); setValidationError(null) }}
+                    data-dt-content
                 />
-                <TextFieldElement
+            </div>
+            <div className="form-group">
+                <label className="form-label" htmlFor="email">Email *</label>
+                <input
                     id="email"
-                    name="email"
-                    label="Email"
-                    required
-                    fullWidth
-                    slotProps={{
-                        htmlInput: { "data-dt-content": true },
-                    }}
+                    type="email"
+                    value={email}
+                    onChange={(e) => { setEmail(e.target.value); resetStatus(); setValidationError(null) }}
+                    data-dt-content
                 />
-                <TextFieldElement
-                    id="cardNumber"
-                    name="cardNumber"
-                    label="Card number"
-                    required
-                    fullWidth
-                    slotProps={{
-                        input: {
-                            endAdornment: (
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        onClick={autofillCardNumber}
-                                        edge="end"
-                                    >
-                                        <Edit />
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        },
-                        htmlInput: { "data-dt-content": true },
-                    }}
-                />
-                <SelectElement
+            </div>
+            <div className="form-group">
+                <label className="form-label" htmlFor="cardNumber">Card number *</label>
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+                    <input
+                        id="cardNumber"
+                        type="text"
+                        value={cardNumber}
+                        onChange={(e) => { setCardNumber(e.target.value); resetStatus(); setValidationError(null) }}
+                        style={{ flex: 1 }}
+                        data-dt-content
+                    />
+                    <button type="button" className="btn btn-ghost" onClick={autofillCardNumber} title="Autofill card number">
+                        <EditIcon />
+                    </button>
+                </div>
+            </div>
+            <div className="form-group">
+                <label className="form-label" htmlFor="cardType">Card type *</label>
+                <select
                     id="cardType"
-                    label="Card type"
-                    name="cardType"
-                    required
-                    fullWidth
-                    options={[
-                        {
-                            id: "visaDebit",
-                            label: "Visa Debit",
-                        },
-                        {
-                            id: "visaCredit",
-                            label: "Visa Credit",
-                        },
-                        {
-                            id: "mastercard",
-                            label: "Mastercard",
-                        },
-                        {
-                            id: "americanExpress",
-                            label: "American Express",
-                        },
-                    ]}
-                    sx={{
-                        minWidth: "150px",
-                    }}
-                    slotProps={{
-                        htmlInput: { "data-dt-content": true },
-                    }}
-                />
-                <TextFieldElement
+                    value={cardType}
+                    onChange={(e) => { setCardType(e.target.value); resetStatus(); setValidationError(null) }}
+                    data-dt-content
+                >
+                    <option value="">Select card type</option>
+                    <option value="visaDebit">Visa Debit</option>
+                    <option value="visaCredit">Visa Credit</option>
+                    <option value="mastercard">Mastercard</option>
+                    <option value="americanExpress">American Express</option>
+                </select>
+            </div>
+            <div className="form-group">
+                <label className="form-label" htmlFor="cvv">CVV *</label>
+                <input
                     id="cvv"
-                    name="cvv"
-                    label="CVV"
-                    required
-                    fullWidth
-                    slotProps={{
-                        htmlInput: { "data-dt-content": true },
-                    }}
+                    type="text"
+                    value={cvv}
+                    onChange={(e) => { setCvv(e.target.value); resetStatus(); setValidationError(null) }}
+                    data-dt-content
                 />
-                <CheckboxElement
+            </div>
+            <div className="form-group" style={{ flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
+                <input
                     id="agreement"
-                    name="agreementCheck"
-                    label={
-                        <CheckboxLabel
-                            text="Agree to terms and conditions *"
-                            hasErrors={
-                                !!formContext.formState.errors.agreementCheck
-                            }
-                        />
-                    }
-                    required
+                    type="checkbox"
+                    checked={agreementCheck}
+                    onChange={(e) => { setAgreementCheck(e.target.checked); resetStatus(); setValidationError(null) }}
+                    style={{ width: "auto" }}
                 />
-                <Typography variant="body2">* Required field</Typography>
-                <CardActions sx={{ justifyContent: "center" }}>
-                    <Button
-                        id="submitButton"
-                        loading={isPending}
-                        type="submit"
-                        variant="outlined"
-                    >
-                        Deposit
-                    </Button>
-                    <Button
-                        type="button"
-                        variant="outlined"
-                        onClick={autofillForm}
-                    >
-                        Autofill
-                    </Button>
-                </CardActions>
-                <StatusDisplay {...statusContext} />
-            </Stack>
-        </FormContainer>
+                <label htmlFor="agreement" style={{ marginBottom: 0 }}>Agree to terms and conditions *</label>
+            </div>
+            <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", margin: "0.25rem 0" }}>* Required field</p>
+            {validationError && (
+                <div className="status-message status-error">{validationError}</div>
+            )}
+            <div className="form-actions">
+                <button id="submitButton" type="submit" className="btn btn-primary" disabled={isPending}>
+                    {isPending ? <span className="spinner" /> : null}
+                    Deposit
+                </button>
+                <button id="autofillButton" type="button" className="btn btn-secondary" onClick={autofillForm}>
+                    Autofill
+                </button>
+            </div>
+            <StatusDisplay {...statusContext} />
+        </form>
     )
 }
