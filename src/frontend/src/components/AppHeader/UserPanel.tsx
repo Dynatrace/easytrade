@@ -1,15 +1,23 @@
 import React, { useState } from "react"
 import { useAuth } from "../../contexts/AuthContext/context"
-import { useAuthUserData } from "../../contexts/UserContext/hooks"
+import { useUserQuery } from "../../contexts/QueryContext/user/hooks"
+import { useRouteLoaderData } from "react-router"
+import { LoaderIds } from "../../router"
 import { logoutInvalidateQuery } from "../../contexts/QueryContext/user/queries"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { User, Balance } from "../../api/user/types"
 import { LogoutIcon } from "../icons"
 
 export default function UserPanel() {
     const [open, setOpen] = useState(false)
-    const { logoutHandler } = useAuth()
+    const { userId, logoutHandler } = useAuth()
 
-    const { user: data } = useAuthUserData()
+    // useRouteLoaderData returns null when the route with that id hasn't loaded
+    // (e.g. on public routes).  Cast defensively — the loader resolves to
+    // [User, Balance] on protected routes after the Stage 16 fix.
+    const loaderData = useRouteLoaderData(LoaderIds.user) as [User?, Balance?] | null
+    const initialUser = loaderData?.[0]
+    const { data } = useUserQuery(userId ?? "", initialUser)
 
     const queryClient = useQueryClient()
     const { mutate } = useMutation({
