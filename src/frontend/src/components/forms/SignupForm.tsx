@@ -1,33 +1,24 @@
-import React from "react"
-import { Button, CardActions, Stack } from "@mui/material"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { FormContainer, TextFieldElement } from "react-hook-form-mui"
+import React, { useState } from "react"
 import useStatusDisplay from "../../hooks/useStatusDisplay"
 import StatusDisplay from "../StatusDisplay"
 import { useMutation } from "@tanstack/react-query"
-import { useEffect } from "react"
 import { SignupHandler } from "../../api/signup/types"
 
-const formSchema = z
-    .object({
-        firstName: z.string().min(1, "First name is required"),
-        lastName: z.string().min(1, "Last name is required"),
-        login: z.string().min(1, "Login is required"),
-        email: z.email("Invalid email"),
-        address: z.string().min(1, "Address is required"),
-        password: z.string().min(1, "Password is required"),
-        repeatPassword: z.string().min(1, "Password is required"),
-    })
-    .refine((data) => data.password === data.repeatPassword, {
-        message: "Passwords have to match",
-        path: ["repeatPassword"],
-    })
+type SignupFormProps = {
+    submitHandler: SignupHandler
+}
 
-type FormData = z.infer<typeof formSchema>
+type FormState = {
+    firstName: string
+    lastName: string
+    login: string
+    email: string
+    address: string
+    password: string
+    repeatPassword: string
+}
 
-const defaultValues: FormData = {
+const empty: FormState = {
     firstName: "",
     lastName: "",
     login: "",
@@ -37,22 +28,35 @@ const defaultValues: FormData = {
     repeatPassword: "",
 }
 
-type SignupFormProps = {
-    submitHandler: SignupHandler
-}
-
 export default function SignupForm({ submitHandler }: SignupFormProps) {
-    const formContext = useForm<FormData>({
-        defaultValues,
-        resolver: zodResolver(formSchema),
-    })
-    const { reset, watch } = formContext
+    const [form, setForm] = useState<FormState>(empty)
     const { setError, setSuccess, resetStatus, statusContext } =
         useStatusDisplay()
 
+    function set(field: keyof FormState) {
+        return (e: React.ChangeEvent<HTMLInputElement>) => {
+            setForm((prev) => ({ ...prev, [field]: e.target.value }))
+            resetStatus()
+        }
+    }
+
     const { mutate, isPending } = useMutation({
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        mutationFn: async ({ repeatPassword, ...data }: FormData) => {
+        mutationFn: async () => {
+            if (form.password !== form.repeatPassword) {
+                throw "Passwords have to match"
+            }
+            if (
+                !form.firstName ||
+                !form.lastName ||
+                !form.login ||
+                !form.email ||
+                !form.address ||
+                !form.password
+            ) {
+                throw "All fields are required"
+            }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { repeatPassword, ...data } = form
             const { error } = await submitHandler(data)
             if (error !== undefined) {
                 throw error
@@ -61,58 +65,55 @@ export default function SignupForm({ submitHandler }: SignupFormProps) {
         onMutate: resetStatus,
         onSuccess: () => {
             setSuccess("User created successfully. You may now login.")
-            reset()
+            setForm(empty)
         },
-        onError: setError,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        onError: (e: any) =>
+            setError(typeof e === "string" ? e : (e?.message ?? String(e))),
     })
 
-    useEffect(() => {
-        const { unsubscribe } = watch((_data, { type }) => {
-            if (type === "change") {
-                resetStatus()
-            }
-        })
-        return unsubscribe
-    }, [watch])
+    function handleSubmit(e: React.FormEvent) {
+        e.preventDefault()
+        mutate()
+    }
+
+    const fields: { key: keyof FormState; label: string; type?: string }[] = [
+        { key: "firstName", label: "First name" },
+        { key: "lastName", label: "Last name" },
+        { key: "login", label: "Login" },
+        { key: "email", label: "Email", type: "email" },
+        { key: "address", label: "Address" },
+        { key: "password", label: "Password", type: "password" },
+        { key: "repeatPassword", label: "Repeat password", type: "password" },
+    ]
 
     return (
-        <FormContainer
-            onSuccess={(data: FormData) => mutate(data)}
-            formContext={formContext}
-        >
-            <Stack direction={"column"} spacing={2}>
-                <TextFieldElement
-                    name="firstName"
-                    label="First name"
-                    fullWidth
-                />
-                <TextFieldElement name="lastName" label="Last name" fullWidth />
-                <TextFieldElement name="login" label="Login" fullWidth />
-                <TextFieldElement name="email" label="Email" fullWidth />
-                <TextFieldElement name="address" label="Address" fullWidth />
-                <TextFieldElement
-                    name="password"
-                    label="Password"
-                    type="password"
-                    fullWidth
-                />
-                <TextFieldElement
-                    name="repeatPassword"
-                    label="Repeat password"
-                    type="password"
-                    fullWidth
-                />
-                <CardActions sx={{ justifyContent: "center" }}>
-                    <Button
-                        loading={isPending}
-                        type="submit"
-                        variant="outlined"
-                    >
-                        Sign up
-                    </Button>
-                </CardActions>
-                <StatusDisplay {...statusContext} />
-            </Stack>
-        </FormContainer>
+        <form className="form" onSubmit={handleSubmit}>
+            {fields.map(({ key, label, type = "text" }) => (
+                <div className="form-group" key={key}>
+                    <label className="form-label" htmlFor={key}>
+                        {label}
+                    </label>
+                    <input
+                        id={key}
+                        type={type}
+                        value={form[key]}
+                        onChange={set(key)}
+                        required
+                    />
+                </div>
+            ))}
+            <div className="form-actions">
+                <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={isPending}
+                >
+                    {isPending ? <span className="spinner" /> : null}
+                    Sign up
+                </button>
+            </div>
+            <StatusDisplay {...statusContext} />
+        </form>
     )
 }

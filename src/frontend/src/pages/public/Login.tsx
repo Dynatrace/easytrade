@@ -1,6 +1,5 @@
 import React from "react"
-import { Card, Divider, Link, Stack, CardContent } from "@mui/material"
-import { Link as RouterLink, useLoaderData } from "react-router"
+import { Link, useLoaderData } from "react-router"
 import { PresetUser } from "../../api/user/types"
 import DefaultLoginForm from "../../components/forms/DefaultLoginForm"
 import LoginForm from "../../components/forms/LoginForm"
@@ -13,31 +12,24 @@ export default function Login() {
     const { data } = usePresetUsersQuery(initialData)
 
     return (
-        <Card
-            sx={{ width: "40%", margin: "auto", padding: 2, minWidth: "500px" }}
-        >
-            <CardContent>
-                <Stack
-                    direction="row"
-                    spacing={2}
-                    alignItems="baseline"
-                    justifyContent="space-evenly"
-                    divider={<Divider orientation="vertical" flexItem />}
-                >
-                    <Stack spacing={2} alignItems="center">
-                        <LoginForm submitHandler={loginHandler} />
-                        <Link component={RouterLink} to="/signup">
-                            Sign up
-                        </Link>
-                    </Stack>
-                    <DefaultLoginForm
-                        users={data ?? []}
-                        submitHandler={({ userId }) =>
-                            defaultLoginHandler(userId)
-                        }
-                    />
-                </Stack>
-            </CardContent>
-        </Card>
+        <div className="login-layout">
+            {/* Left column — used by loadgen */}
+            <div className="login-panel">
+                <h2>Sign in</h2>
+                <LoginForm submitHandler={loginHandler} />
+                <p style={{ marginTop: "var(--space-4)", fontSize: "var(--text-sm)" }}>
+                    <Link to="/signup">Don't have an account? Sign up</Link>
+                </p>
+            </div>
+
+            {/* Right column — preset user quick-select */}
+            <div className="login-panel">
+                <h2>Quick login</h2>
+                <DefaultLoginForm
+                    users={data ?? []}
+                    submitHandler={({ userId }) => defaultLoginHandler(userId)}
+                />
+            </div>
+        </div>
     )
 }

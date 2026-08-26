@@ -1,5 +1,4 @@
 import React from "react"
-import { Alert, Fade, Stack } from "@mui/material"
 import { StatusDisplayContext } from "../hooks/useStatusDisplay"
 
 export default function StatusDisplay({
@@ -8,18 +7,19 @@ export default function StatusDisplay({
     successMsg,
     errorMsg,
 }: StatusDisplayContext) {
+    if (!isError() && !isSuccess()) return null
     return (
-        <Stack>
-            <Fade in={isError()} appear={false} unmountOnExit>
-                <Alert severity="error" variant="outlined">
+        <div>
+            {isError() && (
+                <div className="status-message status-error" role="alert">
                     {errorMsg()}
-                </Alert>
-            </Fade>
-            <Fade in={isSuccess()} appear={false} unmountOnExit>
-                <Alert severity="success" variant="outlined">
+                </div>
+            )}
+            {isSuccess() && (
+                <div className="status-message status-success" role="status">
                     {successMsg()}
-                </Alert>
-            </Fade>
-        </Stack>
+                </div>
+            )}
+        </div>
     )
 }
