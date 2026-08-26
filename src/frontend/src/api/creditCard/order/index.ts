@@ -49,7 +49,7 @@ export async function orderCreditCard(
     data: Omit<CreditCardOrderRequest, "accountId">
 ): Promise<CreditCardOrderResponse> {
     const request: CreditCardOrderRequest = {
-        accountId: Number(userId),
+        accountId: userId,
         ...data,
     }
     console.log(
@@ -83,7 +83,7 @@ export async function getOrderStatus(
     try {
         const data = await backends.creditCards.getOrderStatusXml(
             new XMLParser(),
-            Number(userId)
+            userId
         )
         console.log(`order status for user [${userId}]`, data)
         return orderStatusMapper(data.StandardResponse)
@@ -107,7 +107,7 @@ export async function getOrderStatusHistory(
     )
     try {
         const data = await backends.creditCards.getOrderStatusHistory(
-            Number(userId)
+            userId
         )
         console.log(`order status history for user [${userId}]`, data)
         const { results } = data
@@ -163,7 +163,7 @@ export async function revokeCreditCard(
 ): Promise<RevokeCardResponse> {
     console.log(`calling [delete-credit-card] API for account [${userId}]`)
     try {
-        await backends.creditCards.deleteCardAndOrder(Number(userId))
+        await backends.creditCards.deleteCardAndOrder(userId)
         return { type: "success" }
     } catch (error) {
         console.error(

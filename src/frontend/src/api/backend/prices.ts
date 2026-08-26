@@ -1,8 +1,8 @@
 import { XMLParser } from "fast-xml-parser"
 
 export type Price = {
-    id: number
-    instrumentId: number
+    id: string  // Guid
+    instrumentId: string  // Guid
     timestamp: string
     open: number
     close: number

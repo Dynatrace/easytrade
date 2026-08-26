@@ -67,7 +67,7 @@ export default function WithdrawForm({ submitHandler }: WithdrawFormProps) {
             setValidationError(null)
             const { error } = await submitHandler({
                 name: cardholderName,
-                accountId: Number(userId),
+                accountId: userId,
                 amount,
                 address,
                 email,
