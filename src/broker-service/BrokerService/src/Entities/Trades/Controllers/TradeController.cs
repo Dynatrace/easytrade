@@ -110,7 +110,7 @@ public class TradeController : ControllerBase
     /// <param name="onlyOpen">Filter only open trades</param>
     /// <param name="onlyLong">Filter only long trades</param>
     [ProducesResponseType(typeof(TradeResultDTO), StatusCodes.Status200OK)]
-    [HttpGet("{accountId:int}")]
+    [HttpGet("{accountId:guid}")]
     public async Task<TradeResultDTO> GetTradesOfAccount(
         Guid accountId,
         [FromQuery] int count = 10,
