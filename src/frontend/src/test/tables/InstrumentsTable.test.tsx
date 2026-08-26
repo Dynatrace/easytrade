@@ -94,7 +94,7 @@ describe("Instruments table", () => {
             <FormatterWrapper>
                 <InstrumentsTable
                     instruments={[mockInstruments[0]]}
-                    disableVirtualization={true}
+                   
                 />
             </FormatterWrapper>
         )
@@ -120,7 +120,7 @@ describe("Instruments table", () => {
             <FormatterWrapper>
                 <InstrumentsTable
                     instruments={mockInstruments}
-                    disableVirtualization={true}
+                   
                 />
             </FormatterWrapper>
         )

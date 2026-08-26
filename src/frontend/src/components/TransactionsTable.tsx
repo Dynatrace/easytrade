@@ -1,155 +1,138 @@
-import React from "react"
-import {
-    DataGrid,
-    GridColDef,
-    GridRenderCellParams,
-    GridToolbarColumnsButton,
-    GridToolbarContainer,
-    GridToolbarFilterButton,
-    GridToolbarQuickFilter,
-} from "@mui/x-data-grid"
-import { Stack, Typography } from "@mui/material"
+import React, { useState } from "react"
 import { Transaction } from "../api/transaction/types"
-import { Formatter } from "../contexts/FormatterContext/types"
-import { useFormatter } from "../contexts/FormatterContext/context"
-import CheckIcon from "@mui/icons-material/Check"
-import CloseIcon from "@mui/icons-material/Close"
-import AutorenewIcon from "@mui/icons-material/Autorenew"
 import { Instrument } from "../api/instrument/types"
+import { useFormatter } from "../contexts/FormatterContext/context"
+import { CheckIcon, CloseIcon, SyncIcon } from "./icons"
 
-function getColumnData(
-    priceFormatter: Formatter<number>,
-    dateFormatter: Formatter<number>
-): GridColDef<Transaction>[] {
-    return [
-        {
-            field: "actionType",
-            headerName: "Buy/Sell",
-            type: "singleSelect",
-            valueOptions: ["BUY", "SELL"],
-            flex: 1,
-            align: "center",
-            headerAlign: "center",
-        },
-        {
-            field: "status",
-            headerName: "Status",
-            type: "singleSelect",
-            valueOptions: ["ACTIVE", "SUCCESS", "FAIL"],
-            flex: 1.5,
-            align: "center",
-            headerAlign: "center",
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            renderCell: (params: GridRenderCellParams<any, string>) => (
-                <Stack direction={"row"}>
-                    {params.value === "ACTIVE" ? (
-                        <AutorenewIcon fontSize="small" color="info" />
-                    ) : params.value === "SUCCESS" ? (
-                        <CheckIcon fontSize="small" color="success" />
-                    ) : (
-                        <CloseIcon fontSize="small" color="error" />
-                    )}
-                    <Typography
-                        variant="body2"
-                        color={
-                            params.value === "ACTIVE"
-                                ? "info.main"
-                                : params.value === "SUCCESS"
-                                  ? "success.main"
-                                  : "error.main"
-                        }
-                    >
-                        {params.value}
-                    </Typography>
-                </Stack>
-            ),
-        },
-        {
-            field: "instrumentName",
-            headerName: "Instrument",
-            flex: 2,
-            align: "center",
-            headerAlign: "center",
-        },
-        { field: "amount", headerName: "Amount", type: "number", flex: 1.5 },
-        {
-            field: "price",
-            headerName: "Price",
-            type: "number",
-            flex: 2,
-            valueFormatter: (value: number) => priceFormatter(value),
-        },
-        {
-            field: "total",
-            headerName: "Total",
-            type: "number",
-            flex: 2,
-            valueGetter: (_, transaction: Transaction) =>
-                transaction.amount * transaction.price,
-            valueFormatter: (value: number) => priceFormatter(value),
-        },
-        {
-            field: "endTime",
-            headerName: "End time",
-            type: "dateTime",
-            flex: 2,
-            align: "center",
-            headerAlign: "center",
-            valueGetter: (_, transaction: Transaction) =>
-                new Date(transaction.endTime),
-            valueFormatter: (value: Date) => dateFormatter(value.getTime()),
-        },
-    ]
-}
-
-function CustomToolbar() {
-    return (
-        <Stack justifyContent="center" alignItems="center" sx={{ m: 1 }}>
-            <Typography variant="h6">Transactions</Typography>
-            <GridToolbarContainer
-                sx={{
-                    width: "100%",
-                }}
-            >
-                <GridToolbarColumnsButton />
-                <GridToolbarFilterButton />
-                <GridToolbarQuickFilter />
-            </GridToolbarContainer>
-        </Stack>
-    )
-}
+const PAGE_SIZE = 10
 
 type TransactionsTableProps = {
     transactions: Transaction[]
     instruments: Instrument[]
-    disableVirtualization?: boolean
+}
+
+function StatusBadge({ status }: { status: string }) {
+    if (status === "SUCCESS") {
+        return (
+            <span className="badge badge-success">
+                <CheckIcon width={12} height={12} />
+                {status}
+            </span>
+        )
+    }
+    if (status === "FAIL") {
+        return (
+            <span className="badge badge-danger">
+                <CloseIcon width={12} height={12} />
+                {status}
+            </span>
+        )
+    }
+    return (
+        <span className="badge badge-neutral">
+            <SyncIcon width={12} height={12} />
+            {status}
+        </span>
+    )
 }
 
 export default function TransactionsTable({
     transactions,
     instruments,
-    disableVirtualization = false,
 }: TransactionsTableProps) {
     const { formatCurrency, formatDate } = useFormatter()
-    transactions = transactions.map((transaction) => {
-        const instrument = instruments.find(
-            (x) => x.id == transaction.instrumentName
-        )
-        if (instrument != undefined) {
-            transaction.instrumentName = instrument.name
+    const [page, setPage] = useState(0)
+
+    // Resolve instrument names
+    const resolved = transactions.map((tx) => {
+        const instrument = instruments.find((i) => String(i.id) === String(tx.instrumentName))
+        return {
+            ...tx,
+            instrumentName: instrument?.name ?? tx.instrumentName,
         }
-        return transaction
     })
+
+    const totalPages = Math.ceil(resolved.length / PAGE_SIZE)
+    const slice = resolved.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+
     return (
-        <DataGrid
-            rows={transactions}
-            columns={getColumnData(formatCurrency, formatDate)}
-            slots={{ toolbar: CustomToolbar }}
-            initialState={{
-                pagination: { paginationModel: { pageSize: 5 } },
-            }}
-            pageSizeOptions={[5, 10, 25]}
-            disableVirtualization={disableVirtualization}
-        />
+        <div>
+            <h3 className="section-heading">Transactions</h3>
+            {resolved.length === 0 ? (
+                <p className="empty-state">No transactions yet.</p>
+            ) : (
+                <>
+                    <div style={{ overflowX: "auto" }}>
+                        <table className="data-table" data-dt-features="transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>Direction</th>
+                                    <th>Status</th>
+                                    <th>Instrument</th>
+                                    <th className="col-number">Amount</th>
+                                    <th className="col-number">Price</th>
+                                    <th className="col-number">Total</th>
+                                    <th>End time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {slice.map((tx) => (
+                                    <tr key={tx.id}>
+                                        <td>
+                                            <span
+                                                className={
+                                                    tx.actionType === "BUY"
+                                                        ? "badge badge-success"
+                                                        : "badge badge-danger"
+                                                }
+                                            >
+                                                {tx.actionType}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <StatusBadge status={tx.status} />
+                                        </td>
+                                        <td>{tx.instrumentName}</td>
+                                        <td className="col-number">{tx.amount}</td>
+                                        <td className="col-number">
+                                            {formatCurrency(tx.price)}
+                                        </td>
+                                        <td className="col-number">
+                                            {formatCurrency(tx.amount * tx.price)}
+                                        </td>
+                                        <td className="text-muted text-sm">
+                                            {formatDate(new Date(tx.endTime).getTime())}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    {totalPages > 1 && (
+                        <div className="pagination">
+                            <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                                disabled={page === 0}
+                            >
+                                ← Prev
+                            </button>
+                            <span>
+                                {page + 1} / {totalPages}
+                            </span>
+                            <button
+                                className="btn btn-secondary btn-sm"
+                                onClick={() =>
+                                    setPage((p) => Math.min(totalPages - 1, p + 1))
+                                }
+                                disabled={page >= totalPages - 1}
+                            >
+                                Next →
+                            </button>
+                        </div>
+                    )}
+                </>
+            )}
+        </div>
     )
 }

@@ -59,7 +59,7 @@ describe("Transactions table", () => {
                 <TransactionsTable
                     transactions={[mockTransactions[0]]}
                     instruments={[]}
-                    disableVirtualization={true}
+                   
                 />
             </FormatterWrapper>
         )
@@ -91,7 +91,7 @@ describe("Transactions table", () => {
                 <TransactionsTable
                     transactions={mockTransactions}
                     instruments={[]}
-                    disableVirtualization={true}
+                   
                 />
             </FormatterWrapper>
         )
