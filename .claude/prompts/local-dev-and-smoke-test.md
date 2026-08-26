@@ -11,20 +11,19 @@ description: Start EasyTrade locally with Docker Compose and verify the stack is
 
 ## Start the stack
 
-**Minimal** (proxy + contentcreator + engine only — fastest startup):
+**Minimal** (proxy + background-service + db only — fastest startup):
 ```bash
-./runDev.sh start
+make start services="db frontendreverseproxy background-service"
 ```
 
-**Full stack** (all 19 services):
+**Full stack** (all services):
 ```bash
-./runDev.sh start-all
+make start
 ```
 
 **Rebuild a service image before starting** (after code changes):
 ```bash
-./runDev.sh build <service-name>
-./runDev.sh start-all
+make redeploy services=<service-name>
 ```
 
 Wait ~30 s for services to initialise. Check container health:
@@ -42,21 +41,21 @@ curl -sf http://localhost/feature-flag-service/v1/flags/ | jq 'length'
 # expected: number > 0 (four flags defined)
 ```
 
-### 2. Account service — list users
+### 2. User service — list preset accounts
 ```bash
-curl -sf http://localhost/accountservice/v1/accounts/ | jq '.[0].firstName'
-# expected: a quoted string (e.g. "James")
+curl -sf http://localhost/user-service/api/accounts/presets | jq 'length'
+# expected: number > 0
 ```
 
 ### 3. Instrument list
 ```bash
-curl -sf http://localhost/engine/v2/instruments/ | jq 'length'
+curl -sf http://localhost/broker-service/v1/instrument | jq 'length'
 # expected: number > 0
 ```
 
 ### 4. Login with known user
 ```bash
-curl -sf -X POST http://localhost/loginservice/v1/login/ \
+curl -sf -X POST http://localhost/user-service/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"username":"james_norton","password":"pass_james_123"}' | jq '.token'
 # expected: a non-null JWT string
@@ -81,7 +80,7 @@ Expected: all tests pass (no snapshot failures, no assertion errors).
 ## Stop the stack
 
 ```bash
-./runDev.sh stop
+make stop
 ```
 
 ## Troubleshooting
@@ -91,4 +90,4 @@ Expected: all tests pass (no snapshot failures, no assertion errors).
 | Port 80 already in use | Another nginx/proxy running | `sudo lsof -i :80` then kill or reconfigure |
 | DB connection errors | `db` container not ready | Wait ~15 s, or `docker compose -f compose.dev.yaml logs db` |
 | Service returns 502 | Service crashed on startup | `docker compose -f compose.dev.yaml logs <service-name>` |
-| Stale image | Code changed but image not rebuilt | `./runDev.sh build <service-name>` |
+| Stale image | Code changed but image not rebuilt | `make redeploy services=<service-name>` |

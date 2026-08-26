@@ -17,11 +17,6 @@ dependencies:
     version: "0.1.0"
     condition: broker-service.enabled
   - name: app
-    alias: contentcreator
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: contentcreator.enabled
-  - name: app
     alias: credit-card-order-service
     repository: "file://./charts/app"
     version: "0.1.0"
