@@ -9,11 +9,6 @@ services:
     build:
       context: src/broker-service
 
-  contentcreator:
-    image: ${REGISTRY}/contentcreator:${TAG}
-    build:
-      context: src/contentcreator
-
   credit-card-order-service:
     image: ${REGISTRY}/credit-card-order-service:${TAG}
     build:
@@ -58,16 +53,6 @@ services:
     image: ${REGISTRY}/pricing-service:${TAG}
     build:
       context: src/pricing-service
-
-  problem-operator:
-    image: ${REGISTRY}/problem-operator:${TAG}
-    build:
-      context: src/problem-operator
-
-  third-party-service:
-    image: ${REGISTRY}/third-party-service:${TAG}
-    build:
-      context: src/third-party-service
 
   user-service:
     image: ${REGISTRY}/user-service:${TAG}

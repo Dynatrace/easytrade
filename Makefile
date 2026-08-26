@@ -59,6 +59,14 @@ help: ## Show this help
 build: ## Build images from local source (compose.dev.yaml)
 	$(DOCKER_COMPOSE_CMD) -f $(COMPOSE_DEV_FILE) build $(services)
 
+.PHONY: build-prod
+build-prod: ## Build and tag images for the registry (compose.build.yaml)
+	$(DOCKER_COMPOSE_CMD) -f $(COMPOSE_BUILD_FILE) build $(services)
+
+.PHONY: push
+push: ## Push registry-tagged images built by build-prod
+	$(DOCKER_COMPOSE_CMD) -f $(COMPOSE_BUILD_FILE) push $(services)
+
 ##@ Docker compose
 
 .PHONY: start
