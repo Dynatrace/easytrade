@@ -1,5 +1,5 @@
 export type PresetUser = {
-    id: number
+    id: string  // Guid from user-service
     username: string
     firstName: string
     lastName: string
@@ -10,8 +10,8 @@ type PresetUsersResponse = {
 }
 
 export type UserResponse = {
-    id: number
-    packageId: number
+    id: string       // Guid from user-service
+    packageId: string  // string from user-service
     firstName: string
     lastName: string
     username: string
@@ -25,7 +25,7 @@ export type UserResponse = {
 }
 
 export type BalanceResponse = {
-    accountId: number
+    accountId: string  // Guid from broker-service
     value: number
 }
 

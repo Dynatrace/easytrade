@@ -1,7 +1,7 @@
 import { Balance, PresetUser, User } from "./types"
 import { backends } from "../backend"
 
-const packages: { [k: number]: string } = { 1: "Starter", 2: "Light", 3: "Pro" }
+const packages: { [k: string]: string } = { "1": "Starter", "2": "Light", "3": "Pro" }
 
 export async function getUser(userId: string): Promise<User> {
     console.log(`[getUser] API call with userId [${userId}]`)
@@ -10,10 +10,10 @@ export async function getUser(userId: string): Promise<User> {
         const data = await backends.users.getData(userId)
 
         return {
-            id: data.id.toString(),
+            id: data.id,
             firstName: data.firstName,
             lastName: data.lastName,
-            packageType: packages[data.packageId] ?? data.packageId.toString(),
+            packageType: packages[data.packageId] ?? data.packageId,
             email: data.email,
             address: data.address,
         }
@@ -30,7 +30,7 @@ export async function getBalance(userId: string): Promise<Balance> {
         const data = await backends.users.getBalance(userId)
 
         return {
-            accountId: data.accountId.toString(),
+            accountId: data.accountId,
             value: data.value,
         }
     } catch (error) {
@@ -43,10 +43,7 @@ export async function getPresetUsers(): Promise<PresetUser[]> {
     console.log("[getPresetUsers] API call")
     try {
         const data = await backends.users.getPreset()
-        return data.results.map(({ id, ...rest }) => ({
-            id: id.toString(),
-            ...rest,
-        }))
+        return data.results.map((u) => ({ ...u }))
     } catch (error) {
         console.error("error: ", error)
         return []

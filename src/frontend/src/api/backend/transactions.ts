@@ -11,8 +11,8 @@ export type Transaction = {
 }
 
 export type QuickTransactionRequest = {
-    accountId: number
-    instrumentId: number
+    accountId: string  // Guid in broker-service
+    instrumentId: string  // Guid in broker-service
     amount: number
 }
 
@@ -21,8 +21,8 @@ type TransactionResult = {
 }
 
 type LongTransactionRequest = {
-    accountId: number
-    instrumentId: number
+    accountId: string  // Guid in broker-service
+    instrumentId: string  // Guid in broker-service
     amount: number
     price: number
     duration: number
