@@ -1,20 +1,15 @@
 import React, { useState } from "react"
 import { useAuth } from "../../contexts/AuthContext/context"
-import { useUserQuery } from "../../contexts/QueryContext/user/hooks"
-import { useRouteLoaderData } from "react-router"
-import { LoaderIds } from "../../router"
+import { useAuthUserData } from "../../contexts/UserContext/hooks"
 import { logoutInvalidateQuery } from "../../contexts/QueryContext/user/queries"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { User } from "../../api/user/types"
 import { LogoutIcon } from "../icons"
 
 export default function UserPanel() {
     const [open, setOpen] = useState(false)
-    const { userId, logoutHandler } = useAuth()
+    const { logoutHandler } = useAuth()
 
-    const initialData = useRouteLoaderData(LoaderIds.user) as [() => User]
-    const initialUser = initialData ? initialData[0]() : undefined
-    const data = userId ? useUserQuery(userId, initialUser).data : undefined
+    const { user: data } = useAuthUserData()
 
     const queryClient = useQueryClient()
     const { mutate } = useMutation({
