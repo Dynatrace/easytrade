@@ -1,0 +1,256 @@
+/* =============================================================
+   EasyTrade — Layout CSS
+   App shell: sidebar (fixed left) + right column (header + content)
+   ============================================================= */
+
+/* ---- App shell ---- */
+.app-shell {
+    display: grid;
+    grid-template-columns: var(--sidebar-width) 1fr;
+    grid-template-rows: var(--header-height) 1fr;
+    grid-template-areas:
+        "sidebar header"
+        "sidebar content";
+    min-height: 100vh;
+}
+
+/* ---- Sidebar ---- */
+.sidebar {
+    grid-area: sidebar;
+    background-color: var(--bg-surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.sidebar-brand {
+    padding: var(--space-4) var(--space-4);
+    border-bottom: 1px solid var(--border);
+    min-height: var(--header-height);
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-brand a {
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: var(--text-lg);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.sidebar-nav {
+    flex: 1;
+    padding: var(--space-3) 0;
+}
+
+.sidebar-nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 var(--space-2);
+}
+
+.sidebar-nav li {
+    list-style: none;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    transition: none; /* No transitions — loadgen-safe */
+}
+
+.nav-link:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.nav-link.active,
+.nav-link[aria-current="page"] {
+    background-color: var(--accent-muted);
+    color: var(--accent);
+}
+
+.nav-link svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* ---- Header ---- */
+.app-header {
+    grid-area: header;
+    background-color: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-6);
+    position: sticky;
+    top: 0;
+    z-index: 9;
+}
+
+.app-header-logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: var(--text-lg);
+    text-decoration: none;
+}
+
+.app-header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    position: relative;
+}
+
+/* Profile dropdown */
+.profile-dropdown {
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    right: 0;
+    min-width: 180px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+    padding: var(--space-1) 0;
+}
+
+.profile-dropdown ul {
+    list-style: none;
+}
+
+.profile-dropdown li {
+    display: block;
+}
+
+.profile-dropdown li a,
+.profile-dropdown li button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-2) var(--space-4);
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    text-align: left;
+    cursor: pointer;
+}
+
+.profile-dropdown li a:hover,
+.profile-dropdown li button:hover {
+    background-color: var(--bg-hover);
+    text-decoration: none;
+}
+
+/* ---- Content area ---- */
+.content-area {
+    grid-area: content;
+    overflow-y: auto;
+    background-color: var(--bg-base);
+}
+
+.page-container {
+    padding: var(--space-6);
+    max-width: 1280px;
+}
+
+.page-container.full-width {
+    max-width: none;
+}
+
+.page-header {
+    margin-bottom: var(--space-6);
+}
+
+.page-header h1,
+.page-header h2 {
+    margin-bottom: var(--space-1);
+}
+
+/* ---- Public layout (login / signup) ---- */
+.public-layout {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--bg-base);
+    padding: var(--space-6);
+}
+
+.public-card {
+    width: 100%;
+    max-width: 480px;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: var(--space-8);
+}
+
+/* ---- Two-column login layout ---- */
+.login-layout {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: var(--bg-base);
+}
+
+.login-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+}
+
+.login-panel:first-child {
+    border-right: 1px solid var(--border);
+}
+
+/* ---- Responsive (minimal — loadgen uses desktop viewport) ---- */
+@media (max-width: 768px) {
+    .app-shell {
+        grid-template-columns: 1fr;
+        grid-template-rows: var(--header-height) 1fr;
+        grid-template-areas:
+            "header"
+            "content";
+    }
+
+    .sidebar {
+        display: none;
+    }
+
+    .login-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .login-panel:first-child {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+}
