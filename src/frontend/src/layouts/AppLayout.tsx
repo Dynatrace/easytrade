@@ -1,19 +1,14 @@
 import React from "react"
-import { Stack } from "@mui/material"
 import AppHeader from "../components/AppHeader/AppHeader"
 import { Outlet } from "react-router"
-import { useTheme } from "../contexts/ThemeContext/ThemeContext"
 
 export default function AppLayout() {
-    const { themeMode } = useTheme()
     return (
-        <Stack
-            sx={{ display: "flex" }}
-            spacing={5}
-            data-dt-properties={`theme:${themeMode}`}
-        >
+        <div className="page-outer" data-dt-properties="theme:dark">
             <AppHeader />
-            <Outlet />
-        </Stack>
+            <div className="page-body">
+                <Outlet />
+            </div>
+        </div>
     )
 }

@@ -3,7 +3,6 @@ import { Navigate, Outlet, useLoaderData, useLocation } from "react-router"
 import { useAuthUser } from "../contexts/UserContext/context"
 import { OrderStatusResponse } from "../api/creditCard/order"
 import { useCreditCardOrderStatus } from "../contexts/QueryContext/creditCard/hooks"
-import { Box } from "@mui/material"
 
 export default function CreditCardLayout() {
     const { userId } = useAuthUser()
@@ -29,9 +28,5 @@ export default function CreditCardLayout() {
         }
     }
 
-    return (
-        <Box sx={{ display: "flex", m: "auto" }}>
-            <Outlet />
-        </Box>
-    )
+    return <Outlet />
 }

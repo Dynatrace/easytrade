@@ -1,84 +1,80 @@
 import React from "react"
-import {
-    Box,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    Toolbar,
-    useTheme,
-} from "@mui/material"
-import Drawer from "@mui/material/Drawer"
-import HomeIcon from "@mui/icons-material/Home"
-import AccountBalanceWalletIcon from "@mui/icons-material/AccountBalanceWallet"
-import CreditCardIcon from "@mui/icons-material/CreditCard"
 import { NavLink } from "react-router"
-import { ReactElement } from "react"
-import { Euro } from "@mui/icons-material"
-import { useNavigation } from "../contexts/NavigationContext/context"
-import AddCardIcon from "@mui/icons-material/AddCard"
-
-interface NavigationItemProps {
-    path: string
-    icon: ReactElement
-    text: string
-}
-
-function NavigationItem({ path, icon, text }: NavigationItemProps) {
-    const theme = useTheme()
-    return (
-        <ListItem>
-            <ListItemButton
-                component={NavLink}
-                to={path}
-                sx={{
-                    "&.active": {
-                        backgroundColor: theme.palette.action.selected,
-                    },
-                }}
-            >
-                <ListItemIcon>{icon}</ListItemIcon>
-                <ListItemText primary={text} />
-            </ListItemButton>
-        </ListItem>
-    )
-}
+import {
+    HomeIcon,
+    InstrumentsIcon,
+    DepositIcon,
+    WithdrawIcon,
+    AddCardIcon,
+} from "./icons"
 
 export default function Navigation() {
-    const { navigationVisible } = useNavigation()
     return (
-        <Drawer variant="persistent" open={navigationVisible}>
-            <Toolbar />
-            <Box>
-                <List>
-                    <NavigationItem
-                        path={"/home"}
-                        icon={<HomeIcon />}
-                        text={"Home"}
-                    />
-                    <NavigationItem
-                        path={"/instruments"}
-                        icon={<Euro />}
-                        text={"Instruments"}
-                    />
-                    <NavigationItem
-                        path={"/deposit"}
-                        icon={<CreditCardIcon />}
-                        text={"Deposit"}
-                    />
-                    <NavigationItem
-                        path={"/withdraw"}
-                        icon={<AccountBalanceWalletIcon />}
-                        text={"Withdraw"}
-                    />
-                    <NavigationItem
-                        path={"/credit-card"}
-                        icon={<AddCardIcon />}
-                        text={"Credit Card"}
-                    />
-                </List>
-            </Box>
-        </Drawer>
+        <nav className="sidebar">
+            <div className="sidebar-nav">
+                <ul>
+                    <li>
+                        <NavLink
+                            id="nav-home"
+                            to="/home"
+                            className={({ isActive }) =>
+                                "nav-link" + (isActive ? " active" : "")
+                            }
+                        >
+                            <HomeIcon />
+                            Home
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink
+                            id="nav-instruments"
+                            to="/instruments"
+                            className={({ isActive }) =>
+                                "nav-link" + (isActive ? " active" : "")
+                            }
+                        >
+                            <InstrumentsIcon />
+                            Instruments
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink
+                            id="nav-deposit"
+                            to="/deposit"
+                            className={({ isActive }) =>
+                                "nav-link" + (isActive ? " active" : "")
+                            }
+                        >
+                            <DepositIcon />
+                            Deposit
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink
+                            id="nav-withdraw"
+                            to="/withdraw"
+                            className={({ isActive }) =>
+                                "nav-link" + (isActive ? " active" : "")
+                            }
+                        >
+                            <WithdrawIcon />
+                            Withdraw
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink
+                            id="nav-credit-card"
+                            to="/credit-card"
+                            className={({ isActive }) =>
+                                "nav-link" + (isActive ? " active" : "")
+                            }
+                        >
+                            <AddCardIcon />
+                            Credit Card
+                        </NavLink>
+                    </li>
+                </ul>
+            </div>
+        </nav>
     )
 }
