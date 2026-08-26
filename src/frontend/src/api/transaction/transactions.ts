@@ -1,7 +1,6 @@
 import { Transaction } from "./types"
 import { backends } from "../backend"
 import { Transaction as RawTransaction } from "../backend/transactions"
-import { DateTime } from "luxon"
 
 export async function getTransactions(
     userId: string,
@@ -37,10 +36,13 @@ function mapRawTransaction(
         amount: quantity,
         price: entryPrice,
         status: mapStatus(status),
-        endTime:
-            DateTime.fromISO(timestampClose, { zone: "utc" }).toISO() ??
-            timestampClose,
+        endTime: parseUtcIso(timestampClose),
     }
+}
+
+function parseUtcIso(value: string): string {
+    const d = new Date(value)
+    return isNaN(d.getTime()) ? value : d.toISOString()
 }
 
 function mapStatus(status: string): string {

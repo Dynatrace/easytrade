@@ -16,7 +16,6 @@ import {
     TextFieldElement,
 } from "react-hook-form-mui"
 import { z } from "zod"
-import isCreditCard from "validator/lib/isCreditCard"
 import { useEffect } from "react"
 import { NumberFormField } from "../NumberFormField"
 import CheckboxLabel from "../CheckboxLabel"
@@ -31,6 +30,23 @@ import { balanceInvalidateQuery } from "../../contexts/QueryContext/user/queries
 import { Stack } from "@mui/system"
 import { useFormatter } from "../../contexts/FormatterContext/context"
 
+function isCreditCardValid(value: string): boolean {
+    const digits = value.replace(/\D/g, "")
+    if (digits.length < 13 || digits.length > 19) return false
+    let sum = 0
+    let isEven = false
+    for (let i = digits.length - 1; i >= 0; i--) {
+        let digit = parseInt(digits[i], 10)
+        if (isEven) {
+            digit *= 2
+            if (digit > 9) digit -= 9
+        }
+        sum += digit
+        isEven = !isEven
+    }
+    return sum % 10 === 0
+}
+
 const cvvRegex = new RegExp(/^[0-9]{3,4}$/)
 
 const formSchema = z.object({
@@ -43,7 +59,7 @@ const formSchema = z.object({
     cardNumber: z
         .string()
         .min(1, "Card number is required")
-        .refine(isCreditCard, "Invalid credit card number"),
+        .refine(isCreditCardValid, "Invalid credit card number"),
     cardType: z.string().min(1, "Must set card type"),
     cvv: z.string().min(1, "CVV is required").regex(cvvRegex, "Invalid CVV"),
     agreementCheck: z
