@@ -14,6 +14,7 @@ export async function selectCardProvider(
     cardProviderSelector: ISelector,
     cardProvider: string
 ): Promise<void> {
+    // Static sidebar — sidebar is always visible, use native <select> directly
     await pageActions.click(cardProviderSelector)
     const providerHandle = await pageActions.getHandle(
         selectors.depositPage_cardType_provider(cardProvider)
@@ -22,37 +23,20 @@ export async function selectCardProvider(
     await pageActions.clickHandle(providerHandle)
 }
 
-export async function showNavbar(pageActions: IPageActions): Promise<void> {
-    // wait in case the navbar autohides after it already appears
-    await pageActions.standardDelay()
-    const navBarOpen = await pageActions.isSelectorPresent(
-        selectors.navigation_homePage
-    )
-    if (navBarOpen) {
-        return
-    }
-    await pageActions.click(selectors.navigation_sidebarToggler)
-    await pageActions.shortDelay()
+// showNavbar / hideNavbar are no-ops: the sidebar is now static and always visible.
+export async function showNavbar(_pageActions: IPageActions): Promise<void> {
+    // no-op: static sidebar is always visible
 }
 
-export async function hideNavbar(pageActions: IPageActions): Promise<void> {
-    // wait in case the navbar autohides after it already appears
-    await pageActions.standardDelay()
-    const navBarOpen = await pageActions.isSelectorPresent(
-        selectors.navigation_homePage
-    )
-    if (!navBarOpen) {
-        return
-    }
-    await pageActions.click(selectors.navigation_sidebarToggler)
-    await pageActions.shortDelay()
+export async function hideNavbar(_pageActions: IPageActions): Promise<void> {
+    // no-op: static sidebar is always visible
 }
 
 export async function gotoPageWithNavBar(
     pageActions: IPageActions,
     navBarSelector: ISelector
 ): Promise<void> {
-    await showNavbar(pageActions)
+    // Sidebar always visible — navigate directly without toggling
     await pageActions.navigate(navBarSelector)
     await pageActions.standardDelay()
 }
