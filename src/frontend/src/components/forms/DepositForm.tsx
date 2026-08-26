@@ -104,10 +104,10 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
             setCardNumber(""); setCardType(""); setCvv(""); setAgreementCheck(false)
             setValidationError(null)
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onError: (e: any) => {
-            if (typeof e === "string" && validationError === e) return
-            setError(typeof e === "string" ? e : (e?.message ?? String(e)))
+        onError: (e: unknown) => {
+            const msg = typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e))
+            if (validationError === msg) return
+            setError(msg)
         },
     })
 

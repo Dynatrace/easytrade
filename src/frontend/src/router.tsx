@@ -78,16 +78,10 @@ const elementRoutes = createRoutesFromElements(
         </Route>
         <Route
             element={<ProtectedLayout />}
-            loader={async () => {
-                return await Promise.all([
-                    loadWithUser(
-                        sessionUserProvider,
-                        userLoader(queryClient, getUser)
-                    ),
-                    loadWithUser(
-                        sessionUserProvider,
-                        balanceLoader(queryClient, getBalance)
-                    ),
+            loader={() => {
+                return Promise.all([
+                    loadWithUser(sessionUserProvider, userLoader(queryClient, getUser))(),
+                    loadWithUser(sessionUserProvider, balanceLoader(queryClient, getBalance))(),
                 ])
             }}
             id={LoaderIds.user}

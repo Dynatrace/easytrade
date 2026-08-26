@@ -18,6 +18,8 @@ type FormState = {
     repeatPassword: string
 }
 
+type FieldErrors = Partial<Record<keyof FormState, string>>
+
 const empty: FormState = {
     firstName: "",
     lastName: "",
@@ -28,48 +30,60 @@ const empty: FormState = {
     repeatPassword: "",
 }
 
+function validateEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
 export default function SignupForm({ submitHandler }: SignupFormProps) {
     const [form, setForm] = useState<FormState>(empty)
-    const { setError, setSuccess, resetStatus, statusContext } =
-        useStatusDisplay()
+    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+    const { setError, setSuccess, resetStatus, statusContext } = useStatusDisplay()
 
     function set(field: keyof FormState) {
         return (e: React.ChangeEvent<HTMLInputElement>) => {
             setForm((prev) => ({ ...prev, [field]: e.target.value }))
+            setFieldErrors((prev) => ({ ...prev, [field]: undefined }))
             resetStatus()
         }
     }
 
+    function validate(): boolean {
+        const errors: FieldErrors = {}
+        if (!form.firstName) errors.firstName = "First name is required"
+        if (!form.lastName) errors.lastName = "Last name is required"
+        if (!form.login) errors.login = "Login is required"
+        if (!form.email) {
+            errors.email = "Email is required"
+        } else if (!validateEmail(form.email)) {
+            errors.email = "Invalid email"
+        }
+        if (!form.address) errors.address = "Address is required"
+        if (!form.password) errors.password = "Password is required"
+        if (form.password && form.repeatPassword && form.password !== form.repeatPassword) {
+            errors.repeatPassword = "Passwords have to match"
+        }
+        setFieldErrors(errors)
+        return Object.keys(errors).length === 0
+    }
+
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {
-            if (form.password !== form.repeatPassword) {
-                throw "Passwords have to match"
-            }
-            if (
-                !form.firstName ||
-                !form.lastName ||
-                !form.login ||
-                !form.email ||
-                !form.address ||
-                !form.password
-            ) {
-                throw "All fields are required"
-            }
+            if (!validate()) throw "Validation failed"
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             const { repeatPassword, ...data } = form
             const { error } = await submitHandler(data)
-            if (error !== undefined) {
-                throw error
-            }
+            if (error !== undefined) throw error
         },
         onMutate: resetStatus,
         onSuccess: () => {
             setSuccess("User created successfully. You may now login.")
             setForm(empty)
+            setFieldErrors({})
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onError: (e: any) =>
-            setError(typeof e === "string" ? e : (e?.message ?? String(e))),
+        onError: (e: unknown) => {
+            if (e === "Validation failed") return
+            setError(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)))
+        },
     })
 
     function handleSubmit(e: React.FormEvent) {
@@ -88,7 +102,7 @@ export default function SignupForm({ submitHandler }: SignupFormProps) {
     ]
 
     return (
-        <form className="form" onSubmit={handleSubmit}>
+        <form className="form" onSubmit={handleSubmit} noValidate>
             {fields.map(({ key, label, type = "text" }) => (
                 <div className="form-group" key={key}>
                     <label className="form-label" htmlFor={key}>
@@ -99,8 +113,10 @@ export default function SignupForm({ submitHandler }: SignupFormProps) {
                         type={type}
                         value={form[key]}
                         onChange={set(key)}
-                        required
                     />
+                    {fieldErrors[key] && (
+                        <span className="field-error">{fieldErrors[key]}</span>
+                    )}
                 </div>
             ))}
             <div className="form-actions">

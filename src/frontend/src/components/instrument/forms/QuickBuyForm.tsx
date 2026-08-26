@@ -32,8 +32,7 @@ export default function QuickBuyForm() {
             setAmount(0)
             await quickTransactionInvalidateQuery(queryClient)
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        onError: (e: any) => setError(typeof e === "string" ? e : (e?.message ?? String(e))),
+        onError: (e: unknown) => setError(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e))),
     })
 
     function handleSubmit(e: React.FormEvent) {

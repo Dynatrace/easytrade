@@ -27,18 +27,20 @@ export default function DefaultLoginForm({
     }
 
     const selectedUser = users.find((u) => u.id === selectedId)
+    const isEmpty = users.length === 0
 
     return (
         <form className="form" onSubmit={handleSubmit}>
             <div className="form-group">
                 <label className="form-label" htmlFor="presetUser">
-                    Quick login
+                    User
                 </label>
                 <select
                     id="presetUser"
                     value={selectedId}
                     onChange={(e) => setSelectedId(e.target.value)}
-                    disabled={users.length === 0}
+                    disabled={isEmpty}
+                    aria-disabled={isEmpty ? "true" : undefined}
                 >
                     {users.map(({ id, firstName, lastName }) => (
                         <option key={id} value={id}>
@@ -51,7 +53,7 @@ export default function DefaultLoginForm({
                 <button
                     type="submit"
                     className="btn btn-secondary"
-                    disabled={users.length === 0}
+                    disabled={isEmpty}
                 >
                     Log in as {selectedUser?.firstName ?? "User"}
                 </button>

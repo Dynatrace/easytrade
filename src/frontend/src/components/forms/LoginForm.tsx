@@ -11,21 +11,24 @@ type LoginFormProps = {
 export default function LoginForm({ submitHandler }: LoginFormProps) {
     const [login, setLogin] = useState("")
     const [password, setPassword] = useState("")
+    const [loginError, setLoginError] = useState("")
+    const [passwordError, setPasswordError] = useState("")
     const { setError, resetStatus, statusContext } = useStatusDisplay()
 
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {
-            if (!login || !password) {
-                throw "Login and password are required"
-            }
+            let valid = true
+            if (!login) { setLoginError("Login is required"); valid = false } else setLoginError("")
+            if (!password) { setPasswordError("Password is required"); valid = false } else setPasswordError("")
+            if (!valid) throw "Validation failed"
             const { error } = await submitHandler(login, password)
-            if (error !== undefined) {
-                throw error
-            }
+            if (error !== undefined) throw error
         },
         onMutate: resetStatus,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- onError receives unknown shape from throw
-        onError: (e: any) => setError(typeof e === "string" ? e : (e?.message ?? String(e))),
+        onError: (e: unknown) => {
+            if (e === "Validation failed") return
+            setError(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)))
+        },
     })
 
     function handleSubmit(e: React.FormEvent) {
@@ -45,11 +48,12 @@ export default function LoginForm({ submitHandler }: LoginFormProps) {
                     value={login}
                     onChange={(e) => {
                         setLogin(e.target.value)
+                        setLoginError("")
                         resetStatus()
                     }}
                     autoComplete="username"
-                    required
                 />
+                {loginError && <span className="field-error">{loginError}</span>}
             </div>
             <div className="form-group">
                 <label className="form-label" htmlFor="password">
@@ -61,11 +65,12 @@ export default function LoginForm({ submitHandler }: LoginFormProps) {
                     value={password}
                     onChange={(e) => {
                         setPassword(e.target.value)
+                        setPasswordError("")
                         resetStatus()
                     }}
                     autoComplete="current-password"
-                    required
                 />
+                {passwordError && <span className="field-error">{passwordError}</span>}
             </div>
             <div className="form-actions">
                 <button

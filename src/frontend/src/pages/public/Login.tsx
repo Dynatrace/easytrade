@@ -18,7 +18,7 @@ export default function Login() {
                 <h2>Sign in</h2>
                 <LoginForm submitHandler={loginHandler} />
                 <p style={{ marginTop: "var(--space-4)", fontSize: "var(--text-sm)" }}>
-                    <Link to="/signup">Don't have an account? Sign up</Link>
+                    <Link to="/signup">Don&apos;t have an account? Sign up</Link>
                 </p>
             </div>
 

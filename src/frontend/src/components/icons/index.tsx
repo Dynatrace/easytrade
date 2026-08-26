@@ -3,11 +3,11 @@
  * All icons use a 24×24 viewBox and fill="currentColor" for theme-agnostic colouring.
  * Props are passed through to the underlying <svg> element.
  */
-import { SVGProps } from "react"
+import React, { SVGProps } from "react"
 
 type IconProps = SVGProps<SVGSVGElement>
 
-function icon(path: string | JSX.Element) {
+function icon(path: string | React.JSX.Element) {
     return function Icon({ width = 20, height = 20, ...rest }: IconProps) {
         return (
             <svg

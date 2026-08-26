@@ -93,7 +93,7 @@ export default function TransactionsTable({
                                             <StatusBadge status={tx.status} />
                                         </td>
                                         <td>{tx.instrumentName}</td>
-                                        <td className="col-number">{tx.amount}</td>
+                                        <td className="col-number">{tx.amount.toLocaleString()}</td>
                                         <td className="col-number">
                                             {formatCurrency(tx.price)}
                                         </td>

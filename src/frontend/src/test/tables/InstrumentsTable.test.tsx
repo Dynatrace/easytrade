@@ -100,19 +100,19 @@ describe("Instruments table", () => {
         )
 
         expect(
-            screen.getByRole("gridcell", { name: /etrave/i })
+            screen.getByRole("cell", { name: /etrave/i })
         ).toBeInTheDocument()
         expect(
-            screen.getByRole("gridcell", { name: /easytravel/i })
+            screen.getByRole("cell", { name: /easytravel/i })
         ).toBeInTheDocument()
         expect(
-            screen.getByRole("gridcell", { name: /494/ })
+            screen.getByRole("cell", { name: /494/ })
         ).toBeInTheDocument()
         expect(
-            screen.getByRole("gridcell", { name: /137.73/ })
+            screen.getByRole("cell", { name: /137.73/ })
         ).toBeInTheDocument()
         expect(
-            screen.getByRole("gridcell", { name: /68,039.24/i })
+            screen.getByRole("cell", { name: /68,039.24/i })
         ).toBeInTheDocument()
     })
     test("displays all rows", () => {
