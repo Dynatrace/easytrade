@@ -1,54 +1,28 @@
 import React from "react"
 import {
-    Timeline,
-    TimelineConnector,
-    TimelineContent,
-    TimelineDot,
-    TimelineItem,
-    TimelineOppositeContent,
-    TimelineSeparator,
-} from "@mui/lab"
-import {
     OrderStatusEntry,
     SuccessOrderStatusHistoryResponse,
 } from "../../api/creditCard/order"
-import { Stack, Typography } from "@mui/material"
 import { useFormatter } from "../../contexts/FormatterContext/context"
+
+function formatStatus(status: string): string {
+    return status
+        .split("_")
+        .map(([head, ...tail]) => `${head.toLocaleUpperCase()}${tail.join("").toLocaleLowerCase()}`)
+        .join(" ")
+}
 
 function TimelineEntry({ timestamp, status, details }: OrderStatusEntry) {
     const { formatDate } = useFormatter()
     return (
-        <TimelineItem>
-            <TimelineOppositeContent>
-                <Typography variant="body2" color="text.secondary">
-                    {formatDate(Date.parse(timestamp))}
-                </Typography>
-            </TimelineOppositeContent>
-            <TimelineSeparator>
-                <TimelineDot />
-                <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-                <Typography
-                    variant="h6"
-                    component="span"
-                    sx={{ fontWeight: 700 }}
-                >
-                    {status
-                        .split("_")
-                        .map(
-                            ([head, ...tail]) =>
-                                `${head.toLocaleUpperCase()}${tail
-                                    .join("")
-                                    .toLocaleLowerCase()}`
-                        )
-                        .join(" ")}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                    {details}
-                </Typography>
-            </TimelineContent>
-        </TimelineItem>
+        <li className="timeline-item">
+            <span className="timeline-time">{formatDate(Date.parse(timestamp))}</span>
+            <span className="timeline-dot" />
+            <div className="timeline-content">
+                <strong>{formatStatus(status)}</strong>
+                {details && <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.875rem" }}>{details}</p>}
+            </div>
+        </li>
     )
 }
 
@@ -58,22 +32,19 @@ export default function CreditCardsStatusTimeline({
     data: SuccessOrderStatusHistoryResponse
 }) {
     return (
-        <Stack spacing={1}>
-            <Typography id="order-id">
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            {/* id="order-id" must be a <p> tag — loadgen uses //p[@id="order-id"] */}
+            <p id="order-id" style={{ margin: 0 }}>
                 Order ID:{" "}
-                <Typography
-                    component={"span"}
-                    sx={{ fontFamily: "monospace" }}
-                    data-dt-mask
-                >
+                <span style={{ fontFamily: "monospace" }} data-dt-mask>
                     {data.orderId}
-                </Typography>
-            </Typography>
-            <Timeline position="right">
-                {data.statusList
-                    .map((entry, id) => <TimelineEntry key={id} {...entry} />)
-                    .reverse()}
-            </Timeline>
-        </Stack>
+                </span>
+            </p>
+            <ol className="timeline">
+                {[...data.statusList]
+                    .reverse()
+                    .map((entry, id) => <TimelineEntry key={id} {...entry} />)}
+            </ol>
+        </div>
     )
 }
