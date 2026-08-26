@@ -1,7 +1,5 @@
-import React from "react"
-import { Alert, Box, Snackbar } from "@mui/material"
+import React, { useReducer } from "react"
 import { FeatureFlag } from "../../api/featureFlags/types"
-import { useReducer } from "react"
 import FeatureFlagItem from "./FeatureFlagItem"
 
 export type FeedbackAction =
@@ -14,80 +12,41 @@ export type ExpandAction =
 
 export type Action = FeedbackAction | ExpandAction
 type State = {
-    expand: {
-        target: string
-    }
+    expand: { target: string }
     feedback: {
         visible: boolean
         variant: "success" | "error"
         msg: string
     }
 }
+
 function feedbackReducer(state: State, action: Action): State {
     switch (action.type) {
-        case "success": {
-            return {
-                ...state,
-                feedback: {
-                    visible: true,
-                    variant: "success",
-                    msg: action.msg,
-                },
-            }
-        }
-        case "error": {
-            return {
-                ...state,
-                feedback: { visible: true, variant: "error", msg: action.msg },
-            }
-        }
-        case "reset": {
-            return {
-                ...state,
-                feedback: {
-                    visible: false,
-                    msg: "",
-                    variant: state.feedback.variant,
-                },
-            }
-        }
-        case "expand": {
-            return {
-                ...state,
-                expand: {
-                    target:
-                        state.expand.target === action.target
-                            ? ""
-                            : action.target,
-                },
-            }
-        }
-        case "collapse": {
+        case "success":
+            return { ...state, feedback: { visible: true, variant: "success", msg: action.msg } }
+        case "error":
+            return { ...state, feedback: { visible: true, variant: "error", msg: action.msg } }
+        case "reset":
+            return { ...state, feedback: { visible: false, msg: "", variant: state.feedback.variant } }
+        case "expand":
+            return { ...state, expand: { target: state.expand.target === action.target ? "" : action.target } }
+        case "collapse":
             return { ...state, expand: { target: "" } }
-        }
-        default: {
-            throw new Error(
-                `Action ${JSON.stringify(
-                    action
-                )} is not handler in [FeedbackReducer]!`
-            )
-        }
+        default:
+            throw new Error(`Action ${JSON.stringify(action)} is not handled in [FeedbackReducer]!`)
     }
 }
 
-export default function FeatureFlagList({
-    featureFlags,
-}: {
-    featureFlags: FeatureFlag[]
-}) {
+export default function FeatureFlagList({ featureFlags }: { featureFlags: FeatureFlag[] }) {
     const [{ expand, feedback }, dispatch] = useReducer(feedbackReducer, {
         expand: { target: "" },
         feedback: { visible: false, msg: "", variant: "success" },
     })
+
     return (
-        <Box>
-            {featureFlags.map(
-                ({ id, name, description, enabled, isModifiable }, idx) => (
+        <div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                {featureFlags.map(({ id, name, description, enabled, isModifiable }, idx) => (
                     <FeatureFlagItem
                         key={idx}
                         flagId={id}
@@ -98,26 +57,24 @@ export default function FeatureFlagList({
                         expanded={expand.target === name}
                         dispatchHandler={dispatch}
                     />
-                )
-            )}
-            <Snackbar
-                open={feedback.visible}
-                anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
-                autoHideDuration={5000}
-                onClose={(event, reason) => {
-                    if (reason !== "clickaway") {
-                        dispatch({ type: "reset" })
-                    }
-                }}
-            >
-                <Alert
-                    severity={feedback.variant}
-                    variant="filled"
-                    onClose={() => dispatch({ type: "reset" })}
+                ))}
+            </div>
+            {feedback.visible && (
+                <div
+                    className={"status-message " + (feedback.variant === "success" ? "status-success" : "status-error")}
+                    style={{ marginTop: "1rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}
                 >
-                    {feedback.msg}
-                </Alert>
-            </Snackbar>
-        </Box>
+                    <span>{feedback.msg}</span>
+                    <button
+                        type="button"
+                        className="btn btn-ghost"
+                        style={{ padding: "0.25rem" }}
+                        onClick={() => dispatch({ type: "reset" })}
+                    >
+                        ×
+                    </button>
+                </div>
+            )}
+        </div>
     )
 }
