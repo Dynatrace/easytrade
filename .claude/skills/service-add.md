@@ -85,11 +85,8 @@ Follow the naming convention of existing scripts (`sql-instruments.sql`, `sql-ac
 ## Step 5 — Verify
 
 ```bash
-# Rebuild new service image
-./runDev.sh build <service-name>
-
-# Start full stack
-./runDev.sh start-all
+# Rebuild new service image and start full stack
+make redeploy services=<service-name>
 
 # Check service is up
 docker compose -f compose.dev.yaml ps <service-name>

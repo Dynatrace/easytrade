@@ -18,9 +18,7 @@ flowchart TD
     broker-service --> feature-flag-service
     broker-service --> pricing-service
     broker-service --> user-service
-    contentcreator --> db
     credit-card-order-service --> db
-    credit-card-order-service --> third-party-service
     db-adapter --> db
     frontendreverseproxy --> broker-service
     frontendreverseproxy --> credit-card-order-service
@@ -28,7 +26,6 @@ flowchart TD
     frontendreverseproxy --> frontend
     frontendreverseproxy --> offerservice
     frontendreverseproxy --> pricing-service
-    frontendreverseproxy --> third-party-service
     frontendreverseproxy --> user-service
     loadgen --> frontendreverseproxy
     manager --> db
@@ -37,14 +34,12 @@ flowchart TD
     offerservice --> user-service
     pricing-service --> db
     credit-card-order-service -.-> feature-flag-service
-    third-party-service -.-> credit-card-order-service
-    third-party-service -.-> feature-flag-service
     user-service -.-> db-adapter
 
     class broker-service,manager dotnet
     class aggregator-service,db-adapter,feature-flag-service,pricing-service,user-service go
     class problem-operator goOffCompose
-    class contentcreator,credit-card-order-service,third-party-service java
+    class credit-card-order-service java
     class frontend,loadgen,offerservice node
     class db,frontendreverseproxy other
 
@@ -79,7 +74,6 @@ EasyTrade consists of the following services/components:
 | -------------------------------------------------------------------- | ---------- | ---------------------------- |
 | [Background service](src/background-service/README.md)               | 80         | `/background-service`        |
 | [Broker service](src/broker-service/README.md)                       | 80         | `/broker-service`            |
-| [Content creator](src/contentcreator/README.md)                      | 80         | `---`                        |
 | [Credit card order service](src/credit-card-order-service/README.md) | 80         | `/credit-card-order-service` |
 | [Db](src/db/README.md)                                               | 80         | `---`                        |
 | [Db adapter](src/db-adapter/README.md)                               | --         | `---`                        |
@@ -145,7 +139,7 @@ name, or a quoted space-separated list. Omit it to act on the whole stack:
 
 ```bash
 make build services=pricing-service
-make start services="db frontendreverseproxy contentcreator"
+make start services="db frontendreverseproxy background-service"
 ```
 
 Two targets act on exactly one service and therefore require `services=`:
@@ -158,7 +152,7 @@ make redeploy services=frontend   # rebuild the image, then recreate — use aft
 The dev stack publishes each service on its own host port (`manager` 8081,
 `pricing-service` 8083, `broker-service` 8084, `offerservice` 8087,
 `user-service` 8089, `credit-card-order-service` 8091, `frontend` 8092,
-`third-party-service` 8093, `feature-flag-service` 8094, `db-adapter` 50051,
+`feature-flag-service` 8094, `db-adapter` 50051,
 `db` 1433/5432), so you can hit a service directly instead of going through nginx.
 
 To run the pre-built registry images through the Makefile instead, use

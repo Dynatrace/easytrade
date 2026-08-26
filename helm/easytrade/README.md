@@ -65,7 +65,6 @@ The easytrade chart includes the following microservices:
 
 - `background-service` - Consolidated data aggregation, content/pricing generation, credit-card manufacture/courier simulation, and (Kubernetes-only) problem-pattern operator
 - `broker-service` - Trading broker service
-- `contentcreator` - Content creation service
 - `credit-card-order-service` - Credit card order processing
 - `db` - Microsoft SQL Server database (StatefulSet)
 - `db-adapter` - gRPC service exposing the database behind a stable interface (pluggable backend: MSSQL/Postgres)
