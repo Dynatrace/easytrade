@@ -92,19 +92,17 @@ Add a `src/db/<name>/` directory (Dockerfile + schema/seed scripts) keeping tabl
 and column names identical to `repository/constants.go`. Set `DB_TYPE=<name>` and
 `DB_URL=...` to run.
 
-## Makefile
+## Common commands
 
 ```bash
-make proto   # regenerate gRPC stubs from src/proto/*.proto → proto/*.pb.go
-make build   # go build ./...
-make test    # go test ./...
-make run    # go run .
-make tidy    # go mod tidy
+sh generate-proto.sh   # regenerate gRPC stubs from src/proto/*.proto → proto/*.pb.go
+go build ./...
+go test ./...
+go run .
+go mod tidy
 ```
 
-Proto sources live in `src/proto/` (shared across services). Generated Go files are
-written to `src/db-adapter/proto/` (`*pb.go` / `*grpc.pb.go`). Requires `protoc` and
-`protoc-gen-go`/`protoc-gen-go-grpc` on `PATH`.
+`generate-proto.sh` compiles all `../proto/*.proto` files and writes the generated Go stubs into `proto/`; requires `protoc`, `protoc-gen-go`, and `protoc-gen-go-grpc` on `PATH`. Re-run it whenever the shared proto files change.
 
 ## Config
 

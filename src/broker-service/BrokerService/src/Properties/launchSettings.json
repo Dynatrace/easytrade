@@ -13,11 +13,10 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "swagger",
       "applicationUrl": "https://+:7207;http://+:5221",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "MSSQL_CONNECTIONSTRING": "Data Source=localhost;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true",
+        "DBADAPTER_HOSTANDPORT": "localhost:50051",
         "USER_SERVICE_HOSTANDPORT": "localhost:8095",
         "PRICINGSERVICE_HOSTANDPORT": "localhost:8083",
         "FEATURE_FLAG_SERVICE_PROTOCOL": "http",

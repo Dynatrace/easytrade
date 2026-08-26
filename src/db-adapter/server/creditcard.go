@@ -27,6 +27,17 @@ func (s *CreditCardOrderServer) CreateCreditCardOrder(ctx context.Context, req *
 	return s.repo.Create(ctx, req)
 }
 
+func (s *CreditCardOrderServer) ExistsByAccountId(ctx context.Context, req *pb.ExistsByAccountIdRequest) (*pb.OrderExistsResponse, error) {
+	if err := validateUUID(req.AccountId); err != nil {
+		return nil, err
+	}
+	exists, err := s.repo.ExistsByAccountID(ctx, req.AccountId)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.OrderExistsResponse{Exists: exists}, nil
+}
+
 func (s *CreditCardOrderServer) GetShippingAddressByOrderId(ctx context.Context, req *pb.GetShippingAddressRequest) (*pb.ShippingAddressMessage, error) {
 	if err := validateUUID(req.OrderId); err != nil {
 		return nil, err
@@ -53,6 +64,13 @@ func (s *CreditCardOrderServer) GetLastOrderStatusByAccountId(ctx context.Contex
 		return nil, err
 	}
 	return fetchOrNotFound(s.repo.GetLastStatusByAccountID(ctx, req.AccountId))
+}
+
+func (s *CreditCardOrderServer) GetLastOrderStatusByOrderId(ctx context.Context, req *pb.GetLastOrderStatusByOrderIdRequest) (*pb.CreditCardOrderStatusMessage, error) {
+	if err := validateUUID(req.OrderId); err != nil {
+		return nil, err
+	}
+	return fetchOrNotFound(s.repo.GetLastStatusByOrderID(ctx, req.OrderId))
 }
 
 func (s *CreditCardOrderServer) GetOrdersToManufacture(ctx context.Context, _ *emptypb.Empty) (*pb.OrdersToManufactureResponse, error) {

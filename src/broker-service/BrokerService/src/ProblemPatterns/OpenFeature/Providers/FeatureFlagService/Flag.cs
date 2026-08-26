@@ -7,4 +7,5 @@ public record Flag(
     string Description,
     bool IsModifiable,
     string Tag
-) { }
+)
+{ }

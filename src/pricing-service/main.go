@@ -1,10 +1,14 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
-	"dynatrace.com/easytrade/pricing-service/services"
+	"dynatrace.com/easytrade/pricing-service/price"
+	pb "dynatrace.com/easytrade/pricing-service/proto"
 	"dynatrace.com/easytrade/pricing-service/utils"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func init() {
@@ -13,19 +17,21 @@ func init() {
 	}
 
 	utils.CheckEnv()
-	services.ConnectToDB()
 }
 
-//	@title			Pricing service API
-//	@version		1.0
-//	@description	This service provides information about the prices of instruments being handled by easyTrade.
-//	@termsOfService	http://swagger.io/terms/
-
-//	@license.name	Apache 2.0
-//	@license.url	http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @schemes	http
 func main() {
-	router := CreateRouter()
+	router := CreateRouter(price.NewHandler(newDbAdapterClient()))
 	router.Run()
+}
+
+func newDbAdapterClient() pb.PricingServiceClient {
+	conn, err := grpc.NewClient(
+		os.Getenv(utils.DbAdapterHostAndPort),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	return pb.NewPricingServiceClient(conn)
 }

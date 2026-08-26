@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.dynatrace.easytrade.creditcardorderservice.models.Version;
 
-import io.swagger.v3.oas.annotations.Parameter;
-
 @RestController
 @RequestMapping("/version")
 public class VersionController {
@@ -26,7 +24,7 @@ public class VersionController {
     }
 
     @GetMapping(produces = { "text/plain", "application/json" })
-    public ResponseEntity<String> getVersion(@Parameter(hidden = true) @RequestHeader(HttpHeaders.ACCEPT) String accept) {
+    public ResponseEntity<String> getVersion(@RequestHeader(HttpHeaders.ACCEPT) String accept) {
         switch(accept) {
             case "application/json":
                 return version.toJson().map(ResponseEntity::ok)

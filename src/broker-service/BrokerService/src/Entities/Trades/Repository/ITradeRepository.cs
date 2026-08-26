@@ -1,10 +1,14 @@
-﻿using EasyTrade.BrokerService.Helpers;
-
 namespace EasyTrade.BrokerService.Entities.Trades.Repository;
 
-public interface ITradeRepository : ITransactionalRepository
+public interface ITradeRepository
 {
-    public void AddTrade(Trade trade);
-    public void UpdateTrade(Trade trade);
-    public IQueryable<Trade> GetAllTrades();
+    Task<Trade> CreateTradeAsync(Trade trade);
+
+    Task<Trade> UpdateTradeAsync(Trade trade);
+
+    Task<List<Trade>> GetOpenTradesAsync();
+
+    Task<List<Trade>> GetExpiredTradesAsync();
+
+    Task<List<Trade>> GetAccountTradesAsync(Guid accountId, bool onlyOpen, bool onlyLong);
 }

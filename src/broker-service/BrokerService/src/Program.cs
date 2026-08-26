@@ -1,11 +1,8 @@
-using System.Reflection;
-using EasyTrade.BrokerService;
+using EasyTrade.BrokerService.Connectors;
 using EasyTrade.BrokerService.Helpers;
 using EasyTrade.BrokerService.Helpers.Logging;
 using EasyTrade.BrokerService.Middleware.CreditCardValidation;
 using EasyTrade.BrokerService.ProblemPatterns.HighCpuUsage;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,20 +14,7 @@ builder.Services.AddCors(services =>
     services.AddDefaultPolicy(policy => policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin())
 );
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options =>
-{
-    options.SwaggerDoc("v1", new OpenApiInfo { Version = "v1", Title = "EasyTradeBrokerService" });
-    // Turn on generating Swagger documentation from comments
-    var xmlDocumentation = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlDocumentation));
-});
-
-// Connect to database
-builder.Services.AddDbContext<BrokerDbContext>(options =>
-    options.UseSqlServer(builder.Configuration[Constants.MsSqlConnectionString])
-);
+builder.Services.AddSingleton<IDbAdapterConnector, DbAdapterConnector>();
 
 // Clear default logging providers and and new ones
 builder.Logging.ClearProviders();
@@ -53,25 +37,6 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-
-    // Add and configure Swagger
-    var proxyPrefix = builder.Configuration[Constants.ProxyPrefix] ?? string.Empty;
-    app.UseSwagger(options =>
-    {
-        if (!string.IsNullOrEmpty(proxyPrefix))
-        {
-            options.PreSerializeFilters.Add(
-                (swagger, request) =>
-                {
-                    var url = $"{request.Scheme}://{request.Host}/{proxyPrefix}";
-                    swagger.Servers = [new() { Url = url }];
-                }
-            );
-        }
-    });
-    app.UseSwaggerUI(options =>
-        options.SwaggerEndpoint("v1/swagger.json", "EasyTradeBrokerService v1")
-    );
 }
 
 app.UseHttpsRedirection();

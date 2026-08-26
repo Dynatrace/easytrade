@@ -1,31 +1,40 @@
-﻿using EasyTrade.BrokerService.Helpers;
-using Microsoft.EntityFrameworkCore;
+using EasyTrade.BrokerService.Connectors;
+using EasyTrade.BrokerService.Helpers;
+using EasyTrade.DbAdapter.Instrument.Grpc;
+using Google.Protobuf.WellKnownTypes;
 
 namespace EasyTrade.BrokerService.Entities.Instruments.Repository;
 
-public class InstrumentRepository(BrokerDbContext dbContext)
-    : TransactionalRepository(dbContext),
-        IInstrumentRepository
+public class InstrumentRepository(IDbAdapterConnector connector)
+    : DbAdapterRepository<InstrumentService.InstrumentServiceClient>(connector, channel => new(channel)), IInstrumentRepository
 {
-    public IQueryable<Instrument> GetAllInstruments() => DbContext.Instruments.AsQueryable();
+    public async Task<List<Instrument>> GetAllInstrumentsAsync() =>
+        await GrpcHelper.ExecuteAsync(
+            async () => InstrumentMapper.FromProto((await GetClient().GetAllInstrumentsAsync(new Empty())).Instruments)
+        );
 
-    public async Task<Instrument?> GetInstrument(int instrumentId) =>
-        await DbContext.Instruments.Where(x => x!.Id == instrumentId).FirstOrDefaultAsync();
+    public async Task<Instrument?> GetInstrumentAsync(Guid instrumentId) =>
+        await GrpcHelper.ExecuteOrNullAsync(
+            async () => InstrumentMapper.FromProto(await GetClient().GetInstrumentByIdAsync(new GetInstrumentRequest { Id = instrumentId.ToString() }))
+        );
 
-    public async Task<OwnedInstrument?> GetOwnedInstrument(int accountId, int instrumentId) =>
-        await DbContext
-            .OwnedInstruments.Where(x => x.AccountId == accountId && x.InstrumentId == instrumentId)
-            .FirstOrDefaultAsync();
+    public async Task<OwnedInstrument?> GetOwnedInstrumentAsync(Guid accountId, Guid instrumentId) =>
+        await GrpcHelper.ExecuteOrNullAsync(
+            async () => InstrumentMapper.FromProto(await GetClient().GetOwnedInstrumentAsync(new GetOwnedInstrumentRequest { AccountId = accountId.ToString(), InstrumentId = instrumentId.ToString() }))
+        );
 
-    public IQueryable<OwnedInstrument> GetOwnedInstrumentsOfAccount(int accountId) =>
-        DbContext.OwnedInstruments.Where(x => x!.AccountId == accountId).AsQueryable();
+    public async Task<List<OwnedInstrument>> GetOwnedInstrumentsOfAccountAsync(Guid accountId) =>
+        await GrpcHelper.ExecuteAsync(
+            async () => InstrumentMapper.FromProto((await GetClient().GetOwnedInstrumentsAsync(new GetOwnedInstrumentsOfAccountRequest { AccountId = accountId.ToString() })).OwnedInstruments)
+        );
 
-    public void AddOwnedInstrument(OwnedInstrument ownedInstrument) =>
-        DbContext.OwnedInstruments.Add(ownedInstrument);
+    public async Task<OwnedInstrument> AddOwnedInstrumentAsync(OwnedInstrument ownedInstrument) =>
+        await GrpcHelper.ExecuteAsync(
+            async () => InstrumentMapper.FromProto(await GetClient().AddOwnedInstrumentAsync(InstrumentMapper.AddToProto(ownedInstrument)))
+        );
 
-    public void UpdateOwnedInstrument(OwnedInstrument ownedInstrument) =>
-        DbContext.OwnedInstruments.Update(ownedInstrument);
-
-    public void DeleteOwnedInstrument(OwnedInstrument ownedInstrument) =>
-        DbContext.OwnedInstruments.Remove(ownedInstrument);
+    public async Task<OwnedInstrument> UpdateOwnedInstrumentAsync(OwnedInstrument ownedInstrument) =>
+        await GrpcHelper.ExecuteAsync(
+            async () => InstrumentMapper.FromProto(await GetClient().UpdateOwnedInstrumentAsync(InstrumentMapper.UpdateToProto(ownedInstrument)))
+        );
 }

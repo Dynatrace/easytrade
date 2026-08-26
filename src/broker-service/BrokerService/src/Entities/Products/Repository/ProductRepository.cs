@@ -1,14 +1,20 @@
+using EasyTrade.BrokerService.Connectors;
 using EasyTrade.BrokerService.Helpers;
-using Microsoft.EntityFrameworkCore;
+using EasyTrade.DbAdapter.Product.Grpc;
+using Google.Protobuf.WellKnownTypes;
 
 namespace EasyTrade.BrokerService.Entities.Products.Repository;
 
-public class ProductRepository(BrokerDbContext dbContext)
-    : TransactionalRepository(dbContext),
-        IProductRepository
+public class ProductRepository(IDbAdapterConnector connector)
+    : DbAdapterRepository<ProductService.ProductServiceClient>(connector, channel => new(channel)), IProductRepository
 {
-    public async Task<Product?> GetProduct(int productId) =>
-        await DbContext.Products.Where(x => x.Id == productId).FirstOrDefaultAsync();
+    public async Task<Product?> GetProductAsync(Guid productId) =>
+        await GrpcHelper.ExecuteOrNullAsync(
+            async () => ProductMapper.FromProto(await GetClient().GetProductByIdAsync(new GetProductRequest { Id = productId.ToString() }))
+        );
 
-    public IQueryable<Product> GetProducts() => DbContext.Products.AsQueryable();
+    public async Task<List<Product>> GetProductsAsync() =>
+        await GrpcHelper.ExecuteAsync(
+            async () => ProductMapper.FromProto((await GetClient().GetProductsAsync(new Empty())).Products)
+        );
 }
