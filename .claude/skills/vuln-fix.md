@@ -21,9 +21,9 @@ implementation 'org.example:library:X.Y.Z'
 ```
 
 **Affected services** (all share the same `build.gradle` structure):
-`accountservice`, `contentcreator`, `credit-card-order-service`, `feature-flag-service`, `third-party-service`
+`credit-card-order-service`, `feature-flag-service`
 
-Apply the same bump to **all six** `build.gradle` files. Never patch one and leave others behind.
+Apply the same bump to **all** affected `build.gradle` files. Never patch one and leave others behind.
 
 Verify:
 ```bash

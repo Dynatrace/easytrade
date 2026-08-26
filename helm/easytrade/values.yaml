@@ -71,18 +71,6 @@ broker-service:
     enabled: true
     port: 8080
 
-contentcreator:
-  enabled: true
-  env:
-    DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
-  resources:
-    requests:
-      cpu: 10m
-      memory: 400Mi
-    limits:
-      cpu: 200m
-      memory: 400Mi
-
 credit-card-order-service:
   enabled: true
   env:
