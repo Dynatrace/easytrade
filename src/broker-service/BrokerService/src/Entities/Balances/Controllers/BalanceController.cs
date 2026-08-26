@@ -21,7 +21,7 @@ public class BalanceController(IBalanceService balanceService) : ControllerBase
     [ProducesResponseType(typeof(Balance), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    [HttpPost("{accountId:int}/deposit")]
+    [HttpPost("{accountId:guid}/deposit")]
     public async Task<Balance> DepositMoney(Guid accountId, DepositMoneyDTO depositMoneyDTO) => await _balanceService.Deposit(accountId, depositMoneyDTO.Amount);
 
     /// <summary>
@@ -33,7 +33,7 @@ public class BalanceController(IBalanceService balanceService) : ControllerBase
     [ProducesResponseType(typeof(Balance), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    [HttpPost("{accountId:int}/withdraw")]
+    [HttpPost("{accountId:guid}/withdraw")]
     public async Task<Balance> WithdrawMoney(Guid accountId, WithdrawMoneyDTO withdrawMoneyDTO) => await _balanceService.Withdraw(accountId, withdrawMoneyDTO.Amount);
 
     /// <summary>
@@ -43,6 +43,6 @@ public class BalanceController(IBalanceService balanceService) : ControllerBase
     /// <returns>Balance</returns>
     [ProducesResponseType(typeof(Balance), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    [HttpGet("{accountId:int}")]
+    [HttpGet("{accountId:guid}")]
     public async Task<Balance> GetBalanceOfAccount(Guid accountId) => await _balanceService.GetBalanceOfAccount(accountId);
 }
