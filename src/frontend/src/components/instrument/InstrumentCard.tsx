@@ -45,7 +45,7 @@ export default function InstrumentCard({ id, code, name, price, amount }: Props)
                         {formatCurrency(price.close)}
                     </h5>
                     <span className={`instrument-pct ${trendClass}`}>
-                        {trendingUp ? "+" : ""}{formatPercent(pctChange)}
+                        {formatPercent(pctChange)}
                     </span>
                 </div>
 

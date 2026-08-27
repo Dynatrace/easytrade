@@ -250,10 +250,11 @@ select {
 
 .instrument-card {
     background-color: var(--bg-card);
-    border: 1px solid var(--border);
+    border: 1px solid #3d4654;      /* slightly brighter than --border so cards stand out */
     border-radius: var(--radius-lg);
     overflow: hidden;
     cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
 }
 
 .instrument-card a {
@@ -271,7 +272,7 @@ select {
 }
 
 .instrument-card.owned-instrument {
-    border-color: var(--border);    /* no special border — amount number carries the emphasis */
+    border-color: #3d4654;          /* same as base — amount number carries the emphasis */
 }
 
 /* Identity block: ticker + company name */
@@ -323,19 +324,18 @@ select {
 .instrument-pct.up   { color: var(--success); }
 .instrument-pct.down { color: var(--danger); }
 
-/* Owned quantity — large muted number at the bottom.
-   Accent color when owned so it visually pops vs the gray on unowned cards. */
+/* Owned quantity — large muted number at the bottom, like the reference image */
 .instrument-card-amount {
     margin-top: auto;
     font-size: var(--text-xl);
     font-weight: 600;
     font-family: var(--font-mono);
-    color: var(--text-muted);          /* gray, same as the reference image */
+    color: var(--text-muted);
     min-height: 1.5rem;                /* reserve height even when empty */
     line-height: 1;
 }
 .instrument-card-amount.owned {
-    color: var(--accent);              /* blue accent — clearly "you own this" */
+    color: var(--text-secondary);      /* slightly brighter than muted — visible but not loud */
 }
 
 /* ---- Tables ---- */
