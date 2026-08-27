@@ -142,6 +142,8 @@
 .page-container {
     padding: var(--space-6);
     max-width: 1280px;
+    margin: 0 auto;         /* center content on wide viewports */
+    width: 100%;
 }
 
 /* ---- Layout for protected pages (sidebar + content) ---- */

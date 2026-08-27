@@ -49,7 +49,7 @@ export default function FeatureFlags() {
                     {isPending ? "Refreshing…" : "Refresh"}
                 </button>
             </div>
-            <FeatureFlagList featureFlags={flags ?? []} />
+            <FeatureFlagList featureFlags={(flags ?? []).slice().sort((a, b) => a.name.localeCompare(b.name))} />
         </div>
     )
 }
