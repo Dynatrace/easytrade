@@ -1,14 +1,15 @@
+import { useToast } from "../../../contexts/ToastContext/context"
 import React, { useState } from "react"
 import { useInstrument } from "../../../contexts/InstrumentContext/context"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { quickTransactionInvalidateQuery } from "../../../contexts/QueryContext/user/queries"
-import useStatusDisplay from "../../../hooks/useStatusDisplay"
-import StatusDisplay from "../../StatusDisplay"
+
+
 
 export default function QuickSellForm() {
     const { instrument, quickSellHandler } = useInstrument()
     const [amount, setAmount] = useState(0)
-    const { setError, setSuccess, resetStatus, statusContext } = useStatusDisplay()
+    const { showToast } = useToast()
 
     const price = instrument.price.close
     // NOTE: id="posessedAmount" — intentional typo kept to match loadgen selector
@@ -23,13 +24,12 @@ export default function QuickSellForm() {
             const { error } = await quickSellHandler(amount)
             if (error !== undefined) throw error
         },
-        onMutate: resetStatus,
         onSuccess: async () => {
-            setSuccess("Transaction successful")
+            showToast("Transaction successful", "success")
             setAmount(0)
             await quickTransactionInvalidateQuery(queryClient)
         },
-        onError: (e: unknown) => setError(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e))),
+        onError: (e: unknown) => showToast(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)), "error"),
     })
 
     function handleSubmit(e: React.FormEvent) {
@@ -48,7 +48,7 @@ export default function QuickSellForm() {
                     step={1}
                     value={amount}
                     autoFocus
-                    onChange={(e) => { setAmount(Number(e.target.value)); resetStatus() }}
+                    onChange={(e) => { setAmount(Number(e.target.value)) }}
                 />
             </div>
             <div className="form-group">
@@ -70,7 +70,6 @@ export default function QuickSellForm() {
                     Sell
                 </button>
             </div>
-            <StatusDisplay {...statusContext} />
         </form>
     )
 }

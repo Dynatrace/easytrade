@@ -1,9 +1,10 @@
+import { useToast } from "../../../contexts/ToastContext/context"
 import React, { useState } from "react"
 import { useInstrument } from "../../../contexts/InstrumentContext/context"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { transactionInvalidateQuery } from "../../../contexts/QueryContext/user/queries"
-import useStatusDisplay from "../../../hooks/useStatusDisplay"
-import StatusDisplay from "../../StatusDisplay"
+
+
 import { AutofillButton } from "./AutofillButton"
 
 export default function SellForm() {
@@ -11,7 +12,7 @@ export default function SellForm() {
     const [amount, setAmount] = useState(0)
     const [price, setPrice] = useState(instrument.price.close)
     const [time, setTime] = useState(1)
-    const { setError, setSuccess, resetStatus, statusContext } = useStatusDisplay()
+    const { showToast } = useToast()
 
     const total = amount * price
 
@@ -24,15 +25,14 @@ export default function SellForm() {
             const { error } = await sellHandler(amount, price, time)
             if (error !== undefined) throw error
         },
-        onMutate: resetStatus,
         onSuccess: async () => {
-            setSuccess("Transaction scheduled")
+            showToast("Transaction scheduled", "success")
             setAmount(0)
             setPrice(instrument.price.close)
             setTime(1)
             await transactionInvalidateQuery(queryClient)
         },
-        onError: (e: unknown) => setError(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e))),
+        onError: (e: unknown) => showToast(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)), "error"),
     })
 
     function handleSubmit(e: React.FormEvent) {
@@ -51,7 +51,7 @@ export default function SellForm() {
                     step={1}
                     value={amount}
                     autoFocus
-                    onChange={(e) => { setAmount(Number(e.target.value)); resetStatus() }}
+                    onChange={(e) => { setAmount(Number(e.target.value)) }}
                 />
             </div>
             <div className="form-group">
@@ -62,7 +62,7 @@ export default function SellForm() {
                     min={0}
                     step="any"
                     value={price}
-                    onChange={(e) => { setPrice(Number(e.target.value)); resetStatus() }}
+                    onChange={(e) => { setPrice(Number(e.target.value)) }}
                 />
             </div>
             <div className="form-group">
@@ -74,7 +74,7 @@ export default function SellForm() {
                     max={24}
                     step={1}
                     value={time}
-                    onChange={(e) => { setTime(Number(e.target.value)); resetStatus() }}
+                    onChange={(e) => { setTime(Number(e.target.value)) }}
                 />
             </div>
             <div className="form-group">
@@ -104,7 +104,6 @@ export default function SellForm() {
                     }}
                 />
             </div>
-            <StatusDisplay {...statusContext} />
         </form>
     )
 }

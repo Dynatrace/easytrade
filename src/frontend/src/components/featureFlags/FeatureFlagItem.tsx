@@ -2,10 +2,9 @@ import React, { useEffect, useRef, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { featureFlagKeys } from "../../contexts/QueryContext/featureFlag/queries"
 import { handleFlagToggle } from "../../api/featureFlags/problemPatterns"
-import { Dispatch } from "react"
-import { Action } from "./FeatureFlagList"
 import { useConfigFlagsQuery } from "../../contexts/QueryContext/featureFlag/hooks"
 import { ContentCopyIcon, InfoIcon, LockIcon } from "../icons"
+import { useToast } from "../../contexts/ToastContext/context"
 
 function getFeatureFlagCurl(flagId: string, enable: boolean): string {
     return `curl -X PUT "${window.location.origin}/feature-flag-service/v1/flags/${flagId}" -H "Content-Type: application/json" -d '{"enabled": ${enable}}'`
@@ -17,17 +16,16 @@ export default function FeatureFlagItem({
     description,
     enabled,
     isModifiable,
-    dispatchHandler,
 }: {
     flagId: string
     name: string
     description?: string
     enabled: boolean
     isModifiable: boolean
-    dispatchHandler: Dispatch<Action>
 }) {
     const [modalOpen, setModalOpen] = useState(false)
     const dialogRef = useRef<HTMLDialogElement>(null)
+    const { showToast } = useToast()
 
     useEffect(() => {
         const el = dialogRef.current
@@ -51,17 +49,11 @@ export default function FeatureFlagItem({
                 queryKey: featureFlagKeys.problemPatterns,
                 exact: true,
             })
-            dispatchHandler({
-                type: "success",
-                msg: `Flag ${displayName} ${context?.enabled ? "enabled" : "disabled"} successfully.`,
-            })
+            showToast(`Flag ${displayName} ${context?.enabled ? "enabled" : "disabled"} successfully.`, "success")
         },
         onError: (error: string, _vars, context) => {
             console.error(error)
-            dispatchHandler({
-                type: "error",
-                msg: `Error while ${context?.enabled ? "enabling" : "disabling"} flag ${displayName}: ${error}.`,
-            })
+            showToast(`Error while ${context?.enabled ? "enabling" : "disabling"} flag ${displayName}: ${error}.`, "error")
         },
     })
 
@@ -158,7 +150,7 @@ export default function FeatureFlagItem({
                                     style={{ flexShrink: 0 }}
                                     onClick={() => {
                                         void navigator.clipboard.writeText(curlCommand)
-                                        dispatchHandler({ type: "success", msg: "Copied to clipboard!" })
+                                        showToast("Copied to clipboard!", "success")
                                     }}
                                     title="Copy to clipboard"
                                 >

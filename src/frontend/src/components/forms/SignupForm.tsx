@@ -1,6 +1,7 @@
+import { useToast } from "../../contexts/ToastContext/context"
 import React, { useState } from "react"
-import useStatusDisplay from "../../hooks/useStatusDisplay"
-import StatusDisplay from "../StatusDisplay"
+
+
 import { useMutation } from "@tanstack/react-query"
 import { SignupHandler } from "../../api/signup/types"
 
@@ -37,13 +38,12 @@ function validateEmail(email: string): boolean {
 export default function SignupForm({ submitHandler }: SignupFormProps) {
     const [form, setForm] = useState<FormState>(empty)
     const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
-    const { setError, setSuccess, resetStatus, statusContext } = useStatusDisplay()
+    const { showToast } = useToast()
 
     function set(field: keyof FormState) {
         return (e: React.ChangeEvent<HTMLInputElement>) => {
             setForm((prev) => ({ ...prev, [field]: e.target.value }))
             setFieldErrors((prev) => ({ ...prev, [field]: undefined }))
-            resetStatus()
         }
     }
 
@@ -74,15 +74,14 @@ export default function SignupForm({ submitHandler }: SignupFormProps) {
             const { error } = await submitHandler(data)
             if (error !== undefined) throw error
         },
-        onMutate: resetStatus,
         onSuccess: () => {
-            setSuccess("User created successfully. You may now login.")
+            showToast("User created successfully. You may now login.", "success")
             setForm(empty)
             setFieldErrors({})
         },
         onError: (e: unknown) => {
             if (e === "Validation failed") return
-            setError(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)))
+            showToast(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)), "error")
         },
     })
 
@@ -129,7 +128,6 @@ export default function SignupForm({ submitHandler }: SignupFormProps) {
                     Sign up
                 </button>
             </div>
-            <StatusDisplay {...statusContext} />
         </form>
     )
 }

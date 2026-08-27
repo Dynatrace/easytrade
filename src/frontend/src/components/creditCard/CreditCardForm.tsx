@@ -1,8 +1,9 @@
+import { useToast } from "../../contexts/ToastContext/context"
 import React, { useState } from "react"
 import { useAuthUser } from "../../contexts/UserContext/context"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import useStatusDisplay from "../../hooks/useStatusDisplay"
-import StatusDisplay from "../StatusDisplay"
+
+
 import { useAuthUserData } from "../../contexts/UserContext/hooks"
 import { orderCreditCard } from "../../api/creditCard/order"
 import { CreditCardLevel } from "../../api/backend/creditCard"
@@ -19,11 +20,11 @@ export default function CreditCardForm() {
     const [agreementCheck, setAgreementCheck] = useState(false)
     const [validationError, setValidationError] = useState<string | null>(null)
 
-    const { setError, setSuccess, resetStatus, statusContext } = useStatusDisplay()
+    const { showToast } = useToast()
 
     function autofill() {
         if (user === undefined) {
-            setError("Couldn't get proper data to fill form.")
+            showToast("Couldn't get proper data to fill form.", "error")
             return
         }
         setName(`${user.firstName} ${user.lastName}`)
@@ -32,7 +33,6 @@ export default function CreditCardForm() {
         setType("silver")
         setAgreementCheck(true)
         setValidationError(null)
-        resetStatus()
     }
 
     function validate(): string | null {
@@ -60,9 +60,8 @@ export default function CreditCardForm() {
             if (response.type === "error") throw response.error
             return { orderId: response.creditCardOrderId }
         },
-        onMutate: resetStatus,
         onSuccess: async ({ orderId }) => {
-            setSuccess(`Card orderred successfully. Order ID: ${orderId}`)
+            showToast(`Card orderred successfully. Order ID: ${orderId}`, "success")
             setName(""); setAddress(""); setEmail(""); setType(""); setAgreementCheck(false)
             setValidationError(null)
             await newCardOrderInvalidateQuery(queryClient)
@@ -70,7 +69,7 @@ export default function CreditCardForm() {
         onError: (e: unknown) => {
             const msg = typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e))
             if (validationError === msg) return
-            setError(msg)
+            showToast(msg, "error")
         },
     })
 
@@ -87,7 +86,6 @@ export default function CreditCardForm() {
                     id="name"
                     type="text"
                     value={name}
-                    onChange={(e) => { setName(e.target.value); resetStatus(); setValidationError(null) }}
                 />
             </div>
             <div className="form-group">
@@ -96,7 +94,6 @@ export default function CreditCardForm() {
                     id="address"
                     type="text"
                     value={address}
-                    onChange={(e) => { setAddress(e.target.value); resetStatus(); setValidationError(null) }}
                 />
             </div>
             <div className="form-group">
@@ -105,7 +102,6 @@ export default function CreditCardForm() {
                     id="email"
                     type="email"
                     value={email}
-                    onChange={(e) => { setEmail(e.target.value); resetStatus(); setValidationError(null) }}
                 />
             </div>
             <div className="form-group">
@@ -113,7 +109,6 @@ export default function CreditCardForm() {
                 <select
                     id="type"
                     value={type}
-                    onChange={(e) => { setType(e.target.value); resetStatus(); setValidationError(null) }}
                 >
                     <option value="">Select card type</option>
                     <option value="silver">Silver</option>
@@ -126,7 +121,6 @@ export default function CreditCardForm() {
                     id="agreement"
                     type="checkbox"
                     checked={agreementCheck}
-                    onChange={(e) => { setAgreementCheck(e.target.checked); resetStatus(); setValidationError(null) }}
                     style={{ width: "auto" }}
                 />
                 <label htmlFor="agreement" style={{ marginBottom: 0 }}>Agree to terms and conditions *</label>
@@ -144,7 +138,6 @@ export default function CreditCardForm() {
                     Autofill
                 </button>
             </div>
-            <StatusDisplay {...statusContext} />
         </form>
     )
 }

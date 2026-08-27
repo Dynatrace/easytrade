@@ -1,7 +1,8 @@
+import { useToast } from "../../contexts/ToastContext/context"
 import React, { useState } from "react"
 import { useAuthUserData } from "../../contexts/UserContext/hooks"
-import useStatusDisplay from "../../hooks/useStatusDisplay"
-import StatusDisplay from "../StatusDisplay"
+
+
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuthUser } from "../../contexts/UserContext/context"
 import { DepositHandler } from "../../api/creditCard/deposit/types"
@@ -29,7 +30,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
     const [agreementCheck, setAgreementCheck] = useState(false)
     const [validationError, setValidationError] = useState<string | null>(null)
 
-    const { setError, setSuccess, resetStatus, statusContext } = useStatusDisplay()
+    const { showToast } = useToast()
 
     function autofillForm() {
         if (amount === 0) setAmount(1000)
@@ -41,12 +42,10 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
         setCvv("123")
         setAgreementCheck(true)
         setValidationError(null)
-        resetStatus()
     }
 
     function autofillCardNumber() {
         setCardNumber("2293562484488276")
-        resetStatus()
     }
 
     function validate(): string | null {
@@ -80,9 +79,8 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
             })
             if (error !== undefined) throw error
         },
-        onMutate: resetStatus,
         onSuccess: async () => {
-            setSuccess("Deposit successful")
+            showToast("Deposit successful", "success")
             await balanceInvalidateQuery(queryClient)
             setAmount(0); setCardholderName(""); setAddress(""); setEmail("")
             setCardNumber(""); setCardType(""); setCvv(""); setAgreementCheck(false)
@@ -91,7 +89,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
         onError: (e: unknown) => {
             const msg = typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e))
             if (validationError === msg) return
-            setError(msg)
+            showToast(msg, "error")
         },
     })
 
@@ -119,7 +117,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     step="any"
                     value={amount}
                     autoFocus
-                    onChange={(e) => { setAmount(Number(e.target.value)); resetStatus(); setValidationError(null) }}
                     data-dt-content
                 />
             </div>
@@ -129,7 +126,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     id="cardholderName"
                     type="text"
                     value={cardholderName}
-                    onChange={(e) => { setCardholderName(e.target.value); resetStatus(); setValidationError(null) }}
                     data-dt-content
                 />
             </div>
@@ -139,7 +135,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     id="address"
                     type="text"
                     value={address}
-                    onChange={(e) => { setAddress(e.target.value); resetStatus(); setValidationError(null) }}
                     data-dt-content
                 />
             </div>
@@ -149,7 +144,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     id="email"
                     type="email"
                     value={email}
-                    onChange={(e) => { setEmail(e.target.value); resetStatus(); setValidationError(null) }}
                     data-dt-content
                 />
             </div>
@@ -160,7 +154,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                         id="cardNumber"
                         type="text"
                         value={cardNumber}
-                        onChange={(e) => { setCardNumber(e.target.value); resetStatus(); setValidationError(null) }}
                         style={{ flex: 1 }}
                         data-dt-content
                     />
@@ -174,7 +167,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                 <select
                     id="cardType"
                     value={cardType}
-                    onChange={(e) => { setCardType(e.target.value); resetStatus(); setValidationError(null) }}
                     data-dt-content
                 >
                     <option value="">Select card type</option>
@@ -190,7 +182,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     id="cvv"
                     type="text"
                     value={cvv}
-                    onChange={(e) => { setCvv(e.target.value); resetStatus(); setValidationError(null) }}
                     data-dt-content
                 />
             </div>
@@ -199,7 +190,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     id="agreement"
                     type="checkbox"
                     checked={agreementCheck}
-                    onChange={(e) => { setAgreementCheck(e.target.checked); resetStatus(); setValidationError(null) }}
                     style={{ width: "auto" }}
                 />
                 <label htmlFor="agreement" style={{ marginBottom: 0 }}>Agree to terms and conditions *</label>
@@ -217,7 +207,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     Autofill
                 </button>
             </div>
-            <StatusDisplay {...statusContext} />
         </form>
     )
 }

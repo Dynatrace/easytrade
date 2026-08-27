@@ -1,9 +1,10 @@
+import { useToast } from "../../../contexts/ToastContext/context"
 import React, { useState } from "react"
 import { useInstrument } from "../../../contexts/InstrumentContext/context"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { quickTransactionInvalidateQuery } from "../../../contexts/QueryContext/user/queries"
-import useStatusDisplay from "../../../hooks/useStatusDisplay"
-import StatusDisplay from "../../StatusDisplay"
+
+
 import { useAuthUserData } from "../../../contexts/UserContext/hooks"
 import { useFormatter } from "../../../contexts/FormatterContext/context"
 
@@ -12,7 +13,7 @@ export default function QuickBuyForm() {
     const { formatCurrency } = useFormatter()
     const { instrument, quickBuyHandler } = useInstrument()
     const [amount, setAmount] = useState(0)
-    const { setError, setSuccess, resetStatus, statusContext } = useStatusDisplay()
+    const { showToast } = useToast()
 
     const price = instrument.price.close
     const currentBalance = balance?.value ?? 0
@@ -26,13 +27,12 @@ export default function QuickBuyForm() {
             const { error } = await quickBuyHandler(amount)
             if (error !== undefined) throw error
         },
-        onMutate: resetStatus,
         onSuccess: async () => {
-            setSuccess("Transaction successful")
+            showToast("Transaction successful", "success")
             setAmount(0)
             await quickTransactionInvalidateQuery(queryClient)
         },
-        onError: (e: unknown) => setError(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e))),
+        onError: (e: unknown) => showToast(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)), "error"),
     })
 
     function handleSubmit(e: React.FormEvent) {
@@ -51,7 +51,7 @@ export default function QuickBuyForm() {
                     step={1}
                     value={amount}
                     autoFocus
-                    onChange={(e) => { setAmount(Number(e.target.value)); resetStatus() }}
+                    onChange={(e) => { setAmount(Number(e.target.value)) }}
                 />
             </div>
             <div className="form-group">
@@ -72,7 +72,6 @@ export default function QuickBuyForm() {
                     Buy
                 </button>
             </div>
-            <StatusDisplay {...statusContext} />
         </form>
     )
 }

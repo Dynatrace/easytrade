@@ -1,8 +1,9 @@
+import { useToast } from "../../contexts/ToastContext/context"
 import React, { useState } from "react"
 import { LoginHandler } from "../../api/login/types"
-import useStatusDisplay from "../../hooks/useStatusDisplay"
+
 import { useMutation } from "@tanstack/react-query"
-import StatusDisplay from "../StatusDisplay"
+
 
 type LoginFormProps = {
     submitHandler: LoginHandler
@@ -13,7 +14,7 @@ export default function LoginForm({ submitHandler }: LoginFormProps) {
     const [password, setPassword] = useState("")
     const [loginError, setLoginError] = useState("")
     const [passwordError, setPasswordError] = useState("")
-    const { setError, resetStatus, statusContext } = useStatusDisplay()
+    const { showToast } = useToast()
 
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {
@@ -24,10 +25,9 @@ export default function LoginForm({ submitHandler }: LoginFormProps) {
             const { error } = await submitHandler(login, password)
             if (error !== undefined) throw error
         },
-        onMutate: resetStatus,
         onError: (e: unknown) => {
             if (e === "Validation failed") return
-            setError(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)))
+            showToast(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)), "error")
         },
     })
 
@@ -49,7 +49,6 @@ export default function LoginForm({ submitHandler }: LoginFormProps) {
                     onChange={(e) => {
                         setLogin(e.target.value)
                         setLoginError("")
-                        resetStatus()
                     }}
                     autoComplete="username"
                 />
@@ -66,7 +65,6 @@ export default function LoginForm({ submitHandler }: LoginFormProps) {
                     onChange={(e) => {
                         setPassword(e.target.value)
                         setPasswordError("")
-                        resetStatus()
                     }}
                     autoComplete="current-password"
                 />
@@ -83,7 +81,6 @@ export default function LoginForm({ submitHandler }: LoginFormProps) {
                     Login
                 </button>
             </div>
-            <StatusDisplay {...statusContext} />
         </form>
     )
 }

@@ -12,10 +12,12 @@ import { getConfig } from "../api/featureFlags/config"
 import { getOrderStatus, getOrderStatusHistory } from "../api/creditCard/order"
 import { getAllVersions } from "../api/version/versions"
 import AppLayout from "./AppLayout"
+import { ToastProvider } from "../contexts/ToastContext/context"
 
 export default function ProviderLayout() {
     return (
         <FormatterProvider currency="USD" locale="en-US">
+            <ToastProvider>
             <QueryClientProvider
                 getUser={getUser}
                 getBalance={getBalance}
@@ -34,6 +36,7 @@ export default function ProviderLayout() {
                     <AppLayout />
                 </AuthProvider>
             </QueryClientProvider>
+            </ToastProvider>
         </FormatterProvider>
     )
 }

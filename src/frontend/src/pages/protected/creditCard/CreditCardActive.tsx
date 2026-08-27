@@ -1,26 +1,26 @@
+import { useToast } from "../../../contexts/ToastContext/context"
 import React from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuthUser } from "../../../contexts/UserContext/context"
 import { revokeCreditCard } from "../../../api/creditCard/order"
-import useStatusDisplay from "../../../hooks/useStatusDisplay"
-import StatusDisplay from "../../../components/StatusDisplay"
+
+
 import { deleteCardInvalidateQuery } from "../../../contexts/QueryContext/creditCard/queries"
 
 export default function CreditCardActive() {
     const { userId } = useAuthUser()
     const queryClient = useQueryClient()
-    const { resetStatus, setError, setSuccess, statusContext } = useStatusDisplay()
+    const { showToast } = useToast()
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {
             const response = await revokeCreditCard(userId)
             if (response.type === "error") throw response.error
         },
-        onMutate: () => { resetStatus() },
         onSuccess: async () => {
             await deleteCardInvalidateQuery(queryClient)
-            setSuccess("Card has been successfully revoked.")
+            showToast("Card has been successfully revoked.", "success")
         },
-        onError: (error: string) => { setError(error) },
+        onError: (error: string) => { showToast(error, "error") },
     })
     return (
         <div className="card" style={{ padding: "1rem", maxWidth: 450, display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem" }}>
@@ -37,7 +37,6 @@ export default function CreditCardActive() {
                 {isPending ? <span className="spinner" /> : null}
                 Revoke card
             </button>
-            <StatusDisplay {...statusContext} />
         </div>
     )
 }
