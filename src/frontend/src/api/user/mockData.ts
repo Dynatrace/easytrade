@@ -5,7 +5,7 @@ type MockUser = { password: string } & UserResponse
 export const USERS: MockUser[] = [
     {
         id: "6",
-        packageId: "3",
+        packageId: "a0000000-0000-4000-8000-000000000003",
         firstName: "James",
         lastName: "Norton",
         username: "james_norton",
@@ -21,7 +21,7 @@ export const USERS: MockUser[] = [
     },
     {
         id: "7",
-        packageId: "1",
+        packageId: "a0000000-0000-4000-8000-000000000001",
         firstName: "Jessica",
         lastName: "Smith",
         username: "jessica_smith",
@@ -37,7 +37,7 @@ export const USERS: MockUser[] = [
     },
     {
         id: "8",
-        packageId: "3",
+        packageId: "a0000000-0000-4000-8000-000000000003",
         firstName: "Tracy",
         lastName: "Wright",
         username: "tracy_wright",

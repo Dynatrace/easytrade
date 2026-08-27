@@ -1,7 +1,12 @@
 import { Balance, PresetUser, User } from "./types"
 import { backends } from "../backend"
 
-const packages: { [k: string]: string } = { "1": "Starter", "2": "Light", "3": "Pro" }
+// Seeded UUIDs from db/mssql/sql-scripts/sql-packages.sql
+const packages: Record<string, string> = {
+    "a0000000-0000-4000-8000-000000000001": "Starter",
+    "a0000000-0000-4000-8000-000000000002": "Light",
+    "a0000000-0000-4000-8000-000000000003": "Pro",
+}
 
 export async function getUser(userId: string): Promise<User> {
     console.log(`[getUser] API call with userId [${userId}]`)
