@@ -26,7 +26,7 @@ func main() {
 
 func newDbAdapterClient() pb.PricingServiceClient {
 	conn, err := grpc.NewClient(
-		os.Getenv(utils.DbAdapterHostAndPort),
+		os.Getenv(utils.DbAdapterAddress),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {

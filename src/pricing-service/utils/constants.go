@@ -1,6 +1,6 @@
 package utils
 
 const (
-	DbAdapterHostAndPort = "DBADAPTER_HOSTANDPORT"
+	DbAdapterAddress = "DB_ADAPTER_ADDRESS"
 	GinMode              = "GIN_MODE"
 )
