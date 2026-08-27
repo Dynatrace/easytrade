@@ -5,7 +5,7 @@ import { handleFlagToggle } from "../../api/featureFlags/problemPatterns"
 import { Dispatch } from "react"
 import { Action } from "./FeatureFlagList"
 import { useConfigFlagsQuery } from "../../contexts/QueryContext/featureFlag/hooks"
-import { ContentCopyIcon } from "../icons"
+import { ContentCopyIcon, InfoIcon, LockIcon } from "../icons"
 
 function getFeatureFlagCurl(flagId: string, enable: boolean): string {
     return `curl -X PUT "${window.location.origin}/feature-flag-service/v1/flags/${flagId}" -H "Content-Type: application/json" -d '{"enabled": ${enable}}'`
@@ -70,8 +70,8 @@ export default function FeatureFlagItem({
         .split("_")
         .map(([head, ...tail]) => `${head.toUpperCase()}${tail.join("")}`)
         .join(" ")
-    const curlCommand = getFeatureFlagCurl(flagId, !enabled)
     const modifyDisabled = !isModifiable || !config?.featureFlagManagement
+    const curlCommand = getFeatureFlagCurl(flagId, !enabled)
 
     function closeModal() {
         setModalOpen(false)
@@ -79,24 +79,46 @@ export default function FeatureFlagItem({
 
     return (
         <>
-            {/* List row — click to open detail modal */}
-            <button
-                type="button"
-                className="flag-list-row"
-                onClick={() => setModalOpen(true)}
-            >
+            {/* List row */}
+            <div className="flag-list-row">
                 <span className="flag-list-name">{displayName}</span>
-                <div style={{ display: "flex", gap: "var(--space-2)", alignItems: "center", flexShrink: 0 }}>
-                    <span className={"badge " + (isModifiable ? "badge-info" : "badge-warning")}>
-                        {isModifiable ? "modifiable" : "non-modifiable"}
-                    </span>
-                    <span className={"badge " + (enabled ? "badge-success" : "badge-danger")}>
-                        {enabled ? "enabled" : "disabled"}
-                    </span>
-                </div>
-            </button>
+                <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", flexShrink: 0 }}>
+                    {/* Toggle slider */}
+                    <label
+                        className={`toggle-switch${!isModifiable ? " locked" : ""}`}
+                        title={!isModifiable ? "This flag is not modifiable" : enabled ? "Click to disable" : "Click to enable"}
+                    >
+                        <input
+                            type="checkbox"
+                            checked={enabled}
+                            disabled={modifyDisabled || isPending}
+                            onChange={() => mutate()}
+                            data-dt-mouse-over="300"
+                        />
+                        <span className="toggle-track" />
+                    </label>
 
-            {/* Detail modal — same pattern as VersionDialog */}
+                    {/* Lock icon shown when not modifiable */}
+                    {!isModifiable && (
+                        <LockIcon
+                            style={{ width: 14, height: 14, color: "var(--text-secondary)", flexShrink: 0 }}
+                        />
+                    )}
+
+                    {/* Info icon — opens detail modal */}
+                    <button
+                        type="button"
+                        className="btn btn-ghost btn-icon"
+                        onClick={() => setModalOpen(true)}
+                        title="More info"
+                        style={{ color: "var(--text-secondary)" }}
+                    >
+                        <InfoIcon style={{ width: 18, height: 18 }} />
+                    </button>
+                </div>
+            </div>
+
+            {/* Detail modal — description + curl only */}
             {modalOpen && (
                 <dialog ref={dialogRef} onClose={closeModal}>
                     <div className="flag-dialog-header">
@@ -111,31 +133,18 @@ export default function FeatureFlagItem({
                         </button>
                     </div>
 
-                    <div className="form" style={{ gap: "var(--space-3)" }}>
-                        <div className="info-row">
-                            <span className="info-label">Flag ID</span>
-                            <span className="info-value" style={{ wordBreak: "break-all" }}>{flagId}</span>
-                        </div>
-                        <div className="info-row">
-                            <span className="info-label">Status</span>
-                            <span className={"badge " + (enabled ? "badge-success" : "badge-danger")}>
-                                {enabled ? "enabled" : "disabled"}
-                            </span>
-                        </div>
-                        <div className="info-row">
-                            <span className="info-label">Modifiable</span>
-                            <span className={"badge " + (isModifiable ? "badge-info" : "badge-warning")}>
-                                {isModifiable ? "yes" : "no"}
-                            </span>
-                        </div>
-                        {description && (
-                            <div style={{ paddingTop: "var(--space-2)", borderTop: "1px solid var(--border)" }}>
-                                <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)", margin: 0 }}>
-                                    {description}
-                                </p>
-                            </div>
+                    <div className="form" style={{ gap: "var(--space-4)" }}>
+                        {description ? (
+                            <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)", margin: 0 }}>
+                                {description}
+                            </p>
+                        ) : (
+                            <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)", margin: 0, fontStyle: "italic" }}>
+                                No description available.
+                            </p>
                         )}
-                        <div style={{ paddingTop: "var(--space-2)", borderTop: "1px solid var(--border)" }}>
+
+                        <div style={{ borderTop: "1px solid var(--border)", paddingTop: "var(--space-3)" }}>
                             <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-xs)", marginBottom: "var(--space-2)" }}>
                                 CURL to {enabled ? "disable" : "enable"}:
                             </p>
@@ -159,18 +168,7 @@ export default function FeatureFlagItem({
                         </div>
                     </div>
 
-                    <div className="form-actions" style={{ marginTop: "var(--space-6)" }}>
-                        <button
-                            type="button"
-                            className={"btn " + (enabled ? "btn-danger" : "btn-primary")}
-                            disabled={modifyDisabled || isPending}
-                            onClick={() => mutate()}
-                            data-dt-mouse-over="300"
-                            title={modifyDisabled ? "Managing flags via UI is disabled in this environment" : undefined}
-                        >
-                            {isPending ? <span className="spinner" /> : null}
-                            {enabled ? "Disable" : "Enable"}
-                        </button>
+                    <div className="form-actions" style={{ marginTop: "var(--space-5)" }}>
                         <button type="button" className="btn btn-secondary" onClick={closeModal}>
                             Close
                         </button>
