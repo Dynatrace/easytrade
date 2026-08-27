@@ -138,6 +138,7 @@
     flex: 1;
     overflow-y: auto;
     background-color: var(--bg-base);
+    padding-top: var(--space-4);    /* breathing room between header and content */
 }
 
 .page-container {
