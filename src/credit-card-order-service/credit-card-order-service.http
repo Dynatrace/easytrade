@@ -40,3 +40,6 @@ Accept: application/json
 ### Delete credit card order for an account
 DELETE {{baseUrl}}/v1/orders/15
 Accept: application/json
+
+### Version
+GET {{baseUrl}}/version

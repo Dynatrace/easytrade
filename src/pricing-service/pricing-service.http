@@ -11,3 +11,6 @@ GET {{baseUrl}}/v1/prices/instrument/1
 
 ### Get pricing data for a specific instrument (limited records)
 GET {{baseUrl}}/v1/prices/instrument/1?records=5
+
+### Version
+GET {{baseUrl}}/version

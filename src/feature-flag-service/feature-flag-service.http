@@ -20,3 +20,6 @@ PUT {{baseUrl}}/v1/flags/db_not_responding
 Content-Type: application/json
 
 {"enabled": false}
+
+### Version
+GET {{baseUrl}}/version
