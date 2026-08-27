@@ -1,17 +1,17 @@
+using EasyTrade.BrokerService.Entities.Instruments.Repository;
 using EasyTrade.BrokerService.Entities.Portfolio.DTO;
 using EasyTrade.BrokerService.Entities.Prices;
 using EasyTrade.BrokerService.Entities.Prices.ServiceConnector;
-using EasyTrade.BrokerService.Entities.Trades.Repository;
 
 namespace EasyTrade.BrokerService.Entities.Portfolio.Service;
 
 public class PortfolioService(
-    ITradeRepository tradeRepository,
+    IInstrumentRepository instrumentRepository,
     IPriceServiceConnector priceService,
     ILogger<PortfolioService> logger
 ) : IPortfolioService
 {
-    private readonly ITradeRepository _tradeRepository = tradeRepository;
+    private readonly IInstrumentRepository _instrumentRepository = instrumentRepository;
     private readonly IPriceServiceConnector _priceService = priceService;
     private readonly ILogger _logger = logger;
 
@@ -32,26 +32,20 @@ public class PortfolioService(
 
         var (start, bucketCount, bucketSize) = ResolvePeriod(period);
 
-        // All settled trades for this account, oldest first
-        var allTrades = await _tradeRepository.GetAccountTradesAsync(
-            accountId,
-            onlyOpen: false,
-            onlyLong: false
-        );
-        var settledTrades = allTrades
-            .Where(t => t.TransactionHappened)
-            .OrderBy(t => t.TimestampOpen)
-            .ToList();
+        // Current owned instruments are not subject to the 24 h cleanup cycle,
+        // so they survive beyond the window where trade records are deleted.
+        var owned = await _instrumentRepository.GetOwnedInstrumentsOfAccountAsync(accountId);
+        var holdings = owned
+            .Where(o => o.Quantity > 0)
+            .ToDictionary(o => o.InstrumentId, o => o.Quantity);
 
-        // Distinct instruments ever traded in this account
-        var instrumentIds = settledTrades.Select(t => t.InstrumentId).Distinct().ToList();
-        if (instrumentIds.Count == 0)
+        if (holdings.Count == 0)
         {
             return BuildZeroPoints(start, bucketCount, bucketSize);
         }
 
-        // Fetch historical prices for each instrument in parallel
-        var priceTasks = instrumentIds.Select(async id =>
+        // Fetch historical prices for each held instrument in parallel
+        var priceTasks = holdings.Keys.Select(async id =>
         {
             var prices = await _priceService.GetPricesByInstrumentId(id, PriceFetchCount);
             return (id, prices: prices.OrderBy(p => p.Timestamp).ToList());
@@ -69,20 +63,8 @@ public class PortfolioService(
 
         foreach (var bucketTime in buckets)
         {
-            // Replay trades up to this bucket boundary to derive held quantities
-            var quantities = new Dictionary<Guid, decimal>();
-            foreach (var trade in settledTrades.Where(t => t.TimestampOpen <= bucketTime))
-            {
-                quantities.TryAdd(trade.InstrumentId, 0m);
-                var delta = trade.Direction is "buy" or "longbuy"
-                    ? trade.Quantity
-                    : -trade.Quantity;
-                quantities[trade.InstrumentId] += delta;
-            }
-
-            // Sum quantity × closest closing price for each held instrument
             var totalValue = 0m;
-            foreach (var (instrumentId, qty) in quantities.Where(kv => kv.Value > 0))
+            foreach (var (instrumentId, qty) in holdings)
             {
                 if (!pricesPerInstrument.TryGetValue(instrumentId, out var prices))
                     continue;
@@ -98,10 +80,10 @@ public class PortfolioService(
         return results;
     }
 
-    // Returns the newest price whose Timestamp <= target, or the oldest available.
+    // Returns the newest price whose Timestamp <= target, or the oldest available
+    // price when no price precedes the target (start-of-history edge case).
     private static Price? ClosestPriceBefore(List<Price> sorted, DateTimeOffset target)
     {
-        // Binary-search-style: last price with Timestamp <= target
         int lo = 0, hi = sorted.Count - 1, best = -1;
         while (lo <= hi)
         {
