@@ -133,6 +133,15 @@
     flex-shrink: 0;
 }
 
+/* ---- Full-page centered spinner (Suspense fallback + page isPending guards) ---- */
+.page-spinner {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 0;      /* flex children can shrink; still fills page-body height */
+}
+
 /* ---- Solo page (public, no sidebar — e.g. /feature-flags, /version) ---- */
 .page-solo {
     flex: 1;

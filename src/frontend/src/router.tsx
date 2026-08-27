@@ -1,4 +1,5 @@
 import React, { lazy, Suspense } from "react"
+import { PageSpinner } from "./components/PageSpinner"
 import {
     createBrowserRouter,
     createRoutesFromElements,
@@ -46,11 +47,7 @@ const CreditCardStatus = lazy(() => import("./pages/protected/creditCard/CreditC
 const CreditCardActive = lazy(() => import("./pages/protected/creditCard/CreditCardActive"))
 
 function Loading() {
-    return (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", padding: "4rem" }}>
-            <span className="spinner" style={{ width: 32, height: 32 }} />
-        </div>
-    )
+    return <PageSpinner />
 }
 
 export enum LoaderIds {
