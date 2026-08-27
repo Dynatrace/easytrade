@@ -15,9 +15,7 @@ public class FeatureFlagClient {
     private static final Logger logger = LoggerFactory.getLogger(FeatureFlagClient.class);
     private final HttpClient httpClient = HttpClient.newBuilder().build();
     private final ObjectMapper mapper = new ObjectMapper();
-    private final String featureFlagServiceUrl = System.getenv("FEATURE_FLAG_SERVICE_PROTOCOL") + "://"
-            + System.getenv("FEATURE_FLAG_SERVICE_BASE_URL") + ":" + System.getenv("FEATURE_FLAG_SERVICE_PORT")
-            + "/v1/flags/";
+    private final String featureFlagServiceUrl = System.getenv("FEATURE_FLAG_SERVICE_ADDRESS") + "/v1/flags/";
 
     public FeatureFlag getFlag(String flagId) {
         logger.info("Getting feature flag with id: {}", flagId);
