@@ -556,13 +556,15 @@ select {
 }
 
 .flag-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
     padding: var(--space-4);
     background-color: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
+}
+
+.flag-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
     gap: var(--space-4);
 }
 
@@ -643,6 +645,11 @@ select {
 .info-value {
     color: var(--text-primary);
     font-family: var(--font-mono);
+}
+
+/* Native <dialog> backdrop overlay */
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.65);
 }
 
 /* ---- Field-level validation error ---- */

@@ -45,7 +45,7 @@ export default function FeatureFlagList({ featureFlags }: { featureFlags: Featur
 
     return (
         <div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+            <div className="flag-grid">
                 {featureFlags.map(({ id, name, description, enabled, isModifiable }, idx) => (
                     <FeatureFlagItem
                         key={idx}
@@ -62,7 +62,7 @@ export default function FeatureFlagList({ featureFlags }: { featureFlags: Featur
             {feedback.visible && (
                 <div
                     className={"status-message " + (feedback.variant === "success" ? "status-success" : "status-error")}
-                    style={{ marginTop: "1rem", display: "flex", alignItems: "center", justifyContent: "space-between" }}
+                    style={{ marginTop: "var(--space-4)", display: "flex", alignItems: "center", justifyContent: "space-between" }}
                 >
                     <span>{feedback.msg}</span>
                     <button

@@ -23,34 +23,32 @@ export default function FeatureFlags() {
     })
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-            <div className="card" style={{ padding: "1rem" }}>
-                <p style={{ margin: 0 }}>
-                    Feature flags (or problem patterns) are used to enable or disable
-                    specific problem simulation in EasyTrade application. Each feature flag
-                    (problem pattern) comes with its own description of what parts of the
-                    application are affected and what symptoms should be expected.
-                </p>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
+                <div style={{ flex: 1 }}>
+                    <h2 style={{ marginBottom: "var(--space-2)" }}>Feature Flags</h2>
+                    <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)", maxWidth: 600 }}>
+                        Feature flags control problem pattern simulations in EasyTrade.
+                        Each flag targets a specific part of the application when enabled.
+                    </p>
                     {!config?.featureFlagManagement && (
-                        <div className="status-message status-info">
-                            The feature flag modification via UI has been disabled.
+                        <div className="status-message status-info" style={{ marginTop: "var(--space-3)", display: "inline-flex" }}>
+                            Flag modification via UI is disabled in this environment.
                         </div>
                     )}
                 </div>
                 <button
                     type="button"
-                    className="btn btn-ghost"
+                    className="btn btn-secondary"
                     disabled={isPending}
                     onClick={() => mutate()}
                     title="Refresh flags"
+                    style={{ flexShrink: 0 }}
                 >
                     <ReplayIcon />
+                    {isPending ? "Refreshing…" : "Refresh"}
                 </button>
             </div>
-            {isPending && <div className="status-message">Refreshing...</div>}
             <FeatureFlagList featureFlags={flags ?? []} />
         </div>
     )
