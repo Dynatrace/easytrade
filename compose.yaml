@@ -45,11 +45,11 @@ services:
       - pricing-service
       - feature-flag-service
     environment:
-      USER_SERVICE_HOSTANDPORT: user-service:8080
-      PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
-      <<: *feature-flag-service-env
+      USER_SERVICE_ADDRESS: http://user-service:8080
+      PRICING_SERVICE_ADDRESS: http://pricing-service:8080
+      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
       PROXY_PREFIX: broker-service
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
+      DB_ADAPTER_ADDRESS: db-adapter:50051
 
   frontend:
     <<: *default-service

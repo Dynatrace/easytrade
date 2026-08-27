@@ -53,13 +53,11 @@ background-service:
 broker-service:
   enabled: true
   env:
-    USER_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-user-service:8080"
-    PRICINGSERVICE_HOSTANDPORT: "{{ .Release.Name }}-pricing-service:8080"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
+    USER_SERVICE_ADDRESS: "http://{{ .Release.Name }}-user-service:8080"
+    PRICING_SERVICE_ADDRESS: "http://{{ .Release.Name }}-pricing-service:8080"
+    FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
     PROXY_PREFIX: "broker-service"
-    DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
       cpu: 150m
