@@ -73,14 +73,12 @@ credit-card-order-service:
   enabled: true
   env:
     PROXY_PREFIX: "credit-card-order-service"
-    THIRD_PARTY_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-background-service:8080"
+    THIRD_PARTY_SERVICE_ADDRESS: "http://{{ .Release.Name }}-background-service:8080"
     WORK_DELAY: "300"
     WORK_RATE: "900"
     JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
-    DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
       cpu: 20m
@@ -209,11 +207,9 @@ loadgen:
 offerservice:
   enabled: true
   env:
-    USER_SERVICE_PORT: "8080"
-    USER_SERVICE_BASE_URL: "{{ .Release.Name }}-user-service"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+    USER_SERVICE_ADDRESS: "http://{{ .Release.Name }}-user-service:8080"
+    FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
   resources:
     requests:
       cpu: 100m
@@ -231,7 +227,7 @@ pricing-service:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/pricing-service
   env:
     PROXY_PREFIX: "pricing-service"
-    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
       cpu: 20m

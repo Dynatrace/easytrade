@@ -8,10 +8,6 @@ x-service: &default-service
   restart: always
   logging: *default-logging
 
-x-feature-flag-service: &feature-flag-service-env
-  FEATURE_FLAG_SERVICE_PROTOCOL: http
-  FEATURE_FLAG_SERVICE_BASE_URL: feature-flag-service
-  FEATURE_FLAG_SERVICE_PORT: 8080
 
 x-connection-strings:
   JAVA_CONNECTION_STRING: &java-connection-string jdbc:sqlserver://db:1433;database=TradeManagement;user=sa;password=yourStrong(!)Password;encrypt=false;trustServerCertificate=false;loginTimeout=30;
@@ -33,7 +29,7 @@ services:
     depends_on:
       - db-adapter
     environment:
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
+      DB_ADAPTER_ADDRESS: db-adapter:50051
       PROXY_PREFIX: pricing-service
 
   broker-service:
@@ -90,10 +86,9 @@ services:
       - user-service
       - db-adapter
     environment:
-      <<: *feature-flag-service-env
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
-      USER_SERVICE_PORT: 8080
-      USER_SERVICE_BASE_URL: user-service
+      DB_ADAPTER_ADDRESS: db-adapter:50051
+      USER_SERVICE_ADDRESS: http://user-service:8080
+      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
 
   feature-flag-service:
     <<: *default-service
@@ -107,8 +102,8 @@ services:
     depends_on:
       - db-adapter
     environment:
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
-      PROXY_PREFIX: accountservice
+      DB_ADAPTER_ADDRESS: db-adapter:50051
+      PROXY_PREFIX: user-service
 
   credit-card-order-service:
     <<: *default-service
@@ -118,9 +113,9 @@ services:
       - background-service
     environment:
       PROXY_PREFIX: credit-card-order-service
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
-      THIRD_PARTY_SERVICE_HOSTANDPORT: background-service:8080
-      <<: *feature-flag-service-env
+      DB_ADAPTER_ADDRESS: db-adapter:50051
+      THIRD_PARTY_SERVICE_ADDRESS: http://background-service:8080
+      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
       WORK_DELAY: 300
       WORK_RATE: 900
       JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
