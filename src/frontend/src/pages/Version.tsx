@@ -15,6 +15,7 @@ export default function Version() {
     }
 
     return (
+        <div className="page-solo">
         <div style={{ maxWidth: 760, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
             <div>
                 <h2 style={{ marginBottom: "var(--space-2)" }}>Service Versions</h2>
@@ -26,6 +27,7 @@ export default function Version() {
             <div style={{ overflowX: "auto" }}>
                 <VersionsTable versions={[getFrontendVersion(), ...(versions ?? [])]} />
             </div>
+        </div>
         </div>
     )
 }

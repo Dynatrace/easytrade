@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 
 interface AutofillButtonProps {
     setSuccessTransaction: () => void
@@ -12,34 +12,45 @@ export function AutofillButton({
     setTimeoutTransaction,
 }: AutofillButtonProps) {
     const [open, setOpen] = useState(false)
+    const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({})
+    const btnRef = useRef<HTMLButtonElement>(null)
+
+    function openDropdown() {
+        if (btnRef.current) {
+            const rect = btnRef.current.getBoundingClientRect()
+            setDropdownStyle({
+                position: "fixed",
+                top: rect.bottom + 4,
+                left: rect.left,
+                zIndex: 1000,
+                minWidth: rect.width,
+            })
+        }
+        setOpen(true)
+    }
 
     return (
-        <div style={{ position: "relative" }}>
+        <div>
             <button
+                ref={btnRef}
                 type="button"
                 className="btn btn-secondary"
-                onClick={() => setOpen((v) => !v)}
+                onClick={() => (open ? setOpen(false) : openDropdown())}
             >
                 Autofill
             </button>
             {open && (
                 <>
                     <div
-                        style={{ position: "fixed", inset: 0, zIndex: 99 }}
+                        style={{ position: "fixed", inset: 0, zIndex: 999 }}
                         onClick={() => setOpen(false)}
                     />
-                    <div
-                        className="profile-dropdown"
-                        style={{ left: 0, right: "auto", zIndex: 100 }}
-                    >
+                    <div className="profile-dropdown" style={dropdownStyle}>
                         <ul>
                             <li>
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        setSuccessTransaction()
-                                        setOpen(false)
-                                    }}
+                                    onClick={() => { setSuccessTransaction(); setOpen(false) }}
                                 >
                                     Success transaction
                                 </button>
@@ -47,10 +58,7 @@ export function AutofillButton({
                             <li>
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        setFailTransaction()
-                                        setOpen(false)
-                                    }}
+                                    onClick={() => { setFailTransaction(); setOpen(false) }}
                                 >
                                     Fail transaction
                                 </button>
@@ -58,10 +66,7 @@ export function AutofillButton({
                             <li>
                                 <button
                                     type="button"
-                                    onClick={() => {
-                                        setTimeoutTransaction()
-                                        setOpen(false)
-                                    }}
+                                    onClick={() => { setTimeoutTransaction(); setOpen(false) }}
                                 >
                                     Timeout transaction
                                 </button>

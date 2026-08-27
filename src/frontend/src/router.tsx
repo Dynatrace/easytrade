@@ -66,6 +66,8 @@ const elementRoutes = createRoutesFromElements(
     <Route path="/" element={<ProviderLayout />} errorElement={<ErrorPage />}>
         <Route index element={<BaseNavigation />} />
         <Route path="*" element={<BaseNavigation />} />
+        <Route path="feature-flags" element={<Suspense fallback={<Loading />}><FeatureFlags /></Suspense>} />
+        <Route path="version" element={<Suspense fallback={<Loading />}><Version /></Suspense>} />
         <Route element={<PublicLayout />}>
             <Route
                 path="login"
@@ -84,8 +86,6 @@ const elementRoutes = createRoutesFromElements(
             }}
             id={LoaderIds.user}
         >
-            <Route path="feature-flags" element={<Suspense fallback={<Loading />}><FeatureFlags /></Suspense>} />
-            <Route path="version" element={<Suspense fallback={<Loading />}><Version /></Suspense>} />
             <Route path="withdraw" element={<Suspense fallback={<Loading />}><Withdraw /></Suspense>} />
             <Route path="deposit" element={<Suspense fallback={<Loading />}><Deposit /></Suspense>} />
             <Route

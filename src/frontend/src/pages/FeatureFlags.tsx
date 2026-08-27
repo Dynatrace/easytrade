@@ -25,7 +25,7 @@ export default function FeatureFlags() {
     const sorted = (flags ?? []).slice().sort((a, b) => a.name.localeCompare(b.name))
 
     return (
-        /* Centered column — max 760px so list rows don't stretch to 1280px */
+        <div className="page-solo">
         <div style={{ maxWidth: 760, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
             <div>
                 {/* Title row — button only shares the line with h2, not the paragraph */}
@@ -54,6 +54,7 @@ export default function FeatureFlags() {
                 )}
             </div>
             <FeatureFlagList featureFlags={sorted} />
+        </div>
         </div>
     )
 }

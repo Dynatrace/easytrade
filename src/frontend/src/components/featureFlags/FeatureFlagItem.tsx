@@ -112,7 +112,7 @@ export default function FeatureFlagItem({
 
             {/* Detail modal — description + curl only */}
             {modalOpen && (
-                <dialog ref={dialogRef} onClose={closeModal}>
+                <dialog ref={dialogRef} onClose={closeModal} onClick={(e) => { if (e.target === e.currentTarget) closeModal() }}>
                     <div className="flag-dialog-header">
                         <h3>{displayName}</h3>
                         <button
@@ -160,11 +160,6 @@ export default function FeatureFlagItem({
                         </div>
                     </div>
 
-                    <div className="form-actions" style={{ marginTop: "var(--space-5)" }}>
-                        <button type="button" className="btn btn-secondary" onClick={closeModal}>
-                            Close
-                        </button>
-                    </div>
                 </dialog>
             )}
         </>

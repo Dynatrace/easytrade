@@ -10,8 +10,8 @@ export default function InstrumentTransactions() {
     const [activeTab, setActiveTab] = useState<TabId>("quick-buy")
 
     return (
-        <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
-            <div className="card" style={{ padding: "0.5rem", display: "flex", flexDirection: "column", gap: "0.25rem", minWidth: 120 }}>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+            <div className="card instrument-tabs-card">
                 <button
                     id="quickBuyTab"
                     type="button"
@@ -45,7 +45,7 @@ export default function InstrumentTransactions() {
                     Sell
                 </button>
             </div>
-            <div className="card" style={{ flex: 1, padding: "1rem" }}>
+            <div className="card" style={{ flex: 1, minWidth: 280, padding: "1rem" }}>
                 {activeTab === "quick-buy" && <QuickBuyForm />}
                 {activeTab === "quick-sell" && <QuickSellForm />}
                 {activeTab === "buy" && <BuyForm />}

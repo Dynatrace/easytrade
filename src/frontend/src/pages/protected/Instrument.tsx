@@ -31,7 +31,7 @@ export default function Instrument() {
             sellHandler={sell}
             buyHandler={buy}
         >
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+            <div className="instrument-page-layout">
                 <FullInstrumentCard />
                 <InstrumentTransactions />
             </div>
