@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react"
+import { createPortal } from "react-dom"
 
 interface AutofillButtonProps {
     setSuccessTransaction: () => void
@@ -16,16 +17,20 @@ export function AutofillButton({
     const btnRef = useRef<HTMLButtonElement>(null)
 
     function openDropdown() {
-        if (btnRef.current) {
-            const rect = btnRef.current.getBoundingClientRect()
-            setDropdownStyle({
-                position: "fixed",
-                top: rect.bottom + 4,
-                left: rect.left,
-                zIndex: 1000,
-                minWidth: rect.width,
-            })
-        }
+        if (!btnRef.current) return
+        const rect = btnRef.current.getBoundingClientRect()
+        // Always open upward so the list doesn't push below the viewport
+        setDropdownStyle({
+            position: "fixed",
+            top: "auto",          // neutralise the CSS class's top: calc(100% + …)
+            right: "auto",        // neutralise the CSS class's right: 0
+            bottom: window.innerHeight - rect.top + 4,
+            left: rect.left,
+            minWidth: rect.width,
+            maxHeight: rect.top - 8,
+            overflowY: "auto",
+            zIndex: 9999,
+        })
         setOpen(true)
     }
 
@@ -39,42 +44,46 @@ export function AutofillButton({
             >
                 Autofill
             </button>
-            {open && (
-                <>
-                    <div
-                        style={{ position: "fixed", inset: 0, zIndex: 999 }}
-                        onClick={() => setOpen(false)}
-                    />
-                    <div className="profile-dropdown" style={dropdownStyle}>
-                        <ul>
-                            <li>
-                                <button
-                                    type="button"
-                                    onClick={() => { setSuccessTransaction(); setOpen(false) }}
-                                >
-                                    Success transaction
-                                </button>
-                            </li>
-                            <li>
-                                <button
-                                    type="button"
-                                    onClick={() => { setFailTransaction(); setOpen(false) }}
-                                >
-                                    Fail transaction
-                                </button>
-                            </li>
-                            <li>
-                                <button
-                                    type="button"
-                                    onClick={() => { setTimeoutTransaction(); setOpen(false) }}
-                                >
-                                    Timeout transaction
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-                </>
-            )}
+
+            {open &&
+                createPortal(
+                    <>
+                        {/* Invisible backdrop — closes dropdown on outside click */}
+                        <div
+                            style={{ position: "fixed", inset: 0, zIndex: 9998 }}
+                            onClick={() => setOpen(false)}
+                        />
+                        <div className="profile-dropdown" style={dropdownStyle}>
+                            <ul>
+                                <li>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setSuccessTransaction(); setOpen(false) }}
+                                    >
+                                        Success transaction
+                                    </button>
+                                </li>
+                                <li>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setFailTransaction(); setOpen(false) }}
+                                    >
+                                        Fail transaction
+                                    </button>
+                                </li>
+                                <li>
+                                    <button
+                                        type="button"
+                                        onClick={() => { setTimeoutTransaction(); setOpen(false) }}
+                                    >
+                                        Timeout transaction
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </>,
+                    document.body
+                )}
         </div>
     )
 }
