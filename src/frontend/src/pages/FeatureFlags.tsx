@@ -22,12 +22,15 @@ export default function FeatureFlags() {
         },
     })
 
+    const sorted = (flags ?? []).slice().sort((a, b) => a.name.localeCompare(b.name))
+
     return (
-        <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
+        /* Centered column — max 760px so list rows don't stretch to 1280px */
+        <div style={{ maxWidth: 760, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
             <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "var(--space-4)", flexWrap: "wrap" }}>
                 <div style={{ flex: 1 }}>
                     <h2 style={{ marginBottom: "var(--space-2)" }}>Feature Flags</h2>
-                    <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)", maxWidth: 600 }}>
+                    <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)" }}>
                         Feature flags control problem pattern simulations in EasyTrade.
                         Each flag targets a specific part of the application when enabled.
                     </p>
@@ -49,7 +52,7 @@ export default function FeatureFlags() {
                     {isPending ? "Refreshing…" : "Refresh"}
                 </button>
             </div>
-            <FeatureFlagList featureFlags={(flags ?? []).slice().sort((a, b) => a.name.localeCompare(b.name))} />
+            <FeatureFlagList featureFlags={sorted} />
         </div>
     )
 }
