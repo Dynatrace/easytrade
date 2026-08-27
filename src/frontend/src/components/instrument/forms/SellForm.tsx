@@ -60,7 +60,7 @@ export default function SellForm() {
                     id="price"
                     type="number"
                     min={0}
-                    step={0.01}
+                    step="any"
                     value={price}
                     onChange={(e) => { setPrice(Number(e.target.value)); resetStatus() }}
                 />
