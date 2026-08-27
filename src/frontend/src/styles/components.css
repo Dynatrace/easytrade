@@ -259,48 +259,83 @@ select {
 .instrument-card a {
     display: flex;
     flex-direction: column;
-    padding: var(--space-4);
+    padding: var(--space-5);
     height: 100%;
     color: var(--text-primary);
     text-decoration: none;
-    gap: var(--space-2);
 }
 
 .instrument-card:hover {
-    border-color: var(--accent);
+    border-color: var(--border-focus);
+    background-color: var(--bg-hover);
 }
 
 .instrument-card.owned-instrument {
-    border-color: var(--success);
+    border-color: var(--border);    /* no special border — amount number carries the emphasis */
 }
 
-.instrument-card.owned-instrument .instrument-badge {
-    display: inline-block;
-    background-color: var(--success-muted);
-    color: var(--success);
-    font-size: var(--text-xs);
-    font-weight: 600;
-    padding: 2px var(--space-2);
-    border-radius: var(--radius-sm);
-}
-
-.instrument-name {
-    font-weight: 600;
-    font-size: var(--text-base);
+/* Identity block: ticker + company name */
+.instrument-card-identity {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: var(--space-5);
 }
 
 .instrument-code {
-    font-size: var(--text-xs);
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: 0.01em;
+}
+
+.instrument-name {
+    font-size: var(--text-sm);
+    font-style: italic;
     color: var(--text-secondary);
-    font-family: var(--font-mono);
-    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Price + % on one row */
+.instrument-card-price-row {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
 }
 
 .instrument-price {
-    font-size: var(--text-lg);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    font-family: var(--font-mono);
+    line-height: 1;
+}
+.instrument-price.up   { color: var(--success); }
+.instrument-price.down { color: var(--danger); }
+
+.instrument-pct {
+    font-size: var(--text-xs);
     font-weight: 600;
     font-family: var(--font-mono);
+}
+.instrument-pct.up   { color: var(--success); }
+.instrument-pct.down { color: var(--danger); }
+
+/* Owned quantity — large muted number at the bottom.
+   Accent color when owned so it visually pops vs the gray on unowned cards. */
+.instrument-card-amount {
     margin-top: auto;
+    font-size: var(--text-xl);
+    font-weight: 600;
+    font-family: var(--font-mono);
+    color: var(--text-muted);          /* gray, same as the reference image */
+    min-height: 1.5rem;                /* reserve height even when empty */
+    line-height: 1;
+}
+.instrument-card-amount.owned {
+    color: var(--accent);              /* blue accent — clearly "you own this" */
 }
 
 /* ---- Tables ---- */
