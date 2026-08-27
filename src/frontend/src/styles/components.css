@@ -647,9 +647,68 @@ select {
     font-family: var(--font-mono);
 }
 
-/* Native <dialog> backdrop overlay */
+/* Native <dialog> — always centered, dark backdrop */
+dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    max-width: min(560px, 90vw);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    padding: var(--space-6);
+    box-shadow: var(--shadow-md);
+}
+
 dialog::backdrop {
     background-color: rgba(0, 0, 0, 0.65);
+}
+
+/* ---- Feature flag detail dialog ---- */
+.flag-dialog-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-5);
+    gap: var(--space-3);
+}
+
+.flag-dialog-header h3 {
+    margin: 0;
+}
+
+/* ---- Feature flag list row ---- */
+.flag-list-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    width: 100%;
+    padding: var(--space-3) var(--space-4);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    color: inherit;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: var(--text-sm);
+    text-align: left;
+}
+
+.flag-list-row:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-focus);
+}
+
+.flag-list-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    flex: 1;
 }
 
 /* ---- Field-level validation error ---- */

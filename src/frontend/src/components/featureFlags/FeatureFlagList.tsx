@@ -6,13 +6,15 @@ export type FeedbackAction =
     | { type: "success"; msg: string }
     | { type: "error"; msg: string }
     | { type: "reset" }
+
+// ExpandAction kept for type-compat with existing callers but no longer used
 export type ExpandAction =
     | { type: "expand"; target: string }
     | { type: "collapse" }
 
 export type Action = FeedbackAction | ExpandAction
+
 type State = {
-    expand: { target: string }
     feedback: {
         visible: boolean
         variant: "success" | "error"
@@ -23,29 +25,27 @@ type State = {
 function feedbackReducer(state: State, action: Action): State {
     switch (action.type) {
         case "success":
-            return { ...state, feedback: { visible: true, variant: "success", msg: action.msg } }
+            return { feedback: { visible: true, variant: "success", msg: action.msg } }
         case "error":
-            return { ...state, feedback: { visible: true, variant: "error", msg: action.msg } }
+            return { feedback: { visible: true, variant: "error", msg: action.msg } }
         case "reset":
-            return { ...state, feedback: { visible: false, msg: "", variant: state.feedback.variant } }
+            return { feedback: { visible: false, msg: "", variant: state.feedback.variant } }
         case "expand":
-            return { ...state, expand: { target: state.expand.target === action.target ? "" : action.target } }
         case "collapse":
-            return { ...state, expand: { target: "" } }
+            return state  // no-op — each item manages its own modal
         default:
             throw new Error(`Action ${JSON.stringify(action)} is not handled in [FeedbackReducer]!`)
     }
 }
 
 export default function FeatureFlagList({ featureFlags }: { featureFlags: FeatureFlag[] }) {
-    const [{ expand, feedback }, dispatch] = useReducer(feedbackReducer, {
-        expand: { target: "" },
+    const [{ feedback }, dispatch] = useReducer(feedbackReducer, {
         feedback: { visible: false, msg: "", variant: "success" },
     })
 
     return (
         <div>
-            <div className="flag-grid">
+            <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
                 {featureFlags.map(({ id, name, description, enabled, isModifiable }, idx) => (
                     <FeatureFlagItem
                         key={idx}
@@ -54,7 +54,6 @@ export default function FeatureFlagList({ featureFlags }: { featureFlags: Featur
                         description={description}
                         name={name}
                         isModifiable={isModifiable}
-                        expanded={expand.target === name}
                         dispatchHandler={dispatch}
                     />
                 ))}
@@ -71,7 +70,7 @@ export default function FeatureFlagList({ featureFlags }: { featureFlags: Featur
                         style={{ padding: "0.25rem" }}
                         onClick={() => dispatch({ type: "reset" })}
                     >
-                        ×
+                        ✕
                     </button>
                 </div>
             )}
