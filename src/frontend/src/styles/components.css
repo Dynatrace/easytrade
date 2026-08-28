@@ -272,15 +272,8 @@ select {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    /* max-width matches the chart card — forms don't stretch wider than the chart */
-    max-width: 960px;
 }
 
-@media (max-width: 600px) {
-    .instrument-page-layout .card {
-        /* on narrow screens forms stack naturally via flexWrap on InstrumentTransactions */
-    }
-}
 
 /* ---- Instrument cards ---- */
 .instruments-grid {
@@ -869,16 +862,15 @@ dialog::backdrop {
 /* ---- Toast notifications ---- */
 .toast-container {
     position: fixed;
-    top: calc(var(--header-height) + var(--space-3));
-    left: 50%;
-    transform: translateX(-50%);
+    bottom: var(--space-5);
+    right: var(--space-5);
     z-index: 9999;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-end;
     gap: var(--space-2);
     width: max-content;
-    max-width: min(480px, calc(100vw - var(--space-8)));
+    max-width: min(380px, calc(100vw - var(--space-8)));
     pointer-events: none;
 }
 

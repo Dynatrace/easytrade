@@ -51,6 +51,7 @@ export default function QuickBuyForm() {
                     step={1}
                     value={amount}
                     autoFocus
+                    onFocus={(e) => e.target.select()}
                     onChange={(e) => { setAmount(Number(e.target.value)) }}
                 />
             </div>

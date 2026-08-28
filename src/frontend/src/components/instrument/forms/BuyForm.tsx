@@ -55,6 +55,7 @@ export default function BuyForm() {
                     step={1}
                     value={amount}
                     autoFocus
+                    onFocus={(e) => e.target.select()}
                     onChange={(e) => { setAmount(Number(e.target.value)) }}
                 />
             </div>
@@ -66,6 +67,7 @@ export default function BuyForm() {
                     min={0}
                     step="any"
                     value={price}
+                    onFocus={(e) => e.target.select()}
                     onChange={(e) => { setPrice(Number(e.target.value)) }}
                 />
             </div>
@@ -78,6 +80,7 @@ export default function BuyForm() {
                     max={24}
                     step={1}
                     value={time}
+                    onFocus={(e) => e.target.select()}
                     onChange={(e) => { setTime(Number(e.target.value)) }}
                 />
             </div>

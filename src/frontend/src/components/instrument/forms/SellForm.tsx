@@ -51,6 +51,7 @@ export default function SellForm() {
                     step={1}
                     value={amount}
                     autoFocus
+                    onFocus={(e) => e.target.select()}
                     onChange={(e) => { setAmount(Number(e.target.value)) }}
                 />
             </div>
@@ -62,6 +63,7 @@ export default function SellForm() {
                     min={0}
                     step="any"
                     value={price}
+                    onFocus={(e) => e.target.select()}
                     onChange={(e) => { setPrice(Number(e.target.value)) }}
                 />
             </div>
@@ -74,6 +76,7 @@ export default function SellForm() {
                     max={24}
                     step={1}
                     value={time}
+                    onFocus={(e) => e.target.select()}
                     onChange={(e) => { setTime(Number(e.target.value)) }}
                 />
             </div>
