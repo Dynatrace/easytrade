@@ -1,4 +1,3 @@
-import React from "react"
 import { Navigate, Outlet, useLoaderData } from "react-router"
 import { useAuthUser } from "../contexts/UserContext/context"
 import { OrderStatusResponse } from "../api/creditCard/order"
