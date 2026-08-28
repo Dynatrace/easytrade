@@ -42,7 +42,7 @@ export class TransactionBackend {
 
     async getAll(accountId: string, limit: number): Promise<TransactionResult> {
         const response = await fetch(
-            `${this.baseUrl}/trade/${accountId}?count=${limit}&onlyLong=true`,
+            `${this.baseUrl}/trade/${accountId}?count=${limit}`,
             { headers: this.headers }
         )
         if (!response.ok) throw new Error(`HTTP ${response.status}`)

@@ -46,19 +46,12 @@ function parseUtcIso(value: string): string {
 }
 
 function mapStatus(status: string): string {
-    if (status.toLowerCase().indexOf("finished") > 0) {
-        return "SUCCESS"
-    } else if (status.toLowerCase().indexOf("failed") > 0) {
-        return "FAIL"
-    } else {
-        return "ACTIVE"
-    }
+    const s = status.toLowerCase()
+    if (s.includes("finished") || s.includes("done")) return "SUCCESS"
+    if (s.includes("failed")) return "FAIL"
+    return "ACTIVE"
 }
 
 function mapDirection(direction: string): string {
-    if (direction.toLowerCase().indexOf("buy") > 0) {
-        return "BUY"
-    } else {
-        return "SELL"
-    }
+    return direction.toLowerCase().includes("buy") ? "BUY" : "SELL"
 }
