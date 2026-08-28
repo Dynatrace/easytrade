@@ -32,6 +32,10 @@ public static class TradeMapper
             Quantity = (double)trade.Quantity,
             EntryPrice = (double)trade.EntryPrice,
             TimestampOpen = Timestamp.FromDateTimeOffset(trade.TimestampOpen),
+            TimestampClose = trade.TimestampClose.HasValue
+                ? Timestamp.FromDateTimeOffset(trade.TimestampClose.Value)
+                : null,
+            TradeClosed = trade.TradeClosed,
             TransactionHappened = trade.TransactionHappened,
             Status = trade.Status
         };
