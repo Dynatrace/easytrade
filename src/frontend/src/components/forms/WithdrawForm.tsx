@@ -111,8 +111,10 @@ export default function WithdrawForm({ submitHandler }: WithdrawFormProps) {
                     type="number"
                     min={0}
                     step="any"
-                    value={amount}
+                    value={amount || ""}
                     autoFocus
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => setAmount(Number(e.target.value))}
                 />
             </div>
             <div className="form-group">
@@ -121,6 +123,7 @@ export default function WithdrawForm({ submitHandler }: WithdrawFormProps) {
                     id="cardholderName"
                     type="text"
                     value={cardholderName}
+                    onChange={(e) => setCardholderName(e.target.value)}
                 />
             </div>
             <div className="form-group">
@@ -129,6 +132,7 @@ export default function WithdrawForm({ submitHandler }: WithdrawFormProps) {
                     id="address"
                     type="text"
                     value={address}
+                    onChange={(e) => setAddress(e.target.value)}
                 />
             </div>
             <div className="form-group">
@@ -137,6 +141,7 @@ export default function WithdrawForm({ submitHandler }: WithdrawFormProps) {
                     id="email"
                     type="email"
                     value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
             </div>
             <div className="form-group">
@@ -147,6 +152,7 @@ export default function WithdrawForm({ submitHandler }: WithdrawFormProps) {
                         type="text"
                         value={cardNumber}
                         style={{ flex: 1 }}
+                        onChange={(e) => setCardNumber(e.target.value)}
                     />
                     <button type="button" className="btn btn-ghost" onClick={autofillCardNumber} title="Autofill card number">
                         <EditIcon />
@@ -158,6 +164,7 @@ export default function WithdrawForm({ submitHandler }: WithdrawFormProps) {
                 <select
                     id="cardType"
                     value={cardType}
+                    onChange={(e) => setCardType(e.target.value)}
                 >
                     <option value="">Select card type</option>
                     <option value="visaDebit">Visa Debit</option>
@@ -172,6 +179,7 @@ export default function WithdrawForm({ submitHandler }: WithdrawFormProps) {
                     type="checkbox"
                     checked={agreementCheck}
                     style={{ width: "auto" }}
+                    onChange={(e) => setAgreementCheck(e.target.checked)}
                 />
                 <label htmlFor="agreement" style={{ marginBottom: 0 }}>Agree to terms and conditions *</label>
             </div>

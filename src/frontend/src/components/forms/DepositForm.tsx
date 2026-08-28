@@ -115,9 +115,11 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     type="number"
                     min={0}
                     step="any"
-                    value={amount}
+                    value={amount || ""}
                     autoFocus
                     data-dt-content
+                    onFocus={(e) => e.target.select()}
+                    onChange={(e) => setAmount(Number(e.target.value))}
                 />
             </div>
             <div className="form-group">
@@ -127,6 +129,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     type="text"
                     value={cardholderName}
                     data-dt-content
+                    onChange={(e) => setCardholderName(e.target.value)}
                 />
             </div>
             <div className="form-group">
@@ -136,6 +139,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     type="text"
                     value={address}
                     data-dt-content
+                    onChange={(e) => setAddress(e.target.value)}
                 />
             </div>
             <div className="form-group">
@@ -145,6 +149,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     type="email"
                     value={email}
                     data-dt-content
+                    onChange={(e) => setEmail(e.target.value)}
                 />
             </div>
             <div className="form-group">
@@ -156,6 +161,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                         value={cardNumber}
                         style={{ flex: 1 }}
                         data-dt-content
+                        onChange={(e) => setCardNumber(e.target.value)}
                     />
                     <button type="button" className="btn btn-ghost" onClick={autofillCardNumber} title="Autofill card number">
                         <EditIcon />
@@ -168,6 +174,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     id="cardType"
                     value={cardType}
                     data-dt-content
+                    onChange={(e) => setCardType(e.target.value)}
                 >
                     <option value="">Select card type</option>
                     <option value="visaDebit">Visa Debit</option>
@@ -183,6 +190,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     type="text"
                     value={cvv}
                     data-dt-content
+                    onChange={(e) => setCvv(e.target.value)}
                 />
             </div>
             <div className="form-group" style={{ flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
@@ -191,6 +199,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     type="checkbox"
                     checked={agreementCheck}
                     style={{ width: "auto" }}
+                    onChange={(e) => setAgreementCheck(e.target.checked)}
                 />
                 <label htmlFor="agreement" style={{ marginBottom: 0 }}>Agree to terms and conditions *</label>
             </div>
