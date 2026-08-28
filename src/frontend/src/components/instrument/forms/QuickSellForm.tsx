@@ -46,9 +46,8 @@ export default function QuickSellForm() {
                     type="number"
                     min={0}
                     step={1}
-                    value={amount}
+                    value={amount || ""}
                     autoFocus
-                    onFocus={(e) => e.target.select()}
                     onChange={(e) => { setAmount(Number(e.target.value)) }}
                 />
             </div>
