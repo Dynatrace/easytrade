@@ -28,7 +28,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
     const [cardType, setCardType] = useState("")
     const [cvv, setCvv] = useState("")
     const [agreementCheck, setAgreementCheck] = useState(false)
-    const [validationError, setValidationError] = useState<string | null>(null)
 
     const { showToast } = useToast()
 
@@ -41,7 +40,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
         setCardType("visaDebit")
         setCvv("123")
         setAgreementCheck(true)
-        setValidationError(null)
     }
 
     function autofillCardNumber() {
@@ -65,8 +63,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {
             const err = validate()
-            if (err) { setValidationError(err); throw err }
-            setValidationError(null)
+            if (err) throw err
             const { error } = await submitHandler({
                 name: cardholderName,
                 accountId: userId,
@@ -84,12 +81,9 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
             await balanceInvalidateQuery(queryClient)
             setAmount(0); setCardholderName(""); setAddress(""); setEmail("")
             setCardNumber(""); setCardType(""); setCvv(""); setAgreementCheck(false)
-            setValidationError(null)
         },
         onError: (e: unknown) => {
-            const msg = typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e))
-            if (validationError === msg) return
-            showToast(msg, "error")
+            showToast(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)), "error")
         },
     })
 
@@ -204,9 +198,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                 <label htmlFor="agreement" style={{ marginBottom: 0 }}>Agree to terms and conditions *</label>
             </div>
             <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", margin: "0.25rem 0" }}>* Required field</p>
-            {validationError && (
-                <div className="status-message status-error">{validationError}</div>
-            )}
             <div className="form-actions">
                 <button id="submitButton" type="submit" className="btn btn-primary" disabled={isPending}>
                     {isPending ? <span className="spinner" /> : null}
