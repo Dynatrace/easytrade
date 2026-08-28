@@ -4,9 +4,11 @@ import DemoAppWarning from "../../../components/DemoAppWarning"
 
 export default function CreditCardOrder() {
     return (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", maxWidth: 450 }}>
-            <DemoAppWarning />
-            <CreditCardForm />
+        <div className="page-centered">
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem", width: "100%", maxWidth: 480 }}>
+                <DemoAppWarning />
+                <CreditCardForm />
+            </div>
         </div>
     )
 }

@@ -12,25 +12,31 @@ export default function CreditCardStatus() {
 
     if (data === undefined) {
         return (
-            <div className="card" style={{ padding: "1rem" }}>
-                <p className="empty-state">Loading order history…</p>
+            <div className="page-centered">
+                <div className="card" style={{ padding: "1rem", minWidth: 400 }}>
+                    <p className="empty-state">Loading order history…</p>
+                </div>
             </div>
         )
     }
 
     if (data.type === "error") {
         return (
-            <div className="card" style={{ padding: "1rem" }}>
-                <div className="status-message status-error">
-                    Could not load order history: {data.error}
+            <div className="page-centered">
+                <div className="card" style={{ padding: "1rem", minWidth: 400 }}>
+                    <div className="status-message status-error">
+                        Could not load order history: {data.error}
+                    </div>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="card" style={{ padding: "1rem" }}>
-            <CreditCardsStatusTimeline data={data} />
+        <div className="page-centered">
+            <div className="card" style={{ padding: "1.5rem", minWidth: 400, width: "100%", maxWidth: 600 }}>
+                <CreditCardsStatusTimeline data={data} />
+            </div>
         </div>
     )
 }

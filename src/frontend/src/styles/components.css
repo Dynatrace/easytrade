@@ -580,49 +580,86 @@ select {
 }
 
 /* ---- Credit card timeline ---- */
+/* Layout: [timestamp] | [dot + vertical line] | [content] */
 .timeline {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .timeline-item {
-    display: flex;
-    gap: var(--space-4);
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: 120px 20px 1fr;
+    gap: 0 var(--space-3);
+    position: relative;
 }
 
-.timeline-indicator {
+/* Vertical line between items — drawn on the dot column of the previous item */
+.timeline-item + .timeline-item .timeline-track::before {
+    content: "";
+    position: absolute;
+    top: -var(--space-3);        /* fills the gap above */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    background-color: var(--border);
+    bottom: calc(100% - 5px);   /* stops at the dot */
+}
+
+.timeline-time {
+    text-align: right;
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+    padding-top: 3px;
+    white-space: nowrap;
+}
+
+/* Column 2: dot + connecting line */
+.timeline-track {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+.timeline-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background-color: var(--success);
+    background-color: var(--text-muted);
     flex-shrink: 0;
-    margin-top: 5px;
+    margin-top: 4px;
+    z-index: 1;
 }
 
-.timeline-indicator.pending {
-    background-color: var(--warning);
+/* Vertical line below the dot, filling space to the next item */
+.timeline-line {
+    flex: 1;
+    width: 2px;
+    background-color: var(--border);
+    margin-top: 4px;
 }
 
-.timeline-indicator.failed {
-    background-color: var(--danger);
+/* Hide the line on the last item */
+.timeline-item:last-child .timeline-line {
+    display: none;
 }
 
 .timeline-content {
-    flex: 1;
+    padding-bottom: var(--space-4);
 }
 
-.timeline-label {
+.timeline-content strong {
     font-size: var(--text-sm);
-    font-weight: 500;
+    font-weight: 600;
     color: var(--text-primary);
 }
 
-.timeline-timestamp {
-    font-size: var(--text-xs);
-    color: var(--text-muted);
-    font-family: var(--font-mono);
+/* ---- Centered narrow page wrapper (credit card, etc.) ---- */
+.page-centered {
+    display: flex;
+    justify-content: center;
+    width: 100%;
 }
 
 /* ---- Feature flag list ---- */

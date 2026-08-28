@@ -1,4 +1,3 @@
-import React from "react"
 import {
     OrderStatusEntry,
     SuccessOrderStatusHistoryResponse,
@@ -17,10 +16,17 @@ function TimelineEntry({ timestamp, status, details }: OrderStatusEntry) {
     return (
         <li className="timeline-item">
             <span className="timeline-time">{formatDate(Date.parse(timestamp))}</span>
-            <span className="timeline-dot" />
+            <span className="timeline-track">
+                <span className="timeline-dot" />
+                <span className="timeline-line" />
+            </span>
             <div className="timeline-content">
                 <strong>{formatStatus(status)}</strong>
-                {details && <p style={{ margin: 0, color: "var(--text-muted)", fontSize: "0.875rem" }}>{details}</p>}
+                {details && (
+                    <p style={{ margin: "0.25rem 0 0", color: "var(--text-muted)", fontSize: "0.875rem" }}>
+                        {details}
+                    </p>
+                )}
             </div>
         </li>
     )
@@ -32,9 +38,9 @@ export default function CreditCardsStatusTimeline({
     data: SuccessOrderStatusHistoryResponse
 }) {
     return (
-        <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {/* id="order-id" must be a <p> tag — loadgen uses //p[@id="order-id"] */}
-            <p id="order-id" style={{ margin: 0 }}>
+            <p id="order-id" style={{ margin: 0, fontSize: "0.875rem", color: "var(--text-muted)" }}>
                 Order ID:{" "}
                 <span style={{ fontFamily: "monospace" }} data-dt-mask>
                     {data.orderId}
