@@ -1,14 +1,16 @@
 using EasyTrade.BrokerService.Entities.Products;
 using EasyTrade.BrokerService.Entities.Products.Repository;
-using EasyTrade.BrokerService.Test.Helpers;
 
 namespace EasyTrade.BrokerService.Test.Fakes;
 
-public class FakeProductRepository : FakeTransactionalRepository, IProductRepository
+public class FakeProductRepository : IProductRepository
 {
-    private readonly List<Product> _products = new();
+    private readonly List<Product> _products = [];
 
-    public FakeProductRepository(List<Product> products) => _products = products;
+    public FakeProductRepository(List<Product> products)
+    {
+        _products = products;
+    }
 
     public FakeProductRepository() { }
 
@@ -18,11 +20,12 @@ public class FakeProductRepository : FakeTransactionalRepository, IProductReposi
         return this;
     }
 
-    public Task<Product?> GetProduct(int productId)
+    public Task<Product?> GetProductAsync(Guid productId)
     {
         var product = _products.Find(x => x.Id == productId);
         return Task.FromResult(product);
     }
 
-    public IQueryable<Product> GetProducts() => _products.AsAsyncQueryable();
+    public Task<List<Product>> GetProductsAsync() =>
+        Task.FromResult(_products.ToList());
 }

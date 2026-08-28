@@ -31,16 +31,16 @@ services:
     <<: *default-service
     image: ${REGISTRY}/pricing-service:${TAG}
     depends_on:
-      - db
+      - db-adapter
     environment:
-      MSSQL_CONNECTIONSTRING: *go-connection-string
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
       PROXY_PREFIX: pricing-service
 
   broker-service:
     <<: *default-service
     image: ${REGISTRY}/broker-service:${TAG}
     depends_on:
-      - db
+      - db-adapter
       - user-service
       - pricing-service
       - feature-flag-service
@@ -49,7 +49,7 @@ services:
       PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
       <<: *feature-flag-service-env
       PROXY_PREFIX: broker-service
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
 
   frontend:
     <<: *default-service
@@ -88,13 +88,12 @@ services:
     image: ${REGISTRY}/offerservice:${TAG}
     depends_on:
       - user-service
-      - manager
+      - db-adapter
     environment:
       <<: *feature-flag-service-env
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
       USER_SERVICE_PORT: 8080
       USER_SERVICE_BASE_URL: user-service
-      MANAGER_BASE_URL: manager
-      MANAGER_PORT: 8080
 
   feature-flag-service:
     <<: *default-service
@@ -115,11 +114,11 @@ services:
     <<: *default-service
     image: ${REGISTRY}/credit-card-order-service:${TAG}
     depends_on:
-      - db
+      - db-adapter
       - background-service
     environment:
       PROXY_PREFIX: credit-card-order-service
-      MSSQL_CONNECTIONSTRING: *java-connection-string
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
       THIRD_PARTY_SERVICE_HOSTANDPORT: background-service:8080
       <<: *feature-flag-service-env
       WORK_DELAY: 300

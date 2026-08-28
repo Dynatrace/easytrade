@@ -10,13 +10,13 @@ public class BalanceService(IBalanceRepository balanceRepository, ILogger<Balanc
     private readonly IBalanceRepository _balanceRepository = balanceRepository;
     private readonly ILogger _logger = logger;
 
-    public Task<Balance> Deposit(int accountId, decimal amount) =>
+    public Task<Balance> Deposit(Guid accountId, decimal amount) =>
         ModifyBalance(accountId, amount, ActionType.Deposit);
 
-    public Task<Balance> Withdraw(int accountId, decimal amount) =>
+    public Task<Balance> Withdraw(Guid accountId, decimal amount) =>
         ModifyBalance(accountId, amount, ActionType.Withdraw);
 
-    private async Task<Balance> ModifyBalance(int accountId, decimal amount, ActionType actionType)
+    private async Task<Balance> ModifyBalance(Guid accountId, decimal amount, ActionType actionType)
     {
         _logger.LogInformation(
             "Modify balance with action type [{action}], amount [{amount}], account ID [{id}]",
@@ -25,9 +25,7 @@ public class BalanceService(IBalanceRepository balanceRepository, ILogger<Balanc
             accountId
         );
 
-        var balance =
-            await _balanceRepository.GetBalanceOfAccount(accountId)
-            ?? throw new AccountNotFoundException(accountId);
+        var balance = await GetBalanceOrThrow(accountId);
         var balanceDifference = actionType is ActionType.Withdraw ? -amount : amount;
         var balanceHistory = new BalanceHistory(
             accountId,
@@ -47,35 +45,24 @@ public class BalanceService(IBalanceRepository balanceRepository, ILogger<Balanc
             default:
                 throw new InvalidOperationException();
         }
-        await _balanceRepository.BeginTransaction();
-        _balanceRepository.UpdateBalance(balance);
-        _balanceRepository.AddBalanceHistory(balanceHistory);
-        try
-        {
-            await _balanceRepository.SaveChanges();
-            await _balanceRepository.CommitTransaction();
-        }
-        catch (Exception e)
-        {
-            _logger.LogError("Error while saving changes: {Message}", e.Message);
-            await _balanceRepository.RollbackTransaction();
-            var exception = e.InnerException ?? e;
-            throw new DbException(exception.Message, e);
-        }
+        balance = await _balanceRepository.UpdateBalanceAsync(balance);
+        await _balanceRepository.AddBalanceHistoryAsync(balanceHistory);
 
         _logger.LogDebug("Updated balance: {balance}", balance.ToJson());
         return balance;
     }
 
-    public async Task<Balance> GetBalanceOfAccount(int accountId)
+    public async Task<Balance> GetBalanceOfAccount(Guid accountId)
     {
         _logger.LogInformation("Get balance of account with ID [{id}]", accountId);
 
-        var balance =
-            await _balanceRepository.GetBalanceOfAccount(accountId)
-            ?? throw new AccountNotFoundException(accountId);
+        var balance = await GetBalanceOrThrow(accountId);
         _logger.LogDebug("Found balance: {balance}", balance.ToJson());
 
         return balance;
     }
+
+    private async Task<Balance> GetBalanceOrThrow(Guid accountId) =>
+        await _balanceRepository.GetBalanceOfAccountAsync(accountId)
+        ?? throw new BalanceNotFoundException(accountId);
 }

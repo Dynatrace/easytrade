@@ -13,8 +13,10 @@ public class TradeController : ControllerBase
     private readonly ITradeService _tradeService;
     private readonly ILongTradeService _longTradeService;
 
-    public TradeController(ITradeService tradeService, ILongTradeService longTradeService) =>
+    public TradeController(ITradeService tradeService, ILongTradeService longTradeService)
+    {
         (_tradeService, _longTradeService) = (tradeService, longTradeService);
+    }
 
     /// <summary>
     /// Quick buy
@@ -97,10 +99,7 @@ public class TradeController : ControllerBase
     /// </summary>
     [ProducesResponseType(StatusCodes.Status200OK)]
     [HttpPost("long/process")]
-    public async Task ProcessLongTransactions()
-    {
-        await _longTradeService.ProcessLongRunningTransactions();
-    }
+    public async Task ProcessLongTransactions() => await _longTradeService.ProcessLongRunningTransactions();
 
     /// <summary>
     /// Get all trades for account
@@ -111,9 +110,9 @@ public class TradeController : ControllerBase
     /// <param name="onlyOpen">Filter only open trades</param>
     /// <param name="onlyLong">Filter only long trades</param>
     [ProducesResponseType(typeof(TradeResultDTO), StatusCodes.Status200OK)]
-    [HttpGet("{accountId:int}")]
+    [HttpGet("{accountId:guid}")]
     public async Task<TradeResultDTO> GetTradesOfAccount(
-        int accountId,
+        Guid accountId,
         [FromQuery] int count = 10,
         [FromQuery] int page = 0,
         [FromQuery] bool onlyOpen = false,

@@ -1,6 +1,6 @@
+using EasyTrade.BrokerService.Helpers;
 using System.Text;
 using System.Text.Json;
-using EasyTrade.BrokerService.Helpers;
 
 namespace EasyTrade.BrokerService.Middleware.CreditCardValidation;
 

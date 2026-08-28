@@ -1,7 +1,7 @@
-using System.Net.Mime;
 using EasyTrade.BrokerService.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
+using System.Net.Mime;
 
 namespace EasyTrade.BrokerService.Versioning;
 

@@ -1,20 +1,16 @@
-﻿using EasyTrade.BrokerService.Helpers;
+﻿namespace EasyTrade.BrokerService.Entities.Instruments.Repository;
 
-namespace EasyTrade.BrokerService.Entities.Instruments.Repository;
-
-public interface IInstrumentRepository : ITransactionalRepository
+public interface IInstrumentRepository
 {
-    public IQueryable<Instrument> GetAllInstruments();
+    Task<List<Instrument>> GetAllInstrumentsAsync();
 
-    public Task<Instrument?> GetInstrument(int instrumentId);
+    Task<Instrument?> GetInstrumentAsync(Guid instrumentId);
 
-    public Task<OwnedInstrument?> GetOwnedInstrument(int accountId, int instrumentId);
+    Task<OwnedInstrument?> GetOwnedInstrumentAsync(Guid accountId, Guid instrumentId);
 
-    public IQueryable<OwnedInstrument> GetOwnedInstrumentsOfAccount(int accountId);
+    Task<List<OwnedInstrument>> GetOwnedInstrumentsOfAccountAsync(Guid accountId);
 
-    public void AddOwnedInstrument(OwnedInstrument ownedInstrument);
+    Task<OwnedInstrument> AddOwnedInstrumentAsync(OwnedInstrument ownedInstrument);
 
-    public void UpdateOwnedInstrument(OwnedInstrument ownedInstrument);
-
-    public void DeleteOwnedInstrument(OwnedInstrument ownedInstrument);
+    Task<OwnedInstrument> UpdateOwnedInstrumentAsync(OwnedInstrument ownedInstrument);
 }

@@ -16,6 +16,7 @@ CREATE TABLE "Accounts" (
 );
 INSERT INTO
     "Accounts" (
+        "Id",
         "PackageId",
         "FirstName",
         "LastName",
@@ -29,6 +30,7 @@ INSERT INTO
         "Address"
 )
 VALUES(
+    'a0000000-0000-4000-8000-000000000000',
     'a0000000-0000-4000-8000-000000000002',
     'EASYTRADE',
     'OWNER',
@@ -40,8 +42,22 @@ VALUES(
     '2021-12-19 22:24:42',
     true,
     '2 Burton coves Port Carlyton HS2 9AN'
-),
-(
+);
+INSERT INTO
+    "Accounts" (
+        "PackageId",
+        "FirstName",
+        "LastName",
+        "Username",
+        "Email",
+        "HashedPassword",
+        "Origin",
+        "CreationDate",
+        "PackageActivationDate",
+        "AccountActive",
+        "Address"
+)
+VALUES(
     'a0000000-0000-4000-8000-000000000001',
     'Lab',
     'User',

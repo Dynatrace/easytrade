@@ -4,9 +4,12 @@ namespace EasyTrade.BrokerService.Test.Fakes;
 
 public class FakeFeatureFlagServiceConnector : IFeatureFlagServiceConnector
 {
-    private readonly List<Flag> _flags = new();
+    private readonly List<Flag> _flags = [];
 
-    public FakeFeatureFlagServiceConnector(List<Flag> flags) => _flags = flags;
+    public FakeFeatureFlagServiceConnector(List<Flag> flags)
+    {
+        _flags = flags;
+    }
 
     public FakeFeatureFlagServiceConnector() { }
 

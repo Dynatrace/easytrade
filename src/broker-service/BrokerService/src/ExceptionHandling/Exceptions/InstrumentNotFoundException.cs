@@ -11,6 +11,6 @@ public class InstrumentNotFoundException : Exception
     public InstrumentNotFoundException(string? message, System.Exception? innerException)
         : base(message, innerException) { }
 
-    public InstrumentNotFoundException(int id)
+    public InstrumentNotFoundException(Guid id)
         : this($"Instrument with id {id} doesn't exist") { }
 }

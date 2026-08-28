@@ -1,79 +1,124 @@
 package price
 
 import (
+	"context"
 	"net/http"
 	"strconv"
+	"time"
 
-	"dynatrace.com/easytrade/pricing-service/services"
+	pb "dynatrace.com/easytrade/pricing-service/proto"
+	"dynatrace.com/easytrade/pricing-service/utils"
 	"github.com/gin-gonic/gin"
-
-	log "github.com/sirupsen/logrus"
+	"github.com/google/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-// @Summary		Get instrument prices
-// @Description	Get current price of each instrument
-// @Tags			Pricing-service
-// @Accept			*/*
-// @Produce		json
-// @Produce		application/xml
-// @Success		200	{object}	price.pricesResult
-// @Router			/v1/prices/latest [get]
-func GetCurrentPrices(ctx *gin.Context) {
-	log.Info("Getting current prices")
-
-	var priceList []price
-
-	services.DB.Where("Timestamp = (?)", services.DB.Table("Pricing").Select("max(Timestamp)")).Find(&priceList)
-
-	negotiateResponse(ctx, http.StatusOK, &pricesResult{
-		Results: priceList,
-	})
+type Handler struct {
+	client pb.PricingServiceClient
 }
 
-// @Summary		Get instrument price
-// @Description	Get last price of instrument
-// @Tags			Pricing-service
-// @Accept			*/*
-// @Produce		json
-// @Produce		application/xml
-// @Success		200	{object}	price.price
-// @Router			/v1/prices/last [get]
-func GetLastPrice(ctx *gin.Context) {
-	log.Info("Getting last price")
-
-	var lastPrice price
-
-	services.DB.Last(&lastPrice)
-
-	negotiateResponse(ctx, http.StatusOK, &lastPrice)
+func NewHandler(client pb.PricingServiceClient) *Handler {
+	return &Handler{client: client}
 }
 
-// @Summary		Get prices of a particular instrument
-// @Description	Get specific number of records of particular instrument
-// @Tags			Pricing-service
-// @Accept			*/*
-// @Produce		json
-// @Produce		application/xml
-// @Success		200	{object}	price.pricesResult
-// @Router			/v1/prices/instrument/{instrumentId} [get]
-// @Param			instrumentId	path	int	true	"Instrument id"
-// @Param			records			query	int	false	"Number of records"
-func GetPricingDataForInstrument(ctx *gin.Context) {
-	instrumentId := ctx.Param("instrumentId")
-	records, _ := strconv.Atoi(ctx.DefaultQuery("records", "100"))
+func (h *Handler) GetCurrentPrices(ctx *gin.Context) {
+	resp, err := h.client.GetLatestPrices(context.Background(), &emptypb.Empty{})
+	if handleInternalError(ctx, err) {
+		return
+	}
+	negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: pricesFromProto(resp.GetPrices())})
+}
 
-	log.WithFields(log.Fields{
-		"instrumentId": instrumentId,
-		"records":      records,
-	}).Info("Getting pricing data for instrument")
-
-	var priceList []price
-
-	services.DB.Table("Pricing").Where("instrumentId = ?", instrumentId).Order("Timestamp desc").Limit(records).Scan(&priceList)
-
-	negotiateResponse(ctx, http.StatusOK, &pricesResult{
-		Results: priceList,
+func (h *Handler) GetLastPrice(ctx *gin.Context) {
+	instrumentId, ok := parseUUIDQuery(ctx, "instrumentId")
+	if !ok {
+		return
+	}
+	resp, err := h.client.GetLatestPriceForInstrument(context.Background(), &pb.GetLatestPriceForInstrumentRequest{
+		InstrumentId: instrumentId.String(),
 	})
+	if handleInternalError(ctx, err) {
+		return
+	}
+	p := priceFromProto(resp)
+	negotiateResponse(ctx, http.StatusOK, &p)
+}
+
+func (h *Handler) GetPricingDataForInstrument(ctx *gin.Context) {
+	instrumentId, ok := parseUUIDParam(ctx, "instrumentId")
+	if !ok {
+		return
+	}
+	recordsI32 := parseRecordsLimit(ctx)
+	resp, err := h.client.GetPricesForInstrument(context.Background(), &pb.GetPricesForInstrumentRequest{
+		InstrumentId: instrumentId.String(),
+		Limit:        &recordsI32,
+	})
+	if handleInternalError(ctx, err) {
+		return
+	}
+	negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: pricesFromProto(resp.GetPrices())})
+}
+
+func parseRecordsLimit(ctx *gin.Context) int32 {
+	n, _ := strconv.Atoi(ctx.DefaultQuery("records", "100"))
+	return int32(n)
+}
+
+func parseUUIDParam(ctx *gin.Context, param string) (uuid.UUID, bool) {
+	return parseUUID(ctx, param, ctx.Param)
+}
+
+func parseUUIDQuery(ctx *gin.Context, param string) (uuid.UUID, bool) {
+	return parseUUID(ctx, param, ctx.Query)
+}
+
+func parseUUID(ctx *gin.Context, param string, extract func(string) string) (uuid.UUID, bool) {
+	id, err := uuid.Parse(extract(param))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid " + param})
+		return uuid.Nil, false
+	}
+	return id, true
+}
+
+func handleInternalError(ctx *gin.Context, err error) bool {
+	if err == nil {
+		return false
+	}
+	utils.GetSugar().Error(err)
+	if st, ok := status.FromError(err); ok && st.Code() == codes.NotFound {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	} else {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+	return true
+}
+
+func priceFromProto(msg *pb.PriceMessage) price {
+	var ts time.Time
+	if msg.GetTimestamp() != nil {
+		ts = msg.GetTimestamp().AsTime()
+	}
+	return price{
+		Id:           uuid.MustParse(msg.GetId()),
+		InstrumentId: uuid.MustParse(msg.GetInstrumentId()),
+		Timestamp:    ts,
+		Open:         msg.GetOpen(),
+		High:         msg.GetHigh(),
+		Low:          msg.GetLow(),
+		Close:        msg.GetClose(),
+	}
+}
+
+func pricesFromProto(msgs []*pb.PriceMessage) []price {
+	result := make([]price, 0, len(msgs))
+	for _, m := range msgs {
+		result = append(result, priceFromProto(m))
+	}
+	return result
 }
 
 func negotiateResponse(ctx *gin.Context, status int, data any) {

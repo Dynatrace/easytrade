@@ -19,7 +19,7 @@ public class InstrumentController(IInstrumentService instrumentService) : Contro
     /// <returns>All instruments</returns>
     [ProducesResponseType(typeof(InstrumentsResultDTO), StatusCodes.Status200OK)]
     [HttpGet]
-    public async Task<InstrumentsResultDTO> GetOwnedInstruments([FromQuery] int accountId = 0)
+    public async Task<InstrumentsResultDTO> GetOwnedInstruments([FromQuery] Guid? accountId = null)
     {
         var instrument = await _instrumentService.GetInstruments(accountId);
         return new InstrumentsResultDTO(instrument);

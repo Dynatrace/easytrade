@@ -1,7 +1,7 @@
 ﻿namespace EasyTrade.BrokerService.Entities.Prices;
 
 public class Price(
-    int instrumentId,
+    Guid instrumentId,
     DateTimeOffset timestamp,
     decimal open,
     decimal high,
@@ -9,8 +9,8 @@ public class Price(
     decimal close
 )
 {
-    public int Id { get; set; }
-    public int InstrumentId { get; set; } = instrumentId;
+    public Guid Id { get; set; }
+    public Guid InstrumentId { get; set; } = instrumentId;
     public DateTimeOffset Timestamp { get; set; } = timestamp;
     public decimal Open { get; set; } = open;
     public decimal High { get; set; } = high;

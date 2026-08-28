@@ -1,113 +1,112 @@
-import { Query, ParamsDictionary, Request } from "express-serve-static-core"
+import { ParamsDictionary, Request } from "express-serve-static-core"
 import { Response } from "express"
 import { logger } from "../logger"
-import { urls } from "../config"
 import { toXml } from "../utils"
+import { getPackages, getProducts } from "../services/db-adapter"
+import { PackageMessage } from "../proto/package_service"
+import { ProductMessage } from "../proto/product_service"
+import { Empty } from "../proto/google/protobuf/empty"
 
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-
-interface TypedRequestQuery<
-    P extends ParamsDictionary,
-    Q extends Query,
-> extends Request {
-    params: P
-    query: Q
-}
-
-type GetOffersRequest = TypedRequestQuery<
-    { platform: string },
-    { productFilter: string; maxYearlyFeeFilter: string }
+type GetOffersRequest = Request<
+    ParamsDictionary & { platform: string },
+    unknown,
+    never,
+    { productFilter?: string; maxYearlyFeeFilter?: string }
 >
 
-interface Package {
-    id: number
-    name: string
-    price: number
-    support: string
+type OfferFilters = {
+    maxYearlyFee: number | undefined
+    productNames: string[] | undefined
 }
 
-interface Product {
-    id: number
-    name: string
-    ppt: number
-    currency: string
+type OfferData = {
+    platform: string
+    quoteFor: string
+    packages: PackageMessage[]
+    products: ProductMessage[]
 }
 
-// ---------------------------------------------------------------------------
-// Data fetching
-// ---------------------------------------------------------------------------
-
-async function getPackages(maxYearlyFee?: number): Promise<Package[]> {
-    try {
-        const url = urls.getPackages()
-        logger.info(`Fetching packages from [${url}]`)
-        const res = await fetch(url)
-        const data: Package[] = await res.json()
-        logger.debug(`Packages response: [${JSON.stringify(data)}]`)
-        return maxYearlyFee === undefined
-            ? data
-            : data.filter((p) => p.price <= maxYearlyFee)
-    } catch (err) {
-        logger.warn(`Error when getting package list [${err}]`)
-        return []
-    }
-}
-
-async function getProducts(productNames?: string[]): Promise<Product[]> {
-    try {
-        const url = urls.getProducts()
-        logger.info(`Fetching products from [${url}]`)
-        const res = await fetch(url)
-        const data: Product[] = await res.json()
-        logger.debug(`Products response: [${JSON.stringify(data)}]`)
-        return productNames === undefined
-            ? data
-            : data.filter((p) => productNames.includes(p.name))
-    } catch (err) {
-        logger.warn(`Error when getting product list [${err}]`)
-        return []
-    }
-}
-
-// ---------------------------------------------------------------------------
-// Handler
-// ---------------------------------------------------------------------------
+const XML_MIME_TYPES = ["application/xml", "text/xml"] as const
 
 export async function getOffers(
     req: GetOffersRequest,
     res: Response
 ): Promise<void> {
-    const platform = req.params.platform
-    const maxYearlyFee =
-        req.query.maxYearlyFeeFilter === undefined
-            ? undefined
-            : Number(req.query.maxYearlyFeeFilter)
-    const productNames: string[] | undefined =
-        req.query.productFilter === undefined
-            ? undefined
-            : JSON.parse(req.query.productFilter)
+    const { platform } = req.params
+    const filters = parseFilters(req.query)
 
     logger.info(`Preparing offer response for [${platform}]`)
-    const [packages, products] = await Promise.all([
-        getPackages(maxYearlyFee),
-        getProducts(productNames),
-    ])
 
-    const data = {
-        platform: "EasyTrade",
-        quoteFor: platform,
-        packages,
-        products,
+    let packages: PackageMessage[]
+    let products: ProductMessage[]
+
+    try {
+        [{ packages }, { products }] = await Promise.all([
+            getPackages(Empty.create()),
+            getProducts(Empty.create()),
+        ])
+    } catch (err) {
+        logger.error(`Error fetching data from db-adapter`, err)
+        res.status(502).json(`Error fetching data from db-adapter [${err}]`)
+        return
     }
 
-    const xmlMimeTypes = ["application/xml", "text/xml"]
-    const acceptHeader = req.header("Accept")
+    const data: OfferData = {
+        platform: "EasyTrade",
+        quoteFor: platform,
+        packages: filterPackagesByMaxFee(packages, filters.maxYearlyFee),
+        products: filterProductsByName(products, filters.productNames),
+    }
 
-    if (acceptHeader !== undefined && xmlMimeTypes.includes(acceptHeader)) {
-        res.status(200).contentType(xmlMimeTypes[0]).send(toXml("offer", data))
+    sendOfferResponse(req, res, data)
+}
+
+function sendOfferResponse(
+    req: GetOffersRequest,
+    res: Response,
+    data: OfferData
+): void {
+    if (isXmlRequest(req)) {
+        res.status(200).contentType(XML_MIME_TYPES[0]).send(toXml("offer", data))
     } else {
         res.status(200).json(data)
     }
+}
+
+
+function parseFilters(query: GetOffersRequest["query"]): OfferFilters {
+    return {
+        maxYearlyFee:
+            query.maxYearlyFeeFilter !== undefined
+                ? Number(query.maxYearlyFeeFilter)
+                : undefined,
+        productNames:
+            query.productFilter !== undefined
+                ? (JSON.parse(query.productFilter) as string[])
+                : undefined,
+    }
+}
+
+function filterPackagesByMaxFee(
+    packages: PackageMessage[],
+    maxYearlyFee: number | undefined
+): PackageMessage[] {
+    if (maxYearlyFee === undefined) return packages
+    return packages.filter((pkg) => pkg.price <= maxYearlyFee)
+}
+
+function filterProductsByName(
+    products: ProductMessage[],
+    productNames: string[] | undefined
+): ProductMessage[] {
+    if (productNames === undefined) return products
+    return products.filter((product) => productNames.includes(product.name))
+}
+
+function isXmlRequest(req: GetOffersRequest): boolean {
+    const acceptHeader = req.header("Accept")
+    return (
+        acceptHeader !== undefined &&
+        (XML_MIME_TYPES as readonly string[]).includes(acceptHeader)
+    )
 }

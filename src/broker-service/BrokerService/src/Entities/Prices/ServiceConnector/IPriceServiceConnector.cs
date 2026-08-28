@@ -2,7 +2,7 @@
 
 public interface IPriceServiceConnector
 {
-    public Task<IEnumerable<Price>> GetPricesByInstrumentId(int id, int count);
+    public Task<IEnumerable<Price>> GetPricesByInstrumentId(Guid id, int count);
     public Task<IEnumerable<Price>> GetLatestPrices();
-    public Task<Price?> GetLastPriceByInstrumentId(int id);
+    public Task<Price?> GetLastPriceByInstrumentId(Guid id);
 }

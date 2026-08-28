@@ -1,29 +1,22 @@
+using EasyTrade.BrokerService.Connectors;
 using EasyTrade.BrokerService.Helpers;
 using EasyTrade.BrokerService.ProblemPatterns.OpenFeature;
 
 namespace EasyTrade.BrokerService.Entities.Trades.Repository;
 
 public class TradeRepositoryWithDbNotResponding(
-    BrokerDbContext dbContext,
+    IDbAdapterConnector connector,
     IPluginManager pluginManager
-) : TradeRepository(dbContext)
+) : TradeRepository(connector)
 {
     private readonly IPluginManager _pluginManager = pluginManager;
 
-    public override void AddTrade(Trade trade)
+    public override async Task<Trade> CreateTradeAsync(Trade trade)
     {
-        if (CheckIfProblemPatternIsOn())
+        if (await _pluginManager.GetPluginState(Constants.DbNotResponding, false))
         {
             trade.Id = Constants.InvalidTradeId;
         }
-        base.AddTrade(trade);
-    }
-
-    private bool CheckIfProblemPatternIsOn()
-    {
-        var task = Task.Run(
-            async () => await _pluginManager.GetPluginState(Constants.DbNotResponding, false)
-        );
-        return task.Result;
+        return await base.CreateTradeAsync(trade);
     }
 }
