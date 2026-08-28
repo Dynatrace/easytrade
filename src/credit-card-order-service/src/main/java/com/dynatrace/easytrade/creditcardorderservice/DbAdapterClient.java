@@ -27,7 +27,7 @@ public class DbAdapterClient {
         this.stub = stub;
     }
 
-    public boolean hasExistingOrder(Integer accountId) {
+    public boolean hasExistingOrder(String accountId) {
         try {
             return stub.existsByAccountId(existsByAccountIdToProto(accountId)).getExists();
         } catch (StatusRuntimeException e) {
@@ -52,7 +52,7 @@ public class DbAdapterClient {
         }
     }
 
-    public Optional<CreditCardOrderStatusHistory> getStatusListByAccountId(Integer accountId) {
+    public Optional<CreditCardOrderStatusHistory> getStatusListByAccountId(String accountId) {
         try {
             List<CreditCardOrderStatusMessage> statuses = stub.getStatusListByAccountId(
                     statusListToProto(accountId)).getStatusesList();
@@ -67,10 +67,10 @@ public class DbAdapterClient {
         }
     }
 
-    public Optional<CreditCardOrderStatus> getLastOrderStatusByAccountId(Integer accountId) {
+    public Optional<CreditCardOrderStatus> getLastOrderStatusByAccountId(String accountId) {
         try {
             return Optional.of(fromProto(
-                    stub.getLastOrderStatusByAccountId(lastOrderStatusToProto(accountId))));
+                    stub.getLastOrderStatusByAccountId(lastOrderStatusByAccountIdToProto(accountId))));
         } catch (StatusRuntimeException e) {
             return handleNotFound(e, Optional.empty());
         }
@@ -79,7 +79,7 @@ public class DbAdapterClient {
     public Optional<CreditCardOrderStatus> getLastOrderStatusByOrderId(String orderId) {
         try {
             return Optional.of(fromProto(
-                    stub.getLastOrderStatusByOrderId(lastOrderStatusToProto(orderId))));
+                    stub.getLastOrderStatusByOrderId(lastOrderStatusByOrderIdToProto(orderId))));
         } catch (StatusRuntimeException e) {
             return handleNotFound(e, Optional.empty());
         }
@@ -125,7 +125,7 @@ public class DbAdapterClient {
         }
     }
 
-    public int deleteOrdersByAccountId(Integer accountId) {
+    public int deleteOrdersByAccountId(String accountId) {
         try {
             return stub.deleteOrdersByAccountId(deleteOrdersToProto(accountId)).getAffected();
         } catch (StatusRuntimeException e) {
@@ -135,7 +135,7 @@ public class DbAdapterClient {
 
     private CreateCreditCardOrderRequest toProto(CreditCardOrderRequest request) {
         return CreateCreditCardOrderRequest.newBuilder()
-                .setAccountId(request.accountId().toString())
+                .setAccountId(request.accountId())
                 .setEmail(request.email())
                 .setName(request.name())
                 .setShippingAddress(request.shippingAddress())
@@ -143,9 +143,9 @@ public class DbAdapterClient {
                 .build();
     }
 
-    private ExistsByAccountIdRequest existsByAccountIdToProto(Integer accountId) {
+    private ExistsByAccountIdRequest existsByAccountIdToProto(String accountId) {
         return ExistsByAccountIdRequest.newBuilder()
-                .setAccountId(accountId.toString())
+                .setAccountId(accountId)
                 .build();
     }
 
@@ -153,19 +153,19 @@ public class DbAdapterClient {
         return GetShippingAddressRequest.newBuilder().setOrderId(orderId).build();
     }
 
-    private GetStatusListByAccountIdRequest statusListToProto(Integer accountId) {
+    private GetStatusListByAccountIdRequest statusListToProto(String accountId) {
         return GetStatusListByAccountIdRequest.newBuilder()
-                .setAccountId(accountId.toString())
+                .setAccountId(accountId)
                 .build();
     }
 
-    private GetLastOrderStatusByAccountIdRequest lastOrderStatusToProto(Integer accountId) {
+    private GetLastOrderStatusByAccountIdRequest lastOrderStatusByAccountIdToProto(String accountId) {
         return GetLastOrderStatusByAccountIdRequest.newBuilder()
-                .setAccountId(accountId.toString())
+                .setAccountId(accountId)
                 .build();
     }
 
-    private GetLastOrderStatusByOrderIdRequest lastOrderStatusToProto(String orderId) {
+    private GetLastOrderStatusByOrderIdRequest lastOrderStatusByOrderIdToProto(String orderId) {
         return GetLastOrderStatusByOrderIdRequest.newBuilder()
                 .setOrderId(orderId)
                 .build();
@@ -203,9 +203,9 @@ public class DbAdapterClient {
                 .build();
     }
 
-    private DeleteOrdersRequest deleteOrdersToProto(Integer accountId) {
+    private DeleteOrdersRequest deleteOrdersToProto(String accountId) {
         return DeleteOrdersRequest.newBuilder()
-                .setAccountId(accountId.toString())
+                .setAccountId(accountId)
                 .build();
     }
 
@@ -218,7 +218,7 @@ public class DbAdapterClient {
                 Instant.ofEpochSecond(msg.getTimestamp().getSeconds(), msg.getTimestamp().getNanos()),
                 ZoneOffset.UTC);
         return new CreditCardOrderStatus(
-                Integer.parseInt(msg.getId()),
+                msg.getId(),
                 msg.getCreditCardOrderId(),
                 datetime,
                 msg.getStatus(),

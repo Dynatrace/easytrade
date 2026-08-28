@@ -49,7 +49,7 @@ export type CreditCardOrderResponse = {
 }
 
 export type CardStatusResult = {
-    id: number
+    id: string
     creditCardOrderId: string
     timestamp: string
     status: OrderStatus
