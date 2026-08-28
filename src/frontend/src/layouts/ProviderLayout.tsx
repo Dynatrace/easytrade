@@ -13,9 +13,11 @@ import { getOrderStatus, getOrderStatusHistory } from "../api/creditCard/order"
 import { getAllVersions } from "../api/version/versions"
 import AppLayout from "./AppLayout"
 import { ToastProvider } from "../contexts/ToastContext/context"
+import { ThemeProvider } from "../contexts/ThemeContext/context"
 
 export default function ProviderLayout() {
     return (
+        <ThemeProvider>
         <FormatterProvider currency="USD" locale="en-US">
             <ToastProvider>
             <QueryClientProvider
@@ -38,5 +40,6 @@ export default function ProviderLayout() {
             </QueryClientProvider>
             </ToastProvider>
         </FormatterProvider>
+        </ThemeProvider>
     )
 }

@@ -1,25 +1,15 @@
 import React, { useEffect, useRef } from "react"
 import { createChart, ColorType, CandlestickData, CandlestickSeries, Time } from "lightweight-charts"
 import { Price } from "../../api/price/types"
+import { useChartColors } from "../../hooks/useChartColors"
 
 type CandlestickChartProps = {
     prices: Price[]
 }
 
-const CHART_COLORS = {
-    background: "#1a1f2e",
-    text: "#b0bec5",
-    grid: "#2a3042",
-    upColor: "#26a69a",
-    downColor: "#ef5350",
-    borderUp: "#26a69a",
-    borderDown: "#ef5350",
-    wickUp: "#26a69a",
-    wickDown: "#ef5350",
-} as const
-
 export default function InstrumentPriceChart({ prices }: CandlestickChartProps) {
     const containerRef = useRef<HTMLDivElement>(null)
+    const colors = useChartColors()
 
     useEffect(() => {
         const el = containerRef.current
@@ -27,12 +17,12 @@ export default function InstrumentPriceChart({ prices }: CandlestickChartProps) 
 
         const chart = createChart(el, {
             layout: {
-                background: { type: ColorType.Solid, color: CHART_COLORS.background },
-                textColor: CHART_COLORS.text,
+                background: { type: ColorType.Solid, color: colors.background },
+                textColor: colors.text,
             },
             grid: {
-                vertLines: { color: CHART_COLORS.grid },
-                horzLines: { color: CHART_COLORS.grid },
+                vertLines: { color: colors.grid },
+                horzLines: { color: colors.grid },
             },
             width: el.clientWidth,
             height: el.clientHeight,
@@ -40,12 +30,12 @@ export default function InstrumentPriceChart({ prices }: CandlestickChartProps) 
         })
 
         const series = chart.addSeries(CandlestickSeries, {
-            upColor: CHART_COLORS.upColor,
-            downColor: CHART_COLORS.downColor,
-            borderUpColor: CHART_COLORS.borderUp,
-            borderDownColor: CHART_COLORS.borderDown,
-            wickUpColor: CHART_COLORS.wickUp,
-            wickDownColor: CHART_COLORS.wickDown,
+            upColor: colors.up,
+            downColor: colors.down,
+            borderUpColor: colors.up,
+            borderDownColor: colors.down,
+            wickUpColor: colors.up,
+            wickDownColor: colors.down,
         })
 
         const candles: CandlestickData[] = prices
@@ -70,7 +60,7 @@ export default function InstrumentPriceChart({ prices }: CandlestickChartProps) 
             observer.disconnect()
             chart.remove()
         }
-    }, [prices])
+    }, [prices, colors.background, colors.text, colors.grid, colors.up, colors.down])
 
     return (
         <div

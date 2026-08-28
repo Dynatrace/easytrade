@@ -1,8 +1,11 @@
+import React, { useState } from "react"
 import {
     OrderStatusEntry,
     SuccessOrderStatusHistoryResponse,
 } from "../../api/creditCard/order"
 import { useFormatter } from "../../contexts/FormatterContext/context"
+
+const COLLAPSED_COUNT = 5
 
 function formatStatus(status: string): string {
     return status
@@ -37,6 +40,14 @@ export default function CreditCardsStatusTimeline({
 }: {
     data: SuccessOrderStatusHistoryResponse
 }) {
+    const [expanded, setExpanded] = useState(false)
+
+    // Chronological order: oldest first (statusList from API is newest first)
+    const chronological = [...data.statusList].reverse()
+    const total = chronological.length
+    const visible = expanded ? chronological : chronological.slice(-COLLAPSED_COUNT)
+    const hidden = total - COLLAPSED_COUNT
+
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
             {/* id="order-id" must be a <p> tag — loadgen uses //p[@id="order-id"] */}
@@ -46,11 +57,34 @@ export default function CreditCardsStatusTimeline({
                     {data.orderId}
                 </span>
             </p>
+
+            {!expanded && hidden > 0 && (
+                <button
+                    type="button"
+                    className="btn btn-ghost btn-sm"
+                    style={{ alignSelf: "flex-start", color: "var(--text-secondary)" }}
+                    onClick={() => setExpanded(true)}
+                >
+                    ↑ Show {hidden} earlier {hidden === 1 ? "entry" : "entries"} ({total} total)
+                </button>
+            )}
+
             <ol className="timeline">
-                {[...data.statusList]
-                    .reverse()
-                    .map((entry, id) => <TimelineEntry key={id} {...entry} />)}
+                {visible.map((entry, idx) => (
+                    <TimelineEntry key={entry.timestamp + idx} {...entry} />
+                ))}
             </ol>
+
+            {expanded && hidden > 0 && (
+                <button
+                    type="button"
+                    className="btn btn-ghost btn-sm"
+                    style={{ alignSelf: "flex-start", color: "var(--text-secondary)" }}
+                    onClick={() => setExpanded(false)}
+                >
+                    ↓ Show fewer
+                </button>
+            )}
         </div>
     )
 }

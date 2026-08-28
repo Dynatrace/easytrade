@@ -4,6 +4,7 @@ import UserPanel from "./UserPanel"
 import { useAuth } from "../../contexts/AuthContext/context"
 import FeatureFlagIcon from "./FeatureFlagIcon"
 import VersionInfo from "../version/VersionInfo"
+import ThemeSwitcher from "./ThemeSwitcher"
 
 export default function AppHeader() {
     const { isLoggedIn } = useAuth()
@@ -15,6 +16,7 @@ export default function AppHeader() {
                 <VersionInfo />
             </div>
             <div className="app-header-right">
+                <ThemeSwitcher />
                 {isLoggedIn && <UserPanel />}
             </div>
         </header>

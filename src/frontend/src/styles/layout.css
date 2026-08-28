@@ -23,7 +23,7 @@
     height: var(--header-height);
     background-color: var(--bg-surface);
     border-bottom: 1px solid var(--border);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-sm);
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -159,8 +159,8 @@
 }
 
 .page-container {
-    padding: var(--space-6);
-    max-width: 1280px;
+    padding: var(--space-6) clamp(var(--space-6), 3vw, var(--space-8));
+    max-width: clamp(900px, 92vw, 1800px);
     margin: 0 auto;         /* center content on wide viewports */
     width: 100%;
 }
@@ -291,7 +291,7 @@
     top: -4px;
     right: -6px;
     background-color: var(--danger);
-    color: #fff;
+    color: var(--text-on-accent);
     border-radius: 50%;
     font-size: 10px;
     font-weight: 700;

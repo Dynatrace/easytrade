@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { createChart, ColorType, LineData, LineSeries, Time } from "lightweight-charts"
 import { getPortfolioHistory, PortfolioPoint } from "../../api/portfolio/portfolio"
+import { useChartColors } from "../../hooks/useChartColors"
 
 type InstrumentsChartProps = {
     accountId: string
@@ -14,18 +15,12 @@ const PERIODS: { label: string; value: Period }[] = [
     { label: "30D", value: "30d" },
 ]
 
-const CHART_COLORS = {
-    background: "#1a1f2e",
-    text: "#b0bec5",
-    grid: "#2a3042",
-    line: "#388bfd",
-} as const
-
 export default function InstrumentsChart({ accountId }: InstrumentsChartProps) {
     const containerRef = useRef<HTMLDivElement>(null)
     const [period, setPeriod] = useState<Period>("1d")
     const [data, setData] = useState<PortfolioPoint[]>([])
     const [loading, setLoading] = useState(true)
+    const colors = useChartColors()
 
     useEffect(() => {
         let cancelled = false
@@ -45,19 +40,19 @@ export default function InstrumentsChart({ accountId }: InstrumentsChartProps) {
 
         const chart = createChart(el, {
             layout: {
-                background: { type: ColorType.Solid, color: CHART_COLORS.background },
-                textColor: CHART_COLORS.text,
+                background: { type: ColorType.Solid, color: colors.background },
+                textColor: colors.text,
             },
             grid: {
-                vertLines: { color: CHART_COLORS.grid },
-                horzLines: { color: CHART_COLORS.grid },
+                vertLines: { color: colors.grid },
+                horzLines: { color: colors.grid },
             },
             width: el.clientWidth,
             height: el.clientHeight,
             timeScale: { timeVisible: true, secondsVisible: false },
         })
 
-        const series = chart.addSeries(LineSeries, { color: CHART_COLORS.line, lineWidth: 2 })
+        const series = chart.addSeries(LineSeries, { color: colors.line, lineWidth: 2 })
 
         const lineData: LineData[] = data
             .map((p) => ({
@@ -78,7 +73,7 @@ export default function InstrumentsChart({ accountId }: InstrumentsChartProps) {
             observer.disconnect()
             chart.remove()
         }
-    }, [data, loading])
+    }, [data, loading, colors.background, colors.text, colors.grid, colors.line])
 
     return (
         <div>

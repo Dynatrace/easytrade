@@ -30,7 +30,7 @@
 .btn-primary {
     background-color: var(--accent);
     border-color: var(--accent);
-    color: #fff;
+    color: var(--text-on-accent);
 }
 .btn-primary:hover:not(:disabled) {
     background-color: var(--accent-hover);
@@ -50,7 +50,7 @@
 .btn-danger {
     background-color: var(--danger);
     border-color: var(--danger);
-    color: #fff;
+    color: var(--text-on-accent);
 }
 .btn-danger:hover:not(:disabled) {
     opacity: 0.85;
@@ -142,7 +142,7 @@ input[type="datetime-local"]:focus,
 select:focus,
 textarea:focus {
     border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px rgba(56, 139, 253, 0.15);
+    box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 .input:disabled,
@@ -284,11 +284,11 @@ select {
 
 .instrument-card {
     background-color: var(--bg-card);
-    border: 1px solid #3d4654;      /* slightly brighter than --border so cards stand out */
+    border: 1px solid var(--border-card);
     border-radius: var(--radius-lg);
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+    box-shadow: var(--shadow-card);
 }
 
 .instrument-card a {
@@ -306,7 +306,7 @@ select {
 }
 
 .instrument-card.owned-instrument {
-    border-color: #3d4654;          /* same as base — amount number carries the emphasis */
+    border-color: var(--border-card);
 }
 
 /* Identity block: ticker + company name */
@@ -780,7 +780,7 @@ dialog {
 }
 
 dialog::backdrop {
-    background-color: rgba(0, 0, 0, 0.65);
+    background-color: var(--shadow-overlay);
 }
 
 /* ---- Feature flag detail dialog ---- */
@@ -963,7 +963,7 @@ dialog::backdrop {
     border: 1px solid;
     font-size: var(--text-sm);
     font-weight: 500;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    box-shadow: var(--shadow-lg);
     pointer-events: all;
     white-space: nowrap;
     width: 100%;
