@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import { useState } from "react"
 import { Transaction } from "../api/transaction/types"
 import { Instrument } from "../api/instrument/types"
 import { useFormatter } from "../contexts/FormatterContext/context"
@@ -42,6 +42,9 @@ export default function TransactionsTable({
 }: TransactionsTableProps) {
     const { formatCurrency, formatDate } = useFormatter()
     const [page, setPage] = useState(0)
+    const [search, setSearch] = useState("")
+    const [directionFilter, setDirectionFilter] = useState<"" | "BUY" | "SELL">("")
+    const [statusFilter, setStatusFilter] = useState<"" | "ACTIVE" | "SUCCESS" | "FAIL">("")
 
     // Resolve instrument names
     const resolved = transactions.map((tx) => {
@@ -52,14 +55,64 @@ export default function TransactionsTable({
         }
     })
 
-    const totalPages = Math.ceil(resolved.length / PAGE_SIZE)
-    const slice = resolved.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+    // Apply filters
+    const filtered = resolved.filter((tx) => {
+        if (directionFilter && tx.actionType !== directionFilter) return false
+        if (statusFilter && tx.status !== statusFilter) return false
+        if (search) {
+            const q = search.toLowerCase()
+            if (
+                !tx.instrumentName.toLowerCase().includes(q) &&
+                !tx.actionType.toLowerCase().includes(q) &&
+                !tx.status.toLowerCase().includes(q)
+            ) return false
+        }
+        return true
+    })
+
+    const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+    const slice = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+
+    function resetPage() {
+        setPage(0)
+    }
 
     return (
         <div>
             <h3 className="section-heading">Transactions</h3>
-            {resolved.length === 0 ? (
-                <p className="empty-state">No transactions yet.</p>
+
+            {/* Toolbar */}
+            <div className="table-toolbar">
+                <input
+                    className="table-search"
+                    type="search"
+                    placeholder="Search…"
+                    value={search}
+                    onChange={(e) => { setSearch(e.target.value); resetPage() }}
+                />
+                <select
+                    className="table-filter-select"
+                    value={directionFilter}
+                    onChange={(e) => { setDirectionFilter(e.target.value as typeof directionFilter); resetPage() }}
+                >
+                    <option value="">All directions</option>
+                    <option value="BUY">BUY</option>
+                    <option value="SELL">SELL</option>
+                </select>
+                <select
+                    className="table-filter-select"
+                    value={statusFilter}
+                    onChange={(e) => { setStatusFilter(e.target.value as typeof statusFilter); resetPage() }}
+                >
+                    <option value="">All statuses</option>
+                    <option value="ACTIVE">ACTIVE</option>
+                    <option value="SUCCESS">SUCCESS</option>
+                    <option value="FAIL">FAIL</option>
+                </select>
+            </div>
+
+            {filtered.length === 0 ? (
+                <p className="empty-state">No transactions match the current filters.</p>
             ) : (
                 <>
                     <div style={{ overflowX: "auto" }}>
