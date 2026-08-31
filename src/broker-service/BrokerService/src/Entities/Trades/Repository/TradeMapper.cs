@@ -31,6 +31,7 @@ public static class TradeMapper
             Direction = trade.Direction,
             Quantity = (double)trade.Quantity,
             EntryPrice = (double)trade.EntryPrice,
+            TimestampOpen = Timestamp.FromDateTimeOffset(trade.TimestampOpen),
             TransactionHappened = trade.TransactionHappened,
             Status = trade.Status
         };
