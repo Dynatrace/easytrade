@@ -14,7 +14,6 @@ func LoadLocalEnv() {
 
 func CheckEnv() {
 	checkSingleEnv(DbAdapterAddress)
-	checkSingleEnv(HealthPort)
 }
 
 func checkSingleEnv(envName string) {

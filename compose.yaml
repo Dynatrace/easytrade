@@ -35,7 +35,6 @@ services:
     environment:
       DBADAPTER_HOSTANDPORT: db-adapter:50051
       PROXY_PREFIX: pricing-service
-      HEALTH_PORT: 8080
 
   broker-service:
     <<: *default-service
@@ -48,7 +47,6 @@ services:
     environment:
       USER_SERVICE_HOSTANDPORT: user-service:8080
       PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
-      ENGINE_HOSTANDPORT: engine:8080
       <<: *feature-flag-service-env
       PROXY_PREFIX: broker-service
       DBADAPTER_HOSTANDPORT: db-adapter:50051
@@ -86,7 +84,6 @@ services:
       - 8097:8080
     environment:
       EASYTRADE_URL: http://frontendreverseproxy
-      HEALTH_PORT: 8080
 
   offerservice:
     <<: *default-service
@@ -105,9 +102,8 @@ services:
     image: ${REGISTRY}/feature-flag-service:${TAG}
     environment:
       PROXY_PREFIX: feature-flag-service
-      HEALTH_PORT: "8080"
     ports:
-      - "8094:8080"
+      - 8094:8080
 
   user-service:
     <<: *default-service
@@ -146,5 +142,4 @@ services:
       THIRD_PARTY_DELAY: 10
       THIRD_PARTY_RATE: 10
       DELAY_CHANCE_PERCENT: 20
-      HEALTH_PORT: 8080
 

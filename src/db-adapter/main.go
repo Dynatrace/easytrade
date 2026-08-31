@@ -19,7 +19,7 @@ func main() {
 		log.WithError(err).Fatal("Failed to open database backend")
 	}
 
-	health.Start(cfg.Server.HealthPort, backend)
+	health.Start("8080", backend)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", cfg.Server.GRPCPort))
 	if err != nil {

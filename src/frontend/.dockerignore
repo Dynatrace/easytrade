@@ -2,5 +2,6 @@ node_modules
 dist
 
 Dockerfile
+Dockerfile.dev
 
 .*

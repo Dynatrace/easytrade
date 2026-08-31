@@ -34,6 +34,5 @@ func main() {
 	router := CreateRouter(handler)
 	setupHealth(router, conn)
 
-	appAddr := fmt.Sprintf(":%s", os.Getenv(utils.HealthPort))
-	router.Run(appAddr)
+	router.Run(":8080")
 }

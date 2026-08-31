@@ -16,7 +16,7 @@ import { HealthServer } from "./healthServer"
 
 async function main() {
     const config = getConfig()
-    const server = new HealthServer(config.healthPort)
+    const server = new HealthServer(8080)
 
     const provider = getProvider(config)
     const headless = config.headlessMode === "headless"

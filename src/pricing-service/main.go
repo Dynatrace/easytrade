@@ -25,8 +25,7 @@ func main() {
 	router := CreateRouter(price.NewHandler(pb.NewPricingServiceClient(conn)))
 	setupHealth(router, conn)
 
-	appAddr := fmt.Sprintf(":%s", os.Getenv(utils.HealthPort))
-	router.Run(appAddr)
+	router.Run(":8080")
 }
 
 func newDbAdapterConn() *grpc.ClientConn {

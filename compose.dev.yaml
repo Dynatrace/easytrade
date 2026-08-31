@@ -35,7 +35,6 @@ services:
     environment:
       DBADAPTER_HOSTANDPORT: db-adapter:50051
       PROXY_PREFIX: pricing-service
-      HEALTH_PORT: 8080
 
   broker-service:
     <<: *default-service
@@ -60,7 +59,6 @@ services:
     <<: *default-service
     build:
       context: src/frontend
-      # dockerfile: Dockerfile
       dockerfile: Dockerfile.dev
       # dockerfile: Dockerfile
     # depends_on:
@@ -83,7 +81,6 @@ services:
       - feature-flag-service
       - offerservice
       - credit-card-order-service
-      - user-service
       - background-service
     ports:
       - 80:80
@@ -97,7 +94,6 @@ services:
       - 8097:8080
     environment:
       EASYTRADE_URL: http://frontendreverseproxy
-      HEALTH_PORT: 8080
 
   offerservice:
     <<: *default-service
@@ -125,7 +121,6 @@ services:
       - 8089:8080
     environment:
       DB_ADAPTER_ADDRESS: db-adapter:50051
-      HEALTH_PORT: 8080
       GIN_MODE: debug
       
   credit-card-order-service:
@@ -154,7 +149,6 @@ services:
       - 8094:8080
     environment:
       PROXY_PREFIX: feature-flag-service
-      HEALTH_PORT: "8080"
       # ENABLE_MODIFY: "false"
       # ENABLE_FRONTEND_MODIFY: "false"
 
@@ -167,11 +161,10 @@ services:
       - db
     ports:
       - 50051:50051
-      - "8095:8080"
+      - 8096:8080
     environment:
       DB_TYPE: ${DB_TYPE}
       DB_URL: ${DB_URL}
-      HEALTH_PORT: "8080"
 
   background-service:
     <<: *default-service
@@ -189,6 +182,5 @@ services:
       THIRD_PARTY_DELAY: 10
       THIRD_PARTY_RATE: 10
       DELAY_CHANCE_PERCENT: 20
-      HEALTH_PORT: 8080
 
 

@@ -1,20 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strconv"
 
 	"dynatrace.com/easytrade/feature-flag-service/flag"
 )
-
-func getEnv(key, defaultVal string) string {
-	if v := os.Getenv(key); v != "" {
-		return v
-	}
-	return defaultVal
-}
 
 func getEnvBool(key string, defaultVal bool) bool {
 	val := os.Getenv(key)
@@ -94,8 +86,7 @@ func main() {
 	svc := flag.NewService(initFlags())
 	r := CreateRouter(svc)
 	setupHealth(r)
-	address := fmt.Sprintf(":%s", getEnv("HEALTH_PORT", "8080"))
-	if err := r.Run(address); err != nil {
+	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}
 }

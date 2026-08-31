@@ -11,7 +11,6 @@ global:
     # supports: ["mssql", "postgres"]
     type: mssql
     port: 1433  # 5432 for postgres
-  healthPort: "8080"
 
   # Global labels to be added to all resources
   labels: {}
@@ -20,8 +19,6 @@ global:
 
 background-service:
   enabled: true
-  env:
-    HEALTH_PORT: "{{ .Values.global.healthPort }}"
   livenessProbe:
     httpGet:
       path: /livez
@@ -173,7 +170,6 @@ db-adapter:
   enabled: true
   env:
     DB_TYPE: "{{ .Values.global.database.type }}"
-    HEALTH_PORT: "{{ .Values.global.healthPort }}"
   envFromSecret:
     DB_URL:
       name: "{{ .Release.Name }}-connection-strings"
@@ -207,7 +203,6 @@ feature-flag-service:
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
-    HEALTH_PORT: "{{ .Values.global.healthPort }}"
   livenessProbe:
     httpGet:
       path: /livez
@@ -310,7 +305,6 @@ loadgen:
   env:
     EASYTRADE_URL: "http://{{ .Release.Name }}-frontendreverseproxy:8080"
     RARE_VISITS_INTERVAL_MINUTES: "60"
-    HEALTH_PORT: "{{ .Values.global.healthPort }}"
   livenessProbe:
     httpGet:
       path: /livez
@@ -370,7 +364,6 @@ pricing-service:
   env:
     PROXY_PREFIX: "pricing-service"
     DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
-    HEALTH_PORT: "{{ .Values.global.healthPort }}"
   livenessProbe:
     httpGet:
       path: /livez
@@ -399,7 +392,6 @@ user-service:
   env:
     PROXY_PREFIX: "user-service"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
-    HEALTH_PORT: "{{ .Values.global.healthPort }}"
   livenessProbe:
     httpGet:
       path: /livez/

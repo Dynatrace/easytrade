@@ -17,8 +17,7 @@ go test ./...
 | Name | Description |
 | ---- | ----------- |
 | `DB_ADAPTER_ADDRESS` | Ready-to-dial address of the `db-adapter` gRPC service (e.g. `db-adapter:8080`) |
-| `HEALTH_PORT` | Port used by health endpoints `/livez` and `/readyz` (default `8080`) |
 
 ## Health endpoints
 
-The service exposes `/livez` (liveness) and `/readyz` (readiness) on `HEALTH_PORT` (default `8080`).
+The service exposes `/livez` (liveness) and `/readyz` (readiness)

@@ -26,7 +26,6 @@ export type ProviderConfig =
       }
 
 export type Config = {
-    healthPort: number
     concurrent_visits: number
     concurrent_browsers: number
     browserTimeToLiveMinutes: number

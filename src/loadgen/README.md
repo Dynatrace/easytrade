@@ -39,9 +39,6 @@ This is an overview and my be out of date, check `src/config/getConifg.ts` for t
 - **HEADLESS_MODE**
   - _default:_ headless
   - one of `headless` | `headfull`
-- **HEALTH_PORT**
-  - _default:_ 8080
-  - port used by health endpoints `/livez` and `/readyz`
 - visit data config
   - **DEPOSIT_MIN_VALUE** | **DEPOSIT_MAX_VALUE**
     - _default:_ 500 | 1500
@@ -101,7 +98,7 @@ docker run -e EASYTRADE_URL={frontend-url} my-loadgen
   - returns `503 Service Unavailable` until startup is complete
   - returns `200 OK` with body `OK` after startup
 
-The health server listens on `HEALTH_PORT` (default `8080`).
+The health server listens on port `8080`.
 
 ## Technology
 
