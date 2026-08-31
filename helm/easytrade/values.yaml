@@ -332,7 +332,20 @@ pricing-service:
     repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/pricing-service
   env:
     PROXY_PREFIX: "pricing-service"
-    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    HEALTH_PORT: "{{ .Values.global.healthPort }}"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 20m
