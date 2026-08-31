@@ -1,12 +1,22 @@
 FROM golang:1.26.4-alpine3.24@sha256:3ad57304ad93bbec8548a0437ad9e06a455660655d9af011d58b993f6f615648 AS build
 
-WORKDIR /build
+RUN apk add --no-cache gcc libc-dev git protoc protobuf-dev
 
-COPY ["go.mod", "go.sum", "./"]
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest \
+    && go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
-RUN go mod download
+WORKDIR /src
+COPY ["proto/", "proto/"]
+COPY ["background-service/go.mod", "background-service/go.sum", "background-service/"]
 
-COPY [".", "."]
+WORKDIR /src/background-service
+RUN go mod download \
+    && go mod verify
+
+
+COPY ["background-service/", "./"]
+
+RUN PATH="$PATH:$(go env GOPATH)/bin" sh generate-proto.sh
 
 ARG BUILD_VERSION="{{BUILD_VERSION}}"
 ARG BUILD_DATE="{{BUILD_DATE}}"
@@ -27,6 +37,10 @@ RUN apk upgrade --no-cache \
 USER easytrade:easytrade
 WORKDIR /home/easytrade
 
-COPY --from=build --chown=easytrade:easytrade ["/build/background-service", "./"]
+ENV GIN_MODE=release
+
+COPY --from=build --chown=easytrade:easytrade ["/src/background-service/background-service", "."]
+
+EXPOSE 8080
 
 CMD [ "./background-service" ]
