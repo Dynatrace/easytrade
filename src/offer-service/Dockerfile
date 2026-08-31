@@ -4,10 +4,10 @@ RUN apk add --no-cache protoc protobuf-dev
 
 WORKDIR /src
 COPY ["proto/", "proto/"]
-COPY ["offerservice/*.json", "offerservice/generate-proto.sh", "offerservice/"]
-COPY ["offerservice/src", "offerservice/src"]
+COPY ["offer-service/*.json", "offer-service/generate-proto.sh", "offer-service/"]
+COPY ["offer-service/src", "offer-service/src"]
 
-WORKDIR /src/offerservice
+WORKDIR /src/offer-service
 RUN npm ci \
     && npm run build
 
@@ -19,11 +19,11 @@ RUN apk upgrade --no-cache \
 USER easytrade:easytrade
 WORKDIR /home/easytrade
 
-COPY --chown=easytrade:easytrade ["offerservice/package.json", "offerservice/package-lock.json", "./"]
+COPY --chown=easytrade:easytrade ["offer-service/package.json", "offer-service/package-lock.json", "./"]
 
 RUN npm ci --omit=dev \
     && npm cache clean --force
 
-COPY --chown=easytrade:easytrade --from=build ["/src/offerservice/dist", "./dist"]
+COPY --chown=easytrade:easytrade --from=build ["/src/offer-service/dist", "./dist"]
 
 CMD [ "node", "./dist/src/app.js" ]

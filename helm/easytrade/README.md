@@ -70,9 +70,9 @@ The easytrade chart includes the following microservices:
 - `db-adapter` - gRPC service exposing the database behind a stable interface (pluggable backend: MSSQL/Postgres)
 - `feature-flag-service` - Feature flag management
 - `frontend` - React frontend application
-- `frontendreverseproxy` - Nginx reverse proxy
-- `loadgen` - Load generator
-- `offerservice` - Offer management
+- `frontend-reverse-proxy` - Nginx reverse proxy
+- `load-gen` - Load generator
+- `offer-service` - Offer management
 - `pricing-service` - Pricing calculation
 - `user-service` - Account and authentication service
 
@@ -94,13 +94,13 @@ db:
   enabled: true
 frontend:
   enabled: true
-frontendreverseproxy:
+frontend-reverse-proxy:
   enabled: true
 
 # Disable all other services
 background-service:
   enabled: false
-loadgen:
+load-gen:
   enabled: false
 # ... etc
 ```

@@ -13,25 +13,25 @@ Generated from `compose.dev.yaml` via `make update-graph` — do not edit the bl
 <!-- dependency-graph:start -->
 ```mermaid
 flowchart TD
-    aggregator-service --> offerservice
+    aggregator-service --> offer-service
     broker-service --> db
     broker-service --> feature-flag-service
     broker-service --> pricing-service
     broker-service --> user-service
     credit-card-order-service --> db
     db-adapter --> db
-    frontendreverseproxy --> broker-service
-    frontendreverseproxy --> credit-card-order-service
-    frontendreverseproxy --> feature-flag-service
-    frontendreverseproxy --> frontend
-    frontendreverseproxy --> offerservice
-    frontendreverseproxy --> pricing-service
-    frontendreverseproxy --> user-service
-    loadgen --> frontendreverseproxy
+    frontend-reverse-proxy --> broker-service
+    frontend-reverse-proxy --> credit-card-order-service
+    frontend-reverse-proxy --> feature-flag-service
+    frontend-reverse-proxy --> frontend
+    frontend-reverse-proxy --> offer-service
+    frontend-reverse-proxy --> pricing-service
+    frontend-reverse-proxy --> user-service
+    load-gen --> frontend-reverse-proxy
     manager --> db
-    offerservice --> feature-flag-service
-    offerservice --> manager
-    offerservice --> user-service
+    offer-service --> feature-flag-service
+    offer-service --> manager
+    offer-service --> user-service
     pricing-service --> db
     credit-card-order-service -.-> feature-flag-service
     user-service -.-> db-adapter
@@ -40,8 +40,8 @@ flowchart TD
     class aggregator-service,db-adapter,feature-flag-service,pricing-service,user-service go
     class problem-operator goOffCompose
     class credit-card-order-service java
-    class frontend,loadgen,offerservice node
-    class db,frontendreverseproxy other
+    class frontend,load-gen,offer-service node
+    class db,frontend-reverse-proxy other
 
     classDef dotnet fill:#d2b4de,stroke:#6c3483,color:#1a1a1a,stroke-width:1px
     classDef go fill:#a9cce3,stroke:#1f618d,color:#1a1a1a,stroke-width:1px
@@ -79,9 +79,9 @@ EasyTrade consists of the following services/components:
 | [Db adapter](src/db-adapter/README.md)                               | --         | `---`                        |
 | [Feature flag service](src/feature-flag-service/README.md)           | 80         | `/feature-flag-service`      |
 | [Frontend](src/frontend/README.md)                                   | 80         | `/`                          |
-| [Frontend reverse-proxy](src/frontendreverseproxy/README.md)         | 80         | `---`                        |
-| [Loadgen](src/loadgen/README.md)                                     | --         | `---`                        |
-| [Offer service](src/offerservice/README.md)                          | 80         | `/offerservice`              |
+| [Frontend reverse-proxy](src/frontend-reverse-proxy/README.md)       | 80         | `---`                        |
+| [Loadgen](src/load-gen/README.md)                                    | --         | `---`                        |
+| [Offer service](src/offer-service/README.md)                         | 80         | `/offer-service`             |
 | [Pricing service](src/pricing-service/README.md)                     | 80         | `/pricing-service`           |
 | [Problem operator](src/problem-operator/README.md)                   | 80         | `---`                        |
 | [User service](src/user-service/README.md)                           | 80         | `/user-service`               |
@@ -139,7 +139,7 @@ name, or a quoted space-separated list. Omit it to act on the whole stack:
 
 ```bash
 make build services=pricing-service
-make start services="db frontendreverseproxy background-service"
+make start services="db frontend-reverse-proxy background-service"
 ```
 
 Two targets act on exactly one service and therefore require `services=`:
@@ -150,7 +150,7 @@ make redeploy services=frontend   # rebuild the image, then recreate — use aft
 ```
 
 The dev stack publishes each service on its own host port (`manager` 8081,
-`pricing-service` 8083, `broker-service` 8084, `offerservice` 8087,
+`pricing-service` 8083, `broker-service` 8084, `offer-service` 8087,
 `user-service` 8089, `credit-card-order-service` 8091, `frontend` 8092,
 `feature-flag-service` 8094, `db-adapter` 50051,
 `db` 1433/5432), so you can hit a service directly instead of going through nginx.
@@ -277,7 +277,7 @@ can also handle XML requests. Data types are negotiated based on `Accept` and `C
 | Service                                                           | Accepted XML MIME types                            |
 | ----------------------------------------------------------------- | -------------------------------------------------- |
 | [CreditCardOrderService](src/credit-card-order-service/README.md) | `application/xml`                                  |
-| [OfferService](src/offerservice/README.md)                        | `application/xml`; `text/xml`                      |
+| [OfferService](src/offer-service/README.md)                       | `application/xml`; `text/xml`                      |
 | [PricingService](src/pricing-service/README.md)                   | `application/xml`                                  |
 
 ## Local Dynatrace MCP Server

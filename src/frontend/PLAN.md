@@ -22,20 +22,20 @@ Remove four dependencies that are either unused or trivially inlineable. No comp
 
 The previous frontend was designed with MUI in mind, resulting in a layout and component structure that inherited MUI's assumptions. The goal is **not** to port that design into custom components — it is to write a new UI starting from what the app actually needs to do.
 
-**Design constraints (loadgen-aware, not loadgen-hostage):**
+**Design constraints (load-gen-aware, not load-gen-hostage):**
 
-The frontend should be designed well first, with the understanding that **loadgen can and should be changed** to match the new UI. This means the frontend is not constrained to preserve element tags, selectors, or patterns just to minimize loadgen churn. Loadgen changes are acceptable and expected if they result in a cleaner, faster, more maintainable frontend design.
+The frontend should be designed well first, with the understanding that **load-gen can and should be changed** to match the new UI. This means the frontend is not constrained to preserve element tags, selectors, or patterns just to minimize load-gen churn. Load-Gen changes are acceptable and expected if they result in a cleaner, faster, more maintainable frontend design.
 
-Key expectations for loadgen compatibility:
-- Every interactive element the loadgen targets must have a stable, unambiguous `id` or `data-testid` — no relying on text content or positional selectors
+Key expectations for load-gen compatibility:
+- Every interactive element the load-gen targets must have a stable, unambiguous `id` or `data-testid` — no relying on text content or positional selectors
 - No animations, transitions, or elements that overlap or animate into position — these cause Puppeteer to click the wrong target or wait unnecessarily
 - Forms use plain `<input>`, `<select>`, `<button>` — no custom dropdowns, no floating labels, no date pickers
 - Pages load only what they need — route-based code splitting from the start (dynamic `import()` per route) so each Puppeteer visit loads the smallest possible JS chunk
-- **Element tag type is part of the selector contract** — `//div[@id="cardType"]`, `//li[@id="logoutItem"]`, `//p[@id="order-id"]`, `//h5[@id="instrumentPrice"]` target specific HTML tags; changing the tag breaks the loadgen even if the `id` is preserved. Either keep the same tags or update `selectors.ts` in lockstep.
-- **Tab buttons have IDs** — tab buttons render as `<button id="quickBuyTab">`, `<button id="quickSellTab">`, `<button id="buyTab">`, `<button id="sellTab">`. Loadgen selectors change from text-match to ID-match.
-- **Static sidebar requires a loadgen co-change** — the current loadgen calls `showNavbar()` which looks for `#navigationToggler` to open the drawer. With a static sidebar, `#navigationToggler` is removed and `showNavbar()`/`hideNavbar()` become no-ops. Nav links gain explicit IDs (`nav-home`, `nav-deposit`, etc.) replacing href-based selectors. Full list of selector and helper changes: [NEW_FLOW.md](NEW_FLOW.md).
-- **Per-view element spec and loadgen impact** — [VIEWS_PLAN.md](VIEWS_PLAN.md) lists every element for every view with its `id`, tag, and loadgen impact. [NEW_FLOW.md](NEW_FLOW.md) lists the exact `selectors.ts` and helper changes required. [OLD_FLOW.md](OLD_FLOW.md) documents the current loadgen step sequence as a regression baseline.
-- **All `data-dt-*` attributes must be preserved** — they are Dynatrace instrumentation, not loadgen selectors, but they are what makes this app observable. The full set in use: `data-dt-features` (on instruments grid, tables, charts), `data-dt-name` / `data-dt-children-name` (on instrument cards and price display), `data-dt-mouse-over` (on charts and feature flag items), `data-dt-content` (on form fields), `data-dt-mask` (on PII fields: user name, credit card status entries), `data-dt-properties` (on root layout for theme tracking).
+- **Element tag type is part of the selector contract** — `//div[@id="cardType"]`, `//li[@id="logoutItem"]`, `//p[@id="order-id"]`, `//h5[@id="instrumentPrice"]` target specific HTML tags; changing the tag breaks the load-gen even if the `id` is preserved. Either keep the same tags or update `selectors.ts` in lockstep.
+- **Tab buttons have IDs** — tab buttons render as `<button id="quickBuyTab">`, `<button id="quickSellTab">`, `<button id="buyTab">`, `<button id="sellTab">`. Load-Gen selectors change from text-match to ID-match.
+- **Static sidebar requires a load-gen co-change** — the current load-gen calls `showNavbar()` which looks for `#navigationToggler` to open the drawer. With a static sidebar, `#navigationToggler` is removed and `showNavbar()`/`hideNavbar()` become no-ops. Nav links gain explicit IDs (`nav-home`, `nav-deposit`, etc.) replacing href-based selectors. Full list of selector and helper changes: [NEW_FLOW.md](NEW_FLOW.md).
+- **Per-view element spec and load-gen impact** — [VIEWS_PLAN.md](VIEWS_PLAN.md) lists every element for every view with its `id`, tag, and load-gen impact. [NEW_FLOW.md](NEW_FLOW.md) lists the exact `selectors.ts` and helper changes required. [OLD_FLOW.md](OLD_FLOW.md) documents the current load-gen step sequence as a regression baseline.
+- **All `data-dt-*` attributes must be preserved** — they are Dynatrace instrumentation, not load-gen selectors, but they are what makes this app observable. The full set in use: `data-dt-features` (on instruments grid, tables, charts), `data-dt-name` / `data-dt-children-name` (on instrument cards and price display), `data-dt-mouse-over` (on charts and feature flag items), `data-dt-content` (on form fields), `data-dt-mask` (on PII fields: user name, credit card status entries), `data-dt-properties` (on root layout for theme tracking).
 
 **Design constraints (maintainability):**
 - Single dark theme hardcoded in CSS variables — no runtime theme switching, no ThemeContext
@@ -45,15 +45,15 @@ Key expectations for loadgen compatibility:
 **What to build:**
 
 *Auth*
-- **Login page** — two-column layout: left column is the login form (`id="login"`, `id="password"`, `id="submitButton"`); right column is a preset-user quick-select (dropdown + submit). Loadgen uses the left column only. No animations between the two sides.
+- **Login page** — two-column layout: left column is the login form (`id="login"`, `id="password"`, `id="submitButton"`); right column is a preset-user quick-select (dropdown + submit). Load-Gen uses the left column only. No animations between the two sides.
 
 *Shell*
-- **Static sidebar nav** — 5 links (Home, Instruments, Deposit, Withdraw, Credit Card). Always visible, no hamburger toggle, no drawer animation. Replaces the current MUI Drawer + `#navigationToggler` open/close flow that the loadgen has to navigate around.
+- **Static sidebar nav** — 5 links (Home, Instruments, Deposit, Withdraw, Credit Card). Always visible, no hamburger toggle, no drawer animation. Replaces the current MUI Drawer + `#navigationToggler` open/close flow that the load-gen has to navigate around.
 - **Header strip** — logo + profile button `id="profileToggler"` + logout item `id="logoutItem"`. No theme switcher (single dark theme).
 
 *Dashboard (Home page)*
-- **Balance display** — read-only field `id="currentBalance"`. Loadgen reads this value before calculating trade amounts. Keep as a plain, always-visible text element.
-- **Owned instruments table** — plain `<table>` with columns: Code, Name, Amount, Price, Total. Replaces `DataGrid`. No column-visibility picker or quick-search — the loadgen never uses those controls.
+- **Balance display** — read-only field `id="currentBalance"`. Load-Gen reads this value before calculating trade amounts. Keep as a plain, always-visible text element.
+- **Owned instruments table** — plain `<table>` with columns: Code, Name, Amount, Price, Total. Replaces `DataGrid`. No column-visibility picker or quick-search — the load-gen never uses those controls.
 - **Transactions table** — plain `<table>` with columns: Direction, Status, Instrument, Amount, Price, Total, End time. Paginated. Replaces `DataGrid`.
 - **Charts** — replace the current snapshot bar chart (amount + value per stock at this moment) with a **portfolio value over time** line chart, defaulting to a 1-day window. Two implementation options depending on scope:
 
@@ -68,22 +68,22 @@ Key expectations for loadgen compatibility:
   The two pie charts (transaction status + direction breakdown) are lower priority and can be kept as-is or dropped.
 
 *Instruments*
-- **Instruments grid** — grid of clickable instrument cards. Each card must keep CSS classes `instrument-card` (all cards) and `owned-instrument` (cards where amount > 0) — the loadgen's XPath targets `//div[contains(@class, "instrument-card")]` and `//div[contains(@class, "owned-instrument")]`.
+- **Instruments grid** — grid of clickable instrument cards. Each card must keep CSS classes `instrument-card` (all cards) and `owned-instrument` (cards where amount > 0) — the load-gen's XPath targets `//div[contains(@class, "instrument-card")]` and `//div[contains(@class, "owned-instrument")]`.
 - **Instrument detail** — price header with `id="instrumentName"` and `id="instrumentPrice"` (rendered as `<h5>` — tag must match selector `//h5[@id="instrumentPrice"]`). Below that: a tab panel with four forms. Tab buttons: `<button id="quickBuyTab">`, `<button id="quickSellTab">`, `<button id="buyTab">`, `<button id="sellTab">` — no animated tab indicator.
 
-*Trade forms (all loadgen-critical — field IDs and element tags must be preserved)*
+*Trade forms (all load-gen-critical — field IDs and element tags must be preserved)*
 - **Quick Buy** — `id="amount"` (`<input>`), `id="price"` (`<input>` readonly), `id="currentBalance"` (`<input>` readonly), total display, `id="submitButton"` (`<button>`).
-- **Quick Sell** — `id="amount"` (`<input>`), `id="price"` (`<input>` readonly), `id="posessedAmount"` (`<input>` readonly — note the typo must be kept to avoid breaking the loadgen selector), total display, `id="submitButton"` (`<button>`).
+- **Quick Sell** — `id="amount"` (`<input>`), `id="price"` (`<input>` readonly), `id="posessedAmount"` (`<input>` readonly — note the typo must be kept to avoid breaking the load-gen selector), total display, `id="submitButton"` (`<button>`).
 - **Buy / Sell (scheduled)** — `id="amount"` (`<input>`), `id="price"` (`<input>`), `id="time"` (`<input>`), readonly total, autofill shortcuts, `id="submitButton"` (`<button>`).
 - **Deposit / Withdraw** — `id="amount"`, `id="cardholderName"`, `id="address"`, `id="email"`, `id="cardNumber"`, `id="cardType"` (native `<select>` — replaces the MUI `<div>` + portal `<li>` pattern; `depositPage_cardType`, `depositPage_cardType_provider`, and `depositPage_submit` selectors updated, `selectCardProvider()` helper rewritten), `id="cvv"` (Deposit only), `id="agreement"` (`<input type="checkbox">`), `id="autofillButton"`, `id="submitButton"`.
 
 *Credit card flow*
 - **Order form** — `id="name"`, `id="address"`, `id="email"`, `id="type"` (native `<select>` — `creditCardPage_cardTypeInput`, `creditCardPage_cardType_type` selectors updated, `orderCard()` helper rewritten), `id="agreement"` (`<input type="checkbox">`), autofill button, `id="submitButton"`.
-- **Status timeline** — read-only ordered list of status steps with timestamps. Contains `id="order-id"` (`<p>` tag — loadgen reads it via `//p[@id="order-id"]`). Fields with PII need `data-dt-mask`. Replaces MUI `Timeline` with a plain `<ol>`.
+- **Status timeline** — read-only ordered list of status steps with timestamps. Contains `id="order-id"` (`<p>` tag — load-gen reads it via `//p[@id="order-id"]`). Fields with PII need `data-dt-mask`. Replaces MUI `Timeline` with a plain `<ol>`.
 - **Active card / revoke** — message + `id="revoke-card"` (`<button>`).
 
 *Admin*
-- **Feature flags page** — list of toggleable flags with enable/disable buttons. Not loadgen-critical; can be a simple list with inline status text instead of MUI accordion + Snackbar.
+- **Feature flags page** — list of toggleable flags with enable/disable buttons. Not load-gen-critical; can be a simple list with inline status text instead of MUI accordion + Snackbar.
 
 *Shared*
 - **Inline SVG icons** — 10 icons currently used (menu, home, wallet, card, euro, flag, logout, build, check, close, sync). Inline as React components or a single sprite. Note: dark/light mode toggle icon is not needed since the frontend uses a single hardcoded dark theme.
@@ -91,7 +91,7 @@ Key expectations for loadgen compatibility:
 
 **What not to carry over:**
 - No Drawer/AppBar pattern — sidebar nav can be static
-- No Snackbar/toast system — inline status messages suffice for the loadgen's interaction flow
+- No Snackbar/toast system — inline status messages suffice for the load-gen's interaction flow
 - No `CircularProgress` spinner abstraction — a simple CSS `@keyframes` rule can replace it if needed; recreating the spinner is optional and not required
 
 **Removed packages:**

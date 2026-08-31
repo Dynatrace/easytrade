@@ -2,14 +2,14 @@ x-service: &default-service
   restart: always
 
 x-addresses:
-  offer-service: &offerServiceAddress "http://offerservice:8080"
+  offer-service: &offerServiceAddress "http://offer-service:8080"
   feature-flag-service: &featureFlagServiceAddress "http://feature-flag-service:8080"
   credit-card-order-service: &creditCardOrderServiceAddress "http://credit-card-order-service:8080"
   db-adapter: &dbAdapterAddress "db-adapter:50051"
   user-service: &userServiceAddress "http://user-service:8080"
   pricing-service: &pricingServiceAddress "http://pricing-service:8080"
   background-service: &backgroundServiceAddress "http://background-service:8080"
-  easytrade-url: &easytradeUrl "http://frontendreverseproxy"
+  easytrade-url: &easytradeUrl "http://frontend-reverse-proxy"
 
 services:
   background-service:
@@ -18,7 +18,7 @@ services:
       context: src/
       dockerfile: background-service/Dockerfile
     depends_on:
-      - offerservice
+      - offer-service
       - db-adapter
     ports:
       - 8095:8080
@@ -120,35 +120,35 @@ services:
     volumes:
       - ./src/frontend/src:/app/src:ro
 
-  frontendreverseproxy:
+  frontend-reverse-proxy:
     <<: *default-service
-    build: src/frontendreverseproxy
+    build: src/frontend-reverse-proxy
     depends_on:
       - broker-service
       - frontend
       - pricing-service
       - feature-flag-service
-      - offerservice
+      - offer-service
       - credit-card-order-service
       - background-service
     ports:
       - 80:80
 
-  loadgen:
+  load-gen:
     <<: *default-service
-    build: src/loadgen
+    build: src/load-gen
     depends_on:
-      - frontendreverseproxy
+      - frontend-reverse-proxy
     ports:
       - 8097:8080
     environment:
       EASYTRADE_URL: *easytradeUrl
 
-  offerservice:
+  offer-service:
     <<: *default-service
     build:
       context: src/
-      dockerfile: offerservice/Dockerfile
+      dockerfile: offer-service/Dockerfile
     depends_on:
       - db-adapter
       - user-service

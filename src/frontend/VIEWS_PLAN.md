@@ -1,14 +1,14 @@
 # Frontend Views Plan
 
 Describes the views for the new plain-HTML frontend (post-MUI rewrite per PLAN.md Stage 2).
-For each view: what elements the new UI must render, and what changes the loadgen requires in lockstep.
+For each view: what elements the new UI must render, and what changes the load-gen requires in lockstep.
 
-The loadgen must not be broken mid-rewrite — frontend and loadgen changes ship together per view.
+The load-gen must not be broken mid-rewrite — frontend and load-gen changes ship together per view.
 
 Legend:
-- 🟢 Element ID unchanged from current frontend — loadgen selector stays as-is
-- 🔵 Element is new or the selector changes — loadgen `selectors.ts` update required
-- ⚫ Not loadgen-critical — no selector impact
+- 🟢 Element ID unchanged from current frontend — load-gen selector stays as-is
+- 🔵 Element is new or the selector changes — load-gen `selectors.ts` update required
+- ⚫ Not load-gen-critical — no selector impact
 
 ---
 
@@ -28,8 +28,8 @@ Legend:
 
 ## Visit flows
 
-- [NEW_FLOW.md](NEW_FLOW.md) — step-by-step loadgen actions against the new frontend (updated selectors, static sidebar, native `<select>`)
-- [OLD_FLOW.md](OLD_FLOW.md) — step-by-step loadgen actions against the current MUI frontend (reference / regression baseline)
+- [NEW_FLOW.md](NEW_FLOW.md) — step-by-step load-gen actions against the new frontend (updated selectors, static sidebar, native `<select>`)
+- [OLD_FLOW.md](OLD_FLOW.md) — step-by-step load-gen actions against the current MUI frontend (reference / regression baseline)
 
 ---
 
@@ -37,16 +37,16 @@ Legend:
 
 **Route:** `/` or `/login`
 
-Two-column layout. Loadgen only uses the left column (username/password form).
+Two-column layout. Load-Gen only uses the left column (username/password form).
 
-| Element | New tag | `id` | Loadgen impact |
+| Element | New tag | `id` | Load-Gen impact |
 |---------|---------|------|----------------|
 | Username field | `<input>` | `login` | 🟢 unchanged |
 | Password field | `<input>` | `password` | 🟢 unchanged |
 | Login button | `<button>` | `submitButton` | 🟢 unchanged |
-| Preset-user picker (right col) | `<select>` + `<button>` | — | ⚫ not used by loadgen |
+| Preset-user picker (right col) | `<select>` + `<button>` | — | ⚫ not used by load-gen |
 
-**Loadgen changes:** none.
+**Load-Gen changes:** none.
 
 ---
 
@@ -55,7 +55,7 @@ Two-column layout. Loadgen only uses the left column (username/password form).
 Present on every authenticated page.
 New design: **static sidebar** — always visible, no drawer, no hamburger toggle.
 
-| Element | New tag | `id` | Loadgen impact |
+| Element | New tag | `id` | Load-Gen impact |
 |---------|---------|------|----------------|
 | ~~Sidebar toggle~~ | removed | ~~`navigationToggler`~~ | 🔵 selector removed |
 | Home link | `<a>` | `nav-home` | 🔵 selector updated |
@@ -66,7 +66,7 @@ New design: **static sidebar** — always visible, no drawer, no hamburger toggl
 | Profile dropdown toggle | `<button>` | `profileToggler` | 🟢 unchanged |
 | Logout item | `<li>` | `logoutItem` | 🟢 unchanged |
 
-**Loadgen changes required:**
+**Load-Gen changes required:**
 
 - `selectors.ts` — remove `navigation_sidebarToggler`; update all 5 nav link selectors from `//a[contains(@href, "…")]` to `//a[@id="nav-…"]`
 - `helpers/common.ts` — `showNavbar()` and `hideNavbar()` become no-ops (sidebar is always visible); `gotoPageWithNavBar()` can skip the show/hide step and call `pageActions.navigate(selector)` directly
@@ -77,14 +77,14 @@ New design: **static sidebar** — always visible, no drawer, no hamburger toggl
 
 **Route:** `/home`
 
-| Element | New tag | `id` | Loadgen impact |
+| Element | New tag | `id` | Load-Gen impact |
 |---------|---------|------|----------------|
 | Current balance | `<input readonly>` | `currentBalance` | 🟢 unchanged |
-| Owned instruments | plain `<table>` | — | ⚫ not used by loadgen |
-| Transactions | plain `<table>` | — | ⚫ not used by loadgen |
-| Portfolio chart | canvas / svg | — | ⚫ not used by loadgen |
+| Owned instruments | plain `<table>` | — | ⚫ not used by load-gen |
+| Transactions | plain `<table>` | — | ⚫ not used by load-gen |
+| Portfolio chart | canvas / svg | — | ⚫ not used by load-gen |
 
-**Loadgen changes:** none.
+**Load-Gen changes:** none.
 
 ---
 
@@ -92,14 +92,14 @@ New design: **static sidebar** — always visible, no drawer, no hamburger toggl
 
 **Route:** `/instruments`
 
-The loadgen calls `getAllHandles` on these selectors to pick a random card — so IDs are not suitable (multiple elements). Keeping class names requires no loadgen change; migrating to `data-testid` requires a selector update.
+The load-gen calls `getAllHandles` on these selectors to pick a random card — so IDs are not suitable (multiple elements). Keeping class names requires no load-gen change; migrating to `data-testid` requires a selector update.
 
-| Element | New tag | Attribute | Loadgen impact |
+| Element | New tag | Attribute | Load-Gen impact |
 |---------|---------|-----------|----------------|
 | Any instrument card (link) | `<div> > <a>` | `class="instrument-card"` (keep) **or** `data-testid="instrument-card"` (migrate) | 🟢 if class kept / 🔵 if migrated to data-testid |
 | Owned instrument card (link) | `<div> > <a>` | `class="owned-instrument"` (keep) **or** `data-testid="owned-instrument"` (migrate) | 🟢 if class kept / 🔵 if migrated to data-testid |
 
-**Loadgen changes:** none if CSS classes are preserved on the new card `<div>`. If migrating to `data-testid`, update the two `instrumentsPage_*` selectors in `selectors.ts` to `//div[@data-testid="instrument-card"]/a` etc.
+**Load-Gen changes:** none if CSS classes are preserved on the new card `<div>`. If migrating to `data-testid`, update the two `instrumentsPage_*` selectors in `selectors.ts` to `//div[@data-testid="instrument-card"]/a` etc.
 
 ---
 
@@ -109,7 +109,7 @@ The loadgen calls `getAllHandles` on these selectors to pick a random card — s
 
 ### Header
 
-| Element | New tag | `id` | Loadgen impact |
+| Element | New tag | `id` | Load-Gen impact |
 |---------|---------|------|----------------|
 | Instrument name | any inline element | `instrumentName` | 🟢 unchanged |
 | Instrument price | `<h5>` | `instrumentPrice` | 🟢 unchanged — selector is `//h5[@id="instrumentPrice"]`, tag must stay `<h5>` |
@@ -117,7 +117,7 @@ The loadgen calls `getAllHandles` on these selectors to pick a random card — s
 
 ### Trade tab buttons
 
-Tabs are plain `<button>` elements. New frontend adds IDs; loadgen selectors change from text-match to ID-match.
+Tabs are plain `<button>` elements. New frontend adds IDs; load-gen selectors change from text-match to ID-match.
 
 | Tab | New tag | `id` | Old selector | New selector |
 |-----|---------|------|--------------|--------------|
@@ -128,7 +128,7 @@ Tabs are plain `<button>` elements. New frontend adds IDs; loadgen selectors cha
 
 ### Quick Buy form
 
-| Element | New tag | `id` | Loadgen impact |
+| Element | New tag | `id` | Load-Gen impact |
 |---------|---------|------|----------------|
 | Amount | `<input>` | `amount` | 🟢 unchanged |
 | Price (read-only) | `<input readonly>` | `price` | 🟢 unchanged |
@@ -137,22 +137,22 @@ Tabs are plain `<button>` elements. New frontend adds IDs; loadgen selectors cha
 
 ### Quick Sell form
 
-| Element | New tag | `id` | Loadgen impact |
+| Element | New tag | `id` | Load-Gen impact |
 |---------|---------|------|----------------|
 | Amount | `<input>` | `amount` | 🟢 unchanged |
-| Possessed amount (read-only) | `<input readonly>` | `posessedAmount` | 🟢 unchanged — typo intentional, loadgen targets this exact string |
+| Possessed amount (read-only) | `<input readonly>` | `posessedAmount` | 🟢 unchanged — typo intentional, load-gen targets this exact string |
 | Submit | `<button>` | `submitButton` | 🟢 unchanged |
 
 ### Buy form / Sell form (scheduled)
 
-| Element | New tag | `id` | Loadgen impact |
+| Element | New tag | `id` | Load-Gen impact |
 |---------|---------|------|----------------|
 | Amount | `<input>` | `amount` | 🟢 unchanged |
 | Price | `<input>` | `price` | 🟢 unchanged |
 | Duration | `<input>` | `time` | 🟢 unchanged |
 | Submit | `<button>` | `submitButton` | 🟢 unchanged |
 
-**Loadgen changes required:**
+**Load-Gen changes required:**
 
 - `selectors.ts` — update `instrumentPage_quickBuyForm`, `instrumentPage_quickSellForm`, `instrumentPage_buyForm`, `instrumentPage_sellForm` from text-match XPath to `//button[@id="…"]`
 
@@ -164,7 +164,7 @@ Tabs are plain `<button>` elements. New frontend adds IDs; loadgen selectors cha
 
 MUI Select (`<div id="cardType">` + portal `<li>`) is replaced by a native `<select id="cardType">`.
 
-| Element | New tag | `id` | Loadgen impact |
+| Element | New tag | `id` | Load-Gen impact |
 |---------|---------|------|----------------|
 | Amount | `<input>` | `amount` | 🟢 unchanged |
 | Cardholder name | `<input>` | `cardholderName` | 🟢 unchanged |
@@ -176,7 +176,7 @@ MUI Select (`<div id="cardType">` + portal `<li>`) is replaced by a native `<sel
 | Accept terms | `<input type="checkbox">` | `agreement` | 🟢 unchanged |
 | Submit | `<button>` | `submitButton` | 🔵 currently `//form//button[@type="submit"]`, gains explicit ID |
 
-**Loadgen changes required:**
+**Load-Gen changes required:**
 
 - `selectors.ts`:
   - `depositPage_cardType`: `//div[@id="cardType"]` → `//select[@id="cardType"]`
@@ -192,7 +192,7 @@ MUI Select (`<div id="cardType">` + portal `<li>`) is replaced by a native `<sel
 
 Same form structure as Deposit; no CVV field. Shares the same `selectors.ts` entries (`depositPage_*`).
 
-| Element | New tag | `id` | Loadgen impact |
+| Element | New tag | `id` | Load-Gen impact |
 |---------|---------|------|----------------|
 | Amount | `<input>` | `amount` | 🟢 unchanged |
 | Cardholder name | `<input>` | `cardholderName` | 🟢 unchanged |
@@ -203,7 +203,7 @@ Same form structure as Deposit; no CVV field. Shares the same `selectors.ts` ent
 | Accept terms | `<input type="checkbox">` | `agreement` | 🟢 unchanged |
 | Submit | `<button>` | `submitButton` | 🔵 same change as Deposit |
 
-**Loadgen changes required:** same as Deposit (shared selectors — fix once, applies to both).
+**Load-Gen changes required:** same as Deposit (shared selectors — fix once, applies to both).
 
 ---
 
@@ -215,7 +215,7 @@ MUI Select (`<div id="type">` + portal `<li>`) is replaced by a native `<select 
 
 ### Order form
 
-| Element | New tag | `id` | Loadgen impact |
+| Element | New tag | `id` | Load-Gen impact |
 |---------|---------|------|----------------|
 | Name | `<input>` | `name` | 🟢 unchanged |
 | Address | `<input>` | `address` | 🟢 unchanged |
@@ -226,17 +226,17 @@ MUI Select (`<div id="type">` + portal `<li>`) is replaced by a native `<select 
 
 ### Active card state
 
-| Element | New tag | `id` | Loadgen impact |
+| Element | New tag | `id` | Load-Gen impact |
 |---------|---------|------|----------------|
 | Revoke card button | `<button>` | `revoke-card` | 🟢 unchanged |
 
 ### Pending order state
 
-| Element | New tag | `id` | Loadgen impact |
+| Element | New tag | `id` | Load-Gen impact |
 |---------|---------|------|----------------|
 | Order ID | `<p>` | `order-id` | 🟢 unchanged — selector is `//p[@id="order-id"]`, tag must stay `<p>` |
 
-**Loadgen changes required:**
+**Load-Gen changes required:**
 
 - `selectors.ts`:
   - `creditCardPage_cardTypeInput`: `//div[@id="type"]` → `//select[@id="type"]`
@@ -249,7 +249,7 @@ MUI Select (`<div id="type">` + portal `<li>`) is replaced by a native `<select 
 
 **Route:** `/feature-flags`
 
-Not loadgen-critical.
+Not load-gen-critical.
 
 | Element | New tag | Notes |
 |---------|---------|-------|
@@ -257,13 +257,13 @@ Not loadgen-critical.
 | Enable / disable button | `<button>` | Inline, no accordion |
 | Status text | inline text | No Snackbar |
 
-**Loadgen changes:** none.
+**Load-Gen changes:** none.
 
 ---
 
-## Consolidated loadgen changes
+## Consolidated load-gen changes
 
-All changes are in `src/loadgen/src/`.
+All changes are in `src/load-gen/src/`.
 
 ### `selectors.ts`
 
