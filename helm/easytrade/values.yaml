@@ -310,11 +310,24 @@ loadgen:
 offerservice:
   enabled: true
   env:
+    DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
     USER_SERVICE_PORT: "8080"
     USER_SERVICE_BASE_URL: "{{ .Release.Name }}-user-service"
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 100m
