@@ -78,4 +78,4 @@ class EasyTradeProvider implements Provider {
 
 OpenFeature.setProvider(new EasyTradeProvider())
 
-export const openFeatureClient = OpenFeature.getClient("offerservice")
+export const openFeatureClient = OpenFeature.getClient("offer-service")

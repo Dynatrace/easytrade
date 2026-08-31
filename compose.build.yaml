@@ -37,21 +37,21 @@ services:
     build:
       context: src/frontend
 
-  frontendreverseproxy:
-    image: ${REGISTRY}/frontendreverseproxy:${TAG}
+  frontend-reverse-proxy:
+    image: ${REGISTRY}/frontend-reverse-proxy:${TAG}
     build:
-      context: src/frontendreverseproxy
+      context: src/frontend-reverse-proxy
 
-  loadgen:
-    image: ${REGISTRY}/loadgen:${TAG}
+  load-gen:
+    image: ${REGISTRY}/load-gen:${TAG}
     build:
-      context: src/loadgen
+      context: src/load-gen
 
-  offerservice:
-    image: ${REGISTRY}/offerservice:${TAG}
+  offer-service:
+    image: ${REGISTRY}/offer-service:${TAG}
     build:
       context: src/
-      dockerfile: offerservice/Dockerfile
+      dockerfile: offer-service/Dockerfile
 
   pricing-service:
     image: ${REGISTRY}/pricing-service:${TAG}

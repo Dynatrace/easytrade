@@ -42,20 +42,20 @@ dependencies:
     version: "0.1.0"
     condition: frontend.enabled
   - name: app
-    alias: frontendreverseproxy
+    alias: frontend-reverse-proxy
     repository: "file://./charts/app"
     version: "0.1.0"
-    condition: frontendreverseproxy.enabled
+    condition: frontend-reverse-proxy.enabled
   - name: app
-    alias: loadgen
+    alias: load-gen
     repository: "file://./charts/app"
     version: "0.1.0"
-    condition: loadgen.enabled
+    condition: load-gen.enabled
   - name: app
-    alias: offerservice
+    alias: offer-service
     repository: "file://./charts/app"
     version: "0.1.0"
-    condition: offerservice.enabled
+    condition: offer-service.enabled
   - name: app
     alias: pricing-service
     repository: "file://./charts/app"

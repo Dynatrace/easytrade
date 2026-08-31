@@ -10,7 +10,7 @@ Detailed per-language conventions live in `.claude/rules/`.
 
 ## What is EasyTrade
 
-Fake stock-broking demo application for Dynatrace showcases. 15 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`frontendreverseproxy`) on port 80.
+Fake stock-broking demo application for Dynatrace showcases. 15 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`frontend-reverse-proxy`) on port 80.
 
 All services share one MSSQL database (`db`, port 1433). Connection string format differs by tech stack — see `compose.yaml` for the three variants (Java/JDBC, .NET, Go/sqlserver).
 
@@ -20,9 +20,9 @@ All services share one MSSQL database (`db`, port 1433). Connection string forma
 |---|---|
 | Java 21 / Spring Boot / Gradle | `credit-card-order-service` |
 | Go + Go Modules | `background-service`, `db-adapter`, `pricing-service`, `user-service`, `feature-flag-service` |
-| TypeScript / Node.js / npm | `frontend` (React + Vite), `loadgen`, `offerservice` (Express) |
+| TypeScript / Node.js / npm | `frontend` (React + Vite), `load-gen`, `offer-service` (Express) |
 | C# / .NET 8 | `broker-service`, `manager` |
-| Config only | `frontendreverseproxy` (nginx), `db` (MSSQL) |
+| Config only | `frontend-reverse-proxy` (nginx), `db` (MSSQL) |
 
 Key roles:
 - `pricing-service`: REST API (Gin + GORM); Swagger at `/pricing-service/swagger-ui/index.html`
@@ -70,7 +70,7 @@ Only `broker-service` has a test project;
 Use the root `Makefile` (`make help` lists every target):
 ```bash
 make start                                          # all services, built from local source (compose.dev.yaml)
-make start services="frontend reverseproxy background-service"   # subset
+make start services="frontend frontend-reverse-proxy background-service"   # subset
 make build [services=NAME]                          # rebuild images; omit services= to build all
 make redeploy services=NAME                         # rebuild + recreate one service after a code change
 make stop

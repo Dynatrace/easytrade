@@ -67,33 +67,33 @@ services:
     volumes:
       - ./src/frontend/src:/app/src:ro
 
-  frontendreverseproxy:
+  frontend-reverse-proxy:
     <<: *default-service
-    build: src/frontendreverseproxy
+    build: src/frontend-reverse-proxy
     depends_on:
       - broker-service
       - frontend
       - pricing-service
       - feature-flag-service
-      - offerservice
+      - offer-service
       - credit-card-order-service
       - background-service
     ports:
       - 80:80
 
-  loadgen:
+  load-gen:
     <<: *default-service
-    build: src/loadgen
+    build: src/load-gen
     depends_on:
-      - frontendreverseproxy
+      - frontend-reverse-proxy
     environment:
-      EASYTRADE_URL: http://frontendreverseproxy
+      EASYTRADE_URL: http://frontend-reverse-proxy
 
-  offerservice:
+  offer-service:
     <<: *default-service
     build:
       context: src/
-      dockerfile: offerservice/Dockerfile
+      dockerfile: offer-service/Dockerfile
     depends_on:
       - db-adapter
       - user-service
@@ -161,12 +161,12 @@ services:
     <<: *default-service
     build: src/background-service
     depends_on:
-      - offerservice
+      - offer-service
       - db-adapter
     ports:
       - 8095:8080
     environment:
-      OFFER_SERVICE_ADDRESS: http://offerservice:8080
+      OFFER_SERVICE_ADDRESS: http://offer-service:8080
       FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
       CREDIT_CARD_ORDER_SERVICE_ADDRESS: http://credit-card-order-service:8080
       DB_ADAPTER_SERVICE_ADDRESS: db-adapter:50051

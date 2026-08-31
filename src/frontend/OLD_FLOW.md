@@ -1,6 +1,6 @@
-# Loadgen Visit Flows — Current Behavior
+# Load-Gen Visit Flows — Current Behavior
 
-Documents exactly what the loadgen executes today against the existing MUI frontend.
+Documents exactly what the load-gen executes today against the existing MUI frontend.
 Use as a reference when verifying that the new frontend + updated selectors produce the same logical sequence.
 
 Delay legend: ⚡ ~500ms · ⏳ ~1500ms · 🕐 ~2000ms (endDtSession)

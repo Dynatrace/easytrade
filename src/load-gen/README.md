@@ -61,7 +61,7 @@ This is an overview and my be out of date, check `src/config/getConifg.ts` for t
     - the timeframe in minutes for which the generated visits are counted, too long time may cause long pauses between visits when the limit of vists in a timeframe has been reached, too short time may lead to visits lasting longer than the timeframe effectively ignoring the limit
   - **RATE_LIMIT_LEARN_TIME_FACTOR**
     - _default:_ 2
-    - how many initial timeframes will the loadgen work at it's full capacity and count how many visits it can produce, after that time it will apply the defined limits (e.g. with timeframe set to 5 minuts and lear time factor set to 2 that will take 10 minutes)
+    - how many initial timeframes will the load-gen work at it's full capacity and count how many visits it can produce, after that time it will apply the defined limits (e.g. with timeframe set to 5 minuts and lear time factor set to 2 that will take 10 minutes)
 - visit weights
   - the weights determine how often each visit will be run in each cycle, this is not random and each visit will be run the same amount of times each cycle, the cycle length depends on the weights and number of visits, if the weights are the same the cycle will run each visit once and repeat
   - **DEPOSIT_AND_BUY_SUCCESS_WEIGHT**
@@ -85,9 +85,9 @@ This is an overview and my be out of date, check `src/config/getConifg.ts` for t
 
 ```bash
 # Build docker image
-docker build -t my-loadgen .
+docker build -t my-load-gen .
 # Run generator
-docker run -e EASYTRADE_URL={frontend-url} my-loadgen
+docker run -e EASYTRADE_URL={frontend-url} my-load-gen
 ```
 
 ## Technology

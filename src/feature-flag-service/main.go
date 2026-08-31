@@ -43,7 +43,7 @@ func initFlags() map[string]*flag.Flag {
 			ID:           "ergo_aggregator_slowdown",
 			Enabled:      getEnvBool("ENABLE_ERGO_AGGREGATOR_SLOWDOWN", false),
 			Name:         "Ergo aggregator slowdown",
-			Description:  "When enabled, the OfferService will respond with delay to 2 out of 5 AggregatorServices querying it, which will result in those services pausing the queries for 1h.",
+			Description:  "When enabled, the Offer Service will respond with delay to 2 out of 5 AggregatorServices querying it, which will result in those services pausing the queries for 1h.",
 			IsModifiable: enableModify,
 			Tag:          "problem_pattern",
 		},

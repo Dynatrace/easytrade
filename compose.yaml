@@ -56,32 +56,32 @@ services:
       - pricing-service
       - credit-card-order-service
 
-  frontendreverseproxy:
+  frontend-reverse-proxy:
     <<: *default-service
-    image: ${REGISTRY}/frontendreverseproxy:${TAG}
+    image: ${REGISTRY}/frontend-reverse-proxy:${TAG}
     depends_on:
       - broker-service
       - frontend
       - user-service
       - pricing-service
       - feature-flag-service
-      - offerservice
+      - offer-service
       - credit-card-order-service
       - background-service
     ports:
       - 80:80
 
-  loadgen:
+  load-gen:
     <<: *default-service
-    image: ${REGISTRY}/loadgen:${TAG}
+    image: ${REGISTRY}/load-gen:${TAG}
     depends_on:
-      - frontendreverseproxy
+      - frontend-reverse-proxy
     environment:
-      EASYTRADE_URL: http://frontendreverseproxy
+      EASYTRADE_URL: http://frontend-reverse-proxy
 
-  offerservice:
+  offer-service:
     <<: *default-service
-    image: ${REGISTRY}/offerservice:${TAG}
+    image: ${REGISTRY}/offer-service:${TAG}
     depends_on:
       - user-service
       - db-adapter
@@ -124,9 +124,9 @@ services:
     <<: *default-service
     image: ${REGISTRY}/background-service:${TAG}
     depends_on:
-      - offerservice
+      - offer-service
     environment:
-      OFFER_SERVICE_ADDRESS: http://offerservice:8080
+      OFFER_SERVICE_ADDRESS: http://offer-service:8080
       FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
       CREDIT_CARD_ORDER_SERVICE_ADDRESS: http://credit-card-order-service:8080
       DB_ADAPTER_SERVICE_ADDRESS: db-adapter:50051

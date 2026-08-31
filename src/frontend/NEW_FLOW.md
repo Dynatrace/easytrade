@@ -41,7 +41,7 @@ The old flow used a two-step MUI portal pattern: click the `<div>` trigger to mo
 | `creditCardPage_cardTypeInput` | `click //div[@id="type"]` | `sel //select[@id="type"]` |
 | `creditCardPage_cardType_type` | `//*[@id="menu-type"]//li[contains(text(), …)]` | `//select[@id="type"]/option[contains(text(), …)]` |
 
-### Helper functions to update (`src/loadgen/src/helpers/`)
+### Helper functions to update (`src/load-gen/src/helpers/`)
 
 | File | Function | Change |
 |------|----------|--------|
