@@ -75,6 +75,18 @@ broker-service:
     FEATURE_FLAG_SERVICE_PORT: "8080"
     PROXY_PREFIX: "broker-service"
     DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 150m
