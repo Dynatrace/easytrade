@@ -71,7 +71,7 @@ broker-service:
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
     PROXY_PREFIX: "broker-service"
-    DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   livenessProbe:
     httpGet:
       path: /livez
@@ -106,7 +106,7 @@ credit-card-order-service:
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
-    DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   livenessProbe:
     httpGet:
       path: /livez
@@ -328,7 +328,7 @@ loadgen:
 offerservice:
   enabled: true
   env:
-    DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
     USER_SERVICE_PORT: "8080"
     USER_SERVICE_BASE_URL: "{{ .Release.Name }}-user-service"
     FEATURE_FLAG_SERVICE_PROTOCOL: http
@@ -359,11 +359,9 @@ offerservice:
 
 pricing-service:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/pricing-service
   env:
     PROXY_PREFIX: "pricing-service"
-    DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   livenessProbe:
     httpGet:
       path: /livez

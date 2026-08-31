@@ -13,7 +13,7 @@ func LoadLocalEnv() {
 }
 
 func CheckEnv() {
-	checkSingleEnv(DbAdapterHostAndPort)
+	checkSingleEnv(DbAdapterAddress)
 }
 
 func checkSingleEnv(envName string) {

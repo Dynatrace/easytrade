@@ -33,7 +33,7 @@ services:
     ports:
       - 8083:8080
     environment:
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
+      DB_ADAPTER_ADDRESS: db-adapter:50051
       PROXY_PREFIX: pricing-service
 
   broker-service:
@@ -53,7 +53,7 @@ services:
       PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
       <<: *feature-flag-service-env
       PROXY_PREFIX: broker-service
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
+      DB_ADAPTER_ADDRESS: db-adapter:50051
 
   frontend:
     <<: *default-service
@@ -108,7 +108,7 @@ services:
       - 8087:8080
     environment:
       <<: *feature-flag-service-env
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
+      DB_ADAPTER_ADDRESS: db-adapter:50051
       USER_SERVICE_PORT: 8080
       USER_SERVICE_BASE_URL: user-service
 
@@ -135,7 +135,7 @@ services:
       - 8091:8080
     environment:
       PROXY_PREFIX: credit-card-order-service
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
+      DB_ADAPTER_ADDRESS: db-adapter:50051
       THIRD_PARTY_SERVICE_HOSTANDPORT: background-service:8080
       <<: *feature-flag-service-env
       WORK_DELAY: 30

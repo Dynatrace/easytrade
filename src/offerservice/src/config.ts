@@ -15,7 +15,7 @@ function env(name: string, defaultValue: string): string {
 export const config = {
     appPort: parseInt(env("APP_PORT", "8080")),
 
-    dbAdapterHostAndPort: env("DBADAPTER_HOSTANDPORT", "localhost:50051"),
+    dbAdapterHostAndPort: env("DB_ADAPTER_ADDRESS", "localhost:50051"),
 
     userServiceUrl: `${env("USER_SERVICE_PROTOCOL", "http")}://${env("USER_SERVICE_BASE_URL", "localhost")}:${env("USER_SERVICE_PORT", "8080")}`,
 
