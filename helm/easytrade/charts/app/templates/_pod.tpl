@@ -31,7 +31,8 @@ spec:
       {{- else if .Values.global.image.baseRepository }}
         {{- $repository = printf "%s/%s" .Values.global.image.baseRepository .Chart.Name }}
       {{- end }}
-      image: "{{ $repository }}:{{ .Values.image.tag | default .Values.global.image.tag }}"
+      {{- $tag := .Values.image.tag | default .Values.global.image.tag }}
+      image: "{{ $repository }}:{{ tpl $tag $ }}"
       imagePullPolicy: {{ .Values.image.pullPolicy }}
       env:
         - name: DT_RELEASE_PRODUCT
