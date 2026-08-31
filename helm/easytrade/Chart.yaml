@@ -62,11 +62,6 @@ dependencies:
     version: "0.1.0"
     condition: pricing-service.enabled
   - name: app
-    alias: problem-operator
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: problem-operator.enabled
-  - name: app
     alias: user-service
     repository: "file://./charts/app"
     version: "0.1.0"
