@@ -1,11 +1,12 @@
-﻿using EasyTrade.BrokerService.Entities.Balances.Repository;
+﻿using EasyTrade.BrokerService.Entities.Balances;
+using EasyTrade.BrokerService.Entities.Balances.Repository;
 using EasyTrade.BrokerService.Entities.Instruments.Repository;
 using EasyTrade.BrokerService.Entities.Prices.ServiceConnector;
+using EasyTrade.BrokerService.Entities.Products;
 using EasyTrade.BrokerService.Entities.Products.Repository;
 using EasyTrade.BrokerService.Entities.Trades.Repository;
 using EasyTrade.BrokerService.ExceptionHandling.Exceptions;
 using EasyTrade.BrokerService.Helpers;
-using Microsoft.EntityFrameworkCore;
 
 namespace EasyTrade.BrokerService.Entities.Trades.Service;
 
@@ -28,7 +29,7 @@ public class TradeService(
         ITradeService
 {
     public async Task<IEnumerable<Trade>> GetTradesOfAccount(
-        int accountId,
+        Guid accountId,
         int count,
         int page,
         bool onlyOpen = false,
@@ -44,100 +45,89 @@ public class TradeService(
             onlyLong
         );
 
-        // Ordered by close timestamp, then by id
-        return await _tradeRepository
-            .GetAllTrades()
-            .Where(x => x.AccountId == accountId)
-            .Where(x => !onlyOpen || !x.TradeClosed)
-            .Where(x =>
-                !onlyLong
-                || x.Direction.Equals(nameof(ActionType.LongBuy).ToLower())
-                || x.Direction.Equals(nameof(ActionType.LongSell).ToLower())
-            )
+        var trades = await _tradeRepository.GetAccountTradesAsync(accountId, onlyOpen, onlyLong);
+        return [.. trades
             .OrderByDescending(x => x.TimestampClose)
             .ThenByDescending(x => x.Id)
             .Skip(count * page)
-            .Take(count)
-            .ToListAsync();
+            .Take(count)];
     }
 
-    public async Task<Trade> BuyAssets(int accountId, int instrumentId, decimal amount)
+    public Task<Trade> BuyAssets(Guid accountId, Guid instrumentId, decimal amount) =>
+        ProcessQuickTrade(accountId, instrumentId, amount, "buy", ExecuteQuickBuy);
+
+    public Task<Trade> SellAssets(Guid accountId, Guid instrumentId, decimal amount) =>
+        ProcessQuickTrade(accountId, instrumentId, amount, "sell", ExecuteQuickSell);
+
+    private async Task<Trade> ProcessQuickTrade(
+        Guid accountId,
+        Guid instrumentId,
+        decimal amount,
+        string action,
+        Func<Guid, Guid, decimal, QuickTradeContext, Task<Trade>> execute
+    )
     {
         _logger.LogInformation(
-            "Quick buy with account ID [{accountId}], instrument ID [{instrumentId}], amount [{amount}]",
+            "Quick {action} with account ID [{accountId}], instrument ID [{instrumentId}], amount [{amount}]",
+            action,
             accountId,
             instrumentId,
             amount
         );
-
         ValidateInput(amount);
-        var balance =
-            await _balanceRepository.GetBalanceOfAccount(accountId)
-            ?? throw new AccountNotFoundException(accountId);
-        var instrument =
-            await _instrumentRepository.GetInstrument(instrumentId)
-            ?? throw new InstrumentNotFoundException(instrumentId);
-        var price = (await _priceService.GetLastPriceByInstrumentId(instrumentId))!.Open;
-        var product = (await _productRepository.GetProduct(instrument.ProductId))!;
+        var ctx = await FetchQuickTradeContext(accountId, instrumentId);
+        return await execute(accountId, instrumentId, amount, ctx);
+    }
 
-        var cost = amount * price;
-        var totalCost = cost + product.Ppt;
-        if (totalCost > balance.Value)
-        {
+    private async Task<Trade> ExecuteQuickBuy(
+        Guid accountId,
+        Guid instrumentId,
+        decimal amount,
+        QuickTradeContext ctx
+    )
+    {
+        var cost = amount * ctx.OpenPrice;
+        if (cost + ctx.Product.Ppt > ctx.Balance.Value)
             throw new NotEnoughMoneyException(
-                $"Not enough money to buy this asset (missing {totalCost - balance.Value})"
+                $"Not enough money to buy this asset (missing {cost + ctx.Product.Ppt - ctx.Balance.Value})"
             );
-        }
-        await _tradeRepository.BeginTransaction();
 
-        var trade = Trade.QuickTrade(accountId, instrumentId, ActionType.Buy, price, amount);
-        _tradeRepository.AddTrade(trade);
-        await UpdateBalance(balance, cost, product.Ppt, ActionType.Buy);
+        var trade = await _tradeRepository.CreateTradeAsync(
+            Trade.QuickTrade(accountId, instrumentId, ActionType.Buy, ctx.OpenPrice, amount)
+        );
+        await UpdateBalance(ctx.Balance, cost, ctx.Product.Ppt, ActionType.Buy);
         await UpdateOwnedInstrument(accountId, instrumentId, amount);
-
-        await SaveChangesOrRollback();
-
         return trade;
     }
 
-    public async Task<Trade> SellAssets(int accountId, int instrumentId, decimal amount)
+    private async Task<Trade> ExecuteQuickSell(
+        Guid accountId,
+        Guid instrumentId,
+        decimal amount,
+        QuickTradeContext ctx
+    )
     {
-        _logger.LogInformation(
-            "Quick sell with account ID [{accountId}], instrument ID [{instrumentId}], amount [{amount}]",
-            accountId,
-            instrumentId,
-            amount
-        );
+        var ownedInstrument = await GetOwnedInstrumentOrThrow(accountId, instrumentId);
 
-        ValidateInput(amount);
-        var balance =
-            await _balanceRepository.GetBalanceOfAccount(accountId)
-            ?? throw new AccountNotFoundException(accountId);
-        var instrument =
-            await _instrumentRepository.GetInstrument(instrumentId)
-            ?? throw new InstrumentNotFoundException(instrumentId);
-        var price = (await _priceService.GetLastPriceByInstrumentId(instrumentId))!.Open;
-        var product = (await _productRepository.GetProduct(instrument.ProductId))!;
-        var ownedInstrument = await _instrumentRepository.GetOwnedInstrument(
-            accountId,
-            instrumentId
-        );
-
-        if (ownedInstrument is null || ownedInstrument.Quantity < amount)
-        {
+        if (ownedInstrument.Quantity < amount)
             throw new NotEnoughAssetsException();
-        }
-        var income = price * amount;
-        await _tradeRepository.BeginTransaction();
 
-        var trade = Trade.QuickTrade(accountId, instrumentId, ActionType.Sell, price, amount);
-        _tradeRepository.AddTrade(trade);
-        await UpdateBalance(balance, income, product.Ppt, ActionType.Sell);
-        UpdateOwnedInstrument(ownedInstrument, -amount);
-
-        await SaveChangesOrRollback();
-
+        var income = ctx.OpenPrice * amount;
+        var trade = await _tradeRepository.CreateTradeAsync(
+            Trade.QuickTrade(accountId, instrumentId, ActionType.Sell, ctx.OpenPrice, amount)
+        );
+        await UpdateBalance(ctx.Balance, income, ctx.Product.Ppt, ActionType.Sell);
+        await UpdateOwnedInstrument(ownedInstrument, -amount);
         return trade;
+    }
+
+    private async Task<QuickTradeContext> FetchQuickTradeContext(Guid accountId, Guid instrumentId)
+    {
+        var balance = await GetBalanceOrThrow(accountId);
+        var instrument = await GetInstrumentOrThrow(instrumentId);
+        var openPrice = (await GetLastPriceOrThrow(instrumentId)).Open;
+        var product = await GetProductOrThrow(instrument.ProductId);
+        return new(balance, openPrice, product);
     }
 
     private static bool ValidateInput(decimal amount)
@@ -148,4 +138,6 @@ public class TradeService(
         }
         return true;
     }
+
+    private record QuickTradeContext(Balance Balance, decimal OpenPrice, Product Product);
 }

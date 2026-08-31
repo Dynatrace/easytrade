@@ -1,8 +1,8 @@
 namespace EasyTrade.BrokerService.Entities.Trades.DTO;
 
 public class LongTradeDTO(
-    int accountId,
-    int instrumentId,
+    Guid accountId,
+    Guid instrumentId,
     decimal amount,
     int duration,
     decimal price

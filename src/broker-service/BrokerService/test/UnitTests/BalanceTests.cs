@@ -16,10 +16,10 @@ public class BalanceTests
     {
         // Arrange
         const decimal startingValue = 344.976M;
-        const int id = 21;
+        var id = Guid.NewGuid();
 
-        Balance[] balances = { new Balance(id, startingValue) };
-        var balanceService = BuildFakeBalanceService(balances, Array.Empty<BalanceHistory>());
+        Balance[] balances = [new Balance(id, startingValue)];
+        var balanceService = BuildFakeBalanceService(balances, []);
 
         // Act
         var balance = await balanceService.GetBalanceOfAccount(id);
@@ -33,15 +33,15 @@ public class BalanceTests
     public async Task GetBalance_InvalidAccountId_ShouldThrowException()
     {
         // Arrange
-        const int id = 213;
+        var id = Guid.NewGuid();
 
         var balanceService = BuildFakeBalanceService(
-            Array.Empty<Balance>(),
-            Array.Empty<BalanceHistory>()
+            [],
+            []
         );
 
         // Act & Assert
-        await Assert.ThrowsAsync<AccountNotFoundException>(
+        await Assert.ThrowsAsync<BalanceNotFoundException>(
             async () => await balanceService.GetBalanceOfAccount(id)
         );
     }
@@ -52,10 +52,10 @@ public class BalanceTests
         // Arrange
         const decimal startingValue = 100;
         const decimal amount = 100.5M;
-        const int id = 10;
+        var id = Guid.NewGuid();
 
-        Balance[] balances = { new Balance(id, startingValue) };
-        var balanceService = BuildFakeBalanceService(balances, Array.Empty<BalanceHistory>());
+        Balance[] balances = [new Balance(id, startingValue)];
+        var balanceService = BuildFakeBalanceService(balances, []);
 
         // Act
         await balanceService.Deposit(id, amount);
@@ -78,10 +78,10 @@ public class BalanceTests
         // Arrange
         const decimal startingValue = 12;
         const decimal amount = 5.52M;
-        const int id = 122;
+        var id = Guid.NewGuid();
 
-        Balance[] balances = { new Balance(id, startingValue) };
-        var balanceService = BuildFakeBalanceService(balances, Array.Empty<BalanceHistory>());
+        Balance[] balances = [new Balance(id, startingValue)];
+        var balanceService = BuildFakeBalanceService(balances, []);
 
         // Act
         await balanceService.Withdraw(id, amount);
@@ -104,10 +104,10 @@ public class BalanceTests
         // Arrange
         const decimal startingValue = 12.3M;
         const decimal amount = 13.3M;
-        const int id = 11;
+        var id = Guid.NewGuid();
 
-        Balance[] balances = { new Balance(id, startingValue) };
-        var balanceService = BuildFakeBalanceService(balances, Array.Empty<BalanceHistory>());
+        Balance[] balances = [new Balance(id, startingValue)];
+        var balanceService = BuildFakeBalanceService(balances, []);
 
         // Act & Assert
         await Assert.ThrowsAsync<NotEnoughMoneyException>(
@@ -120,18 +120,18 @@ public class BalanceTests
     {
         // Arrange
         const decimal amount = 100;
-        const int id = 10;
+        var id = Guid.NewGuid();
 
         var balanceService = BuildFakeBalanceService(
-            Array.Empty<Balance>(),
-            Array.Empty<BalanceHistory>()
+            [],
+            []
         );
 
         // Act & Assert
-        await Assert.ThrowsAsync<AccountNotFoundException>(
+        await Assert.ThrowsAsync<BalanceNotFoundException>(
             async () => await balanceService.Deposit(id, amount)
         );
-        await Assert.ThrowsAsync<AccountNotFoundException>(
+        await Assert.ThrowsAsync<BalanceNotFoundException>(
             async () => await balanceService.Withdraw(id, amount)
         );
     }
@@ -142,10 +142,10 @@ public class BalanceTests
         // Arrange
         const decimal startingValue = 0;
         const decimal amount = -0.1M;
-        const int id = 10;
+        var id = Guid.NewGuid();
 
-        Balance[] balances = { new Balance(id, startingValue) };
-        var balanceService = BuildFakeBalanceService(balances, Array.Empty<BalanceHistory>());
+        Balance[] balances = [new Balance(id, startingValue)];
+        var balanceService = BuildFakeBalanceService(balances, []);
 
         // Act & Assert
         await Assert.ThrowsAsync<NegativeAmountException>(
@@ -162,8 +162,8 @@ public class BalanceTests
     )
     {
         _balanceRepository = new FakeBalanceRepository(
-            balances.ToList(),
-            balanceHistories.ToList()
+            [.. balances],
+            [.. balanceHistories]
         );
         var logger = new Mock<ILogger<BalanceService>>().Object;
         return new BalanceService(_balanceRepository, logger);

@@ -1,10 +1,13 @@
 FROM node:24.11.0-alpine3.22@sha256:f36fed0b2129a8492535e2853c64fbdbd2d29dc1219ee3217023ca48aebd3787 AS build
 
-WORKDIR /app
+RUN apk add --no-cache protoc protobuf-dev
 
-COPY ["*.json", "./"]
-COPY ["./src", "./src"]
+WORKDIR /src
+COPY ["proto/", "proto/"]
+COPY ["offerservice/*.json", "offerservice/generate-proto.sh", "offerservice/"]
+COPY ["offerservice/src", "offerservice/src"]
 
+WORKDIR /src/offerservice
 RUN npm ci \
     && npm run build
 
@@ -16,11 +19,11 @@ RUN apk upgrade --no-cache \
 USER easytrade:easytrade
 WORKDIR /home/easytrade
 
-COPY --chown=easytrade:easytrade ["package.json", "package-lock.json", "./"]
+COPY --chown=easytrade:easytrade ["offerservice/package.json", "offerservice/package-lock.json", "./"]
 
 RUN npm ci --omit=dev \
     && npm cache clean --force
 
-COPY --chown=easytrade:easytrade --from=build ["app/dist", "./dist"]
+COPY --chown=easytrade:easytrade --from=build ["/src/offerservice/dist", "./dist"]
 
 CMD [ "node", "./dist/src/app.js" ]

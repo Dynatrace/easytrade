@@ -2,7 +2,7 @@ namespace EasyTrade.BrokerService.Entities.Trades.DTO;
 
 public class TradeDTO(Trade trade)
 {
-    public int InstrumentId { get; set; } = trade.InstrumentId;
+    public Guid InstrumentId { get; set; } = trade.InstrumentId;
     public string Direction { get; set; } = trade.Direction;
     public decimal Quantity { get; set; } = trade.Quantity;
     public decimal EntryPrice { get; set; } = trade.EntryPrice;

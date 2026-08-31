@@ -6,11 +6,11 @@ namespace EasyTrade.BrokerService.Entities.Instruments.DTO;
 
 public class InstrumentDTO
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
     public string Code { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
-    public int ProductId { get; set; }
+    public Guid ProductId { get; set; }
     public string ProductName { get; set; }
     public PriceDTO Price { get; set; }
     public decimal Amount { get; set; }
@@ -33,11 +33,11 @@ public class InstrumentDTO
     }
 
     public InstrumentDTO(
-        int id,
+        Guid id,
         string code,
         string name,
         string description,
-        int productId,
+        Guid productId,
         string productName,
         PriceDTO price,
         decimal amount

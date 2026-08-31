@@ -70,7 +70,7 @@ Only `broker-service` has a test project;
 Use the root `Makefile` (`make help` lists every target):
 ```bash
 make start                                          # all services, built from local source (compose.dev.yaml)
-make start services="frontend reverseproxy contentcreator"   # subset
+make start services="frontend reverseproxy background-service"   # subset
 make build [services=NAME]                          # rebuild images; omit services= to build all
 make redeploy services=NAME                         # rebuild + recreate one service after a code change
 make stop

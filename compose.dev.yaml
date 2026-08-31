@@ -25,22 +25,26 @@ services:
 
   pricing-service:
     <<: *default-service
-    build: src/pricing-service
+    build:
+      context: src/
+      dockerfile: pricing-service/Dockerfile
     depends_on:
-      - db
+      - db-adapter
     ports:
       - 8083:8080
     environment:
-      MSSQL_CONNECTIONSTRING: *go-connection-string
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
       PROXY_PREFIX: pricing-service
 
   broker-service:
     <<: *default-service
-    build: src/broker-service
+    build:
+      context: src/
+      dockerfile: broker-service/Dockerfile
     ports:
       - 8084:8080
     depends_on:
-      - db
+      - db-adapter
       - user-service
       - pricing-service
       - feature-flag-service
@@ -49,7 +53,7 @@ services:
       PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
       <<: *feature-flag-service-env
       PROXY_PREFIX: broker-service
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
 
   frontend:
     <<: *default-service
@@ -96,14 +100,18 @@ services:
 
   offerservice:
     <<: *default-service
-    build: src/offerservice
+    build:
+      context: src/
+      dockerfile: offerservice/Dockerfile
     depends_on:
+      - db-adapter
       - user-service
       - feature-flag-service
     ports:
       - 8087:8080
     environment:
       <<: *feature-flag-service-env
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
       USER_SERVICE_PORT: 8080
       USER_SERVICE_BASE_URL: user-service
 
@@ -121,15 +129,17 @@ services:
       
   credit-card-order-service:
     <<: *default-service
-    build: src/credit-card-order-service
+    build:
+      context: src/
+      dockerfile: credit-card-order-service/Dockerfile
     depends_on:
-      - db
+      - db-adapter
       - background-service
     ports:
       - 8091:8080
     environment:
       PROXY_PREFIX: credit-card-order-service
-      MSSQL_CONNECTIONSTRING: *java-connection-string
+      DBADAPTER_HOSTANDPORT: db-adapter:50051
       THIRD_PARTY_SERVICE_HOSTANDPORT: background-service:8080
       <<: *feature-flag-service-env
       WORK_DELAY: 30
@@ -149,7 +159,9 @@ services:
 
   db-adapter:
     <<: *default-service
-    build: src/db-adapter
+    build:
+      context: src/
+      dockerfile: db-adapter/Dockerfile
     depends_on:
       - db
     ports:

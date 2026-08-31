@@ -1,5 +1,5 @@
-using System.Net;
 using EasyTrade.BrokerService.Helpers;
+using System.Net;
 
 namespace EasyTrade.BrokerService.ProblemPatterns.OpenFeature.Providers.FeatureFlagService;
 

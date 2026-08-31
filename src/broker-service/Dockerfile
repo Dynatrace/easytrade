@@ -1,9 +1,11 @@
 ﻿# https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
-FROM mcr.microsoft.com/dotnet/sdk:8.0.412-alpine3.22@sha256:ad6ab1a677854e5b681bc69f4fdb4ad9913e3798c4f89927254b6a53215d5b7d AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.412-noble@sha256:c9a9fd6312801f4f57eb8cbb6f25c078feba76065feb2d671454dbc01c8f3601 AS build
 
-WORKDIR /BrokerService
-COPY ["BrokerService/", "./"]
+WORKDIR /src
+COPY ["proto/", "proto/"]
+COPY ["broker-service/BrokerService/", "broker-service/BrokerService/"]
 
+WORKDIR /src/broker-service/BrokerService
 RUN dotnet test test/BrokerService.test.csproj \
     && dotnet publish src/BrokerService.csproj -o /publish
 

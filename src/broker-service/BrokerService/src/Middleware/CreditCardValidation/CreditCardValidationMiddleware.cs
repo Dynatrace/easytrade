@@ -1,7 +1,7 @@
-using System.Text.Json;
 using EasyTrade.BrokerService.ExceptionHandling;
 using EasyTrade.BrokerService.Helpers;
 using EasyTrade.BrokerService.ProblemPatterns.OpenFeature;
+using System.Text.Json;
 
 namespace EasyTrade.BrokerService.Middleware.CreditCardValidation;
 

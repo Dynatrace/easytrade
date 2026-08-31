@@ -8,12 +8,15 @@
   "scripts": {
     "start": "node dist/src/app.js",
     "dev": "APP_PORT=8087 ts-node src/app.ts",
-    "build": "rm -rf ./dist && tsc",
+    "generate:proto": "sh generate-proto.sh",
+    "build": "npm run generate:proto && rm -rf ./dist && tsc",
     "lint": "eslint src"
   },
   "author": "tomasz.wieremjewicz@dynatrace.com",
   "license": "ISC",
   "dependencies": {
+    "@bufbuild/protobuf": "^2.13.0",
+    "@grpc/grpc-js": "^1.13.4",
     "@openfeature/server-sdk": "^1.21.0",
     "express": "^5.2.1",
     "path-to-regexp": "^8.4.1",
@@ -25,6 +28,7 @@
     "eslint": "^9.39.1",
     "prettier": "^3.4.2",
     "ts-node": "^10.9.2",
+    "ts-proto": "^2.7.0",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.3"
   }

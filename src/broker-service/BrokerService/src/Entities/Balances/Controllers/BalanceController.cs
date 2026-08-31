@@ -21,11 +21,8 @@ public class BalanceController(IBalanceService balanceService) : ControllerBase
     [ProducesResponseType(typeof(Balance), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    [HttpPost("{accountId:int}/deposit")]
-    public async Task<Balance> DepositMoney(int accountId, DepositMoneyDTO depositMoneyDTO)
-    {
-        return await _balanceService.Deposit(accountId, depositMoneyDTO.Amount);
-    }
+    [HttpPost("{accountId:guid}/deposit")]
+    public async Task<Balance> DepositMoney(Guid accountId, DepositMoneyDTO depositMoneyDTO) => await _balanceService.Deposit(accountId, depositMoneyDTO.Amount);
 
     /// <summary>
     /// Withdraw money from the account
@@ -36,11 +33,8 @@ public class BalanceController(IBalanceService balanceService) : ControllerBase
     [ProducesResponseType(typeof(Balance), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    [HttpPost("{accountId:int}/withdraw")]
-    public async Task<Balance> WithdrawMoney(int accountId, WithdrawMoneyDTO withdrawMoneyDTO)
-    {
-        return await _balanceService.Withdraw(accountId, withdrawMoneyDTO.Amount);
-    }
+    [HttpPost("{accountId:guid}/withdraw")]
+    public async Task<Balance> WithdrawMoney(Guid accountId, WithdrawMoneyDTO withdrawMoneyDTO) => await _balanceService.Withdraw(accountId, withdrawMoneyDTO.Amount);
 
     /// <summary>
     /// Get current balance of an account
@@ -49,9 +43,6 @@ public class BalanceController(IBalanceService balanceService) : ControllerBase
     /// <returns>Balance</returns>
     [ProducesResponseType(typeof(Balance), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-    [HttpGet("{accountId:int}")]
-    public async Task<Balance> GetBalanceOfAccount(int accountId)
-    {
-        return await _balanceService.GetBalanceOfAccount(accountId);
-    }
+    [HttpGet("{accountId:guid}")]
+    public async Task<Balance> GetBalanceOfAccount(Guid accountId) => await _balanceService.GetBalanceOfAccount(accountId);
 }

@@ -74,7 +74,7 @@ broker-service:
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
     PROXY_PREFIX: "broker-service"
-    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
       cpu: 150m
@@ -85,18 +85,6 @@ broker-service:
   service:
     enabled: true
     port: 8080
-
-contentcreator:
-  enabled: true
-  env:
-    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
-  resources:
-    requests:
-      cpu: 10m
-      memory: 400Mi
-    limits:
-      cpu: 200m
-      memory: 400Mi
 
 credit-card-order-service:
   enabled: true
@@ -109,7 +97,7 @@ credit-card-order-service:
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
-    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
   resources:
     requests:
       cpu: 20m

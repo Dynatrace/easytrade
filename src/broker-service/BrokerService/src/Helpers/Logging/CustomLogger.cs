@@ -5,8 +5,10 @@ public sealed class CustomLogger : ILogger
     private readonly string _name;
     private readonly Func<CustomLoggerConfiguration> _getCurrentConfig;
 
-    public CustomLogger(string name, Func<CustomLoggerConfiguration> getCurrentConfig) =>
+    public CustomLogger(string name, Func<CustomLoggerConfiguration> getCurrentConfig)
+    {
         (_name, _getCurrentConfig) = (name, getCurrentConfig);
+    }
 
 #pragma warning disable CS8633
     public IDisposable BeginScope<TState>(TState state) => default!;
@@ -30,7 +32,7 @@ public sealed class CustomLogger : ILogger
 
         if (config.EventId == 0 || config.EventId == eventId.Id)
         {
-            ConsoleColor originalColor = Console.ForegroundColor;
+            var originalColor = Console.ForegroundColor;
 
             var timestamp = DateTimeOffset.Now.ToString(config.TimestampFormat);
             var callerName = config.SimplifiedNames ? _name.Split('.').Last() : _name;

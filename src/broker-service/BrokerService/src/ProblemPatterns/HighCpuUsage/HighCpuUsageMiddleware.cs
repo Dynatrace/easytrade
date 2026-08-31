@@ -1,6 +1,6 @@
-using System.Runtime.CompilerServices;
 using EasyTrade.BrokerService.Helpers;
 using EasyTrade.BrokerService.ProblemPatterns.OpenFeature;
+using System.Runtime.CompilerServices;
 
 namespace EasyTrade.BrokerService.ProblemPatterns.HighCpuUsage;
 
@@ -38,8 +38,8 @@ public class HighCpuUsageMiddleware(
             );
             var end = DateTime.Now.Add(TimeSpan.FromMilliseconds(_delayMs));
 
-            List<Task> tasks = new();
-            for (int i = 0; i < _concurrency; i++)
+            List<Task> tasks = [];
+            for (var i = 0; i < _concurrency; i++)
             {
                 tasks.Add(Task.Run(() => NotMiningBitcoinLoop(end)));
             }
