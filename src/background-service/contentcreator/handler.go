@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	proto "dynatrace.com/easytrade/background-service/db-adapter/proto"
+	proto "dynatrace.com/easytrade/background-service/proto"
 )
 
 const (

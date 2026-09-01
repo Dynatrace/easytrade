@@ -107,7 +107,9 @@ services:
 
   user-service:
     <<: *default-service
-    build: src/user-service
+    build:
+      context: src/
+      dockerfile: user-service/Dockerfile
     depends_on:
       - db-adapter
     ports:
@@ -159,7 +161,9 @@ services:
 
   background-service:
     <<: *default-service
-    build: src/background-service
+    build:
+      context: src/
+      dockerfile: background-service/Dockerfile
     depends_on:
       - offerservice
       - db-adapter
