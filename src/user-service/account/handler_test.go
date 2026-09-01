@@ -7,15 +7,15 @@ import (
 	"strings"
 	"testing"
 
-	"dynatrace.com/easytrade/user-service/dbadapter/proto"
+	"dynatrace.com/easytrade/user-service/proto"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// newTestRouter builds a gin engine wired to a Handler backed by the given fake client.
-func newTestRouter(client proto.AccountServiceClient) *gin.Engine {
+// newTestRouter builds a gin engine wired to a Handler backed by the given fake accountClient.
+func newTestRouter(accountClient proto.AccountServiceClient, balanceClient proto.BalanceServiceClient) *gin.Engine {
 	gin.SetMode(gin.TestMode)
-	h := NewHandler(client)
+	h := NewHandler(accountClient, balanceClient)
 	router := gin.New()
 	router.POST("/api/auth/login", h.Login)
 	router.POST("/api/auth/signup", h.Signup)
@@ -24,11 +24,11 @@ func newTestRouter(client proto.AccountServiceClient) *gin.Engine {
 	return router
 }
 
-// seedAccount creates an account in the fake client with a known password and returns its id.
-func seedAccount(t *testing.T, client *fakeAccountServiceClient, username, password, origin string) string {
+// seedAccount creates an account in the fake accountClient with a known password and returns its id.
+func seedAccount(t *testing.T, accountClient *fakeAccountServiceClient, username, password, origin string) string {
 	t.Helper()
 	now := timestamppb.Now()
-	acc, err := client.CreateAccount(context.Background(), &proto.CreateAccountRequest{
+	acc, err := accountClient.CreateAccount(context.Background(), &proto.CreateAccountRequest{
 		PackageId:             "1",
 		FirstName:             "Jane",
 		LastName:              "Doe",
@@ -62,9 +62,9 @@ func doRequest(router *gin.Engine, method, target, body string) *httptest.Respon
 }
 
 // TestLogin_MissingFields_ReturnsBadRequest checks a body missing required fields is rejected
-// before any client lookup is attempted.
+// before any accountClient lookup is attempted.
 func TestLogin_MissingFields_ReturnsBadRequest(t *testing.T) {
-	router := newTestRouter(newFakeAccountServiceClient())
+	router := newTestRouter(newFakeAccountServiceClient(), newFakeBalanceServiceClient())
 
 	recorder := doRequest(router, http.MethodPost, "/api/auth/login", "{}")
 
@@ -75,9 +75,9 @@ func TestLogin_MissingFields_ReturnsBadRequest(t *testing.T) {
 
 // TestLogin_ValidCredentials_ReturnsOk checks a correct username/password returns 200.
 func TestLogin_ValidCredentials_ReturnsOk(t *testing.T) {
-	client := newFakeAccountServiceClient()
-	seedAccount(t, client, "demouser", "demopass", "WEB")
-	router := newTestRouter(client)
+	accountClient := newFakeAccountServiceClient()
+	seedAccount(t, accountClient, "demouser", "demopass", "WEB")
+	router := newTestRouter(accountClient, newFakeBalanceServiceClient())
 
 	recorder := doRequest(router, http.MethodPost, "/api/auth/login",
 		`{"username":"demouser","password":"demopass"}`)
@@ -89,9 +89,9 @@ func TestLogin_ValidCredentials_ReturnsOk(t *testing.T) {
 
 // TestLogin_WrongPassword_ReturnsUnauthorized checks a bad password returns 401.
 func TestLogin_WrongPassword_ReturnsUnauthorized(t *testing.T) {
-	client := newFakeAccountServiceClient()
-	seedAccount(t, client, "demouser", "demopass", "WEB")
-	router := newTestRouter(client)
+	accountClient := newFakeAccountServiceClient()
+	seedAccount(t, accountClient, "demouser", "demopass", "WEB")
+	router := newTestRouter(accountClient, newFakeBalanceServiceClient())
 
 	recorder := doRequest(router, http.MethodPost, "/api/auth/login",
 		`{"username":"demouser","password":"wrong"}`)
@@ -103,7 +103,7 @@ func TestLogin_WrongPassword_ReturnsUnauthorized(t *testing.T) {
 
 // TestLogin_UnknownUser_ReturnsUnauthorized checks an unknown username returns 401.
 func TestLogin_UnknownUser_ReturnsUnauthorized(t *testing.T) {
-	router := newTestRouter(newFakeAccountServiceClient())
+	router := newTestRouter(newFakeAccountServiceClient(), newFakeBalanceServiceClient())
 
 	recorder := doRequest(router, http.MethodPost, "/api/auth/login",
 		`{"username":"nobody","password":"whatever"}`)
@@ -115,9 +115,9 @@ func TestLogin_UnknownUser_ReturnsUnauthorized(t *testing.T) {
 
 // TestSignup_UsernameAlreadyExists_ReturnsConflict checks a signup with an existing username returns 409.
 func TestSignup_UsernameAlreadyExists_ReturnsConflict(t *testing.T) {
-	client := newFakeAccountServiceClient()
-	seedAccount(t, client, "demouser", "demopass", "WEB")
-	router := newTestRouter(client)
+	accountClient := newFakeAccountServiceClient()
+	seedAccount(t, accountClient, "demouser", "demopass", "WEB")
+	router := newTestRouter(accountClient, newFakeBalanceServiceClient())
 
 	recorder := doRequest(router, http.MethodPost, "/api/auth/signup",
 		`{"packageId":"a0000000-0000-4000-8000-000000000001","firstName":"Jane","lastName":"Doe","username":"demouser",`+
@@ -130,7 +130,7 @@ func TestSignup_UsernameAlreadyExists_ReturnsConflict(t *testing.T) {
 
 // TestSignup_MissingFields_ReturnsBadRequest checks a body missing required fields is rejected.
 func TestSignup_MissingFields_ReturnsBadRequest(t *testing.T) {
-	router := newTestRouter(newFakeAccountServiceClient())
+	router := newTestRouter(newFakeAccountServiceClient(), newFakeBalanceServiceClient())
 
 	recorder := doRequest(router, http.MethodPost, "/api/auth/signup", "{}")
 
@@ -141,7 +141,7 @@ func TestSignup_MissingFields_ReturnsBadRequest(t *testing.T) {
 
 // TestSignup_ValidPayload_ReturnsCreated checks a complete signup payload returns 201.
 func TestSignup_ValidPayload_ReturnsCreated(t *testing.T) {
-	router := newTestRouter(newFakeAccountServiceClient())
+	router := newTestRouter(newFakeAccountServiceClient(), newFakeBalanceServiceClient())
 
 	body := `{"packageId":"a0000000-0000-4000-8000-000000000001","firstName":"Jane","lastName":"Doe","username":"jane_doe",` +
 		`"email":"jane.doe@example.com","password":"securepassword","origin":"WEB",` +
@@ -155,9 +155,9 @@ func TestSignup_ValidPayload_ReturnsCreated(t *testing.T) {
 
 // TestGetAccount_ExistingId_ReturnsOk checks an existing account is returned with 200.
 func TestGetAccount_ExistingId_ReturnsOk(t *testing.T) {
-	client := newFakeAccountServiceClient()
-	id := seedAccount(t, client, "demouser", "demopass", "WEB")
-	router := newTestRouter(client)
+	accountClient := newFakeAccountServiceClient()
+	id := seedAccount(t, accountClient, "demouser", "demopass", "WEB")
+	router := newTestRouter(accountClient, newFakeBalanceServiceClient())
 
 	recorder := doRequest(router, http.MethodGet, "/api/accounts/"+id, "")
 
@@ -168,7 +168,7 @@ func TestGetAccount_ExistingId_ReturnsOk(t *testing.T) {
 
 // TestGetAccount_MissingId_ReturnsNotFound checks an unknown id returns 404.
 func TestGetAccount_MissingId_ReturnsNotFound(t *testing.T) {
-	router := newTestRouter(newFakeAccountServiceClient())
+	router := newTestRouter(newFakeAccountServiceClient(), newFakeBalanceServiceClient())
 
 	recorder := doRequest(router, http.MethodGet, "/api/accounts/999", "")
 
@@ -179,7 +179,7 @@ func TestGetAccount_MissingId_ReturnsNotFound(t *testing.T) {
 
 // TestGetPresets_NoAccounts_ReturnsEmptyList checks that an empty store returns an empty results list.
 func TestGetPresets_NoAccounts_ReturnsEmptyList(t *testing.T) {
-	router := newTestRouter(newFakeAccountServiceClient())
+	router := newTestRouter(newFakeAccountServiceClient(), newFakeBalanceServiceClient())
 
 	recorder := doRequest(router, http.MethodGet, "/api/accounts/presets", "")
 
@@ -193,11 +193,11 @@ func TestGetPresets_NoAccounts_ReturnsEmptyList(t *testing.T) {
 
 // TestGetPresets_MixedOrigins_ReturnsOnlyPresets checks that only PRESET accounts appear.
 func TestGetPresets_MixedOrigins_ReturnsOnlyPresets(t *testing.T) {
-	client := newFakeAccountServiceClient()
-	seedAccount(t, client, "webuser", "pass", "WEB")
-	seedAccount(t, client, "preset1", "pass", "PRESET")
-	seedAccount(t, client, "preset2", "pass", "PRESET")
-	router := newTestRouter(client)
+	accountClient := newFakeAccountServiceClient()
+	seedAccount(t, accountClient, "webuser", "pass", "WEB")
+	seedAccount(t, accountClient, "preset1", "pass", "PRESET")
+	seedAccount(t, accountClient, "preset2", "pass", "PRESET")
+	router := newTestRouter(accountClient, newFakeBalanceServiceClient())
 
 	recorder := doRequest(router, http.MethodGet, "/api/accounts/presets", "")
 
@@ -215,11 +215,11 @@ func TestGetPresets_MixedOrigins_ReturnsOnlyPresets(t *testing.T) {
 
 // TestGetPresets_LimitBelowCount_ReturnsLimitedResults checks that ?limit trims the result set.
 func TestGetPresets_LimitBelowCount_ReturnsLimitedResults(t *testing.T) {
-	client := newFakeAccountServiceClient()
+	accountClient := newFakeAccountServiceClient()
 	for i := range 5 {
-		seedAccount(t, client, strings.Repeat("p", i+1), "pass", "PRESET")
+		seedAccount(t, accountClient, strings.Repeat("p", i+1), "pass", "PRESET")
 	}
-	router := newTestRouter(client)
+	router := newTestRouter(accountClient, newFakeBalanceServiceClient())
 
 	recorder := doRequest(router, http.MethodGet, "/api/accounts/presets?limit=2", "")
 
@@ -233,11 +233,11 @@ func TestGetPresets_LimitBelowCount_ReturnsLimitedResults(t *testing.T) {
 
 // TestGetPresets_ZeroLimit_ReturnsAllPresets checks that limit=0 is treated as no limit.
 func TestGetPresets_ZeroLimit_ReturnsAllPresets(t *testing.T) {
-	client := newFakeAccountServiceClient()
-	seedAccount(t, client, "preset1", "pass", "PRESET")
-	seedAccount(t, client, "preset2", "pass", "PRESET")
-	seedAccount(t, client, "preset3", "pass", "PRESET")
-	router := newTestRouter(client)
+	accountClient := newFakeAccountServiceClient()
+	seedAccount(t, accountClient, "preset1", "pass", "PRESET")
+	seedAccount(t, accountClient, "preset2", "pass", "PRESET")
+	seedAccount(t, accountClient, "preset3", "pass", "PRESET")
+	router := newTestRouter(accountClient, newFakeBalanceServiceClient())
 
 	recorder := doRequest(router, http.MethodGet, "/api/accounts/presets?limit=0", "")
 
