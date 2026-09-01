@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"dynatrace.com/easytrade/user-service/account"
-	"dynatrace.com/easytrade/user-service/dbadapter/proto"
+	"dynatrace.com/easytrade/user-service/proto"
 	"dynatrace.com/easytrade/user-service/utils"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -28,8 +28,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	client := proto.NewAccountServiceClient(conn)
-	handler := account.NewHandler(client)
+	accountClient := proto.NewAccountServiceClient(conn)
+	balanceClient := proto.NewBalanceServiceClient(conn)
+	handler := account.NewHandler(accountClient, balanceClient)
 
 	router := CreateRouter(handler)
 	router.Run()

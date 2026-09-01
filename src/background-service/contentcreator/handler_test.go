@@ -8,7 +8,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	proto "dynatrace.com/easytrade/background-service/db-adapter/proto"
+	proto "dynatrace.com/easytrade/background-service/proto"
 )
 
 // The fakes below embed the generated proto client interfaces (leaving every
