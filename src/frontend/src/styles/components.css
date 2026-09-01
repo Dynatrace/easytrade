@@ -527,14 +527,6 @@ select {
     border-bottom-color: var(--accent);
 }
 
-.tab-panel {
-    display: none;
-}
-
-.tab-panel.active {
-    display: block;
-}
-
 /* ---- Status / inline feedback ---- */
 .status-message {
     padding: var(--space-3) var(--space-4);
@@ -667,45 +659,6 @@ select {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-}
-
-.flag-item {
-    padding: var(--space-4);
-    background-color: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-}
-
-.flag-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-    gap: var(--space-4);
-}
-
-.flag-info {
-    flex: 1;
-}
-
-.flag-name {
-    font-weight: 500;
-    font-size: var(--text-sm);
-    color: var(--text-primary);
-    margin-bottom: 2px;
-}
-
-.flag-description {
-    font-size: var(--text-xs);
-    color: var(--text-muted);
-}
-
-.flag-status {
-    font-size: var(--text-xs);
-    font-weight: 600;
-}
-
-.flag-actions {
-    display: flex;
-    gap: var(--space-2);
 }
 
 /* ---- Divider ---- */
