@@ -12,9 +12,7 @@ export default function UserPanel() {
     const [open, setOpen] = useState(false)
     const { userId, logoutHandler } = useAuth()
 
-    // useRouteLoaderData returns null when the route with that id hasn't loaded
-    // (e.g. on public routes).  Cast defensively — the loader resolves to
-    // [User, Balance] on protected routes after the Stage 16 fix.
+    // useRouteLoaderData returns null on public routes — cast defensively.
     const loaderData = useRouteLoaderData(LoaderIds.user) as [User?, Balance?] | null
     const initialUser = loaderData?.[0]
     const { data } = useUserQuery(userId ?? "", initialUser)

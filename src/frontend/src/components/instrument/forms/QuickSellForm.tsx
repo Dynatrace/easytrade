@@ -56,7 +56,6 @@ export default function QuickSellForm() {
                 <input id="price" type="number" value={price} readOnly />
             </div>
             <div className="form-group">
-                {/* id="posessedAmount" — loadgen selector relies on this exact (misspelled) id */}
                 <label className="form-label" htmlFor="posessedAmount">Possessed amount</label>
                 <input id="posessedAmount" type="number" value={posessedAmount} readOnly />
             </div>

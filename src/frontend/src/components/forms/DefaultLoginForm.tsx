@@ -12,7 +12,6 @@ export default function DefaultLoginForm({
 }: DefaultLoginFormProps) {
     const [selectedId, setSelectedId] = useState<string>(users[0]?.id ?? "")
 
-    // Keep selection in sync when users load
     React.useEffect(() => {
         if (users.length > 0 && !selectedId) {
             setSelectedId(users[0].id)

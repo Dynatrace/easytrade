@@ -32,7 +32,6 @@ import {
 } from "./contexts/QueryContext/creditCard/loaders"
 import { getOrderStatus, getOrderStatusHistory } from "./api/creditCard/order"
 
-// Route-based code splitting — each page loads its own JS chunk
 const Login = lazy(() => import("./pages/public/Login"))
 const Signup = lazy(() => import("./pages/public/Signup"))
 const Home = lazy(() => import("./pages/protected/Home"))
