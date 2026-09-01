@@ -1,14 +1,12 @@
 package account
 
 import (
-	"context"
 	"net/http"
 	"strconv"
 
 	"dynatrace.com/easytrade/user-service/proto"
 	"dynatrace.com/easytrade/user-service/utils"
 	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
