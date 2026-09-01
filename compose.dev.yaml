@@ -1,36 +1,35 @@
 x-service: &default-service
   restart: always
 
-
-x-connection-strings:
-  JAVA_CONNECTION_STRING: &java-connection-string jdbc:sqlserver://db:1433;database=TradeManagement;user=sa;password=yourStrong(!)Password;encrypt=false;trustServerCertificate=false;loginTimeout=30;
-  DOTNET_CONNECTION_STRING: &dotnet-connection-string Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
-  GO_CONNECTION_STRING: &go-connection-string sqlserver://sa:yourStrong(!)Password@db:1433?database=TradeManagement&connection+encrypt=false&connection+TrustServerCertificate=false&connection+loginTimeout=30
+x-addresses:
+  offer-service: &offerServiceAddress "http://offerservice:8080"
+  feature-flag-service: &featureFlagServiceAddress "http://feature-flag-service:8080"
+  credit-card-order-service: &creditCardOrderServiceAddress "http://credit-card-order-service:8080"
+  db-adapter: &dbAdapterAddress "db-adapter:50051"
+  user-service: &userServiceAddress "http://user-service:8080"
+  pricing-service: &pricingServiceAddress "http://pricing-service:8080"
+  background-service: &backgroundServiceAddress "http://background-service:8080"
+  easytrade-url: &easytradeUrl "http://frontendreverseproxy"
 
 services:
-  db:
-    <<: *default-service
-    build: src/db/${DB_TYPE}
-    ports:
-      - 1433:1433
-      - 5432:5432
-    environment:
-      SA_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-
-  pricing-service:
+  background-service:
     <<: *default-service
     build:
       context: src/
-      dockerfile: pricing-service/Dockerfile
+      dockerfile: background-service/Dockerfile
     depends_on:
+      - offerservice
       - db-adapter
     ports:
-      - 8083:8080
+      - 8095:8080
     environment:
-      DB_ADAPTER_ADDRESS: db-adapter:50051
-      PROXY_PREFIX: pricing-service
+      OFFER_SERVICE_ADDRESS: *offerServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
+      CREDIT_CARD_ORDER_SERVICE_ADDRESS: *creditCardOrderServiceAddress
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      THIRD_PARTY_DELAY: 10
+      THIRD_PARTY_RATE: 10
+      DELAY_CHANCE_PERCENT: 20
 
   broker-service:
     <<: *default-service
@@ -45,11 +44,64 @@ services:
       - pricing-service
       - feature-flag-service
     environment:
-      USER_SERVICE_ADDRESS: http://user-service:8080
-      PRICING_SERVICE_ADDRESS: http://pricing-service:8080
-      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
+      USER_SERVICE_ADDRESS: *userServiceAddress
+      PRICING_SERVICE_ADDRESS: *pricingServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
       PROXY_PREFIX: broker-service
-      DB_ADAPTER_ADDRESS: db-adapter:50051
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+
+  credit-card-order-service:
+    <<: *default-service
+    build:
+      context: src/
+      dockerfile: credit-card-order-service/Dockerfile
+    depends_on:
+      - db-adapter
+      - background-service
+    ports:
+      - 8091:8080
+    environment:
+      PROXY_PREFIX: credit-card-order-service
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      THIRD_PARTY_SERVICE_ADDRESS: *backgroundServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
+      WORK_DELAY: 30
+      WORK_RATE: 30
+      JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
+
+  db:
+    <<: *default-service
+    build: src/db/${DB_TYPE}
+    ports:
+      - 1433:1433
+      - 5432:5432
+    environment:
+      SA_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+  db-adapter:
+    <<: *default-service
+    build:
+      context: src/
+      dockerfile: db-adapter/Dockerfile
+    depends_on:
+      - db
+    ports:
+      - 50051:50051
+    environment:
+      DB_TYPE: ${DB_TYPE}
+      DB_URL: ${DB_URL}
+
+  feature-flag-service:
+    <<: *default-service
+    build: src/feature-flag-service
+    ports:
+      - 8094:8080
+    environment:
+      PROXY_PREFIX: feature-flag-service
+      # ENABLE_MODIFY: "false"
+      # ENABLE_FRONTEND_MODIFY: "false"
 
   frontend:
     <<: *default-service
@@ -87,7 +139,7 @@ services:
     depends_on:
       - frontendreverseproxy
     environment:
-      EASYTRADE_URL: http://frontendreverseproxy
+      EASYTRADE_URL: *easytradeUrl
 
   offerservice:
     <<: *default-service
@@ -101,9 +153,22 @@ services:
     ports:
       - 8087:8080
     environment:
-      DB_ADAPTER_ADDRESS: db-adapter:50051
-      USER_SERVICE_ADDRESS: http://user-service:8080
-      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      USER_SERVICE_ADDRESS: *userServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
+
+  pricing-service:
+    <<: *default-service
+    build:
+      context: src/
+      dockerfile: pricing-service/Dockerfile
+    depends_on:
+      - db-adapter
+    ports:
+      - 8083:8080
+    environment:
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      PROXY_PREFIX: pricing-service
 
   user-service:
     <<: *default-service
@@ -115,67 +180,4 @@ services:
     ports:
       - 8089:8080
     environment:
-      DB_ADAPTER_ADDRESS: db-adapter:50051
-      
-  credit-card-order-service:
-    <<: *default-service
-    build:
-      context: src/
-      dockerfile: credit-card-order-service/Dockerfile
-    depends_on:
-      - db-adapter
-      - background-service
-    ports:
-      - 8091:8080
-    environment:
-      PROXY_PREFIX: credit-card-order-service
-      DB_ADAPTER_ADDRESS: db-adapter:50051
-      THIRD_PARTY_SERVICE_ADDRESS: http://background-service:8080
-      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
-      WORK_DELAY: 30
-      WORK_RATE: 30
-      JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
-
-  feature-flag-service:
-    <<: *default-service
-    build: src/feature-flag-service
-    ports:
-      - 8094:8080
-    environment:
-      PROXY_PREFIX: feature-flag-service
-      # ENABLE_MODIFY: "false"
-      # ENABLE_FRONTEND_MODIFY: "false"
-
-  db-adapter:
-    <<: *default-service
-    build:
-      context: src/
-      dockerfile: db-adapter/Dockerfile
-    depends_on:
-      - db
-    ports:
-      - 50051:50051
-    environment:
-      DB_TYPE: ${DB_TYPE}
-      DB_URL: ${DB_URL}
-
-  background-service:
-    <<: *default-service
-    build:
-      context: src/
-      dockerfile: background-service/Dockerfile
-    depends_on:
-      - offerservice
-      - db-adapter
-    ports:
-      - 8095:8080
-    environment:
-      OFFER_SERVICE_ADDRESS: http://offerservice:8080
-      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
-      CREDIT_CARD_ORDER_SERVICE_ADDRESS: http://credit-card-order-service:8080
-      DB_ADAPTER_SERVICE_ADDRESS: db-adapter:50051
-      THIRD_PARTY_DELAY: 10
-      THIRD_PARTY_RATE: 10
-      DELAY_CHANCE_PERCENT: 20
-
-
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress

@@ -1,36 +1,35 @@
-x-logging: &default-logging
-  driver: json-file
-  options:
-    max-file: "5"
-    max-size: "10m"
-
 x-service: &default-service
   restart: always
-  logging: *default-logging
+  logging:
+    driver: json-file
+    options:
+      max-file: "5"
+      max-size: "10m"
 
-
-x-connection-strings:
-  JAVA_CONNECTION_STRING: &java-connection-string jdbc:sqlserver://db:1433;database=TradeManagement;user=sa;password=yourStrong(!)Password;encrypt=false;trustServerCertificate=false;loginTimeout=30;
-  DOTNET_CONNECTION_STRING: &dotnet-connection-string Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
-  GO_CONNECTION_STRING: &go-connection-string sqlserver://sa:yourStrong(!)Password@db:1433?database=TradeManagement&connection+encrypt=false&connection+TrustServerCertificate=false&connection+loginTimeout=30
+x-addresses:
+  offer-service: &offerServiceAddress "http://offerservice:8080"
+  feature-flag-service: &featureFlagServiceAddress "http://feature-flag-service:8080"
+  credit-card-order-service: &creditCardOrderServiceAddress "http://credit-card-order-service:8080"
+  db-adapter: &dbAdapterAddress "db-adapter:50051"
+  user-service: &userServiceAddress "http://user-service:8080"
+  pricing-service: &pricingServiceAddress "http://pricing-service:8080"
+  background-service: &backgroundServiceAddress "http://background-service:8080"
+  easytrade-url: &easytradeUrl "http://frontendreverseproxy"
 
 services:
-  db:
+  background-service:
     <<: *default-service
-    image: ${REGISTRY}/db-${DB_TYPE}:${TAG}
-    environment:
-      SA_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
-
-  pricing-service:
-    <<: *default-service
-    image: ${REGISTRY}/pricing-service:${TAG}
+    image: ${REGISTRY}/background-service:${TAG}
     depends_on:
-      - db-adapter
+      - offerservice
     environment:
-      DB_ADAPTER_ADDRESS: db-adapter:50051
-      PROXY_PREFIX: pricing-service
+      OFFER_SERVICE_ADDRESS: *offerServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
+      CREDIT_CARD_ORDER_SERVICE_ADDRESS: *creditCardOrderServiceAddress
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      THIRD_PARTY_DELAY: 10
+      THIRD_PARTY_RATE: 10
+      DELAY_CHANCE_PERCENT: 20
 
   broker-service:
     <<: *default-service
@@ -41,11 +40,53 @@ services:
       - pricing-service
       - feature-flag-service
     environment:
-      USER_SERVICE_ADDRESS: http://user-service:8080
-      PRICING_SERVICE_ADDRESS: http://pricing-service:8080
-      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
+      USER_SERVICE_ADDRESS: *userServiceAddress
+      PRICING_SERVICE_ADDRESS: *pricingServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
       PROXY_PREFIX: broker-service
-      DB_ADAPTER_ADDRESS: db-adapter:50051
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+
+  credit-card-order-service:
+    <<: *default-service
+    image: ${REGISTRY}/credit-card-order-service:${TAG}
+    depends_on:
+      - db-adapter
+      - background-service
+    environment:
+      PROXY_PREFIX: credit-card-order-service
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      THIRD_PARTY_SERVICE_ADDRESS: *backgroundServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
+      WORK_DELAY: 300
+      WORK_RATE: 900
+      JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
+
+  db:
+    <<: *default-service
+    image: ${REGISTRY}/db-${DB_TYPE}:${TAG}
+    environment:
+      SA_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+  db-adapter:
+    <<: *default-service
+    build:
+      context: src/
+      dockerfile: db-adapter/Dockerfile
+    depends_on:
+      - db
+    ports:
+      - 50051:50051
+    environment:
+      DB_TYPE: ${DB_TYPE}
+      DB_URL: ${DB_URL}
+
+  feature-flag-service:
+    <<: *default-service
+    image: ${REGISTRY}/feature-flag-service:${TAG}
+    environment:
+      PROXY_PREFIX: feature-flag-service
 
   frontend:
     <<: *default-service
@@ -77,7 +118,7 @@ services:
     depends_on:
       - frontendreverseproxy
     environment:
-      EASYTRADE_URL: http://frontendreverseproxy
+      EASYTRADE_URL: *easytradeUrl
 
   offerservice:
     <<: *default-service
@@ -86,15 +127,18 @@ services:
       - user-service
       - db-adapter
     environment:
-      DB_ADAPTER_ADDRESS: db-adapter:50051
-      USER_SERVICE_ADDRESS: http://user-service:8080
-      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      USER_SERVICE_ADDRESS: *userServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
 
-  feature-flag-service:
+  pricing-service:
     <<: *default-service
-    image: ${REGISTRY}/feature-flag-service:${TAG}
+    image: ${REGISTRY}/pricing-service:${TAG}
+    depends_on:
+      - db-adapter
     environment:
-      PROXY_PREFIX: feature-flag-service
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      PROXY_PREFIX: pricing-service
 
   user-service:
     <<: *default-service
@@ -102,35 +146,5 @@ services:
     depends_on:
       - db-adapter
     environment:
-      DB_ADAPTER_ADDRESS: db-adapter:50051
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
       PROXY_PREFIX: user-service
-
-  credit-card-order-service:
-    <<: *default-service
-    image: ${REGISTRY}/credit-card-order-service:${TAG}
-    depends_on:
-      - db-adapter
-      - background-service
-    environment:
-      PROXY_PREFIX: credit-card-order-service
-      DB_ADAPTER_ADDRESS: db-adapter:50051
-      THIRD_PARTY_SERVICE_ADDRESS: http://background-service:8080
-      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
-      WORK_DELAY: 300
-      WORK_RATE: 900
-      JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
-
-  background-service:
-    <<: *default-service
-    image: ${REGISTRY}/background-service:${TAG}
-    depends_on:
-      - offerservice
-    environment:
-      OFFER_SERVICE_ADDRESS: http://offerservice:8080
-      FEATURE_FLAG_SERVICE_ADDRESS: http://feature-flag-service:8080
-      CREDIT_CARD_ORDER_SERVICE_ADDRESS: http://credit-card-order-service:8080
-      DB_ADAPTER_SERVICE_ADDRESS: db-adapter:50051
-      THIRD_PARTY_DELAY: 10
-      THIRD_PARTY_RATE: 10
-      DELAY_CHANCE_PERCENT: 20
-
