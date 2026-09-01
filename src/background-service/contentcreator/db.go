@@ -6,7 +6,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	proto "dynatrace.com/easytrade/background-service/db-adapter/proto"
+	proto "dynatrace.com/easytrade/background-service/proto"
 )
 
 const aggregatorOrigin = "AGGREGATOR"
