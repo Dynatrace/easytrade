@@ -136,10 +136,6 @@ db-adapter:
 
 feature-flag-service:
   enabled: true
-  env:
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
   resources:
     requests:
       cpu: 30m
@@ -238,32 +234,6 @@ pricing-service:
   service:
     enabled: true
     port: 8080
-
-problem-operator:
-  enabled: true
-  rbac:
-    create: true
-    rules:
-      - apiGroups: [""]
-        resources: ["services", "pods", "events"]
-        verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
-      - apiGroups: ["apps"]
-        resources: ["deployments", "replicasets"]
-        verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
-  env:
-    POD_NAMESPACE: "{{ .Release.Namespace }}"
-    HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT: "300m"
-    HIGH_CPU_USAGE_BROKER_SERVICE_NAME: "{{ .Release.Name }}-broker-service"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
-  resources:
-    requests:
-      cpu: 10m
-      memory: 15Mi
-    limits:
-      cpu: 100m
-      memory: 15Mi
 
 user-service:
   enabled: true
