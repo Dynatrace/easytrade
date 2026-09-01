@@ -12,6 +12,7 @@ public class PortfolioController(IPortfolioService portfolioService) : Controlle
 {
     [ProducesResponseType(typeof(PortfolioHistoryDTO), StatusCodes.Status200OK)]
     [HttpGet("history/{accountId:guid}")]
+    [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client)]
     public async Task<PortfolioHistoryDTO> GetPortfolioHistory(Guid accountId, [FromQuery] string period = "1d")
     {
         var results = await portfolioService.GetPortfolioHistoryAsync(accountId, period);
