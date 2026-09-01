@@ -58,11 +58,6 @@ export const selectors = {
         "credit-card-select",
         '//select[@id="cardType"]'
     ),
-    depositPage_cardType_provider: (provider: string) =>
-        new XpathSelector(
-            "credit-card-provider",
-            `//select[@id="cardType"]/option[contains(text(), "${provider}")]`
-        ),
     depositPage_address: new XpathSelector(
         "address-input",
         '//input[@id="address"]'
@@ -152,11 +147,6 @@ export const selectors = {
         "card-type-select",
         '//select[@id="type"]'
     ),
-    creditCardPage_cardType_type: (type: string) =>
-        new XpathSelector(
-            "credit-card-provider",
-            `//select[@id="type"]/option[contains(text(), "${type}")]`
-        ),
     creditCardPage_orderCardButton: new XpathSelector(
         "order-card-button",
         '//button[@id="submitButton"]'

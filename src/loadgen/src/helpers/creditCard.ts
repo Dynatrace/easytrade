@@ -23,13 +23,11 @@ export async function orderCard(
     await pageActions.standardDelay()
     await pageActions.input(selectors.creditCardPage_emailInput, user.email)
     await pageActions.standardDelay()
-    // Native <select id="type"> — click to open, then click the matching <option>
-    await pageActions.click(selectors.creditCardPage_cardTypeInput)
-    const typeHandle = await pageActions.getHandle(
-        selectors.creditCardPage_cardType_type(cardType)
+    // Native <select id="type">: select by value attribute ("silver"/"gold"/"platinum").
+    await pageActions.selectOption(
+        selectors.creditCardPage_cardTypeInput,
+        cardType.toLowerCase()
     )
-    await pageActions.shortDelay()
-    await pageActions.clickHandle(typeHandle)
     await pageActions.standardDelay()
     await pageActions.click(selectors.creditCardPage_acceptTerms)
     await pageActions.standardDelay()

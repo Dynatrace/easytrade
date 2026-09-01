@@ -1,5 +1,4 @@
 import { IPageActions, ISelector } from "@demoability/loadgen-core"
-import { selectors } from "../selectors"
 import { User } from "../user"
 import { Page } from "puppeteer"
 
@@ -14,22 +13,10 @@ export async function selectCardProvider(
     cardProviderSelector: ISelector,
     cardProvider: string
 ): Promise<void> {
-    // Static sidebar — sidebar is always visible, use native <select> directly
-    await pageActions.click(cardProviderSelector)
-    const providerHandle = await pageActions.getHandle(
-        selectors.depositPage_cardType_provider(cardProvider)
-    )
-    await pageActions.shortDelay()
-    await pageActions.clickHandle(providerHandle)
-}
-
-// showNavbar / hideNavbar are no-ops: the sidebar is now static and always visible.
-export async function showNavbar(_pageActions: IPageActions): Promise<void> {
-    // no-op: static sidebar is always visible
-}
-
-export async function hideNavbar(_pageActions: IPageActions): Promise<void> {
-    // no-op: static sidebar is always visible
+    // Native <select>: use selectOption which calls ElementHandle.select(value) directly.
+    // getHandle with { visible: true } times out on <option> elements — they are never
+    // "visible" in the DOM sense, unlike the MUI <li> portal items they replaced.
+    await pageActions.selectOption(cardProviderSelector, cardProvider)
 }
 
 export async function gotoPageWithNavBar(
