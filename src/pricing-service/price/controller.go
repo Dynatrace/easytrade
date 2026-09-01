@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Handler struct {
@@ -60,6 +61,45 @@ func (h *Handler) GetPricingDataForInstrument(ctx *gin.Context) {
 		return
 	}
 	negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: pricesFromProto(resp.GetPrices())})
+}
+
+func (h *Handler) GetPricingDataForInstrumentsAscByTimestamp(ctx *gin.Context) {
+	var body pricesForInstrumentsRequest
+	if err := ctx.ShouldBindJSON(&body); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	instrumentIds, ok := parseUUIDs(ctx, body.InstrumentIds)
+	if !ok {
+		return
+	}
+
+	since := time.Time{}
+	if body.Since != nil {
+		since = *body.Since
+	}
+
+	resp, err := h.client.GetPricesForInstrumentsAscByTimestamp(context.Background(), &pb.GetPricesForInstrumentsAscByTimestampRequest{
+		InstrumentIds: instrumentIds,
+		Since:         timestamppb.New(since),
+	})
+	if handleInternalError(ctx, err) {
+		return
+	}
+	negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: pricesFromProto(resp.GetPrices())})
+}
+
+func parseUUIDs(ctx *gin.Context, raw []string) ([]string, bool) {
+	ids := make([]string, 0, len(raw))
+	for _, r := range raw {
+		id, ok := parseUUID(ctx, r, func(string) string { return r })
+		if !ok {
+			return nil, false
+		}
+		ids = append(ids, id.String())
+	}
+	return ids, true
 }
 
 func parseRecordsLimit(ctx *gin.Context) int32 {
@@ -126,4 +166,9 @@ func negotiateResponse(ctx *gin.Context, status int, data any) {
 		Offered: []string{gin.MIMEJSON, gin.MIMEXML},
 		Data:    data,
 	})
+}
+
+type pricesForInstrumentsRequest struct {
+	InstrumentIds []string   `json:"instrumentIds" binding:"required"`
+	Since         *time.Time `json:"since"`
 }

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"time"
 
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
 	"github.com/dynatrace/easytrade/dbadapter/repository"
@@ -44,6 +45,26 @@ func (s *PricingServer) GetPricesForInstrument(ctx context.Context, req *pb.GetP
 		limit = &v
 	}
 	prices, err := s.repo.GetForInstrument(ctx, req.InstrumentId, limit)
+	if err != nil {
+		return nil, err
+	}
+	return &pb.PricesResponse{Prices: prices}, nil
+}
+
+func (s *PricingServer) GetPricesForInstrumentsAscByTimestamp(ctx context.Context, req *pb.GetPricesForInstrumentsAscByTimestampRequest) (*pb.PricesResponse, error) {
+	if len(req.InstrumentIds) == 0 {
+		return &pb.PricesResponse{}, nil
+	}
+	for _, id := range req.InstrumentIds {
+		if err := validateUUID(id); err != nil {
+			return nil, err
+		}
+	}
+	var since time.Time
+	if req.Since != nil {
+		since = req.Since.AsTime()
+	}
+	prices, err := s.repo.GetForInstrumentsAscByTimestamp(ctx, req.InstrumentIds, since)
 	if err != nil {
 		return nil, err
 	}
