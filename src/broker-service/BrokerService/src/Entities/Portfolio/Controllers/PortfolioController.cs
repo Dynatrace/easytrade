@@ -10,21 +10,11 @@ namespace EasyTrade.BrokerService.Entities.Portfolio.Controllers;
 [TypeFilter(typeof(BrokerExceptionFilter))]
 public class PortfolioController(IPortfolioService portfolioService) : ControllerBase
 {
-    private readonly IPortfolioService _portfolioService = portfolioService;
-
-    /// <summary>
-    /// Get portfolio value history for an account.
-    /// </summary>
-    /// <param name="accountId">Account ID</param>
-    /// <param name="period">Time window: 1d (default), 7d, 30d</param>
     [ProducesResponseType(typeof(PortfolioHistoryDTO), StatusCodes.Status200OK)]
     [HttpGet("history/{accountId:guid}")]
-    public async Task<PortfolioHistoryDTO> GetPortfolioHistory(
-        Guid accountId,
-        [FromQuery] string period = "1d"
-    )
+    public async Task<PortfolioHistoryDTO> GetPortfolioHistory(Guid accountId, [FromQuery] string period = "1d")
     {
-        var results = await _portfolioService.GetPortfolioHistoryAsync(accountId, period);
+        var results = await portfolioService.GetPortfolioHistoryAsync(accountId, period);
         return new PortfolioHistoryDTO(results);
     }
 }

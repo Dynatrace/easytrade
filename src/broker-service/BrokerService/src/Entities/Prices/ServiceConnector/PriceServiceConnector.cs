@@ -55,10 +55,44 @@ public class PriceServiceConnector(
         return price;
     }
 
-    private async Task<T?> FetchAsync<T>(string endpoint)
+    public async Task<IReadOnlyDictionary<Guid, List<Price>>> GetPricesForInstrumentsAscByTimestamp(IEnumerable<Guid> instrumentIds, DateTimeOffset since)
+    {
+        var ids = instrumentIds.ToList();
+        _logger.LogInformation(
+            "Fetching prices for [{count}] instruments since [{since}]",
+            ids.Count,
+            since
+        );
+
+        if (ids.Count == 0)
+        {
+            return new Dictionary<Guid, List<Price>>();
+        }
+
+        const string endpoint = "v1/prices/instruments";
+        var pricesResult = await PostAsync<PricesForInstrumentsRequestDto, PricesResultDto>(endpoint, new PricesForInstrumentsRequestDto(ids, since));
+        var prices = pricesResult?.Results ?? [];
+        _logger.LogDebug("Fetched prices: {content}", prices.ToJson());
+
+        return prices.GroupBy(price => price.InstrumentId).ToDictionary(group => group.Key, group => group.ToList());
+    }
+
+    private async Task<TResponse?> FetchAsync<TResponse>(string endpoint)
     {
         using var client = GetHttpClient();
         using var response = await client.GetAsync(endpoint);
+        return await ReadJsonOrLogError<TResponse>(response);
+    }
+
+    private async Task<TResponse?> PostAsync<TRequest, TResponse>(string endpoint, TRequest body)
+    {
+        using var client = GetHttpClient();
+        using var response = await client.PostAsJsonAsync(endpoint, body);
+        return await ReadJsonOrLogError<TResponse>(response);
+    }
+
+    private async Task<T?> ReadJsonOrLogError<T>(HttpResponseMessage response)
+    {
         if (response.StatusCode == HttpStatusCode.OK)
         {
             return await response.Content.ReadFromJsonAsync<T>();
