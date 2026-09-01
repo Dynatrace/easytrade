@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	dbAdapterServiceAddress = "DB_ADAPTER_SERVICE_ADDRESS"
+	dbAdapterAddress = "DB_ADAPTER_ADDRESS"
 )
 
 type Handler struct {
@@ -37,7 +37,7 @@ func NewHandler(conn *grpc.ClientConn) *Handler {
 
 func Start(ctx context.Context, values config.Values) {
 	conn, err := grpc.NewClient(
-		values.Get(dbAdapterServiceAddress),
+		values.Get(dbAdapterAddress),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
