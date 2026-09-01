@@ -5,10 +5,6 @@ import { transform } from "../QueryContext"
 import { balanceQuery, presetUsersQuery, userQuery } from "./queries"
 
 export function sessionUserProvider() {
-    // sessionStorage.setItem stores the raw string value (no JSON wrapper);
-    // the old usehooks-ts implementation JSON-serialised the value, requiring
-    // JSON.parse here — that is no longer needed after the Stage 1 rewrite of
-    // storage.ts.
     return sessionStorage.getItem("user-id")
 }
 

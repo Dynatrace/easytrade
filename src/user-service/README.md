@@ -3,7 +3,7 @@
 Go service for user authentication and account management. Runs behind the nginx reverse proxy.
 
 **Stack:** Go, Gin. All data access goes through the `db-adapter` service over gRPC, via the
-generated `proto.AccountServiceClient` (contract in `../proto/account_service.proto`; pre-generated stubs committed under `dbadapter/proto/`).
+generated `proto.AccountServiceClient` (contracts in `../proto/account_service.proto` and `../proto/balance_service.proto`; stubs are generated during `docker build` and written to `proto/`).
 
 ## Build
 

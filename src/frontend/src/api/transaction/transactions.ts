@@ -6,14 +6,10 @@ export async function getTransactions(
     userId: string,
     records: number = 100
 ): Promise<Transaction[]> {
-    console.log(`[getTransactions] API call with userId [${userId}]`)
-
     try {
         const data = await backends.transactions.getAll(userId, records)
-        console.log("transaction data: ", data)
         return data.results.map(mapRawTransaction)
-    } catch (error) {
-        console.log("error: ", error)
+    } catch {
         return []
     }
 }
@@ -32,7 +28,7 @@ function mapRawTransaction(
     return {
         id: index,
         actionType: mapDirection(direction),
-        instrumentName: instrumentId.toString(), // this will be change to name in TransactionsTable.tsx
+        instrumentName: instrumentId.toString(),
         amount: quantity,
         price: entryPrice,
         status: mapStatus(status),

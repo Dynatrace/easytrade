@@ -20,7 +20,7 @@ function DifferenceWarning({ value, expectedValue }: DifferenceAlertProps) {
     )
 }
 
-export default function VersionsTabelItem({ service }: VersionListItemProps) {
+export default function VersionsTableItem({ service }: VersionListItemProps) {
     if (!service.success) {
         return (
             <tr>

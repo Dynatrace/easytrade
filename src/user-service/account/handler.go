@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"dynatrace.com/easytrade/user-service/dbadapter/proto"
+	"dynatrace.com/easytrade/user-service/proto"
 	"dynatrace.com/easytrade/user-service/utils"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/codes"
@@ -15,11 +15,12 @@ import (
 var logger = utils.GetSugar()
 
 type Handler struct {
-	client proto.AccountServiceClient
+	accountClient proto.AccountServiceClient
+	balanceClient proto.BalanceServiceClient
 }
 
-func NewHandler(client proto.AccountServiceClient) *Handler {
-	return &Handler{client: client}
+func NewHandler(accountClient proto.AccountServiceClient, balanceClient proto.BalanceServiceClient) *Handler {
+	return &Handler{accountClient: accountClient, balanceClient: balanceClient}
 }
 
 // Login handles POST /api/auth/login.
@@ -30,7 +31,7 @@ func (h *Handler) Login(ctx *gin.Context) {
 		return
 	}
 
-	acc, err := h.client.GetAccountByUsername(ctx.Request.Context(), &proto.GetAccountByUsernameRequest{Username: body.Username})
+	acc, err := h.accountClient.GetAccountByUsername(ctx.Request.Context(), &proto.GetAccountByUsernameRequest{Username: body.Username})
 	if err != nil {
 		if status.Code(err) == codes.NotFound {
 			ctx.JSON(http.StatusUnauthorized, ErrorResponse{Error: "user not found"})
@@ -57,7 +58,7 @@ func (h *Handler) Signup(ctx *gin.Context) {
 		return
 	}
 
-	_, err := h.client.GetAccountByUsername(ctx.Request.Context(), &proto.GetAccountByUsernameRequest{Username: body.Username})
+	_, err := h.accountClient.GetAccountByUsername(ctx.Request.Context(), &proto.GetAccountByUsernameRequest{Username: body.Username})
 	if err == nil {
 		ctx.JSON(http.StatusConflict, ErrorResponse{Error: "username already exists"})
 		return
@@ -68,9 +69,15 @@ func (h *Handler) Signup(ctx *gin.Context) {
 		return
 	}
 
-	acc, err := h.client.CreateAccount(ctx.Request.Context(), body.ToProtoAccountRequest())
+	acc, err := h.accountClient.CreateAccount(ctx.Request.Context(), body.ToProtoAccountRequest())
 	if err != nil {
 		logger.Errorw("signup failed", "error", err)
+		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	if _, err := h.balanceClient.CreateBalance(ctx.Request.Context(), &proto.CreateBalanceRequest{AccountId: acc.Id, Value: 0}); err != nil {
+		logger.Errorw("signup failed to create balance", "error", err)
 		ctx.JSON(http.StatusInternalServerError, ErrorResponse{Error: err.Error()})
 		return
 	}
@@ -83,7 +90,7 @@ func (h *Handler) GetAccount(ctx *gin.Context) {
 	id := ctx.Param("id")
 	logger.Infow("GetAccount called", "accountId", id)
 
-	acc, err := h.client.GetAccountById(ctx.Request.Context(), &proto.GetAccountByIdRequest{Id: id})
+	acc, err := h.accountClient.GetAccountById(ctx.Request.Context(), &proto.GetAccountByIdRequest{Id: id})
 	if err != nil {
 		if status.Code(err) == codes.NotFound {
 			ctx.String(http.StatusNotFound, "account not found")
@@ -106,7 +113,7 @@ func (h *Handler) GetPresets(ctx *gin.Context) {
 		limit, _ = strconv.Atoi(limitStr)
 	}
 
-	resp, err := h.client.GetAccounts(ctx.Request.Context(), &emptypb.Empty{})
+	resp, err := h.accountClient.GetAccounts(ctx.Request.Context(), &emptypb.Empty{})
 	if err != nil {
 		ctx.String(http.StatusInternalServerError, "failed to get accounts: %v", err)
 		return

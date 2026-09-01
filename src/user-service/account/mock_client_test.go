@@ -2,7 +2,7 @@ package account
 
 import (
 	"context"
-	"dynatrace.com/easytrade/user-service/dbadapter/proto"
+	"dynatrace.com/easytrade/user-service/proto"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -11,6 +11,9 @@ import (
 )
 
 type fakeAccountServiceClient struct {
+	// Embedded so the fake satisfies the full generated interface. It is nil:
+	// only the methods defined below are callable, the rest panic if reached.
+	proto.AccountServiceClient
 	accounts map[string]*proto.AccountMessage
 }
 
@@ -64,4 +67,22 @@ func (f *fakeAccountServiceClient) GetAccounts(_ context.Context, _ *emptypb.Emp
 		accounts = append(accounts, acc)
 	}
 	return &proto.AccountsResponse{Accounts: accounts}, nil
+}
+
+type fakeBalanceServiceClient struct {
+	// As above; the Handler only calls CreateBalance.
+	proto.BalanceServiceClient
+	balances map[string]*proto.BalanceMessage
+}
+
+func newFakeBalanceServiceClient() *fakeBalanceServiceClient {
+	return &fakeBalanceServiceClient{
+		balances: make(map[string]*proto.BalanceMessage),
+	}
+}
+
+func (f *fakeBalanceServiceClient) CreateBalance(_ context.Context, in *proto.CreateBalanceRequest, _ ...grpc.CallOption) (*proto.BalanceMessage, error) {
+	balance := &proto.BalanceMessage{AccountId: in.AccountId, Value: in.Value}
+	f.balances[in.AccountId] = balance
+	return balance, nil
 }

@@ -35,7 +35,7 @@ export type LoginResponse = {
 }
 
 type SignupRequest = {
-    packageId: number
+    packageId: string
     origin: string
     firstName: string
     lastName: string

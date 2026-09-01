@@ -46,7 +46,6 @@ export default function TransactionsTable({
     const [directionFilter, setDirectionFilter] = useState<"" | "BUY" | "SELL">("")
     const [statusFilter, setStatusFilter] = useState<"" | "ACTIVE" | "SUCCESS" | "FAIL">("")
 
-    // Resolve instrument names
     const resolved = transactions.map((tx) => {
         const instrument = instruments.find((i) => String(i.id) === String(tx.instrumentName))
         return {
@@ -55,7 +54,6 @@ export default function TransactionsTable({
         }
     })
 
-    // Apply filters
     const filtered = resolved.filter((tx) => {
         if (directionFilter && tx.actionType !== directionFilter) return false
         if (statusFilter && tx.status !== statusFilter) return false

@@ -123,19 +123,19 @@ k8s-uninstall: ## Uninstall the deployment
 
 ##@ Protobuf
 
-# Service dirs equipped with their own `proto` target (e.g. src/db-adapter/Makefile).
-PROTO_SERVICE_DIRS := $(patsubst src/%/Makefile,%,$(shell grep -l '^proto:' src/*/Makefile 2>/dev/null))
+# Service dirs equipped with their own generate-proto.sh (e.g. src/db-adapter/generate-proto.sh).
+PROTO_SERVICE_DIRS := $(patsubst src/%/generate-proto.sh,%,$(wildcard src/*/generate-proto.sh))
 
 .PHONY: generate-proto
-generate-proto: ## Generate code from protobuf definitions (runs each equipped service's own `make proto`)
+generate-proto: ## Generate code from protobuf definitions (runs each equipped service's generate-proto.sh)
 	@dirs="$(if $(service),$(service),$(PROTO_SERVICE_DIRS))"; \
 	if [ -z "$$dirs" ]; then \
-		echo "No service Makefiles with a 'proto' target found under src/*/Makefile."; \
+		echo "No generate-proto.sh scripts found under src/*/generate-proto.sh."; \
 		exit 0; \
 	fi; \
 	for dir in $$dirs; do \
 		echo "==> src/$$dir"; \
-		$(MAKE) --no-print-directory -C src/$$dir proto || exit 1; \
+		(cd src/$$dir && bash generate-proto.sh) || exit 1; \
 	done
 
 ##@ Graph

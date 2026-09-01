@@ -1,5 +1,5 @@
 import React from "react"
-import VersionsTabelItem from "./VersionsTableItem"
+import VersionsTableItem from "./VersionsTableItem"
 import { ServiceVersion } from "../../api/version/types"
 
 export type { ServiceVersion }
@@ -21,7 +21,7 @@ export default function VersionsTable({ versions }: VersionsListProps) {
             </thead>
             <tbody>
                 {versions.map((service: ServiceVersion) => (
-                    <VersionsTabelItem service={service} key={service.serviceName} />
+                    <VersionsTableItem service={service} key={service.serviceName} />
                 ))}
             </tbody>
         </table>

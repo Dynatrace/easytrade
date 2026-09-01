@@ -3,7 +3,7 @@ package account
 import (
 	"time"
 
-	"dynatrace.com/easytrade/user-service/dbadapter/proto"
+	"dynatrace.com/easytrade/user-service/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
