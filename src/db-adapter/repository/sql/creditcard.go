@@ -105,11 +105,12 @@ func (repo *CreditCardOrderRepository) GetLastStatusByOrderID(ctx context.Contex
 }
 
 func (repo *CreditCardOrderRepository) GetOrdersToManufacture(ctx context.Context) ([]*pb.CreditCardManufactureDataMessage, error) {
-	join := "JOIN " + q(repository.TableCreditCardOrderStatus) +
-		" ON " + qcol(repository.TableCreditCardOrderStatus, repository.ColCreditCardOrderID) +
-		" = " + qcol(repository.TableCreditCardOrders, repository.ColID)
-	where := qcol(repository.TableCreditCardOrderStatus, repository.ColStatus) + " = ?"
-	query := repo.db.WithContext(ctx).Joins(join).Where(where, repository.StatusOrderCreated)
+	statusTableName := q(repository.TableCreditCardOrderStatus)
+	statusOrderIDColumn := q(repository.ColCreditCardOrderID)
+	ordersTableIDColumn := qcol(repository.TableCreditCardOrders, repository.ColID)
+	statusCountCondition := `(SELECT COUNT(*) FROM ` + statusTableName + ` WHERE ` + statusOrderIDColumn + ` = ` + ordersTableIDColumn + `) = 1`
+
+	query := repo.db.WithContext(ctx).Where(statusCountCondition)
 	return findAndMapAll(query, (*CreditCardOrder).toManufactureDataProto)
 }
 
