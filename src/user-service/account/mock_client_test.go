@@ -11,6 +11,9 @@ import (
 )
 
 type fakeAccountServiceClient struct {
+	// Embedded so the fake satisfies the full generated interface. It is nil:
+	// only the methods defined below are callable, the rest panic if reached.
+	proto.AccountServiceClient
 	accounts map[string]*proto.AccountMessage
 }
 
@@ -67,6 +70,8 @@ func (f *fakeAccountServiceClient) GetAccounts(_ context.Context, _ *emptypb.Emp
 }
 
 type fakeBalanceServiceClient struct {
+	// As above; the Handler only calls CreateBalance.
+	proto.BalanceServiceClient
 	balances map[string]*proto.BalanceMessage
 }
 
