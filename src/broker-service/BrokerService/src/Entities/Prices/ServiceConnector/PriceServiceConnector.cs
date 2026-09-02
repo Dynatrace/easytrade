@@ -14,7 +14,7 @@ public class PriceServiceConnector(
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly ILogger _logger = logger;
 
-    private string PriceServiceUrl => $"http://{_configuration[Constants.PricingService]}/";
+    private string PriceServiceUrl => $"{_configuration[Constants.PricingServiceAddress]}/";
 
     public async Task<IEnumerable<Price>> GetPricesByInstrumentId(Guid id, int count = 10)
     {

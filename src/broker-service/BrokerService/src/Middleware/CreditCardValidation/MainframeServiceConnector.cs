@@ -19,12 +19,12 @@ public class MainframeServiceConnector(
 
     public async Task<bool> ValidateCreditCardAsync(string cardNumber)
     {
-        var baseUrl = config[Constants.MainframeServiceUrl];
+        var baseUrl = config[Constants.MainframeServiceAddress];
         if (string.IsNullOrEmpty(baseUrl))
         {
             logger.LogWarning(
                 "[CreditCardValidation] {EnvVar} is not configured — failing open",
-                Constants.MainframeServiceUrl
+                Constants.MainframeServiceAddress
             );
             return true;
         }

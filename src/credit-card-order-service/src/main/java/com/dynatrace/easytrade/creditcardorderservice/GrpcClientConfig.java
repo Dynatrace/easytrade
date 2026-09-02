@@ -15,7 +15,7 @@ public class GrpcClientConfig {
     private ManagedChannel dbAdapterChannel;
 
     @Bean
-    public ManagedChannel dbAdapterChannel(@Value("${DBADAPTER_HOSTANDPORT}") String target) {
+    public ManagedChannel dbAdapterChannel(@Value("${DB_ADAPTER_ADDRESS}") String target) {
         this.dbAdapterChannel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         return this.dbAdapterChannel;
     }
