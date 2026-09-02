@@ -149,7 +149,7 @@ db-mssql:
   env:
     SA_PASSWORD: "{{ .Values.global.database.password }}"
   livenessProbe: *tcpLivenessProbe
-  readinessProbe: *rootReadinessProbe
+  readinessProbe: *tcpLivenessProbe
   resources:
     requests:
       cpu: 500m
@@ -173,7 +173,7 @@ db-postgres:
     POSTGRES_PASSWORD: "{{ .Values.global.database.password }}"
     POSTGRES_DB: "{{ .Values.global.database.name }}"
   livenessProbe: *tcpLivenessProbe
-  readinessProbe: *rootReadinessProbe
+  readinessProbe: *tcpLivenessProbe
   resources:
     requests:
       cpu: 500m
