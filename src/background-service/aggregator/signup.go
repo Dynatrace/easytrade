@@ -12,7 +12,6 @@ import (
 	"dynatrace.com/easytrade/background-service/logger"
 )
 
-// placeholder
 var (
 	starterPackageID = uuid.MustParse("a0000000-0000-4000-8000-000000000001")
 	lightPackageID   = uuid.MustParse("a0000000-0000-4000-8000-000000000002")
