@@ -324,18 +324,8 @@ user-service:
   env:
     PROXY_PREFIX: "user-service"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
-  livenessProbe:
-    httpGet:
-      path: /livez/
-      port: http
-    initialDelaySeconds: 15
-    periodSeconds: 10
-  readinessProbe:
-    httpGet:
-      path: /readyz/
-      port: http
-    initialDelaySeconds: 5
-    periodSeconds: 5
+  livenessProbe: *defaultLivenessProbe
+  readinessProbe: *defaultReadinessProbe
   resources:
     requests:
       cpu: 20m
