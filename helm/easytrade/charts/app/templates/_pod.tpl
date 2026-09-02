@@ -26,13 +26,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       {{- $repository := .Values.image.repository }}
-      {{- if $repository }}
-        {{- $repository = tpl $repository $ }}
-      {{- else if .Values.global.image.baseRepository }}
+      {{- if and .Values.global.image.baseRepository (not .Values.image.repository) }}
         {{- $repository = printf "%s/%s" .Values.global.image.baseRepository .Chart.Name }}
       {{- end }}
-      {{- $tag := .Values.image.tag | default .Values.global.image.tag }}
-      image: "{{ $repository }}:{{ tpl $tag $ }}"
+      image: "{{ $repository }}:{{ .Values.image.tag | default .Values.global.image.tag }}"
       imagePullPolicy: {{ .Values.image.pullPolicy }}
       env:
         - name: DT_RELEASE_PRODUCT
@@ -73,7 +70,7 @@ spec:
         {{- end }}
       {{- else }}
         - name: http
-          containerPort: {{ tpl (.Values.service.port | toString) $ }}
+          containerPort: {{ .Values.service.port }}
           protocol: TCP
       {{- end }}
       {{- with .Values.livenessProbe }}

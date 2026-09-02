@@ -10,7 +10,6 @@ global:
     name: TradeManagement
     # supports: ["mssql", "postgres"]
     type: mssql
-    port: 1433  # 5432 for postgres
 
   # Global labels to be added to all resources
   labels: {}
@@ -144,26 +143,13 @@ credit-card-order-service:
     enabled: true
     port: 8080
 
-db:
+db-mssql:
   enabled: true
   workloadType: statefulset
-  image:
-    repository: "{{ .Values.global.image.baseRepository }}/db-{{ .Values.global.database.type }}"
-    tag: "{{ .Values.global.image.tag }}"
   env:
     SA_PASSWORD: "{{ .Values.global.database.password }}"
-    POSTGRES_PASSWORD: "{{ .Values.global.database.password }}"
-    POSTGRES_DB: "{{ .Values.global.database.name }}"
-  livenessProbe:
-    tcpSocket:
-      port: http
-    initialDelaySeconds: 15
-    periodSeconds: 10
-  readinessProbe:
-    tcpSocket:
-      port: http
-    initialDelaySeconds: 5
-    periodSeconds: 5
+  livenessProbe: *tcpLivenessProbe
+  readinessProbe: *rootReadinessProbe
   resources:
     requests:
       cpu: 500m
@@ -173,11 +159,35 @@ db:
       memory: 1.5Gi
   service:
     enabled: true
-    port: "{{ .Values.global.database.port }}"
+    port: 1433
   # Enabling persistence will create a PersistentVolumeClaim for the database data
   # persistence:
   #   enabled: true
   #   mountPath: /var/opt/mssql
+  #   size: 10Gi
+
+db-postgres:
+  enabled: false
+  workloadType: statefulset
+  env:
+    POSTGRES_PASSWORD: "{{ .Values.global.database.password }}"
+    POSTGRES_DB: "{{ .Values.global.database.name }}"
+  livenessProbe: *tcpLivenessProbe
+  readinessProbe: *rootReadinessProbe
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1.5Gi
+    limits:
+      cpu: "2"
+      memory: 1.5Gi
+  service:
+    enabled: true
+    port: 5432
+  # Enabling persistence will create a PersistentVolumeClaim for the database data
+  # persistence:
+  #   enabled: true
+  #   mountPath: /var/lib/postgresql/data
   #   size: 10Gi
 
 db-adapter:
