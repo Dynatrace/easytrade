@@ -105,11 +105,15 @@ func (repo *CreditCardOrderRepository) GetLastStatusByOrderID(ctx context.Contex
 }
 
 func (repo *CreditCardOrderRepository) GetOrdersToManufacture(ctx context.Context) ([]*pb.CreditCardManufactureDataMessage, error) {
-	statusTableName := q(repository.TableCreditCardOrderStatus)
-	condition := `(SELECT TOP 1 ` + q(repository.ColStatus) + ` FROM ` + statusTableName +
-		` WHERE ` + q(repository.ColCreditCardOrderID) + ` = ` + qcol(repository.TableCreditCardOrders, repository.ColID) +
-		` ORDER BY ` + q(repository.ColTimestamp) + ` DESC) = ?`
-	query := repo.db.WithContext(ctx).Where(condition, repository.StatusOrderCreated)
+	// Use GORM's subquery builder which handles dialect differences (TOP 1 vs LIMIT 1)
+	latestStatusSubquery := repo.db.
+		Table(repository.TableCreditCardOrderStatus).
+		Select(q(repository.ColStatus)).
+		Where(q(repository.ColCreditCardOrderID) + " = " + qcol(repository.TableCreditCardOrders, repository.ColID)).
+		Order(q(repository.ColTimestamp) + " DESC").
+		Limit(1)
+
+	query := repo.db.WithContext(ctx).Where("(?) = ?", latestStatusSubquery, repository.StatusOrderCreated)
 	return findAndMapAll(query, (*CreditCardOrder).toManufactureDataProto)
 }
 
