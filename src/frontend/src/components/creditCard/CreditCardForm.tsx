@@ -1,68 +1,52 @@
-import React from "react"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import {
-    CheckboxElement,
-    FormContainer,
-    SelectElement,
-    TextFieldElement,
-} from "react-hook-form-mui"
-import { Button, CardActions, Stack, Typography } from "@mui/material"
+import { useToast } from "../../contexts/ToastContext/context"
+import React, { useState } from "react"
 import { useAuthUser } from "../../contexts/UserContext/context"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import useStatusDisplay from "../../hooks/useStatusDisplay"
-import StatusDisplay from "../StatusDisplay"
-import CheckboxLabel from "../CheckboxLabel"
-import { zodResolver } from "@hookform/resolvers/zod"
+
+
 import { useAuthUserData } from "../../contexts/UserContext/hooks"
 import { orderCreditCard } from "../../api/creditCard/order"
 import { CreditCardLevel } from "../../api/backend/creditCard"
 import { newCardOrderInvalidateQuery } from "../../contexts/QueryContext/creditCard/queries"
 
-const formSchema = z.object({
-    name: z.string().min(1, "Cardholder name is required."),
-    address: z.string().min(1, "Cardholder address is required."),
-    email: z.email("Provide a valid email."),
-    type: z.string().min(1, "Card type is required."),
-    agreementCheck: z
-        .boolean()
-        .refine((checked) => checked, "Must agree to terms and conditions"),
-})
-
-type FormData = z.infer<typeof formSchema>
-
 export default function CreditCardForm() {
     const { userId } = useAuthUser()
     const { user } = useAuthUserData()
-    const formContext = useForm<FormData>({
-        defaultValues: {
-            name: "",
-            address: "",
-            type: "",
-            agreementCheck: false,
-        },
-        resolver: zodResolver(formSchema),
-    })
-    const { setError, setSuccess, resetStatus, statusContext } =
-        useStatusDisplay()
+
+    const [name, setName] = useState("")
+    const [address, setAddress] = useState("")
+    const [email, setEmail] = useState("")
+    const [type, setType] = useState("")
+    const [agreementCheck, setAgreementCheck] = useState(false)
+
+    const { showToast } = useToast()
 
     function autofill() {
         if (user === undefined) {
-            setError("Couldn't get proper data to fill form.")
+            showToast("Couldn't get proper data to fill form.", "error")
             return
         }
-        const { setValue } = formContext
-        setValue("name", `${user.firstName} ${user.lastName}`, {
-            shouldValidate: false,
-        })
-        setValue("address", user.address, { shouldValidate: false })
-        setValue("type", "silver", { shouldValidate: false })
-        setValue("email", user.email, { shouldValidate: false })
-        setValue("agreementCheck", true, { shouldValidate: false })
+        setName(`${user.firstName} ${user.lastName}`)
+        setAddress(user.address)
+        setEmail(user.email)
+        setType("silver")
+        setAgreementCheck(true)
     }
+
+    function validate(): string | null {
+        if (!name.trim()) return "Cardholder name is required."
+        if (!address.trim()) return "Cardholder address is required."
+        if (!email.trim() || !email.includes("@")) return "Provide a valid email."
+        if (!type) return "Card type is required."
+        if (!agreementCheck) return "Must agree to terms and conditions"
+        return null
+    }
+
     const queryClient = useQueryClient()
     const { mutate, isPending } = useMutation({
-        mutationFn: async ({ address, name, type, email }: FormData) => {
+        mutationFn: async () => {
+            const err = validate()
+            if (err) throw err
             const cardLevel = type as CreditCardLevel
             const response = await orderCreditCard(userId, {
                 cardLevel,
@@ -70,89 +54,86 @@ export default function CreditCardForm() {
                 name,
                 shippingAddress: address,
             })
-            if (response.type === "error") {
-                throw response.error
-            }
+            if (response.type === "error") throw response.error
             return { orderId: response.creditCardOrderId }
         },
-        onMutate: resetStatus,
         onSuccess: async ({ orderId }) => {
-            setSuccess(`Card orderred successfully. Order ID: ${orderId}`)
-            formContext.reset()
+            showToast(`Card ordered successfully. Order ID: ${orderId}`, "success")
+            setName(""); setAddress(""); setEmail(""); setType(""); setAgreementCheck(false)
             await newCardOrderInvalidateQuery(queryClient)
         },
-        onError: setError,
+        onError: (e: unknown) => {
+            showToast(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)), "error")
+        },
     })
 
+    function handleSubmit(e: React.FormEvent) {
+        e.preventDefault()
+        mutate()
+    }
+
     return (
-        <FormContainer
-            formContext={formContext}
-            onSuccess={(data: FormData) => mutate(data)}
-        >
-            <Stack direction={"column"} spacing={2} minWidth={300}>
-                <TextFieldElement
+        <form className="form" onSubmit={handleSubmit} style={{ width: "100%", minWidth: 300 }}>
+            <div className="form-group">
+                <label className="form-label" htmlFor="name">Cardholder name *</label>
+                <input
                     id="name"
-                    name="name"
-                    label="Cardholder name"
-                    required
-                    fullWidth
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                 />
-                <TextFieldElement
+            </div>
+            <div className="form-group">
+                <label className="form-label" htmlFor="address">Cardholder address *</label>
+                <input
                     id="address"
-                    name="address"
-                    label="Cardholder address"
-                    required
-                    fullWidth
+                    type="text"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
                 />
-                <TextFieldElement
+            </div>
+            <div className="form-group">
+                <label className="form-label" htmlFor="email">Email *</label>
+                <input
                     id="email"
-                    name="email"
-                    label="Email"
-                    required
-                    fullWidth
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
-                <SelectElement
+            </div>
+            <div className="form-group">
+                <label className="form-label" htmlFor="type">Card type *</label>
+                <select
                     id="type"
-                    name="type"
-                    label="Card type"
-                    required
-                    fullWidth
-                    options={[
-                        { id: "silver", label: "Silver" },
-                        { id: "gold", label: "Gold" },
-                        { id: "platinum", label: "Platinum" },
-                    ]}
-                    sx={{ minWidth: "150px" }}
-                />
-                <CheckboxElement
+                    value={type}
+                    onChange={(e) => setType(e.target.value)}
+                >
+                    <option value="">Select card type</option>
+                    <option value="silver">Silver</option>
+                    <option value="gold">Gold</option>
+                    <option value="platinum">Platinum</option>
+                </select>
+            </div>
+            <div className="form-group" style={{ flexDirection: "row", alignItems: "center", gap: "0.5rem" }}>
+                <input
                     id="agreement"
-                    name="agreementCheck"
-                    label={
-                        <CheckboxLabel
-                            text="Agree to terms and conditions *"
-                            hasErrors={
-                                !!formContext.formState.errors.agreementCheck
-                            }
-                        />
-                    }
-                    required
+                    type="checkbox"
+                    checked={agreementCheck}
+                    style={{ width: "auto" }}
+                    onChange={(e) => setAgreementCheck(e.target.checked)}
                 />
-                <Typography variant="body2">* Required field</Typography>
-                <CardActions sx={{ justifyContent: "center" }}>
-                    <Button
-                        id="submitButton"
-                        type="submit"
-                        variant="outlined"
-                        loading={isPending}
-                    >
-                        Order card
-                    </Button>
-                    <Button type="button" variant="outlined" onClick={autofill}>
-                        Autofill
-                    </Button>
-                </CardActions>
-                <StatusDisplay {...statusContext} />
-            </Stack>
-        </FormContainer>
+                <label htmlFor="agreement" style={{ marginBottom: 0 }}>Agree to terms and conditions *</label>
+            </div>
+            <p style={{ fontSize: "0.8rem", color: "var(--text-muted)", margin: "0.25rem 0" }}>* Required field</p>
+            <div className="form-actions">
+                <button id="submitButton" type="submit" className="btn btn-primary" disabled={isPending}>
+                    {isPending ? <span className="spinner" /> : null}
+                    Order card
+                </button>
+                <button type="button" className="btn btn-secondary" onClick={autofill}>
+                    Autofill
+                </button>
+            </div>
+        </form>
     )
 }

@@ -5,11 +5,7 @@ import { transform } from "../QueryContext"
 import { balanceQuery, presetUsersQuery, userQuery } from "./queries"
 
 export function sessionUserProvider() {
-    const userId = sessionStorage.getItem("user-id")
-    // strings coming from session storage are wrapped in ""
-    // using json to parse it removes them and feels like better solution
-    // than using string replacements
-    return userId !== null ? (JSON.parse(userId) as string) : null
+    return sessionStorage.getItem("user-id")
 }
 
 export function loadWithUser<T = unknown>(

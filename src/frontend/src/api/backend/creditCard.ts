@@ -1,7 +1,7 @@
 import { XMLParser } from "fast-xml-parser"
 
 export type DepositRequest = {
-    accountId: number
+    accountId: string
     amount: number
     name: string
     address: string
@@ -12,7 +12,7 @@ export type DepositRequest = {
 }
 
 export type WithdrawRequest = {
-    accountId: number
+    accountId: string
     amount: number
     name: string
     address: string
@@ -33,7 +33,7 @@ export type OrderStatus =
 export type CreditCardLevel = "silver" | "gold" | "platinum"
 
 export type CreditCardOrderRequest = {
-    accountId: number
+    accountId: string
     name: string
     email: string
     shippingAddress: string
@@ -49,7 +49,7 @@ export type CreditCardOrderResponse = {
 }
 
 export type CardStatusResult = {
-    id: number
+    id: string
     creditCardOrderId: string
     timestamp: string
     status: OrderStatus
@@ -126,7 +126,7 @@ export class CreditCardBackend {
 
     async getOrderStatusXml(
         xmlParser: XMLParser,
-        accountId: number
+        accountId: string
     ): Promise<CreditCardResponseXml<CardStatusResult>> {
         const response = await fetch(
             `${this.creditCardServiceUrl}/orders/${accountId}/status/latest`,
@@ -145,7 +145,7 @@ export class CreditCardBackend {
     }
 
     async getOrderStatusHistory(
-        accountId: number
+        accountId: string
     ): Promise<CreditCardResponse<CardStatusHistory>> {
         const response = await fetch(
             `${this.creditCardServiceUrl}/orders/${accountId}/status`,
@@ -155,7 +155,7 @@ export class CreditCardBackend {
         return response.json() as Promise<CreditCardResponse<CardStatusHistory>>
     }
 
-    async deleteCardAndOrder(accountId: number): Promise<void> {
+    async deleteCardAndOrder(accountId: string): Promise<void> {
         const response = await fetch(
             `${this.creditCardServiceUrl}/orders/${accountId}`,
             { method: "DELETE", headers: this.jsonHeaders }

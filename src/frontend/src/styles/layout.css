@@ -1,0 +1,359 @@
+/* =============================================================
+   EasyTrade — Layout CSS
+   Structure:
+     AppLayout   → .page-outer (flex column)
+                     .app-header (header strip)
+                     .page-body  (flex row — outlet fills this)
+     ProtectedLayout → .with-sidebar (flex row)
+                         .sidebar (fixed-width nav)
+                         .content-area (scrollable content)
+     PublicLayout → .public-page (centered)
+   ============================================================= */
+
+/* ---- Outer wrapper (AppLayout) ---- */
+.page-outer {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: var(--bg-base);
+}
+
+/* ---- Header strip ---- */
+.app-header {
+    height: var(--header-height);
+    background-color: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-5);
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.app-header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.app-header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.app-logo {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: var(--text-lg);
+    letter-spacing: 0.1em;
+    color: var(--text-primary);
+    text-decoration: none;
+}
+.app-logo:hover {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+/* ---- Body area (below header) ---- */
+.page-body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* ---- Sidebar (inside ProtectedLayout) ---- */
+.sidebar {
+    width: var(--sidebar-width);
+    flex-shrink: 0;
+    background-color: var(--bg-surface);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.sidebar-nav {
+    padding: var(--space-3) var(--space-2);
+    flex: 1;
+}
+
+.sidebar-footer {
+    padding: var(--space-3) var(--space-2);
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebar-nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebar-nav li {
+    list-style: none;
+}
+
+/* Nav links */
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: var(--text-sm);
+    font-weight: 500;
+}
+
+.nav-link:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+    text-decoration: none;
+}
+
+.nav-link.active {
+    background-color: var(--accent-muted);
+    color: var(--accent);
+}
+
+.nav-link svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* ---- Full-page centered spinner (Suspense fallback + page isPending guards) ---- */
+.page-spinner {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 0;
+}
+
+/* ---- Solo page (public, no sidebar — e.g. /feature-flags, /version) ---- */
+.page-solo {
+    flex: 1;
+    overflow-y: auto;
+    background-color: var(--bg-base);
+    padding: var(--space-8) var(--space-6) var(--space-6);
+}
+
+/* ---- Content area (right of sidebar in ProtectedLayout) ---- */
+.content-area {
+    flex: 1;
+    overflow-y: auto;
+    background-color: var(--bg-base);
+    padding-top: var(--space-4);
+}
+
+.page-container {
+    padding: var(--space-6) clamp(var(--space-6), 3vw, var(--space-8));
+    max-width: clamp(900px, 92vw, 1800px);
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ---- Layout for protected pages (sidebar + content) ---- */
+.with-sidebar {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* ---- Public page layout (no sidebar) ---- */
+.public-page {
+    flex: 1;
+    overflow-y: auto;
+    background-color: var(--bg-base);
+    padding: var(--space-8) var(--space-6);
+}
+
+.public-page > * {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* ---- Two-column login layout ---- */
+.login-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    max-width: 900px;
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.login-panel {
+    padding: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-panel:first-child {
+    border-right: 1px solid var(--border);
+}
+
+.login-panel h1,
+.login-panel h2 {
+    margin-bottom: var(--space-6);
+}
+
+/* ---- Profile dropdown (in header) ---- */
+.profile-area {
+    position: relative;
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: calc(100% + var(--space-2));
+    right: 0;
+    min-width: 180px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    z-index: 100;
+    padding: var(--space-1) 0;
+}
+
+.profile-dropdown ul {
+    list-style: none;
+}
+
+.profile-dropdown li a,
+.profile-dropdown li button {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-2) var(--space-4);
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: var(--text-sm);
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.profile-dropdown li a:hover,
+.profile-dropdown li button:hover {
+    background-color: var(--bg-hover);
+    text-decoration: none;
+}
+
+/* ---- Greeting / avatar ---- */
+.user-greeting {
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--accent-muted);
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+/* ---- Flag count badge ---- */
+.flag-badge {
+    position: relative;
+    display: inline-flex;
+}
+
+.flag-count {
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    background-color: var(--danger);
+    color: var(--text-on-accent);
+    border-radius: 50%;
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    line-height: 1;
+}
+
+/* ---- Page header ---- */
+.page-header {
+    margin-bottom: var(--space-6);
+}
+
+.page-header h1,
+.page-header h2 {
+    margin-bottom: var(--space-1);
+}
+
+@media (max-width: 768px) {
+    .page-outer {
+        height: 100dvh;
+    }
+
+    .with-sidebar {
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .sidebar {
+        width: 100%;
+        flex-shrink: 0;
+        height: auto;
+        flex-direction: row;
+        overflow-x: auto;
+        overflow-y: visible;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-nav {
+        padding: var(--space-2);
+        flex: 1;
+    }
+
+    .sidebar-nav ul {
+        flex-direction: row;
+        gap: var(--space-1);
+    }
+
+    .content-area {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    .login-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .login-panel:first-child {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+}

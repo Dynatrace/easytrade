@@ -1,4 +1,5 @@
-import React from "react"
+import React, { lazy, Suspense } from "react"
+import { PageSpinner } from "./components/PageSpinner"
 import {
     createBrowserRouter,
     createRoutesFromElements,
@@ -7,11 +8,7 @@ import {
 import ProviderLayout from "./layouts/ProviderLayout"
 import ProtectedLayout from "./layouts/ProtectedLayout"
 import PublicLayout from "./layouts/PublicLayout"
-import Login from "./pages/public/Login"
-import Signup from "./pages/public/Signup"
-import Home from "./pages/protected/Home"
-import Deposit from "./pages/protected/Deposit"
-import Withdraw from "./pages/protected/Withdraw"
+import CreditCardLayout from "./layouts/CreditCardLayout"
 import BaseNavigation from "./pages/BaseNavigation"
 import { queryClient } from "./contexts/QueryContext/QueryContext"
 import { getUser, getPresetUsers, getBalance } from "./api/user/user"
@@ -23,25 +20,34 @@ import {
     balanceLoader,
     userLoader,
 } from "./contexts/QueryContext/user/loaders"
-import InstrumentsPage from "./pages/protected/Instruments"
-import Instrument from "./pages/protected/Instrument"
 import { instrumentsLoader } from "./contexts/QueryContext/instrument/loaders"
 import { getInstruments } from "./api/instrument/instruments"
 import { instrumentPricesLoader } from "./contexts/QueryContext/price/loaders"
 import { getPricesForInstrument } from "./api/price/price"
 import { transactionsLoader } from "./contexts/QueryContext/transaction/loaders"
 import { getTransactions } from "./api/transaction/transactions"
-import FeatureFlags from "./pages/FeatureFlags"
-import Version from "./pages/Version"
 import {
     creditCardStatusHistoryLoader,
     creditCardStatusLoader,
 } from "./contexts/QueryContext/creditCard/loaders"
 import { getOrderStatus, getOrderStatusHistory } from "./api/creditCard/order"
-import CreditCardLayout from "./layouts/CreditCardLayout"
-import CreditCardOrder from "./pages/protected/creditCard/CreditCardOrder"
-import CreditCardStatus from "./pages/protected/creditCard/CreditCardStatus"
-import CreditCardActive from "./pages/protected/creditCard/CreditCardActive"
+
+const Login = lazy(() => import("./pages/public/Login"))
+const Signup = lazy(() => import("./pages/public/Signup"))
+const Home = lazy(() => import("./pages/protected/Home"))
+const Deposit = lazy(() => import("./pages/protected/Deposit"))
+const Withdraw = lazy(() => import("./pages/protected/Withdraw"))
+const InstrumentsPage = lazy(() => import("./pages/protected/Instruments"))
+const Instrument = lazy(() => import("./pages/protected/Instrument"))
+const FeatureFlags = lazy(() => import("./pages/FeatureFlags"))
+const Version = lazy(() => import("./pages/Version"))
+const CreditCardOrder = lazy(() => import("./pages/protected/creditCard/CreditCardOrder"))
+const CreditCardStatus = lazy(() => import("./pages/protected/creditCard/CreditCardStatus"))
+const CreditCardActive = lazy(() => import("./pages/protected/creditCard/CreditCardActive"))
+
+function Loading() {
+    return <PageSpinner />
+}
 
 export enum LoaderIds {
     user = "user-loader",
@@ -56,34 +62,28 @@ const elementRoutes = createRoutesFromElements(
     <Route path="/" element={<ProviderLayout />} errorElement={<ErrorPage />}>
         <Route index element={<BaseNavigation />} />
         <Route path="*" element={<BaseNavigation />} />
-        <Route path="feature-flags" element={<FeatureFlags />} />
-        <Route path="version" element={<Version />} />
+        <Route path="feature-flags" element={<Suspense fallback={<Loading />}><FeatureFlags /></Suspense>} />
+        <Route path="version" element={<Suspense fallback={<Loading />}><Version /></Suspense>} />
         <Route element={<PublicLayout />}>
             <Route
                 path="login"
-                element={<Login />}
+                element={<Suspense fallback={<Loading />}><Login /></Suspense>}
                 loader={presetUsersLoader(queryClient, getPresetUsers)}
             />
-            <Route path="signup" element={<Signup />} />
+            <Route path="signup" element={<Suspense fallback={<Loading />}><Signup /></Suspense>} />
         </Route>
         <Route
             element={<ProtectedLayout />}
-            loader={async () => {
-                return await Promise.all([
-                    loadWithUser(
-                        sessionUserProvider,
-                        userLoader(queryClient, getUser)
-                    ),
-                    loadWithUser(
-                        sessionUserProvider,
-                        balanceLoader(queryClient, getBalance)
-                    ),
+            loader={() => {
+                return Promise.all([
+                    loadWithUser(sessionUserProvider, userLoader(queryClient, getUser))(),
+                    loadWithUser(sessionUserProvider, balanceLoader(queryClient, getBalance))(),
                 ])
             }}
             id={LoaderIds.user}
         >
-            <Route path="withdraw" element={<Withdraw />} />
-            <Route path="deposit" element={<Deposit />} />
+            <Route path="withdraw" element={<Suspense fallback={<Loading />}><Withdraw /></Suspense>} />
+            <Route path="deposit" element={<Suspense fallback={<Loading />}><Deposit /></Suspense>} />
             <Route
                 path="credit-card"
                 element={<CreditCardLayout />}
@@ -93,10 +93,10 @@ const elementRoutes = createRoutesFromElements(
                 )}
                 id={LoaderIds.creditCard}
             >
-                <Route path="order" element={<CreditCardOrder />} />
+                <Route path="order" element={<Suspense fallback={<Loading />}><CreditCardOrder /></Suspense>} />
                 <Route
                     path="status"
-                    element={<CreditCardStatus />}
+                    element={<Suspense fallback={<Loading />}><CreditCardStatus /></Suspense>}
                     loader={loadWithUser(
                         sessionUserProvider,
                         creditCardStatusHistoryLoader(
@@ -106,7 +106,7 @@ const elementRoutes = createRoutesFromElements(
                     )}
                     id={LoaderIds.creditCardStatusHistory}
                 />
-                <Route path="active" element={<CreditCardActive />} />
+                <Route path="active" element={<Suspense fallback={<Loading />}><CreditCardActive /></Suspense>} />
             </Route>
             <Route
                 loader={loadWithUser(
@@ -117,7 +117,7 @@ const elementRoutes = createRoutesFromElements(
             >
                 <Route
                     path="home"
-                    element={<Home />}
+                    element={<Suspense fallback={<Loading />}><Home /></Suspense>}
                     loader={loadWithUser(
                         sessionUserProvider,
                         transactionsLoader(queryClient, getTransactions)
@@ -125,10 +125,10 @@ const elementRoutes = createRoutesFromElements(
                     id={LoaderIds.transactions}
                 />
                 <Route path="instruments">
-                    <Route index element={<InstrumentsPage />} />
+                    <Route index element={<Suspense fallback={<Loading />}><InstrumentsPage /></Suspense>} />
                     <Route
                         path=":id"
-                        element={<Instrument />}
+                        element={<Suspense fallback={<Loading />}><Instrument /></Suspense>}
                         loader={async ({ params }) => {
                             return await instrumentPricesLoader(
                                 queryClient,

@@ -1,28 +1,20 @@
 import React from "react"
-import { Card, CardContent, Link, Stack } from "@mui/material"
-import { Link as RouterLink } from "react-router"
+import { Link } from "react-router"
 import { signup } from "../../api/signup/signup"
 import SignupForm from "../../components/forms/SignupForm"
 import DemoAppWarning from "../../components/DemoAppWarning"
 
 export default function Signup() {
     return (
-        <Card
-            sx={{
-                margin: "auto",
-                minWidth: "300px",
-                maxWidth: "450px",
-            }}
-        >
-            <CardContent>
-                <Stack spacing={2} alignItems="center" justifyContent="center">
-                    <DemoAppWarning />
-                    <SignupForm submitHandler={signup} />
-                    <Link component={RouterLink} to="/login">
-                        Log in
-                    </Link>
-                </Stack>
-            </CardContent>
-        </Card>
+        <div style={{ width: "100%", maxWidth: "440px" }}>
+            <h2 style={{ marginBottom: "var(--space-5)" }}>Sign up</h2>
+            <DemoAppWarning />
+            <div style={{ marginTop: "var(--space-5)" }}>
+                <SignupForm submitHandler={signup} />
+            </div>
+            <p style={{ marginTop: "var(--space-4)", fontSize: "var(--text-sm)" }}>
+                <Link to="/login">Already have an account? Log in</Link>
+            </p>
+        </div>
     )
 }
