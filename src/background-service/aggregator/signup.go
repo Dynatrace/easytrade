@@ -14,9 +14,9 @@ import (
 
 // placeholder
 var (
-	starterPackageID = uuid.MustParse("11111111-1111-1111-1111-111111111111")
-	lightPackageID   = uuid.MustParse("22222222-2222-2222-2222-222222222222")
-	proPackageID     = uuid.MustParse("33333333-3333-3333-3333-333333333333")
+	starterPackageID = uuid.MustParse("a0000000-0000-4000-8000-000000000001")
+	lightPackageID   = uuid.MustParse("a0000000-0000-4000-8000-000000000002")
+	proPackageID     = uuid.MustParse("a0000000-0000-4000-8000-000000000003")
 )
 
 type SignupRequest struct {
