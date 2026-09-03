@@ -5,15 +5,6 @@ POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 {
-  "username": "demouser",
-  "password": "demopass"
-}
-
-### Login - preset account
-POST {{baseUrl}}/api/auth/login
-Content-Type: application/json
-
-{
   "username": "james_norton",
   "password": "pass_james_123"
 }
