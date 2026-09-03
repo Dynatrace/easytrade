@@ -21,54 +21,20 @@ global:
   # Environment variables to be added to all pods
   env: {}
 
-# Shared probe shapes, referenced by *alias below (not a real Helm value; ignored since no chart alias is named "_probes")
-_probes:
-  defaultLiveness: &defaultLivenessProbe
-    httpGet:
-      path: /livez
-      port: http
-    initialDelaySeconds: 15
-    periodSeconds: 10
-  defaultReadiness: &defaultReadinessProbe
-    httpGet:
-      path: /readyz
-      port: http
-    initialDelaySeconds: 5
-    periodSeconds: 5
-  port8080Liveness: &port8080LivenessProbe
-    httpGet:
-      path: /livez
-      port: 8080
-    initialDelaySeconds: 15
-    periodSeconds: 10
-  port8080Readiness: &port8080ReadinessProbe
-    httpGet:
-      path: /readyz
-      port: 8080
-    initialDelaySeconds: 5
-    periodSeconds: 5
-  tcpLiveness: &tcpLivenessProbe
-    tcpSocket:
-      port: http
-    initialDelaySeconds: 30
-    timeoutSeconds: 5
-    periodSeconds: 10
-    failureThreshold: 6
-    successThreshold: 1
-  rootReadiness: &rootReadinessProbe
-    httpGet:
-      path: /
-      port: http
-    initialDelaySeconds: 5
-    timeoutSeconds: 3
-    periodSeconds: 5
-    failureThreshold: 3
-    successThreshold: 1
-
 background-service:
   enabled: true
-  livenessProbe: *defaultLivenessProbe
-  readinessProbe: *defaultReadinessProbe
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   rbac:
     create: true
     rules:
@@ -110,8 +76,18 @@ broker-service:
     FEATURE_FLAG_SERVICE_PORT: "8080"
     PROXY_PREFIX: "broker-service"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
-  livenessProbe: *defaultLivenessProbe
-  readinessProbe: *defaultReadinessProbe
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 150m
@@ -135,8 +111,18 @@ credit-card-order-service:
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
-  livenessProbe: *defaultLivenessProbe
-  readinessProbe: *defaultReadinessProbe
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 20m
@@ -155,8 +141,22 @@ db-mssql:
     SA_PASSWORD:
       name: '{{ include "easytrade.dbPasswordSecretName" . }}'
       key: '{{ include "easytrade.dbPasswordSecretKey" . }}'
-  livenessProbe: *tcpLivenessProbe
-  readinessProbe: *tcpLivenessProbe
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
   resources:
     requests:
       cpu: 500m
@@ -182,8 +182,22 @@ db-postgres:
     POSTGRES_PASSWORD:
       name: '{{ include "easytrade.dbPasswordSecretName" . }}'
       key: '{{ include "easytrade.dbPasswordSecretKey" . }}'
-  livenessProbe: *tcpLivenessProbe
-  readinessProbe: *tcpLivenessProbe
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
   resources:
     requests:
       cpu: 500m
@@ -208,8 +222,18 @@ db-adapter:
     DB_URL:
       name: "{{ .Release.Name }}-connection-strings"
       key: "DB_URL"
-  livenessProbe: *port8080LivenessProbe
-  readinessProbe: *port8080ReadinessProbe
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 10m
@@ -227,8 +251,18 @@ feature-flag-service:
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
-  livenessProbe: *defaultLivenessProbe
-  readinessProbe: *defaultReadinessProbe
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 30m
@@ -242,8 +276,23 @@ feature-flag-service:
 
 frontend:
   enabled: true
-  livenessProbe: *tcpLivenessProbe
-  readinessProbe: *rootReadinessProbe
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 5
+    timeoutSeconds: 3
+    periodSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
   resources:
     requests:
       cpu: 10m
@@ -267,8 +316,23 @@ frontendreverseproxy:
     PRICING_SERVICE_URL: "http://{{ .Release.Name }}-pricing-service:8080"
     USER_SERVICE_URL: "http://{{ .Release.Name }}-user-service:8080"
     BACKGROUND_SERVICE_URL: "http://{{ .Release.Name }}-background-service:8080"
-  livenessProbe: *tcpLivenessProbe
-  readinessProbe: *rootReadinessProbe
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 5
+    timeoutSeconds: 3
+    periodSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
   resources:
     requests:
       cpu: 50m
@@ -289,8 +353,18 @@ loadgen:
   env:
     EASYTRADE_URL: "http://{{ .Release.Name }}-frontendreverseproxy:8080"
     RARE_VISITS_INTERVAL_MINUTES: "60"
-  livenessProbe: *port8080LivenessProbe
-  readinessProbe: *port8080ReadinessProbe
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: "1"
@@ -308,8 +382,18 @@ offerservice:
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
-  livenessProbe: *defaultLivenessProbe
-  readinessProbe: *defaultReadinessProbe
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 100m
@@ -326,8 +410,18 @@ pricing-service:
   env:
     PROXY_PREFIX: "pricing-service"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
-  livenessProbe: *defaultLivenessProbe
-  readinessProbe: *defaultReadinessProbe
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 20m
@@ -344,8 +438,18 @@ user-service:
   env:
     PROXY_PREFIX: "user-service"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
-  livenessProbe: *defaultLivenessProbe
-  readinessProbe: *defaultReadinessProbe
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 20m
