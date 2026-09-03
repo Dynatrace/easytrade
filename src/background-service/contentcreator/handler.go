@@ -35,14 +35,14 @@ func NewHandler(conn *grpc.ClientConn) *Handler {
 	}
 }
 
-func Start(ctx context.Context, values config.Values) {
+func Start(ctx context.Context, values config.Values) *grpc.ClientConn {
 	conn, err := grpc.NewClient(
 		values.Get(dbAdapterServiceAddress),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
 		l.Errorw("Failed to connect to DB adapter service", "err", err)
-		return
+		return nil
 	}
 	go func() {
 		<-ctx.Done()
@@ -56,6 +56,8 @@ func Start(ctx context.Context, values config.Values) {
 		h.initializePricingData(ctx, now)
 		h.generatePricingData(ctx, now)
 	}()
+
+	return conn
 }
 
 func (h *Handler) initializePricingData(ctx context.Context, now time.Time) {

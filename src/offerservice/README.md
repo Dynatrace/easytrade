@@ -43,7 +43,7 @@ This generates TypeScript client classes in `src/proto/` (which are gitignored a
 | Variable                         | Default           | Description                                        |
 | -------------------------------- | ----------------- | -------------------------------------------------- |
 | `APP_PORT`                       | `8080`            | Port the HTTP server listens on                    |
-| `DBADAPTER_HOSTANDPORT`          | `localhost:50051` | Host and port of the db-adapter gRPC service       |
+| `DB_ADAPTER_ADDRESS`             | `localhost:50051` | Host and port of the db-adapter gRPC service       |
 | `USER_SERVICE_PROTOCOL`          | `http`      | Protocol for user-service                          |
 | `USER_SERVICE_BASE_URL`          | `localhost` | Hostname for user-service                          |
 | `USER_SERVICE_PORT`              | `8080`      | Port for user-service                              |

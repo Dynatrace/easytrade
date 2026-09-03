@@ -3,7 +3,7 @@
     public static class Constants
     {
         public const string PricingService = "PRICINGSERVICE_HOSTANDPORT";
-        public const string DbAdapterService = "DBADAPTER_HOSTANDPORT";
+        public const string DbAdapterService = "DB_ADAPTER_ADDRESS";
         public const string UserService = "USER_SERVICE_HOSTANDPORT";
         public const string FeatureFlagServiceProtocol = "FEATURE_FLAG_SERVICE_PROTOCOL";
         public const string FeatureFlagServiceBaseUrl = "FEATURE_FLAG_SERVICE_BASE_URL";

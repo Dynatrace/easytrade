@@ -1,5 +1,6 @@
 using EasyTrade.BrokerService.Connectors;
 using EasyTrade.BrokerService.Helpers;
+using EasyTrade.BrokerService.Helpers.Health;
 using EasyTrade.BrokerService.Helpers.Logging;
 using EasyTrade.BrokerService.Middleware.CreditCardValidation;
 using EasyTrade.BrokerService.ProblemPatterns.HighCpuUsage;
@@ -15,6 +16,7 @@ builder.Services.AddCors(services =>
 );
 
 builder.Services.AddSingleton<IDbAdapterConnector, DbAdapterConnector>();
+builder.Services.AddBrokerServiceHealthChecks();
 
 // Clear default logging providers and and new ones
 builder.Logging.ClearProviders();
@@ -47,5 +49,6 @@ app.UseMiddleware<HighCpuUsageMiddleware>();
 app.UseMiddleware<CreditCardValidationMiddleware>();
 
 app.MapControllers();
+app.MapBrokerServiceHealthChecks();
 
 app.Run();

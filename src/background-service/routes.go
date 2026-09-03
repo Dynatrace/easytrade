@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"google.golang.org/grpc"
 
 	"dynatrace.com/easytrade/background-service/logger"
 	"dynatrace.com/easytrade/background-service/thirdparty"
@@ -25,13 +27,14 @@ func requestLogger() gin.HandlerFunc {
 	}
 }
 
-func New(handlers thirdparty.Handlers) *http.Server {
+func New(handlers thirdparty.Handlers, dbAdapterConn *grpc.ClientConn) *http.Server {
 	router := gin.New()
 	router.Use(gin.Recovery())
 	router.Use(requestLogger())
 
 	router.GET("/version", version.GetVersion)
 	router.POST("/v1/manufacturer", handlers.PostManufacturer)
+	setupHealth(router, dbAdapterConn)
 
 	return &http.Server{Addr: ":8080", Handler: router}
 }

@@ -8,6 +8,7 @@ import (
 )
 
 type DBBackend interface {
+	Ping(ctx context.Context) error
 	Account() AccountRepository
 	Balance() BalanceRepository
 	CreditCard() CreditCardOrderRepository
