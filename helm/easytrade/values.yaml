@@ -6,7 +6,12 @@ global:
     baseRepository: "europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade"
     tag: latest
   database:
+    # Plaintext default. Ignored when existingSecret.name is set.
     password: "yourStrong(!)Password"
+    # Set name to source the password from an existing Kubernetes Secret instead.
+    existingSecret:
+      name: ""
+      key: "password"
     name: TradeManagement
     # supports: ["mssql", "postgres"]
     type: mssql
@@ -146,8 +151,10 @@ credit-card-order-service:
 db-mssql:
   enabled: true
   workloadType: statefulset
-  env:
-    SA_PASSWORD: "{{ .Values.global.database.password }}"
+  envFromSecret:
+    SA_PASSWORD:
+      name: '{{ include "easytrade.dbPasswordSecretName" . }}'
+      key: '{{ include "easytrade.dbPasswordSecretKey" . }}'
   livenessProbe: *tcpLivenessProbe
   readinessProbe: *tcpLivenessProbe
   resources:
@@ -170,8 +177,11 @@ db-postgres:
   enabled: false
   workloadType: statefulset
   env:
-    POSTGRES_PASSWORD: "{{ .Values.global.database.password }}"
     POSTGRES_DB: "{{ .Values.global.database.name }}"
+  envFromSecret:
+    POSTGRES_PASSWORD:
+      name: '{{ include "easytrade.dbPasswordSecretName" . }}'
+      key: '{{ include "easytrade.dbPasswordSecretKey" . }}'
   livenessProbe: *tcpLivenessProbe
   readinessProbe: *tcpLivenessProbe
   resources:
