@@ -7,30 +7,21 @@ type InstrumentsChartProps = {
     accountId: string
 }
 
-type Period = "1d" | "7d" | "30d"
-
-const PERIODS: { label: string; value: Period }[] = [
-    { label: "1D", value: "1d" },
-    { label: "7D", value: "7d" },
-    { label: "30D", value: "30d" },
-]
-
 export default function InstrumentsChart({ accountId }: InstrumentsChartProps) {
     const containerRef = useRef<HTMLDivElement>(null)
-    const [period, setPeriod] = useState<Period>("1d")
     const [data, setData] = useState<PortfolioPoint[]>([])
     const [loading, setLoading] = useState(true)
     useEffect(() => {
         let cancelled = false
         setLoading(true)
-        void getPortfolioHistory(accountId, period).then((points) => {
+        void getPortfolioHistory(accountId).then((points) => {
             if (!cancelled) {
                 setData(points)
                 setLoading(false)
             }
         })
         return () => { cancelled = true }
-    }, [accountId, period])
+    }, [accountId])
 
     useEffect(() => {
         const el = containerRef.current
@@ -77,21 +68,8 @@ export default function InstrumentsChart({ accountId }: InstrumentsChartProps) {
         <div>
             <div className="chart-header">
                 <span style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)" }}>
-                    Portfolio value
+                    Portfolio value (24h)
                 </span>
-                <div style={{ display: "flex", gap: "var(--space-2)" }}>
-                    {PERIODS.map(({ label, value }) => (
-                        <button
-                            key={value}
-                            type="button"
-                            className={"btn btn-ghost" + (period === value ? " active" : "")}
-                            style={{ padding: "2px 8px", fontSize: "var(--text-xs)" }}
-                            onClick={() => setPeriod(value)}
-                        >
-                            {label}
-                        </button>
-                    ))}
-                </div>
             </div>
             {loading ? (
                 <div

@@ -16,9 +16,9 @@ export class PortfolioBackend {
         this.headers = { Accept: "application/json" }
     }
 
-    async getHistory(accountId: string, period: string): Promise<PortfolioHistoryResponse> {
+    async getHistory(accountId: string): Promise<PortfolioHistoryResponse> {
         const response = await fetch(
-            `${this.baseUrl}/portfolio/history/${accountId}?period=${period}`,
+            `${this.baseUrl}/portfolio/history/${accountId}`,
             { headers: this.headers }
         )
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
