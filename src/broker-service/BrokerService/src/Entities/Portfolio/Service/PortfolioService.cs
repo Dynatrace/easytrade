@@ -10,20 +10,18 @@ public class PortfolioService(
     ILogger<PortfolioService> logger
 ) : IPortfolioService
 {
-    public async Task<IEnumerable<PortfolioPointDTO>> GetPortfolioHistoryAsync(Guid accountId, string period)
-    {
-        logger.LogInformation(
-            "Computing portfolio history for account [{accountId}], period [{period}]",
-            accountId,
-            period
-        );
+    private static readonly TimeSpan PeriodLength = TimeSpan.FromHours(24);
+    private static readonly TimeSpan BucketSize = TimeSpan.FromMinutes(1);
 
-        var (periodLength, bucketSize) = ResolvePeriodWindow(period);
-        var start = DateTimeOffset.UtcNow - periodLength;
+    public async Task<IEnumerable<PortfolioPointDTO>> GetPortfolioHistoryAsync(Guid accountId)
+    {
+        logger.LogInformation("Computing portfolio history for account [{accountId}]", accountId);
+
+        var start = DateTimeOffset.UtcNow - PeriodLength;
 
         var holdingQuantitiesByInstrument = await GetCurrentHoldingsAsync(accountId);
-        var priceHistoryByInstrument = await priceService.GetPricesForInstrumentsAscByTimestamp(holdingQuantitiesByInstrument.Keys, start);
-        var bucketTimestamps = BuildBucketTimestamps(start, periodLength, bucketSize);
+        var priceHistoryByInstrument = await priceService.GetAllPricesAscByTimestamp(start);
+        var bucketTimestamps = BuildBucketTimestamps(start);
 
         return new PortfolioValuation(holdingQuantitiesByInstrument, priceHistoryByInstrument).BuildPoints(bucketTimestamps);
     }
@@ -36,21 +34,9 @@ public class PortfolioService(
             .ToDictionary(instrument => instrument.InstrumentId, instrument => instrument.Quantity);
     }
 
-    private static (TimeSpan periodLength, TimeSpan bucketSize) ResolvePeriodWindow(string period) =>
-        period switch
-        {
-            "7d" => (TimeSpan.FromDays(7), TimeSpan.FromHours(4)),
-            "30d" => (TimeSpan.FromDays(30), TimeSpan.FromDays(1)),
-            _ => (TimeSpan.FromDays(1), TimeSpan.FromHours(1)),
-        };
-
-    private static IEnumerable<DateTimeOffset> BuildBucketTimestamps(
-        DateTimeOffset start,
-        TimeSpan periodLength,
-        TimeSpan bucketSize
-    )
+    private static IEnumerable<DateTimeOffset> BuildBucketTimestamps(DateTimeOffset start)
     {
-        var bucketCount = (int)(periodLength / bucketSize);
-        return Enumerable.Range(1, bucketCount).Select(i => start + bucketSize * i);
+        var bucketCount = (int)(PeriodLength / BucketSize);
+        return Enumerable.Range(1, bucketCount).Select(i => start + BucketSize * i);
     }
 }
