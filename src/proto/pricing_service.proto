@@ -35,8 +35,7 @@ message GetPricesForInstrumentRequest {
 }
 
 message GetPricesForInstrumentsAscByTimestampRequest {
-  repeated string instrument_ids = 1;
-  google.protobuf.Timestamp since = 2;
+  google.protobuf.Timestamp since = 1;
 }
 
 message PricingRow {

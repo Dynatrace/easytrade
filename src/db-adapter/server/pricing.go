@@ -2,10 +2,11 @@ package server
 
 import (
 	"context"
-	"time"
 
 	pb "github.com/dynatrace/easytrade/dbadapter/proto"
 	"github.com/dynatrace/easytrade/dbadapter/repository"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -52,19 +53,10 @@ func (s *PricingServer) GetPricesForInstrument(ctx context.Context, req *pb.GetP
 }
 
 func (s *PricingServer) GetPricesForInstrumentsAscByTimestamp(ctx context.Context, req *pb.GetPricesForInstrumentsAscByTimestampRequest) (*pb.PricesResponse, error) {
-	if len(req.InstrumentIds) == 0 {
-		return &pb.PricesResponse{}, nil
+	if req.Since == nil {
+		return nil, status.Error(codes.InvalidArgument, "since is required")
 	}
-	for _, id := range req.InstrumentIds {
-		if err := validateUUID(id); err != nil {
-			return nil, err
-		}
-	}
-	var since time.Time
-	if req.Since != nil {
-		since = req.Since.AsTime()
-	}
-	prices, err := s.repo.GetForInstrumentsAscByTimestamp(ctx, req.InstrumentIds, since)
+	prices, err := s.repo.GetAllAscByTimestamp(ctx, req.Since.AsTime())
 	if err != nil {
 		return nil, err
 	}
