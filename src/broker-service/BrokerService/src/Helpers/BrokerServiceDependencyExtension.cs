@@ -2,6 +2,7 @@
 using EasyTrade.BrokerService.Entities.Balances.Service;
 using EasyTrade.BrokerService.Entities.Instruments.Repository;
 using EasyTrade.BrokerService.Entities.Instruments.Service;
+using EasyTrade.BrokerService.Entities.Portfolio.Service;
 using EasyTrade.BrokerService.Entities.Prices.ServiceConnector;
 using EasyTrade.BrokerService.Entities.Products.Repository;
 using EasyTrade.BrokerService.Entities.Trades.Notification;
@@ -30,6 +31,7 @@ public static class BrokerServiceDependencyExtension
             .AddPriceDependency()
             .AddProductDependency()
             .AddTradesDependency()
+            .AddPortfolioDependency()
             .AddProblemPatternsDependency()
             .AddMiddlewareDependency();
         return services;
@@ -74,6 +76,9 @@ public static class BrokerServiceDependencyExtension
             .AddInitAction<IPluginManager>(async (service) => await service.InitializeAsync());
         return services;
     }
+
+    private static IServiceCollection AddPortfolioDependency(this IServiceCollection services) =>
+        services.AddTransient<IPortfolioService, PortfolioService>();
 
     private static IServiceCollection AddMiddlewareDependency(this IServiceCollection services) =>
         services
