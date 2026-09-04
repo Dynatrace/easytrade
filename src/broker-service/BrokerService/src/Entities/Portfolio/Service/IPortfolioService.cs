@@ -4,5 +4,5 @@ namespace EasyTrade.BrokerService.Entities.Portfolio.Service;
 
 public interface IPortfolioService
 {
-    Task<IEnumerable<PortfolioPointDTO>> GetPortfolioHistoryAsync(Guid accountId, string period);
+    Task<IEnumerable<PortfolioPointDTO>> GetPortfolioHistoryAsync(Guid accountId);
 }
