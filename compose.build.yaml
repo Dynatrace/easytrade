@@ -2,7 +2,8 @@ services:
   background-service:
     image: ${REGISTRY}/background-service:${TAG}
     build:
-      context: src/background-service
+      context: src/
+      dockerfile: background-service/Dockerfile
 
   broker-service:
     image: ${REGISTRY}/broker-service:${TAG}
@@ -16,10 +17,15 @@ services:
       context: src/
       dockerfile: credit-card-order-service/Dockerfile
 
-  db:
-    image: ${REGISTRY}/db-${DB_TYPE}:${TAG}
+  db-mssql:
+    image: ${REGISTRY}/db-mssql:${TAG}
     build:
-      context: src/db/${DB_TYPE}
+      context: src/db/mssql
+
+  db-postgres:
+    image: ${REGISTRY}/db-postgres:${TAG}
+    build:
+      context: src/db/postgres
 
   db-adapter:
     image: ${REGISTRY}/db-adapter:${TAG}
@@ -62,4 +68,5 @@ services:
   user-service:
     image: ${REGISTRY}/user-service:${TAG}
     build:
-      context: src/user-service
+      context: src/
+      dockerfile: user-service/Dockerfile
