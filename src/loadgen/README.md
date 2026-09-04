@@ -90,6 +90,16 @@ docker build -t my-loadgen .
 docker run -e EASYTRADE_URL={frontend-url} my-loadgen
 ```
 
+## Health endpoints
+
+- `GET /livez`
+  - returns `200 OK` with body `OK`
+- `GET /readyz`
+  - returns `503 Service Unavailable` until startup is complete
+  - returns `200 OK` with body `OK` after startup
+
+The health server listens on port `8080`.
+
 ## Technology
 
 - Puppeteer

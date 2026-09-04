@@ -27,13 +27,22 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
 
+  db-adapter:
+    <<: *default-service
+    image: ${REGISTRY}/db-adapter:${TAG}
+    depends_on:
+      - db
+    environment:
+      DB_TYPE: ${DB_TYPE}
+      DB_URL: ${DB_URL}
+
   pricing-service:
     <<: *default-service
     image: ${REGISTRY}/pricing-service:${TAG}
     depends_on:
       - db-adapter
     environment:
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
+      DB_ADAPTER_ADDRESS: db-adapter:50051
       PROXY_PREFIX: pricing-service
 
   broker-service:
@@ -49,7 +58,7 @@ services:
       PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
       <<: *feature-flag-service-env
       PROXY_PREFIX: broker-service
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
+      DB_ADAPTER_ADDRESS: db-adapter:50051
 
   frontend:
     <<: *default-service
@@ -80,6 +89,8 @@ services:
     image: ${REGISTRY}/loadgen:${TAG}
     depends_on:
       - frontendreverseproxy
+    ports:
+      - 8097:8080
     environment:
       EASYTRADE_URL: http://frontendreverseproxy
 
@@ -91,7 +102,7 @@ services:
       - db-adapter
     environment:
       <<: *feature-flag-service-env
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
+      DB_ADAPTER_ADDRESS: db-adapter:50051
       USER_SERVICE_PORT: 8080
       USER_SERVICE_BASE_URL: user-service
 
@@ -100,6 +111,8 @@ services:
     image: ${REGISTRY}/feature-flag-service:${TAG}
     environment:
       PROXY_PREFIX: feature-flag-service
+    ports:
+      - 8094:8080
 
   user-service:
     <<: *default-service
@@ -107,7 +120,7 @@ services:
     depends_on:
       - db-adapter
     environment:
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
+      DB_ADAPTER_ADDRESS: db-adapter:50051
       PROXY_PREFIX: accountservice
 
   credit-card-order-service:
@@ -118,7 +131,7 @@ services:
       - background-service
     environment:
       PROXY_PREFIX: credit-card-order-service
-      DBADAPTER_HOSTANDPORT: db-adapter:50051
+      DB_ADAPTER_ADDRESS: db-adapter:50051
       THIRD_PARTY_SERVICE_HOSTANDPORT: background-service:8080
       <<: *feature-flag-service-env
       WORK_DELAY: 300

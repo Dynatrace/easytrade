@@ -20,9 +20,9 @@ func init() {
 }
 
 func main() {
-	addr := os.Getenv(utils.DbAdapterAddress)
+	adapterAddr := os.Getenv(utils.DbAdapterAddress)
 
-	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(adapterAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
@@ -33,5 +33,7 @@ func main() {
 	handler := account.NewHandler(accountClient, balanceClient)
 
 	router := CreateRouter(handler)
-	router.Run()
+	setupHealth(router, conn)
+
+	router.Run(":8080")
 }

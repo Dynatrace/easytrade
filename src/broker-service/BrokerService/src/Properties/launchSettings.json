@@ -16,7 +16,7 @@
       "applicationUrl": "https://+:7207;http://+:5221",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "DBADAPTER_HOSTANDPORT": "localhost:50051",
+        "DB_ADAPTER_ADDRESS": "localhost:50051",
         "USER_SERVICE_HOSTANDPORT": "localhost:8095",
         "PRICINGSERVICE_HOSTANDPORT": "localhost:8083",
         "FEATURE_FLAG_SERVICE_PROTOCOL": "http",

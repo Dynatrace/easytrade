@@ -6,11 +6,15 @@ global:
     baseRepository: "europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade"
     tag: latest
   database:
+    # Plaintext default. Ignored when existingSecret.name is set.
     password: "yourStrong(!)Password"
+    # Set name to source the password from an existing Kubernetes Secret instead.
+    existingSecret:
+      name: ""
+      key: "password"
     name: TradeManagement
     # supports: ["mssql", "postgres"]
     type: mssql
-    port: 1433  # 5432 for postgres
 
   # Global labels to be added to all resources
   labels: {}
@@ -19,6 +23,18 @@ global:
 
 background-service:
   enabled: true
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   rbac:
     create: true
     rules:
@@ -59,7 +75,19 @@ broker-service:
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
     PROXY_PREFIX: "broker-service"
-    DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 150m
@@ -82,7 +110,19 @@ credit-card-order-service:
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
-    DBADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 20m
@@ -94,15 +134,29 @@ credit-card-order-service:
     enabled: true
     port: 8080
 
-db:
+db-mssql:
   enabled: true
   workloadType: statefulset
-  image:
-    repository: "{{ .Values.global.image.baseRepository }}/db-{{ .Values.global.database.type }}"
-  env:
-    SA_PASSWORD: "{{ .Values.global.database.password }}"
-    POSTGRES_PASSWORD: "{{ .Values.global.database.password }}"
-    POSTGRES_DB: "{{ .Values.global.database.name }}"
+  envFromSecret:
+    SA_PASSWORD:
+      name: '{{ include "easytrade.dbPasswordSecretName" . }}'
+      key: '{{ include "easytrade.dbPasswordSecretKey" . }}'
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
   resources:
     requests:
       cpu: 500m
@@ -112,11 +166,52 @@ db:
       memory: 1.5Gi
   service:
     enabled: true
-    port: "{{ .Values.global.database.port }}"
+    port: 1433
   # Enabling persistence will create a PersistentVolumeClaim for the database data
   # persistence:
   #   enabled: true
   #   mountPath: /var/opt/mssql
+  #   size: 10Gi
+
+db-postgres:
+  enabled: false
+  workloadType: statefulset
+  env:
+    POSTGRES_DB: "{{ .Values.global.database.name }}"
+  envFromSecret:
+    POSTGRES_PASSWORD:
+      name: '{{ include "easytrade.dbPasswordSecretName" . }}'
+      key: '{{ include "easytrade.dbPasswordSecretKey" . }}'
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  resources:
+    requests:
+      cpu: 500m
+      memory: 1.5Gi
+    limits:
+      cpu: "2"
+      memory: 1.5Gi
+  service:
+    enabled: true
+    port: 5432
+  # Enabling persistence will create a PersistentVolumeClaim for the database data
+  # persistence:
+  #   enabled: true
+  #   mountPath: /var/lib/postgresql/data
   #   size: 10Gi
 
 db-adapter:
@@ -127,6 +222,18 @@ db-adapter:
     DB_URL:
       name: "{{ .Release.Name }}-connection-strings"
       key: "DB_URL"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 10m
@@ -144,6 +251,18 @@ feature-flag-service:
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 30m
@@ -157,6 +276,23 @@ feature-flag-service:
 
 frontend:
   enabled: true
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 5
+    timeoutSeconds: 3
+    periodSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
   resources:
     requests:
       cpu: 10m
@@ -178,8 +314,25 @@ frontendreverseproxy:
     FRONTEND_URL: "http://{{ .Release.Name }}-frontend:3000"
     OFFER_SERVICE_URL: "http://{{ .Release.Name }}-offerservice:8080"
     PRICING_SERVICE_URL: "http://{{ .Release.Name }}-pricing-service:8080"
-    BACKGROUND_SERVICE_URL: "http://{{ .Release.Name }}-background-service:8080"
     USER_SERVICE_URL: "http://{{ .Release.Name }}-user-service:8080"
+    BACKGROUND_SERVICE_URL: "http://{{ .Release.Name }}-background-service:8080"
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 5
+    timeoutSeconds: 3
+    periodSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
   resources:
     requests:
       cpu: 50m
@@ -200,6 +353,18 @@ loadgen:
   env:
     EASYTRADE_URL: "http://{{ .Release.Name }}-frontendreverseproxy:8080"
     RARE_VISITS_INTERVAL_MINUTES: "60"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: "1"
@@ -211,11 +376,24 @@ loadgen:
 offerservice:
   enabled: true
   env:
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
     USER_SERVICE_PORT: "8080"
     USER_SERVICE_BASE_URL: "{{ .Release.Name }}-user-service"
     FEATURE_FLAG_SERVICE_PROTOCOL: http
     FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
     FEATURE_FLAG_SERVICE_PORT: "8080"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 100m
@@ -229,11 +407,21 @@ offerservice:
 
 pricing-service:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/pricing-service
   env:
     PROXY_PREFIX: "pricing-service"
-    DB_ADAPTER_HOSTANDPORT: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 20m
@@ -245,37 +433,23 @@ pricing-service:
     enabled: true
     port: 8080
 
-problem-operator:
-  enabled: true
-  rbac:
-    create: true
-    rules:
-      - apiGroups: [""]
-        resources: ["services", "pods", "events"]
-        verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
-      - apiGroups: ["apps"]
-        resources: ["deployments", "replicasets"]
-        verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
-  env:
-    POD_NAMESPACE: "{{ .Release.Namespace }}"
-    HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT: "300m"
-    HIGH_CPU_USAGE_BROKER_SERVICE_NAME: "{{ .Release.Name }}-broker-service"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
-  resources:
-    requests:
-      cpu: 10m
-      memory: 15Mi
-    limits:
-      cpu: 100m
-      memory: 15Mi
-
 user-service:
   enabled: true
   env:
     PROXY_PREFIX: "user-service"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 20m

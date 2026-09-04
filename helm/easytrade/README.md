@@ -74,7 +74,6 @@ The easytrade chart includes the following microservices:
 - `loadgen` - Load generator
 - `offerservice` - Offer management
 - `pricing-service` - Pricing calculation
-- `problem-operator` - Problem pattern simulator
 - `user-service` - Account and authentication service
 
 ### Example Configurations

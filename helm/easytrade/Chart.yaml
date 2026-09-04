@@ -22,10 +22,15 @@ dependencies:
     version: "0.1.0"
     condition: credit-card-order-service.enabled
   - name: app
-    alias: db
+    alias: db-mssql
     repository: "file://./charts/app"
     version: "0.1.0"
-    condition: db.enabled
+    condition: db-mssql.enabled
+  - name: app
+    alias: db-postgres
+    repository: "file://./charts/app"
+    version: "0.1.0"
+    condition: db-postgres.enabled
   - name: app
     alias: db-adapter
     repository: "file://./charts/app"
@@ -61,11 +66,6 @@ dependencies:
     repository: "file://./charts/app"
     version: "0.1.0"
     condition: pricing-service.enabled
-  - name: app
-    alias: problem-operator
-    repository: "file://./charts/app"
-    version: "0.1.0"
-    condition: problem-operator.enabled
   - name: app
     alias: user-service
     repository: "file://./charts/app"
