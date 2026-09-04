@@ -15,6 +15,7 @@ builder.Services.AddCors(services =>
 );
 
 builder.Services.AddSingleton<IDbAdapterConnector, DbAdapterConnector>();
+builder.Services.AddMemoryCache();
 
 // Clear default logging providers and and new ones
 builder.Logging.ClearProviders();
