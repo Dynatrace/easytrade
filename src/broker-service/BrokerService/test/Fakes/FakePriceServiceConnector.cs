@@ -46,14 +46,10 @@ public class FakePriceServiceConnector : IPriceServiceConnector
         return Task.FromResult(prices);
     }
 
-    public Task<IReadOnlyDictionary<Guid, List<Price>>> GetPricesForInstrumentsAscByTimestamp(
-        IEnumerable<Guid> instrumentIds,
-        DateTimeOffset since
-    )
+    public Task<IReadOnlyDictionary<Guid, List<Price>>> GetAllPricesAscByTimestamp(DateTimeOffset since)
     {
-        var ids = instrumentIds.ToHashSet();
         IReadOnlyDictionary<Guid, List<Price>> result = _prices
-            .Where(x => ids.Contains(x.InstrumentId) && x.Timestamp >= since)
+            .Where(x => x.Timestamp >= since)
             .GroupBy(x => x.InstrumentId)
             .ToDictionary(
                 group => group.Key,

@@ -1,4 +1,4 @@
-﻿using EasyTrade.BrokerService.Entities.Prices.DTO;
+using EasyTrade.BrokerService.Entities.Prices.DTO;
 using EasyTrade.BrokerService.Helpers;
 using System.Net;
 
@@ -55,22 +55,12 @@ public class PriceServiceConnector(
         return price;
     }
 
-    public async Task<IReadOnlyDictionary<Guid, List<Price>>> GetPricesForInstrumentsAscByTimestamp(IEnumerable<Guid> instrumentIds, DateTimeOffset since)
+    public async Task<IReadOnlyDictionary<Guid, List<Price>>> GetAllPricesAscByTimestamp(DateTimeOffset since)
     {
-        var ids = instrumentIds.ToList();
-        _logger.LogInformation(
-            "Fetching prices for [{count}] instruments since [{since}]",
-            ids.Count,
-            since
-        );
+        _logger.LogInformation("Fetching prices for all instruments since [{since}]", since);
 
-        if (ids.Count == 0)
-        {
-            return new Dictionary<Guid, List<Price>>();
-        }
-
-        const string endpoint = "v1/prices/instruments";
-        var pricesResult = await PostAsync<PricesForInstrumentsRequestDto, PricesResultDto>(endpoint, new PricesForInstrumentsRequestDto(ids, since));
+        var endpoint = $"v1/prices/instruments?since={Uri.EscapeDataString(since.ToString("O"))}";
+        var pricesResult = await FetchAsync<PricesResultDto>(endpoint);
         var prices = pricesResult?.Results ?? [];
         _logger.LogDebug("Fetched prices: {content}", prices.ToJson());
 
@@ -81,13 +71,6 @@ public class PriceServiceConnector(
     {
         using var client = GetHttpClient();
         using var response = await client.GetAsync(endpoint);
-        return await ReadJsonOrLogError<TResponse>(response);
-    }
-
-    private async Task<TResponse?> PostAsync<TRequest, TResponse>(string endpoint, TRequest body)
-    {
-        using var client = GetHttpClient();
-        using var response = await client.PostAsJsonAsync(endpoint, body);
         return await ReadJsonOrLogError<TResponse>(response);
     }
 
