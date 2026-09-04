@@ -20,7 +20,6 @@ type IQueryContext = {
     getPresetUsers: QueryFunction<PresetUser[]>
     getTransactions: (userId: string) => QueryFunction<Transaction[]>
     getInstruments: (userId?: string) => QueryFunction<Instrument[]>
-    getLatestPrices: QueryFunction<Price[]>
     getInstrumentPrices: (instrumentId: string) => QueryFunction<Price[]>
     getFeatureFlags: QueryFunction<FeatureFlag[]>
     getConfig: QueryFunction<Config>
@@ -36,7 +35,6 @@ type QueryProviderProps = {
     getPresetUsers: () => Promise<PresetUser[]>
     getTransactions: (userId: string) => Promise<Transaction[]>
     getInstruments: (userId?: string) => Promise<Instrument[]>
-    getLatestPrices: () => Promise<Price[]>
     getInstrumentPrices: (instrumentId: string) => Promise<Price[]>
     getFeatureFlags: () => Promise<FeatureFlag[]>
     getConfig: () => Promise<Config>

@@ -5,7 +5,7 @@ import { getBalance, getPresetUsers, getUser } from "../api/user/user"
 import { AuthProvider } from "../contexts/AuthContext"
 import { QueryClientProvider } from "../contexts/QueryContext/QueryContext"
 import { getInstruments } from "../api/instrument/instruments"
-import { getPricesForInstrument, getLatestPrices } from "../api/price/price"
+import { getPricesForInstrument } from "../api/price/price"
 import { FormatterProvider } from "../contexts/FormatterContext/context"
 import { getFeatureFlags } from "../api/featureFlags/problemPatterns"
 import { getConfig } from "../api/featureFlags/config"
@@ -24,7 +24,6 @@ export default function ProviderLayout() {
                 getPresetUsers={getPresetUsers}
                 getTransactions={getTransactions}
                 getInstruments={getInstruments}
-                getLatestPrices={getLatestPrices}
                 getFeatureFlags={getFeatureFlags}
                 getConfig={getConfig}
                 getCreditCardStatus={getOrderStatus}

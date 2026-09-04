@@ -30,14 +30,6 @@ export class PriceBackend {
         }
     }
 
-    async getLatestXml(xmlParser: XMLParser): Promise<PriceResponseXml> {
-        const response = await fetch(`${this.baseUrl}/prices/latest`, {
-            headers: this.headers,
-        })
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
-        return xmlParser.parse(await response.text()) as PriceResponseXml
-    }
-
     async getForInstrumentXml(
         xmlParser: XMLParser,
         instrumentId: string
