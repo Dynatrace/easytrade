@@ -59,28 +59,28 @@ describe("Transactions table", () => {
                 <TransactionsTable
                     transactions={[mockTransactions[0]]}
                     instruments={[]}
-                    disableVirtualization={true}
+                   
                 />
             </FormatterWrapper>
         )
 
         expect(
-            screen.getByRole("gridcell", { name: /sell/i })
+            screen.getByRole("cell", { name: /sell/i })
         ).toBeInTheDocument()
         expect(
-            screen.getByRole("gridcell", { name: /easyhotels/i })
+            screen.getByRole("cell", { name: /easyhotels/i })
         ).toBeInTheDocument()
         expect(
-            screen.getByRole("gridcell", { name: /8,460/ })
+            screen.getByRole("cell", { name: /8,460/ })
         ).toBeInTheDocument()
         expect(
-            screen.getByRole("gridcell", { name: /23.17/ })
+            screen.getByRole("cell", { name: /23.17/ })
         ).toBeInTheDocument()
         expect(
-            screen.getByRole("gridcell", { name: /fail/i })
+            screen.getByRole("cell", { name: /fail/i })
         ).toBeInTheDocument()
         expect(
-            screen.getByRole("gridcell", {
+            screen.getByRole("cell", {
                 name: /3\/20\/23, 12:15 pm/i,
             })
         ).toBeInTheDocument()
@@ -91,7 +91,7 @@ describe("Transactions table", () => {
                 <TransactionsTable
                     transactions={mockTransactions}
                     instruments={[]}
-                    disableVirtualization={true}
+                   
                 />
             </FormatterWrapper>
         )

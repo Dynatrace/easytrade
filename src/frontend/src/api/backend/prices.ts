@@ -1,8 +1,8 @@
 import { XMLParser } from "fast-xml-parser"
 
 export type Price = {
-    id: number
-    instrumentId: number
+    id: string
+    instrumentId: string
     timestamp: string
     open: number
     close: number
@@ -28,14 +28,6 @@ export class PriceBackend {
             Accept: "application/xml",
             "Content-Type": "application/xml",
         }
-    }
-
-    async getLatestXml(xmlParser: XMLParser): Promise<PriceResponseXml> {
-        const response = await fetch(`${this.baseUrl}/prices/latest`, {
-            headers: this.headers,
-        })
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
-        return xmlParser.parse(await response.text()) as PriceResponseXml
     }
 
     async getForInstrumentXml(

@@ -1,16 +1,6 @@
 import { QueryClient } from "@tanstack/react-query"
-import { instrumentPricesQuery, latestPricesQuery } from "./queries"
-import { Price } from "../../../api/price/types"
+import { instrumentPricesQuery } from "./queries"
 import { transform } from "../QueryContext"
-
-export function latestPricesLoader(
-    client: QueryClient,
-    pricesProvider: () => Promise<Price[]>
-) {
-    return async () => {
-        return await client.ensureQueryData(latestPricesQuery(pricesProvider))
-    }
-}
 
 export function instrumentPricesLoader(
     client: QueryClient,

@@ -6,7 +6,7 @@ export async function signup(request: SignupRequest): Promise<SignupResponse> {
 
     try {
         return await backends.users.signup({
-            packageId: 1,
+            packageId: "a0000000-0000-4000-8000-000000000001",
             origin: "easyTrade",
             firstName: request.firstName,
             lastName: request.lastName,

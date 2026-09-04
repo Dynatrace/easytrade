@@ -1,24 +1,24 @@
 import React from "react"
-import { Badge, IconButton } from "@mui/material"
-import FlagIcon from "@mui/icons-material/Flag"
-import { Link as RouterLink } from "react-router"
+import { Link } from "react-router"
+import { FlagIcon } from "../icons"
 import { useProblemFlagsQuery } from "../../contexts/QueryContext/featureFlag/hooks"
 
-export default function FeatureFlag() {
+export default function FeatureFlagIcon() {
     const { data: flags } = useProblemFlagsQuery()
-    const enabledFlagCount =
-        flags?.filter(({ enabled }) => enabled)?.length ?? 0
+    const enabledFlagCount = flags?.filter(({ enabled }) => enabled)?.length ?? 0
+
     return (
-        <IconButton
+        <Link
             to="/feature-flags"
-            component={RouterLink}
-            sx={{
-                color: "inherit",
-            }}
+            className="btn btn-ghost btn-icon"
+            title="Feature Flags"
         >
-            <Badge badgeContent={enabledFlagCount} color="secondary">
-                <FlagIcon />
-            </Badge>
-        </IconButton>
+            <span className="flag-badge">
+                <FlagIcon width={18} height={18} />
+                {enabledFlagCount > 0 && (
+                    <span className="flag-count">{enabledFlagCount}</span>
+                )}
+            </span>
+        </Link>
     )
 }

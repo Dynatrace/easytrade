@@ -1,5 +1,5 @@
 export type PresetUser = {
-    id: number
+    id: string
     username: string
     firstName: string
     lastName: string
@@ -10,8 +10,8 @@ type PresetUsersResponse = {
 }
 
 export type UserResponse = {
-    id: number
-    packageId: number
+    id: string
+    packageId: string
     firstName: string
     lastName: string
     username: string
@@ -25,7 +25,7 @@ export type UserResponse = {
 }
 
 export type BalanceResponse = {
-    accountId: number
+    accountId: string
     value: number
 }
 
@@ -35,7 +35,7 @@ export type LoginResponse = {
 }
 
 type SignupRequest = {
-    packageId: number
+    packageId: string
     origin: string
     firstName: string
     lastName: string

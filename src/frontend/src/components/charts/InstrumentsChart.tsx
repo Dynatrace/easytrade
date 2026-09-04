@@ -1,125 +1,93 @@
-import React from "react"
-import {
-    Bar,
-    BarChart,
-    CartesianGrid,
-    Label,
-    Legend,
-    ResponsiveContainer,
-    Tooltip,
-    TooltipContentProps,
-    XAxis,
-    YAxis,
-} from "recharts"
-import { Box, Typography } from "@mui/material"
-import { useTheme } from "../../contexts/ThemeContext/ThemeContext"
-import { useFormatter } from "../../contexts/FormatterContext/context"
-import { Instrument } from "../../api/instrument/types"
+import React, { useEffect, useRef, useState } from "react"
+import { createChart, ColorType, LineData, LineSeries, Time } from "lightweight-charts"
+import { getPortfolioHistory, PortfolioPoint } from "../../api/portfolio/portfolio"
+import { CHART_COLORS } from "../../styles/chartColors"
 
 type InstrumentsChartProps = {
-    instruments: Instrument[]
+    accountId: string
 }
 
-function CustomTooltip({ active, payload }: TooltipContentProps) {
-    const { formatCurrency } = useFormatter()
+export default function InstrumentsChart({ accountId }: InstrumentsChartProps) {
+    const containerRef = useRef<HTMLDivElement>(null)
+    const [data, setData] = useState<PortfolioPoint[]>([])
+    const [loading, setLoading] = useState(true)
+    useEffect(() => {
+        let cancelled = false
+        setLoading(true)
+        void getPortfolioHistory(accountId).then((points) => {
+            if (!cancelled) {
+                setData(points)
+                setLoading(false)
+            }
+        })
+        return () => { cancelled = true }
+    }, [accountId])
 
-    if (active && payload && payload.length) {
-        /* eslint-disable */
-        const name = payload[0].payload.name
-        const amount = payload[0].payload.amount
-        const totalValue = formatCurrency(payload[0].payload.totalValue)
-        /* eslint-enable */
-        return (
-            <Box>
-                <Typography variant="h6">{name}</Typography>
-                <Typography variant="body1">Amount: {amount}</Typography>
-                <Typography variant="body1">
-                    Total value: {totalValue}
-                </Typography>
-            </Box>
-        )
-    }
+    useEffect(() => {
+        const el = containerRef.current
+        if (!el || loading) return
 
-    return null
-}
+        const chart = createChart(el, {
+            layout: {
+                background: { type: ColorType.Solid, color: CHART_COLORS.background },
+                textColor: CHART_COLORS.text,
+            },
+            grid: {
+                vertLines: { color: CHART_COLORS.grid },
+                horzLines: { color: CHART_COLORS.grid },
+            },
+            width: el.clientWidth,
+            height: el.clientHeight,
+            timeScale: { timeVisible: true, secondsVisible: false },
+        })
 
-export default function InstrumentsChart({
-    instruments,
-}: InstrumentsChartProps) {
-    const { theme } = useTheme()
+        const series = chart.addSeries(LineSeries, { color: CHART_COLORS.line, lineWidth: 2 })
 
-    const instrumentsData = instruments.map((instrument) => {
-        return {
-            name: instrument.name,
-            code: instrument.code,
-            amount: instrument.amount,
-            totalValue: instrument.amount * instrument.price.close,
+        const lineData: LineData[] = data
+            .map((p) => ({
+                time: (new Date(p.timestamp).getTime() / 1000) as Time,
+                value: p.totalValue,
+            }))
+            .sort((a, b) => (a.time as number) - (b.time as number))
+
+        series.setData(lineData)
+        chart.timeScale().fitContent()
+
+        const observer = new ResizeObserver(() => {
+            chart.applyOptions({ width: el.clientWidth })
+        })
+        observer.observe(el)
+
+        return () => {
+            observer.disconnect()
+            chart.remove()
         }
-    })
+    }, [data, loading])
 
     return (
-        <Box
-            height="300px"
-            width="100%"
-            display={"flex"}
-            justifyContent={"center"}
-            data-dt-features={"main-chart"}
-            data-dt-mouse-over="300"
-        >
-            <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={instrumentsData}>
-                    <XAxis
-                        dataKey="code"
-                        interval={0}
-                        tick={{ fontSize: 14 }}
-                    />
-                    <YAxis yAxisId="left" dataKey="amount" width={80}>
-                        <Label
-                            value="Amount"
-                            angle={-90}
-                            position="insideLeft"
-                            style={{ textAnchor: "middle" }}
-                        />
-                    </YAxis>
-                    <YAxis
-                        yAxisId="right"
-                        dataKey="totalValue"
-                        orientation="right"
-                        width={80}
-                        unit="$"
-                    >
-                        <Label
-                            value="Total value"
-                            angle={90}
-                            position="insideRight"
-                            style={{ textAnchor: "middle" }}
-                        />
-                    </YAxis>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip
-                        content={CustomTooltip}
-                        wrapperStyle={{
-                            backgroundColor: theme.palette.background.default,
-                            color: theme.palette.text.primary,
-                            borderStyle: "ridge",
-                            padding: "10px",
-                        }}
-                    />
-                    <Legend iconType="square" />
-                    <Bar
-                        dataKey="amount"
-                        name="Amount"
-                        fill={theme.palette.primary.main}
-                        yAxisId="left"
-                    />
-                    <Bar
-                        dataKey="totalValue"
-                        name="Total value"
-                        fill={theme.palette.success.main}
-                        yAxisId="right"
-                    />
-                </BarChart>
-            </ResponsiveContainer>
-        </Box>
+        <div>
+            <div className="chart-header">
+                <span style={{ fontSize: "var(--text-sm)", color: "var(--text-secondary)" }}>
+                    Portfolio value (24h)
+                </span>
+            </div>
+            {loading ? (
+                <div
+                    className="chart-container"
+                    data-dt-features="main-chart"
+                    data-dt-mouse-over="300"
+                    style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+                >
+                    <span className="spinner" />
+                </div>
+            ) : (
+                <div
+                    ref={containerRef}
+                    className="chart-container"
+                    data-dt-features="main-chart"
+                    data-dt-mouse-over="300"
+                />
+            )}
+        </div>
     )
 }

@@ -1,7 +1,3 @@
-// the calls to import.meta.env.* are replaced during build
-// so they can't be accessed dynamically
-// like import.meta.env[name]
-
 export class EnvProxy {
     static getFeatureFlagServiceUrl(): string {
         return `${window.location.origin}/feature-flag-service/v1`

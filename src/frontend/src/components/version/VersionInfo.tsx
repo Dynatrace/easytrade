@@ -1,7 +1,5 @@
-import React from "react"
-import { Build } from "@mui/icons-material"
-import { IconButton } from "@mui/material"
-import { useState } from "react"
+import React, { useState } from "react"
+import { BuildIcon } from "../icons"
 import { VersionDialog } from "./VersionDialog"
 import { getFrontendVersion } from "../../api/version/versions"
 
@@ -9,15 +7,13 @@ export default function VersionInfo() {
     const [modalOpen, setModalOpen] = useState(false)
     return (
         <>
-            <IconButton
-                sx={{
-                    color: "inherit",
-                    display: { xs: "none", sm: "block" },
-                }}
+            <button
+                className="btn btn-ghost btn-icon"
                 onClick={() => setModalOpen(true)}
+                title="Version info"
             >
-                <Build fontSize="small" />
-            </IconButton>
+                <BuildIcon width={18} height={18} />
+            </button>
             <VersionDialog
                 open={modalOpen}
                 closeHandler={() => setModalOpen(false)}
