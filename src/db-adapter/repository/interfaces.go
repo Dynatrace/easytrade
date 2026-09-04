@@ -66,7 +66,7 @@ type PricingRepository interface {
 	GetLatest(ctx context.Context) ([]*pb.PriceMessage, error)
 	GetMostRecent(ctx context.Context, instrumentID string) (*pb.PriceMessage, error)
 	GetForInstrument(ctx context.Context, instrumentID string, limit *int) ([]*pb.PriceMessage, error)
-	GetForInstrumentsAscByTimestamp(ctx context.Context, instrumentIDs []string, since time.Time) ([]*pb.PriceMessage, error)
+	GetAllAscByTimestamp(ctx context.Context, since time.Time) ([]*pb.PriceMessage, error)
 	InsertBatch(ctx context.Context, req *pb.InsertPricesBatchRequest) (int32, error)
 	DeleteOlderThan(ctx context.Context, date time.Time) (int32, error)
 }

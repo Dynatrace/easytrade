@@ -64,25 +64,13 @@ func (h *Handler) GetPricingDataForInstrument(ctx *gin.Context) {
 }
 
 func (h *Handler) GetPricingDataForInstrumentsAscByTimestamp(ctx *gin.Context) {
-	var body pricesForInstrumentsRequest
-	if err := ctx.ShouldBindJSON(&body); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	instrumentIds, ok := parseUUIDs(ctx, body.InstrumentIds)
+	since, ok := parseSinceQuery(ctx, "since")
 	if !ok {
 		return
 	}
 
-	since := time.Time{}
-	if body.Since != nil {
-		since = *body.Since
-	}
-
 	resp, err := h.client.GetPricesForInstrumentsAscByTimestamp(context.Background(), &pb.GetPricesForInstrumentsAscByTimestampRequest{
-		InstrumentIds: instrumentIds,
-		Since:         timestamppb.New(since),
+		Since: timestamppb.New(since),
 	})
 	if handleInternalError(ctx, err) {
 		return
@@ -90,16 +78,18 @@ func (h *Handler) GetPricingDataForInstrumentsAscByTimestamp(ctx *gin.Context) {
 	negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: pricesFromProto(resp.GetPrices())})
 }
 
-func parseUUIDs(ctx *gin.Context, raw []string) ([]string, bool) {
-	ids := make([]string, 0, len(raw))
-	for _, r := range raw {
-		id, ok := parseUUID(ctx, r, func(string) string { return r })
-		if !ok {
-			return nil, false
-		}
-		ids = append(ids, id.String())
+func parseSinceQuery(ctx *gin.Context, param string) (time.Time, bool) {
+	raw := ctx.Query(param)
+	if raw == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": param + " is required"})
+		return time.Time{}, false
 	}
-	return ids, true
+	since, err := time.Parse(time.RFC3339, raw)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid " + param})
+		return time.Time{}, false
+	}
+	return since, true
 }
 
 func parseRecordsLimit(ctx *gin.Context) int32 {
@@ -166,9 +156,4 @@ func negotiateResponse(ctx *gin.Context, status int, data any) {
 		Offered: []string{gin.MIMEJSON, gin.MIMEXML},
 		Data:    data,
 	})
-}
-
-type pricesForInstrumentsRequest struct {
-	InstrumentIds []string   `json:"instrumentIds" binding:"required"`
-	Since         *time.Time `json:"since"`
 }

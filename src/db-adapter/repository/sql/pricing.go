@@ -60,9 +60,8 @@ func (repo *PricingRepository) GetForInstrument(ctx context.Context, instrumentI
 	return findAndMapAll(query, (*Price).toProto)
 }
 
-func (repo *PricingRepository) GetForInstrumentsAscByTimestamp(ctx context.Context, instrumentIDs []string, since time.Time) ([]*pb.PriceMessage, error) {
+func (repo *PricingRepository) GetAllAscByTimestamp(ctx context.Context, since time.Time) ([]*pb.PriceMessage, error) {
 	query := repo.db.WithContext(ctx).
-		Where(q(repository.ColInstrumentID)+" IN ?", instrumentIDs).
 		Where(q(repository.ColTimestamp)+" >= ?", since).
 		Order(q(repository.ColTimestamp) + " ASC")
 	return findAndMapAll(query, (*Price).toProto)
