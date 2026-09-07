@@ -57,12 +57,12 @@ npm run lint    # eslint
 
 **C# / .NET:**
 ```bash
-# Run from the solution directory: src/<service>/<ServiceName>/
+# Run from the solution directory: src/<service>/
 dotnet build
 dotnet test                        # runs xunit tests in test/ project
 dotnet test --filter "FullyQualifiedName~SomeTest"
 ```
-Solution paths: `src/broker-service/BrokerService/.
+Solution paths: `src/broker-service/`.
 Only `broker-service` has a test project;
 
 ## Running locally
