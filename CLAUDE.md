@@ -87,7 +87,7 @@ docker compose up          # uses pre-built images from registry (compose.yaml)
 ```
 `make start-remote` is the Makefile equivalent of the second form.
 
-App available at `http://localhost`. Dev credentials: `demouser/demopass`, `james_norton/pass_james_123`.
+App available at `http://localhost`. Dev credentials: `james_norton/pass_james_123`.
 
 Frontend dev server runs on port 3000 (`npm run dev` in `src/frontend/`). API calls go through nginx in production; in dev mode they must be routed manually or via the full compose stack.
 

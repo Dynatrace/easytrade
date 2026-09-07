@@ -206,7 +206,7 @@ kubectl delete namespace easytrade
 
 After starting easyTrade application you can:
 
-- go to the frontend and try it out. Just go to the machines IP address, or "localhost" and you should see the login page. You can either create a new user, or use one of superusers (with easy passwords) like "demouser/demopass" or "specialuser/specialpass". Remember that in order to buy stocks you need money, so visit the deposit page first.
+- go to the frontend and try it out. Just go to the machines IP address, or "localhost" and you should see the login page. You can either create a new user, or use the existing "james_norton/pass_james_123" user (see below). Remember that in order to buy stocks you need money, so visit the deposit page first.
 - go to some services swagger endpoint - you will find proper instructions in the dedicated service readmes.
 - after some time go to dynatrace to configure your application and see what is going on in easyTrade - to have it work you will need an agent on the machine where you started easyTrade :P
 
