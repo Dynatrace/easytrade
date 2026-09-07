@@ -5,6 +5,7 @@ import {
     QueryClientProvider as BaseClientProvider,
     QueryFunction,
 } from "@tanstack/react-query"
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
 import { IQueryContext, QueryProviderProps } from "./types"
 
 const QueryContext = createContext<IQueryContext | null>(null)
@@ -61,6 +62,7 @@ function QueryClientProvider({
             >
                 {children}
             </QueryContext.Provider>
+            {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
         </BaseClientProvider>
     )
 }

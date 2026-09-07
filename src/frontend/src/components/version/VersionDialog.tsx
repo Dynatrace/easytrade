@@ -1,14 +1,5 @@
-import React from "react"
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogTitle,
-    List,
-    ListItem,
-    ListItemText,
-} from "@mui/material"
-import { Link as RouterLink } from "react-router"
+import React, { useEffect, useRef } from "react"
+import { Link } from "react-router"
 import { ServiceVersionData } from "../../api/version/types"
 
 interface VersionDialogProps {
@@ -17,47 +8,59 @@ interface VersionDialogProps {
     serviceVersion: ServiceVersionData
 }
 
-export function VersionDialog(props: VersionDialogProps) {
+export function VersionDialog({ open, closeHandler, serviceVersion }: VersionDialogProps) {
+    const dialogRef = useRef<HTMLDialogElement>(null)
+
+    useEffect(() => {
+        const el = dialogRef.current
+        if (!el) return
+        if (open) {
+            el.showModal()
+        } else {
+            el.close()
+        }
+    }, [open])
+
+    if (!open) return null
+
     return (
-        <Dialog open={props.open} onClose={props.closeHandler}>
-            <DialogTitle>EasyTrade</DialogTitle>
-            <List
-                sx={{
-                    paddingX: "30px",
-                }}
-            >
-                <ListItem>
-                    <ListItemText
-                        primary="Version"
-                        secondary={props.serviceVersion.buildVersion}
-                    />
-                </ListItem>
-                <ListItem>
-                    <ListItemText
-                        primary="Build date"
-                        secondary={props.serviceVersion.buildDate}
-                    />
-                </ListItem>
-                <ListItem>
-                    <ListItemText
-                        primary="Build commit"
-                        secondary={props.serviceVersion.buildCommit}
-                    />
-                </ListItem>
-            </List>
-            <DialogActions sx={{ justifyContent: "space-around" }}>
-                <Button
-                    variant="outlined"
-                    onClick={props.closeHandler}
-                    to="/version"
-                    component={RouterLink}
-                >
+        <dialog
+            ref={dialogRef}
+            onClose={closeHandler}
+            style={{
+                background: "var(--bg-card)",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius-lg)",
+                color: "var(--text-primary)",
+                padding: "var(--space-6)",
+                minWidth: "280px",
+            }}
+        >
+            <h2 style={{ marginBottom: "var(--space-5)" }}>EasyTrade</h2>
+            <div className="form" style={{ gap: "var(--space-3)" }}>
+                <div className="info-row">
+                    <span className="info-label">Version</span>
+                    <span className="info-value">{serviceVersion.buildVersion}</span>
+                </div>
+                <div className="info-row">
+                    <span className="info-label">Build date</span>
+                    <span className="info-value">{serviceVersion.buildDate}</span>
+                </div>
+                <div className="info-row">
+                    <span className="info-label">Build commit</span>
+                    <span className="info-value" style={{ wordBreak: "break-all" }}>
+                        {serviceVersion.buildCommit}
+                    </span>
+                </div>
+            </div>
+            <div className="form-actions" style={{ marginTop: "var(--space-6)" }}>
+                <Link to="/version" className="btn btn-secondary" onClick={closeHandler}>
                     More
-                </Button>
-                <Button variant="outlined" onClick={props.closeHandler}>
+                </Link>
+                <button className="btn btn-secondary" onClick={closeHandler}>
                     Close
-                </Button>
-            </DialogActions>
-        </Dialog>
+                </button>
+            </div>
+        </dialog>
     )
 }

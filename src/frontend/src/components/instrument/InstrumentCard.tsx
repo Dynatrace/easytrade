@@ -1,17 +1,8 @@
 import React from "react"
-import {
-    Card,
-    CardActionArea,
-    CardContent,
-    CardHeader,
-    Stack,
-    Typography,
-} from "@mui/material"
 import { Link } from "react-router"
-import PriceDisplay from "./PriceDisplay"
-import { grey } from "@mui/material/colors"
 import { Price } from "../../api/backend/prices"
 import { InstrumentPrice } from "../../api/instrument/types"
+import { useFormatter } from "../../contexts/FormatterContext/context"
 
 type Props = {
     id: string
@@ -21,69 +12,51 @@ type Props = {
     amount: number
 }
 
-export default function InstrumentCard({
-    id,
-    code,
-    price,
-    name,
-    amount,
-}: Props) {
+export default function InstrumentCard({ id, code, name, price, amount }: Props) {
+    const { formatCurrency, formatPercent } = useFormatter()
+
+    const trendingUp = price.close >= price.open
+    const pctChange = price.open !== 0 ? (price.close - price.open) / price.open : 0
+    const trendClass = trendingUp ? "up" : "down"
+
     return (
-        <Card
-            sx={{ height: "100%" }}
-            className={`instrument-card${
-                amount > 0 ? " owned-instrument" : ""
-            }`}
-        >
-            <CardActionArea
-                component={Link}
-                to={`/instruments/${id}`}
-                sx={{
-                    padding: 1,
-                    height: "100%",
-                }}
-            >
-                <Stack height={"100%"} justifyContent={"space-between"}>
-                    <CardHeader
-                        title={code}
-                        subheader={name}
-                        slotProps={{
-                            subheader: {
-                                sx: {
-                                    fontStyle: "italic",
-                                },
-                            },
-                            title: {
-                                sx: {
-                                    fontFamily: "monospace",
-                                    fontWeight: 600,
-                                    color: "inherit",
-                                    textDecoration: "none",
-                                },
-                                "data-dt-name": "Instrument symbol",
-                            },
-                            root: {
-                                "data-dt-children-name": "Instrument name",
-                            },
-                        }}
-                    />
-                    <CardContent>
-                        <Stack justifyContent="space-between" spacing={1}>
-                            <PriceDisplay price={price} />
-                            <Typography
-                                variant="h5"
-                                color={grey[300]}
-                                sx={{
-                                    fontWeight: 600,
-                                }}
-                                data-dt-name={"Instrument volume"}
-                            >
-                                {amount.toLocaleString("en-US")}
-                            </Typography>
-                        </Stack>
-                    </CardContent>
-                </Stack>
-            </CardActionArea>
-        </Card>
+        <div className={`instrument-card${amount > 0 ? " owned-instrument" : ""}`}>
+            <Link to={`/instruments/${id}`}>
+                {/* Ticker + company name */}
+                <div
+                    className="instrument-card-identity"
+                    data-dt-name="Instrument symbol"
+                    data-dt-children-name="Instrument name"
+                >
+                    <span className="instrument-code">{code}</span>
+                    <span className="instrument-name">{name}</span>
+                </div>
+
+                {/* Price + percent change */}
+                <div
+                    className="instrument-card-price-row"
+                    data-dt-name="Instrument price"
+                    data-dt-children-name="Instrument variation"
+                >
+                    <h5
+                        id="instrumentPrice"
+                        className={`instrument-price ${trendClass}`}
+                    >
+                        {formatCurrency(price.close)}
+                    </h5>
+                    <span className={`instrument-pct ${trendClass}`}>
+                        {formatPercent(pctChange)}
+                    </span>
+                </div>
+
+                {/* Owned quantity — always rendered to keep uniform card height */}
+                <div
+                    className={`instrument-card-amount${amount > 0 ? " owned" : ""}`}
+                    data-dt-name="Instrument volume"
+                >
+                    {amount > 0 ? amount.toLocaleString("en-US") : ""}
+                </div>
+            </Link>
+        </div>
     )
 }

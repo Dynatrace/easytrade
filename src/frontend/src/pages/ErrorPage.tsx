@@ -1,31 +1,23 @@
 import React from "react"
-import { Box, Card, CssBaseline, Typography } from "@mui/material"
 import { useRouteError } from "react-router"
-import { getPreferredTheme } from "../contexts/ThemeContext/theme"
-import { ThemeProvider } from "../contexts/ThemeContext/ThemeContext"
 
 export default function ErrorPage() {
     const error = useRouteError()
 
+    function describeError(e: unknown): string {
+        if (e instanceof Error) return e.message
+        if (typeof e === "string") return e
+        try { return JSON.stringify(e) } catch { return String(e) }
+    }
+
     return (
-        <ThemeProvider initialTheme={getPreferredTheme()}>
-            <CssBaseline />
-            <Box justifyContent="center" alignItems="center">
-                <Card sx={{ padding: 2, margin: 5 }}>
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            mr: 2,
-                            fontWeight: 600,
-                            color: "error",
-                            textDecoration: "none",
-                        }}
-                    >
-                        Oops! There was an error!
-                    </Typography>
-                    <Typography>{JSON.stringify(error)}</Typography>
-                </Card>
-            </Box>
-        </ThemeProvider>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", padding: "2rem" }}>
+            <div className="card" style={{ padding: "2rem", maxWidth: 600 }}>
+                <h2 style={{ color: "var(--danger)", marginBottom: "1rem" }}>Oops! There was an error!</h2>
+                <p style={{ fontFamily: "monospace", fontSize: "0.875rem", color: "var(--text-muted)", wordBreak: "break-word" }}>
+                    {describeError(error)}
+                </p>
+            </div>
+        </div>
     )
 }

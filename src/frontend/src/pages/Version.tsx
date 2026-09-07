@@ -1,34 +1,29 @@
-import React from "react"
-import Grid2 from "@mui/material/Grid2"
 import VersionsTable from "../components/version/VersionsTable"
 import { useVersionsQuery } from "../contexts/QueryContext/version/hooks"
-import { Box, CircularProgress } from "@mui/material"
 import { getFrontendVersion } from "../api/version/versions"
+import { PageSpinner } from "../components/PageSpinner"
 
 export default function Version() {
     const { isPending, data: versions } = useVersionsQuery()
+
     if (isPending) {
-        return (
-            <Box
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                minHeight="70vh"
-            >
-                <CircularProgress color="inherit" />
-            </Box>
-        )
+        return <PageSpinner />
     }
+
     return (
-        <Grid2 container>
-            <Grid2
-                size={{ xs: 12, md: 10, lg: 8 }}
-                offset={{ xs: 0, md: 1, lg: 2 }}
-            >
-                <VersionsTable
-                    versions={[getFrontendVersion(), ...(versions ?? [])]}
-                />
-            </Grid2>
-        </Grid2>
+        <div className="page-solo">
+        <div style={{ maxWidth: 760, margin: "0 auto", width: "100%", display: "flex", flexDirection: "column", gap: "var(--space-5)" }}>
+            <div>
+                <h2 style={{ marginBottom: "var(--space-2)" }}>Service Versions</h2>
+                <p style={{ color: "var(--text-secondary)", fontSize: "var(--text-sm)" }}>
+                    Build version, date, and commit for each EasyTrade service.
+                    Entries highlighted in red differ from the frontend build.
+                </p>
+            </div>
+            <div style={{ overflowX: "auto" }}>
+                <VersionsTable versions={[getFrontendVersion(), ...(versions ?? [])]} />
+            </div>
+        </div>
+        </div>
     )
 }

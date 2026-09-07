@@ -17,8 +17,8 @@ export async function quickBuy(
 
     try {
         const body = {
-            accountId: Number(userId),
-            instrumentId: Number(instrumentId),
+            accountId: userId,
+            instrumentId,
             amount,
         }
         BizEvents.buyStart(body)
@@ -48,8 +48,8 @@ export async function quickSell(
 
     try {
         const body = {
-            accountId: Number(userId),
-            instrumentId: Number(instrumentId),
+            accountId: userId,
+            instrumentId,
             amount,
         }
         BizEvents.sellStart(body)
@@ -83,8 +83,8 @@ export async function buy(
 
     try {
         await backends.transactions.buy({
-            accountId: Number(userId),
-            instrumentId: Number(instrumentId),
+            accountId: userId,
+            instrumentId,
             amount,
             price,
             duration: time,
@@ -115,8 +115,8 @@ export async function sell(
 
     try {
         await backends.transactions.sell({
-            accountId: Number(userId),
-            instrumentId: Number(instrumentId),
+            accountId: userId,
+            instrumentId,
             amount,
             price,
             duration: time,

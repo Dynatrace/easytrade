@@ -1,33 +1,27 @@
-import React from "react"
-import { Button, CardActions, Stack } from "@mui/material"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { FormContainer, TextFieldElement } from "react-hook-form-mui"
-import useStatusDisplay from "../../hooks/useStatusDisplay"
-import StatusDisplay from "../StatusDisplay"
+import { useToast } from "../../contexts/ToastContext/context"
+import React, { useState } from "react"
+
+
 import { useMutation } from "@tanstack/react-query"
-import { useEffect } from "react"
 import { SignupHandler } from "../../api/signup/types"
 
-const formSchema = z
-    .object({
-        firstName: z.string().min(1, "First name is required"),
-        lastName: z.string().min(1, "Last name is required"),
-        login: z.string().min(1, "Login is required"),
-        email: z.email("Invalid email"),
-        address: z.string().min(1, "Address is required"),
-        password: z.string().min(1, "Password is required"),
-        repeatPassword: z.string().min(1, "Password is required"),
-    })
-    .refine((data) => data.password === data.repeatPassword, {
-        message: "Passwords have to match",
-        path: ["repeatPassword"],
-    })
+type SignupFormProps = {
+    submitHandler: SignupHandler
+}
 
-type FormData = z.infer<typeof formSchema>
+type FormState = {
+    firstName: string
+    lastName: string
+    login: string
+    email: string
+    address: string
+    password: string
+    repeatPassword: string
+}
 
-const defaultValues: FormData = {
+type FieldErrors = Partial<Record<keyof FormState, string>>
+
+const empty: FormState = {
     firstName: "",
     lastName: "",
     login: "",
@@ -37,82 +31,103 @@ const defaultValues: FormData = {
     repeatPassword: "",
 }
 
-type SignupFormProps = {
-    submitHandler: SignupHandler
+function validateEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
 export default function SignupForm({ submitHandler }: SignupFormProps) {
-    const formContext = useForm<FormData>({
-        defaultValues,
-        resolver: zodResolver(formSchema),
-    })
-    const { reset, watch } = formContext
-    const { setError, setSuccess, resetStatus, statusContext } =
-        useStatusDisplay()
+    const [form, setForm] = useState<FormState>(empty)
+    const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+    const { showToast } = useToast()
+
+    function set(field: keyof FormState) {
+        return (e: React.ChangeEvent<HTMLInputElement>) => {
+            setForm((prev) => ({ ...prev, [field]: e.target.value }))
+            setFieldErrors((prev) => ({ ...prev, [field]: undefined }))
+        }
+    }
+
+    function validate(): boolean {
+        const errors: FieldErrors = {}
+        if (!form.firstName) errors.firstName = "First name is required"
+        if (!form.lastName) errors.lastName = "Last name is required"
+        if (!form.login) errors.login = "Login is required"
+        if (!form.email) {
+            errors.email = "Email is required"
+        } else if (!validateEmail(form.email)) {
+            errors.email = "Invalid email"
+        }
+        if (!form.address) errors.address = "Address is required"
+        if (!form.password) errors.password = "Password is required"
+        if (form.password && form.repeatPassword && form.password !== form.repeatPassword) {
+            errors.repeatPassword = "Passwords have to match"
+        }
+        setFieldErrors(errors)
+        return Object.keys(errors).length === 0
+    }
 
     const { mutate, isPending } = useMutation({
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        mutationFn: async ({ repeatPassword, ...data }: FormData) => {
+        mutationFn: async () => {
+            if (!validate()) throw "Validation failed"
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { repeatPassword, ...data } = form
             const { error } = await submitHandler(data)
-            if (error !== undefined) {
-                throw error
-            }
+            if (error !== undefined) throw error
         },
-        onMutate: resetStatus,
         onSuccess: () => {
-            setSuccess("User created successfully. You may now login.")
-            reset()
+            showToast("User created successfully. You may now login.", "success")
+            setForm(empty)
+            setFieldErrors({})
         },
-        onError: setError,
+        onError: (e: unknown) => {
+            if (e === "Validation failed") return
+            showToast(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)), "error")
+        },
     })
 
-    useEffect(() => {
-        const { unsubscribe } = watch((_data, { type }) => {
-            if (type === "change") {
-                resetStatus()
-            }
-        })
-        return unsubscribe
-    }, [watch])
+    function handleSubmit(e: React.FormEvent) {
+        e.preventDefault()
+        mutate()
+    }
+
+    const fields: { key: keyof FormState; label: string; type?: string }[] = [
+        { key: "firstName", label: "First name" },
+        { key: "lastName", label: "Last name" },
+        { key: "login", label: "Login" },
+        { key: "email", label: "Email", type: "email" },
+        { key: "address", label: "Address" },
+        { key: "password", label: "Password", type: "password" },
+        { key: "repeatPassword", label: "Repeat password", type: "password" },
+    ]
 
     return (
-        <FormContainer
-            onSuccess={(data: FormData) => mutate(data)}
-            formContext={formContext}
-        >
-            <Stack direction={"column"} spacing={2}>
-                <TextFieldElement
-                    name="firstName"
-                    label="First name"
-                    fullWidth
-                />
-                <TextFieldElement name="lastName" label="Last name" fullWidth />
-                <TextFieldElement name="login" label="Login" fullWidth />
-                <TextFieldElement name="email" label="Email" fullWidth />
-                <TextFieldElement name="address" label="Address" fullWidth />
-                <TextFieldElement
-                    name="password"
-                    label="Password"
-                    type="password"
-                    fullWidth
-                />
-                <TextFieldElement
-                    name="repeatPassword"
-                    label="Repeat password"
-                    type="password"
-                    fullWidth
-                />
-                <CardActions sx={{ justifyContent: "center" }}>
-                    <Button
-                        loading={isPending}
-                        type="submit"
-                        variant="outlined"
-                    >
-                        Sign up
-                    </Button>
-                </CardActions>
-                <StatusDisplay {...statusContext} />
-            </Stack>
-        </FormContainer>
+        <form className="form" onSubmit={handleSubmit} noValidate>
+            {fields.map(({ key, label, type = "text" }) => (
+                <div className="form-group" key={key}>
+                    <label className="form-label" htmlFor={key}>
+                        {label}
+                    </label>
+                    <input
+                        id={key}
+                        type={type}
+                        value={form[key]}
+                        onChange={set(key)}
+                    />
+                    {fieldErrors[key] && (
+                        <span className="field-error">{fieldErrors[key]}</span>
+                    )}
+                </div>
+            ))}
+            <div className="form-actions">
+                <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={isPending}
+                >
+                    {isPending ? <span className="spinner" /> : null}
+                    Sign up
+                </button>
+            </div>
+        </form>
     )
 }

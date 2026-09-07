@@ -2,7 +2,6 @@ import { IPageActions } from "@demoability/loadgen-core"
 import { User } from "../user"
 import { selectors } from "../selectors"
 import { gotoPageWithNavBar, selectCardProvider } from "./common"
-import { CREDIT_CARD_MAPPING } from "../const"
 
 /**
  * Assumes starting point Deposit page.
@@ -51,7 +50,7 @@ async function fillUserDepositData(
     await selectCardProvider(
         pageActions,
         selectors.depositPage_cardType,
-        CREDIT_CARD_MAPPING[user.credit_card_provider]
+        user.credit_card_provider
     )
     await pageActions.shortDelay()
     await pageActions.input(selectors.depositPage_cardCvv, user.credit_card_cvv)

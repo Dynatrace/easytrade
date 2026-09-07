@@ -54,9 +54,8 @@ export function logoutInvalidateQuery(client: QueryClient) {
 
 export async function quickTransactionInvalidateQuery(client: QueryClient) {
     await client.invalidateQueries({ queryKey: balanceKeys.current })
-    await client.invalidateQueries({
-        queryKey: instrumentKeys.all,
-    })
+    await client.invalidateQueries({ queryKey: instrumentKeys.all })
+    await client.invalidateQueries({ queryKey: transactionKeys.all })
 }
 
 export async function balanceInvalidateQuery(client: QueryClient) {
