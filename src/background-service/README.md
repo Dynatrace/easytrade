@@ -18,7 +18,7 @@ Single Go binary that consolidates four former EasyTrade services.
 | `THIRD_PARTY_DELAY` | yes | — | thirdparty (seconds before first run) |
 | `THIRD_PARTY_RATE` | yes | — | thirdparty (seconds between runs) |
 | `DELAY_CHANCE_PERCENT` | yes | `20` | thirdparty (% chance of extra delay per manufacture run) |
-| `DB_ADAPTER_SERVICE_ADDRESS` | yes | `db-adapter:50051` | contentcreator (gRPC `host:port`) |
+| `DB_ADAPTER_ADDRESS` | yes | `db-adapter:50051` | contentcreator (gRPC `host:port`) |
 | `FEATURE_FLAG_SERVICE_ADDRESS` | yes | `http://feature-flag-service:8080` | thirdparty + operator |
 | `POD_NAMESPACE` | — | — | operator gate — must be **absent** outside Kubernetes; set by the Downward API in-cluster |
 | `SYNC_INTERVAL` | no | `5s` | operator (reconciliation loop interval; only read when `POD_NAMESPACE` is set) |
