@@ -1,0 +1,16 @@
+@baseUrl = http://localhost:8083
+
+### Get latest price of each instrument
+GET {{baseUrl}}/v1/prices/latest
+
+### Get newest price record
+GET {{baseUrl}}/v1/prices/last
+
+### Get pricing data for a specific instrument (default 100 records)
+GET {{baseUrl}}/v1/prices/instrument/1
+
+### Get pricing data for a specific instrument (limited records)
+GET {{baseUrl}}/v1/prices/instrument/1?records=5
+
+### Version
+GET {{baseUrl}}/version

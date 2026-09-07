@@ -25,7 +25,7 @@ var Registry = []VarSpec{
 	{Name: "DELAY_CHANCE_PERCENT", Default: "20"},
 
 	// contentcreator
-	{Name: "DB_ADAPTER_SERVICE_ADDRESS", Required: true},
+	{Name: "DB_ADAPTER_ADDRESS", Required: true},
 
 	// problem-operator
 	{Name: "FEATURE_FLAG_SERVICE_ADDRESS", Required: true},

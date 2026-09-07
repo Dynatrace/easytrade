@@ -69,11 +69,9 @@ background-service:
 broker-service:
   enabled: true
   env:
-    USER_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-user-service:8080"
-    PRICINGSERVICE_HOSTANDPORT: "{{ .Release.Name }}-pricing-service:8080"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
+    USER_SERVICE_ADDRESS: "http://{{ .Release.Name }}-user-service:8080"
+    PRICING_SERVICE_ADDRESS: "http://{{ .Release.Name }}-pricing-service:8080"
+    FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
     PROXY_PREFIX: "broker-service"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   livenessProbe:
@@ -103,13 +101,11 @@ credit-card-order-service:
   enabled: true
   env:
     PROXY_PREFIX: "credit-card-order-service"
-    THIRD_PARTY_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-background-service:8080"
+    THIRD_PARTY_SERVICE_ADDRESS: "http://{{ .Release.Name }}-background-service:8080"
     WORK_DELAY: "300"
     WORK_RATE: "900"
     JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
+    FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   livenessProbe:
     httpGet:
@@ -247,10 +243,6 @@ db-adapter:
 
 feature-flag-service:
   enabled: true
-  env:
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
   livenessProbe:
     httpGet:
       path: /livez
@@ -377,11 +369,8 @@ offerservice:
   enabled: true
   env:
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
-    USER_SERVICE_PORT: "8080"
-    USER_SERVICE_BASE_URL: "{{ .Release.Name }}-user-service"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
+    USER_SERVICE_ADDRESS: "http://{{ .Release.Name }}-user-service:8080"
+    FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
   livenessProbe:
     httpGet:
       path: /livez

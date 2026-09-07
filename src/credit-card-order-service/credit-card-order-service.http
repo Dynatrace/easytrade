@@ -1,0 +1,45 @@
+@baseUrl = http://localhost:8091
+
+### Create a new credit card order
+POST {{baseUrl}}/v1/orders
+Content-Type: application/json
+Accept: application/json
+
+{
+  "accountId": 15,
+  "email": "whatever@pear.com",
+  "name": "John Bear",
+  "shippingAddress": "Milky Way 13",
+  "cardLevel": "silver"
+}
+
+### Get status history for an account
+GET {{baseUrl}}/v1/orders/15/status
+Accept: application/json
+
+### Get latest status for an account
+GET {{baseUrl}}/v1/orders/15/status/latest
+Accept: application/json
+
+### Get shipping address for an order
+GET {{baseUrl}}/v1/orders/b0404285-41ca-4748-a8d9-8a104a0a9d08/shipping-address
+Accept: application/json
+
+### Update credit card order status
+POST {{baseUrl}}/v1/orders/b0404285-41ca-4748-a8d9-8a104a0a9d08/status
+Content-Type: application/json
+Accept: application/json
+
+{
+  "orderId": "b0404285-41ca-4748-a8d9-8a104a0a9d08",
+  "type": "card_delivered",
+  "timestamp": "2023-07-28T14:51:59.847Z",
+  "details": {}
+}
+
+### Delete credit card order for an account
+DELETE {{baseUrl}}/v1/orders/15
+Accept: application/json
+
+### Version
+GET {{baseUrl}}/version

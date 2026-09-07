@@ -1,0 +1,25 @@
+@baseUrl = http://localhost:8094
+
+### Get all flags
+GET {{baseUrl}}/v1/flags
+
+### Get flags by tag
+GET {{baseUrl}}/v1/flags?tag=problem_pattern
+
+### Get flag by ID
+GET {{baseUrl}}/v1/flags/db_not_responding
+
+### Enable a flag
+PUT {{baseUrl}}/v1/flags/db_not_responding
+Content-Type: application/json
+
+{"enabled": true}
+
+### Disable a flag
+PUT {{baseUrl}}/v1/flags/db_not_responding
+Content-Type: application/json
+
+{"enabled": false}
+
+### Version
+GET {{baseUrl}}/version

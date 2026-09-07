@@ -18,7 +18,7 @@ import java.util.List;
 public class WorkScheduler extends BaseScheduler {
     private static final Logger logger = LoggerFactory.getLogger(WorkScheduler.class);
     private final DbAdapterClient dbAdapterClient;
-    private final String creditCardOrderService = System.getenv("THIRD_PARTY_SERVICE_HOSTANDPORT");
+    private final String creditCardOrderService = System.getenv("THIRD_PARTY_SERVICE_ADDRESS");
     private final HttpClient httpClient = HttpClient.newBuilder().build();
 
     public WorkScheduler(DbAdapterClient dbAdapterClient) {
@@ -39,7 +39,7 @@ public class WorkScheduler extends BaseScheduler {
 
                 // deepcode ignore Ssrf: trusted environment variable
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(String.format("http://%s/v1/manufacturer", creditCardOrderService)))
+                        .uri(URI.create(String.format("%s/v1/manufacturer", creditCardOrderService)))
                         .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(body)))
                         .header("Content-Type", "application/json")
                         .build();

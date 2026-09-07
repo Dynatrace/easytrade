@@ -17,11 +17,9 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DB_ADAPTER_ADDRESS": "localhost:50051",
-        "USER_SERVICE_HOSTANDPORT": "localhost:8095",
-        "PRICINGSERVICE_HOSTANDPORT": "localhost:8083",
-        "FEATURE_FLAG_SERVICE_PROTOCOL": "http",
-        "FEATURE_FLAG_SERVICE_BASE_URL": "localhost",
-        "FEATURE_FLAG_SERVICE_PORT": "8094"
+        "USER_SERVICE_ADDRESS": "http://localhost:8095",
+        "PRICING_SERVICE_ADDRESS": "http://localhost:8083",
+        "FEATURE_FLAG_SERVICE_ADDRESS": "http://localhost:8094"
       }
     }
   }

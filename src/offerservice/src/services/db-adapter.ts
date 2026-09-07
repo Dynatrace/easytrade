@@ -13,7 +13,7 @@ function createInsecureClient<T extends grpc.Client>(
     ) => T
 ): T {
     return new Ctor(
-        config.dbAdapterHostAndPort,
+        config.dbAdapterAddress,
         grpc.credentials.createInsecure()
     )
 }

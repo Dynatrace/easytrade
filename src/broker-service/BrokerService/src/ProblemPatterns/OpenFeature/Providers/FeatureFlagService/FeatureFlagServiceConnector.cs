@@ -12,8 +12,7 @@ public class FeatureFlagServiceConnector(
     private readonly IConfiguration _config = configuration;
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
     private readonly ILogger _logger = logger;
-    private string FeatureFlagServiceUrl =>
-        $"{_config[Constants.FeatureFlagServiceProtocol]}://{_config[Constants.FeatureFlagServiceBaseUrl]}:{_config[Constants.FeatureFlagServicePort]}/v1/";
+    private string FeatureFlagServiceUrl => $"{_config[Constants.FeatureFlagServiceAddress]}/v1/";
 
     public async Task<Flag?> GetFlag(string id)
     {
