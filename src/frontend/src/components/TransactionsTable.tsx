@@ -47,10 +47,10 @@ export default function TransactionsTable({
     const [statusFilter, setStatusFilter] = useState<"" | "ACTIVE" | "SUCCESS" | "FAIL">("")
 
     const resolved = transactions.map((tx) => {
-        const instrument = instruments.find((i) => String(i.id) === String(tx.instrumentName))
+        const instrument = instruments.find((i) => String(i.id) === String(tx.instrumentId))
         return {
             ...tx,
-            instrumentName: instrument?.name ?? tx.instrumentName,
+            resolvedInstrumentName: instrument?.name ?? tx.instrumentId,
         }
     })
 
@@ -60,7 +60,7 @@ export default function TransactionsTable({
         if (search) {
             const q = search.toLowerCase()
             if (
-                !tx.instrumentName.toLowerCase().includes(q) &&
+                !tx.resolvedInstrumentName.toLowerCase().includes(q) &&
                 !tx.actionType.toLowerCase().includes(q) &&
                 !tx.status.toLowerCase().includes(q)
             ) return false
@@ -143,7 +143,7 @@ export default function TransactionsTable({
                                         <td>
                                             <StatusBadge status={tx.status} />
                                         </td>
-                                        <td>{tx.instrumentName}</td>
+                                        <td>{tx.resolvedInstrumentName}</td>
                                         <td className="col-number">{tx.amount.toLocaleString()}</td>
                                         <td className="col-number">
                                             {formatCurrency(tx.price)}

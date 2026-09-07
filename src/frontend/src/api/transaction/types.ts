@@ -1,7 +1,7 @@
 export type Transaction = {
     id: number
     actionType: string
-    instrumentName: string
+    instrumentId: string
     amount: number
     price: number
     status: string

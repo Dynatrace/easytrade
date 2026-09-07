@@ -28,7 +28,7 @@ function mapRawTransaction(
     return {
         id: index,
         actionType: mapDirection(direction),
-        instrumentName: instrumentId.toString(),
+        instrumentId: instrumentId.toString(),
         amount: quantity,
         price: entryPrice,
         status: mapStatus(status),
