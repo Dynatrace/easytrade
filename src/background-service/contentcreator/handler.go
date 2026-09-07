@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	dbAdapterAddress = "DB_ADAPTER_ADDRESS"
+	dbAdapterAddress = "DB_ADAPTER_SERVICE_ADDRESS"
 )
 
 type Handler struct {
