@@ -21,10 +21,10 @@
     <PackageReference Include="Grpc.AspNetCore" Version="2.64.0" />
   </ItemGroup>
   <ItemGroup>
-    <Protobuf Include="..\..\..\proto\common.proto" GrpcServices="Client" />
-    <Protobuf Include="..\..\..\proto\balance_service.proto" GrpcServices="Client" />
-    <Protobuf Include="..\..\..\proto\instrument_service.proto" GrpcServices="Client" />
-    <Protobuf Include="..\..\..\proto\product_service.proto" GrpcServices="Client" />
-    <Protobuf Include="..\..\..\proto\trade_service.proto" GrpcServices="Client" />
+    <Protobuf Include="..\..\proto\common.proto" GrpcServices="Client" />
+    <Protobuf Include="..\..\proto\balance_service.proto" GrpcServices="Client" />
+    <Protobuf Include="..\..\proto\instrument_service.proto" GrpcServices="Client" />
+    <Protobuf Include="..\..\proto\product_service.proto" GrpcServices="Client" />
+    <Protobuf Include="..\..\proto\trade_service.proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>

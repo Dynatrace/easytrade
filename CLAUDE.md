@@ -62,7 +62,7 @@ dotnet build
 dotnet test                        # runs xunit tests in test/ project
 dotnet test --filter "FullyQualifiedName~SomeTest"
 ```
-Solution paths: `src/broker-service/BrokerService/.
+Solution paths: `src/broker-service/`.
 Only `broker-service` has a test project;
 
 ## Running locally
