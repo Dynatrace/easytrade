@@ -53,7 +53,7 @@ background-service:
     POD_NAMESPACE: "{{ .Release.Namespace }}"
     HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT: "300m"
     HIGH_CPU_USAGE_BROKER_SERVICE_NAME: "{{ .Release.Name }}-broker-service"
-    DB_ADAPTER_SERVICE_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
     DELAY_CHANCE_PERCENT: "20"
   resources:
     requests:
