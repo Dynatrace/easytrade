@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react"
 
-const SESSION_KEY = "user-id"
+export const SESSION_KEY = "user-id"
 
 export function sessionStore(value: string | null) {
     const [storedValue, setStoredValue] = useState<string | null>(() => {

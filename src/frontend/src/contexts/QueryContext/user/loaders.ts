@@ -2,10 +2,11 @@ import { QueryClient } from "@tanstack/react-query"
 import { redirect } from "react-router"
 import { PresetUser, User, Balance } from "../../../api/user/types"
 import { transform } from "../QueryContext"
+import { SESSION_KEY } from "../../AuthContext/storage"
 import { balanceQuery, presetUsersQuery, userQuery } from "./queries"
 
 export function sessionUserProvider() {
-    return sessionStorage.getItem("user-id")
+    return sessionStorage.getItem(SESSION_KEY)
 }
 
 export function loadWithUser<T = unknown>(
