@@ -15,6 +15,7 @@ import (
 )
 
 type sqlBackend struct {
+	gormDB     *gorm.DB
 	account    repository.AccountRepository
 	balance    repository.BalanceRepository
 	creditCard repository.CreditCardOrderRepository
@@ -29,6 +30,7 @@ var _ repository.DBBackend = (*sqlBackend)(nil)
 
 func newSQLBackend(db *gorm.DB) repository.DBBackend {
 	return &sqlBackend{
+		gormDB:     db,
 		account:    NewAccountRepository(db),
 		balance:    NewBalanceRepository(db),
 		creditCard: NewCreditCardOrderRepository(db),
@@ -48,6 +50,13 @@ func (r *sqlBackend) Package() repository.PackageRepository            { return 
 func (r *sqlBackend) Pricing() repository.PricingRepository            { return r.pricing }
 func (r *sqlBackend) Product() repository.ProductRepository            { return r.product }
 func (r *sqlBackend) Trade() repository.TradeRepository                { return r.trade }
+func (r *sqlBackend) Ping(ctx context.Context) error {
+	sqlDB, err := r.gormDB.DB()
+	if err != nil {
+		return err
+	}
+	return sqlDB.PingContext(ctx)
+}
 
 type dbNamer struct{ schema.NamingStrategy }
 

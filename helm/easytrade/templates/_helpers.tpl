@@ -54,6 +54,21 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Name of the Secret holding the database password.
+Uses global.database.existingSecret.name if set, otherwise the chart-managed secret.
+*/}}
+{{- define "easytrade.dbPasswordSecretName" -}}
+{{- .Values.global.database.existingSecret.name | default (printf "%s-db-password" .Release.Name) -}}
+{{- end }}
+
+{{/*
+Key within the database password Secret.
+*/}}
+{{- define "easytrade.dbPasswordSecretKey" -}}
+{{- .Values.global.database.existingSecret.key | default "password" -}}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "easytrade.serviceAccountName" -}}

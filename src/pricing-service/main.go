@@ -20,11 +20,15 @@ func init() {
 }
 
 func main() {
-	router := CreateRouter(price.NewHandler(newDbAdapterClient()))
-	router.Run()
+	conn := newDbAdapterConn()
+
+	router := CreateRouter(price.NewHandler(pb.NewPricingServiceClient(conn)))
+	setupHealth(router, conn)
+
+	router.Run(":8080")
 }
 
-func newDbAdapterClient() pb.PricingServiceClient {
+func newDbAdapterConn() *grpc.ClientConn {
 	conn, err := grpc.NewClient(
 		os.Getenv(utils.DbAdapterAddress),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -33,5 +37,5 @@ func newDbAdapterClient() pb.PricingServiceClient {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	return pb.NewPricingServiceClient(conn)
+	return conn
 }

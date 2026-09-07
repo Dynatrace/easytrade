@@ -67,7 +67,6 @@ build-prod: ## Build and tag images for the registry (compose.build.yaml)
 push: ## Push registry-tagged images built by build-prod
 	$(DOCKER_COMPOSE_CMD) -f $(COMPOSE_BUILD_FILE) push $(services)
 
-
 ##@ Docker compose
 
 .PHONY: start

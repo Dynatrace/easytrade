@@ -21,7 +21,7 @@ All services share one MSSQL database (`db`, port 1433). Connection string forma
 | Java 21 / Spring Boot / Gradle | `credit-card-order-service` |
 | Go + Go Modules | `background-service`, `db-adapter`, `pricing-service`, `user-service`, `feature-flag-service` |
 | TypeScript / Node.js / npm | `frontend` (React + Vite), `loadgen`, `offerservice` (Express) |
-| C# / .NET 8 | `broker-service`, `manager` |
+| C# / .NET 8 | `broker-service` |
 | Config only | `frontendreverseproxy` (nginx), `db` (MSSQL) |
 
 Key roles:
@@ -87,7 +87,7 @@ docker compose up          # uses pre-built images from registry (compose.yaml)
 ```
 `make start-remote` is the Makefile equivalent of the second form.
 
-App available at `http://localhost`. Dev credentials: `demouser/demopass`, `james_norton/pass_james_123`.
+App available at `http://localhost`. Dev credentials: `james_norton/pass_james_123`.
 
 Frontend dev server runs on port 3000 (`npm run dev` in `src/frontend/`). API calls go through nginx in production; in dev mode they must be routed manually or via the full compose stack.
 

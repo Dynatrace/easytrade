@@ -31,8 +31,8 @@ public class OrderControllerTests {
     @Test
     void grpcCallThrowsExceptionTest() {
         CreditCardOrderRequest request = new CreditCardOrderRequest(
-                13, "email@mail.ail", "Jane Doe", "Box 13", "silver");
-        Mockito.when(dbAdapterClient.hasExistingOrder(anyInt())).thenThrow(new RuntimeException("gRPC call failed"));
+                "a67a075f-f1b3-4fd4-bfbd-e4986cd11956", "email@mail.ail", "Jane Doe", "Box 13", "silver");
+        Mockito.when(dbAdapterClient.hasExistingOrder(anyString())).thenThrow(new RuntimeException("gRPC call failed"));
 
         OrderController controller = new OrderController(dbAdapterClient, openFeatureAPI);
         ResponseEntity<StandardResponse> response = controller.createCreditCardOrder(request);
@@ -44,9 +44,9 @@ public class OrderControllerTests {
     @Test
     void createAnotherOrderForSameAccountTest() {
         CreditCardOrderRequest request = new CreditCardOrderRequest(
-                13, "email@mail.ail", "Jane Doe", "Box 13", "silver");
+                "a67a075f-f1b3-4fd4-bfbd-e4986cd11956", "email@mail.ail", "Jane Doe", "Box 13", "silver");
 
-        Mockito.when(dbAdapterClient.hasExistingOrder(anyInt())).thenReturn(true);
+        Mockito.when(dbAdapterClient.hasExistingOrder(anyString())).thenReturn(true);
 
         checkOrderCreationResult(HttpStatus.BAD_REQUEST.value(), OrderController.ORDER_ALREADY_EXISTS, request);
     }
@@ -54,10 +54,10 @@ public class OrderControllerTests {
     @Test
     void createCreditCardOrderTest() {
         CreditCardOrderRequest request = new CreditCardOrderRequest(
-                13, "email@mail.ail", "Jane Doe", "Box 13", "silver");
+                "a67a075f-f1b3-4fd4-bfbd-e4986cd11956", "email@mail.ail", "Jane Doe", "Box 13", "silver");
         String guid = "b78a075f-e1b3-4fd4-afbd-f4986cd11945";
 
-        Mockito.when(dbAdapterClient.hasExistingOrder(anyInt())).thenReturn(false);
+        Mockito.when(dbAdapterClient.hasExistingOrder(anyString())).thenReturn(false);
         Mockito.when(dbAdapterClient.createOrder(request)).thenReturn(guid);
         Mockito.doNothing().when(dbAdapterClient).insertNewStatus(guid, StatusType.ORDER_CREATED);
 

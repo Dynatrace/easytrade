@@ -71,13 +71,9 @@ services:
 
   db-adapter:
     <<: *default-service
-    build:
-      context: src/
-      dockerfile: db-adapter/Dockerfile
+    image: ${REGISTRY}/db-adapter:${TAG}
     depends_on:
       - db
-    ports:
-      - 50051:50051
     environment:
       DB_TYPE: ${DB_TYPE}
       DB_URL: ${DB_URL}

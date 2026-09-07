@@ -86,7 +86,7 @@ public class OrderController {
     }
 
     @GetMapping("/{accountId}/status")
-    public ResponseEntity<StandardResponse> getStatusHistory(@PathVariable Integer accountId) {
+    public ResponseEntity<StandardResponse> getStatusHistory(@PathVariable String accountId) {
         logger.info("Getting status history for accountId: " + accountId);
         try {
             Optional<CreditCardOrderStatusHistory> history = dbAdapterClient.getStatusListByAccountId(accountId);
@@ -100,7 +100,7 @@ public class OrderController {
     }
 
     @GetMapping("/{accountId}/status/latest")
-    public ResponseEntity<StandardResponse> getLatestStatus(@PathVariable Integer accountId) {
+    public ResponseEntity<StandardResponse> getLatestStatus(@PathVariable String accountId) {
         logger.info("Getting latest status for accountId: " + accountId);
         try {
             final Client client = openFeatureAPI.getClient();
@@ -122,7 +122,7 @@ public class OrderController {
     }
 
     @DeleteMapping("/{accountId}")
-    public ResponseEntity<StandardResponse> deleteOrder(@PathVariable Integer accountId) {
+    public ResponseEntity<StandardResponse> deleteOrder(@PathVariable String accountId) {
         logger.info("Deleting order and/or card for accountId: " + accountId);
         try {
             dbAdapterClient.deleteOrdersByAccountId(accountId);

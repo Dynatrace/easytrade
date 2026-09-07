@@ -89,6 +89,7 @@ services:
       - db
     ports:
       - 50051:50051
+      - 8096:8080
     environment:
       DB_TYPE: ${DB_TYPE}
       DB_URL: ${DB_URL}
@@ -138,6 +139,8 @@ services:
     build: src/loadgen
     depends_on:
       - frontendreverseproxy
+    ports:
+      - 8097:8080
     environment:
       EASYTRADE_URL: *easytradeUrl
 
@@ -181,3 +184,4 @@ services:
       - 8089:8080
     environment:
       DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      GIN_MODE: debug

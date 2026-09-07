@@ -2,6 +2,8 @@
 
 A Go REST service that allows to get and update feature flag data.
 
+Exposes `/livez` (liveness) and `/readyz` (readiness) on port `8080`.
+
 ## Technologies used
 
 - Golang

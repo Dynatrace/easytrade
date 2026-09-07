@@ -85,6 +85,7 @@ func initFlags() map[string]*flag.Flag {
 func main() {
 	svc := flag.NewService(initFlags())
 	r := CreateRouter(svc)
+	setupHealth(r)
 	if err := r.Run(":8080"); err != nil {
 		log.Fatal(err)
 	}

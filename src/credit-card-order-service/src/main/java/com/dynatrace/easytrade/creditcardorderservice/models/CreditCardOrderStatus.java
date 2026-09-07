@@ -2,6 +2,6 @@ package com.dynatrace.easytrade.creditcardorderservice.models;
 
 import java.time.OffsetDateTime;
 
-public record CreditCardOrderStatus(Integer id, String creditCardOrderId, OffsetDateTime timestamp, String status,
+public record CreditCardOrderStatus(String id, String creditCardOrderId, OffsetDateTime timestamp, String status,
                 String details) {
 }

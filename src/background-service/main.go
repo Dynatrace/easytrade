@@ -33,7 +33,7 @@ func main() {
 	aggregator.Start(ctx, values)
 
 	// contentcreator: steady-state per-minute loop + startup backfill
-	contentcreator.Start(ctx, values)
+	dbAdapterConn := contentcreator.Start(ctx, values)
 
 	// third-party-service: manufacture + courier schedulers
 	tp := thirdparty.New(values, flagClient)
@@ -48,6 +48,6 @@ func main() {
 		l.Info("POD_NAMESPACE not set; operator subsystem disabled")
 	}
 
-	srv := New(*tp)
+	srv := New(*tp, dbAdapterConn)
 	Run(ctx, srv)
 }

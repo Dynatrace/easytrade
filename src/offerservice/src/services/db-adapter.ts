@@ -23,3 +23,7 @@ const productClient = createInsecureClient(ProductServiceClient)
 
 export const getPackages = promisify(packageClient.getPackages.bind(packageClient)) as (request: Empty) => Promise<PackagesResponse>
 export const getProducts = promisify(productClient.getProducts.bind(productClient)) as (request: Empty) => Promise<ProductsResponse>
+
+export function isDbAdapterReady(): boolean {
+    return packageClient.getChannel().getConnectivityState(true) === grpc.connectivityState.READY
+}
