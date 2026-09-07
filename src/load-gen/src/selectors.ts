@@ -18,25 +18,21 @@ export const selectors = {
         '//button[@id="submitButton"]'
     ),
 
-    navigation_sidebarToggler: new XpathSelector(
-        "sidebar-toggler",
-        '//button[@id="navigationToggler"]'
-    ),
     navigation_depositPage: new XpathSelector(
         "deposit-page-nav",
-        '//a[contains(@href, "deposit")]'
+        '//a[@id="nav-deposit"]'
     ),
     navigation_homePage: new XpathSelector(
         "home-page-nav",
-        '//a[contains(@href, "home")]'
+        '//a[@id="nav-home"]'
     ),
     navigation_withdrawPage: new XpathSelector(
         "withdraw-page-nav",
-        '//a[contains(@href, "withdraw")]'
+        '//a[@id="nav-withdraw"]'
     ),
     navigation_instrumentsPage: new XpathSelector(
         "instruments-page-nav",
-        '//a[contains(@href, "instruments")]'
+        '//a[@id="nav-instruments"]'
     ),
     navigation_dropdownToggler: new XpathSelector(
         "dropdown-toggler",
@@ -44,7 +40,7 @@ export const selectors = {
     ),
     navigation_creditCardPage: new XpathSelector(
         "credit-card-page-nav",
-        '//a[contains(@href, "credit-card")]'
+        '//a[@id="nav-credit-card"]'
     ),
     navigation_logout: new XpathSelector(
         "logout-button",
@@ -52,7 +48,7 @@ export const selectors = {
     ),
     depositPage_submit: new XpathSelector(
         "deposit-button",
-        '//form//button[@type="submit"]'
+        '//button[@id="submitButton"]'
     ),
     depositPage_cardholderName: new XpathSelector(
         "name-input",
@@ -60,13 +56,8 @@ export const selectors = {
     ),
     depositPage_cardType: new XpathSelector(
         "credit-card-select",
-        '//div[@id="cardType"]'
+        '//select[@id="cardType"]'
     ),
-    depositPage_cardType_provider: (provider: string) =>
-        new XpathSelector(
-            "credit-card-provider",
-            `//*[@id="menu-cardType"]//li[contains(text(), "${provider}")]`
-        ),
     depositPage_address: new XpathSelector(
         "address-input",
         '//input[@id="address"]'
@@ -98,19 +89,19 @@ export const selectors = {
     ),
     instrumentPage_quickBuyForm: new XpathSelector(
         "quick-buy-nav",
-        '//button[text()="Quick Buy"]'
+        '//button[@id="quickBuyTab"]'
     ),
     instrumentPage_quickSellForm: new XpathSelector(
         "quick-sell-nav",
-        '//button[text()="Quick Sell"]'
+        '//button[@id="quickSellTab"]'
     ),
     instrumentPage_buyForm: new XpathSelector(
         "long-buy-nav",
-        '//button[text()="Buy"]'
+        '//button[@id="buyTab"]'
     ),
     instrumentPage_sellForm: new XpathSelector(
         "long-sell-nav",
-        '//button[text()="Sell"]'
+        '//button[@id="sellTab"]'
     ),
     instrumentPage_instrumentPrice: new XpathSelector(
         "instrument-price-view",
@@ -126,7 +117,7 @@ export const selectors = {
     ),
     instrumentPage_possessedAmount: new XpathSelector(
         "owned-amount-view",
-        '//input[@id="posessedAmount"]'
+        '//input[@id="possessedAmount"]'
     ),
     instrumentPage_priceInput: new XpathSelector(
         "price-input",
@@ -154,13 +145,8 @@ export const selectors = {
     ),
     creditCardPage_cardTypeInput: new XpathSelector(
         "card-type-select",
-        '//div[@id="type"]'
+        '//select[@id="type"]'
     ),
-    creditCardPage_cardType_type: (type: string) =>
-        new XpathSelector(
-            "credit-card-provider",
-            `//*[@id="menu-type"]//li[contains(text(), "${type}")]`
-        ),
     creditCardPage_orderCardButton: new XpathSelector(
         "order-card-button",
         '//button[@id="submitButton"]'

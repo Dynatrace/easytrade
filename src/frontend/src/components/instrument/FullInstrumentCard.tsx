@@ -1,5 +1,4 @@
 import React from "react"
-import { Card, CardHeader } from "@mui/material"
 import InstrumentHeader from "./InstrumentHeader"
 import { useInstrument } from "../../contexts/InstrumentContext/context"
 import { useRouteLoaderData } from "react-router"
@@ -14,19 +13,12 @@ export default function FullInstrumentCard() {
     const { data } = useInstrumentPricesQuery(instrument.id, pricesData)
 
     return (
-        <Card>
-            <CardHeader
-                title={<InstrumentHeader instrument={instrument} />}
-                subheader={instrument.code}
-                slotProps={{
-                    subheader: {
-                        sx: {
-                            fontStyle: "italic",
-                        },
-                    },
-                }}
-            />
+        <div className="card" style={{ padding: "1rem" }}>
+            <div style={{ marginBottom: "0.5rem" }}>
+                <InstrumentHeader instrument={instrument} />
+                <p style={{ color: "var(--text-muted)", fontStyle: "italic", margin: 0 }}>{instrument.code}</p>
+            </div>
             <InstrumentPriceChart prices={data ?? []} />
-        </Card>
+        </div>
     )
 }

@@ -1,83 +1,86 @@
-import React from "react"
-import { Button, CardActions } from "@mui/material"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { FormContainer, TextFieldElement } from "react-hook-form-mui"
-import { useEffect } from "react"
+import { useToast } from "../../contexts/ToastContext/context"
+import React, { useState } from "react"
 import { LoginHandler } from "../../api/login/types"
-import useStatusDisplay from "../../hooks/useStatusDisplay"
+
 import { useMutation } from "@tanstack/react-query"
-import StatusDisplay from "../StatusDisplay"
-import { Stack } from "@mui/system"
 
-const formSchema = z.object({
-    login: z.string().min(1, "Login is required"),
-    password: z.string().min(1, "Password is required"),
-})
-
-type FormData = z.infer<typeof formSchema>
-
-const defaultValues: FormData = {
-    login: "",
-    password: "",
-}
 
 type LoginFormProps = {
     submitHandler: LoginHandler
 }
 
 export default function LoginForm({ submitHandler }: LoginFormProps) {
-    const formContext = useForm<FormData>({
-        defaultValues,
-        resolver: zodResolver(formSchema),
-    })
-    const { watch } = formContext
-    const { setError, resetStatus, statusContext } = useStatusDisplay()
+    const [login, setLogin] = useState("")
+    const [password, setPassword] = useState("")
+    const [loginError, setLoginError] = useState("")
+    const [passwordError, setPasswordError] = useState("")
+    const { showToast } = useToast()
 
     const { mutate, isPending } = useMutation({
-        mutationFn: async ({ login, password }: FormData) => {
+        mutationFn: async () => {
+            let valid = true
+            if (!login) { setLoginError("Login is required"); valid = false } else setLoginError("")
+            if (!password) { setPasswordError("Password is required"); valid = false } else setPasswordError("")
+            if (!valid) throw "Validation failed"
             const { error } = await submitHandler(login, password)
-            if (error !== undefined) {
-                throw error
-            }
+            if (error !== undefined) throw error
         },
-        onMutate: resetStatus,
-        onError: setError,
+        onError: (e: unknown) => {
+            if (e === "Validation failed") return
+            showToast(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)), "error")
+        },
     })
 
-    useEffect(() => {
-        const { unsubscribe } = watch(() => {
-            resetStatus()
-        })
-        return unsubscribe
-    }, [watch])
+    function handleSubmit(e: React.FormEvent) {
+        e.preventDefault()
+        mutate()
+    }
 
     return (
-        <FormContainer
-            onSuccess={(data: FormData) => mutate(data)}
-            formContext={formContext}
-        >
-            <Stack direction={"column"} spacing={2}>
-                <TextFieldElement id="login" name="login" label="Login" />
-                <TextFieldElement
-                    id="password"
-                    name="password"
-                    label="Password"
-                    type="password"
+        <form className="form" onSubmit={handleSubmit}>
+            <div className="form-group">
+                <label className="form-label" htmlFor="login">
+                    Login
+                </label>
+                <input
+                    id="login"
+                    type="text"
+                    value={login}
+                    onChange={(e) => {
+                        setLogin(e.target.value)
+                        setLoginError("")
+                    }}
+                    autoComplete="username"
                 />
-                <CardActions sx={{ justifyContent: "center" }}>
-                    <Button
-                        id="submitButton"
-                        loading={isPending}
-                        type="submit"
-                        variant="outlined"
-                    >
-                        Login
-                    </Button>
-                </CardActions>
-                <StatusDisplay {...statusContext} />
-            </Stack>
-        </FormContainer>
+                {loginError && <span className="field-error">{loginError}</span>}
+            </div>
+            <div className="form-group">
+                <label className="form-label" htmlFor="password">
+                    Password
+                </label>
+                <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => {
+                        setPassword(e.target.value)
+                        setPasswordError("")
+                    }}
+                    autoComplete="current-password"
+                />
+                {passwordError && <span className="field-error">{passwordError}</span>}
+            </div>
+            <div className="form-actions">
+                <button
+                    id="submitButton"
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={isPending}
+                >
+                    {isPending ? <span className="spinner" /> : null}
+                    Login
+                </button>
+            </div>
+        </form>
     )
 }

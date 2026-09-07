@@ -1,54 +1,41 @@
-import React from "react"
-import { Button, Card, CardContent, Stack, Typography } from "@mui/material"
+import { useToast } from "../../../contexts/ToastContext/context"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuthUser } from "../../../contexts/UserContext/context"
 import { revokeCreditCard } from "../../../api/creditCard/order"
-import useStatusDisplay from "../../../hooks/useStatusDisplay"
-import StatusDisplay from "../../../components/StatusDisplay"
 import { deleteCardInvalidateQuery } from "../../../contexts/QueryContext/creditCard/queries"
 
 export default function CreditCardActive() {
     const { userId } = useAuthUser()
     const queryClient = useQueryClient()
-    const { resetStatus, setError, setSuccess, statusContext } =
-        useStatusDisplay()
+    const { showToast } = useToast()
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {
             const response = await revokeCreditCard(userId)
-            if (response.type === "error") {
-                throw response.error
-            }
-        },
-        onMutate: () => {
-            resetStatus()
+            if (response.type === "error") throw response.error
         },
         onSuccess: async () => {
             await deleteCardInvalidateQuery(queryClient)
-            setSuccess("Card has been successfully revoked.")
+            showToast("Card has been successfully revoked.", "success")
         },
-        onError: (error: string) => {
-            setError(error)
-        },
+        onError: (error: string) => { showToast(error, "error") },
     })
     return (
-        <Card sx={{ padding: 1, maxWidth: "450px" }}>
-            <CardContent>
-                <Stack justifyContent="center" alignItems="center" spacing={2}>
-                    <Typography>
-                        You already have an active credit card. Only one credit
-                        card can be active at a time.
-                    </Typography>
-                    <Button
-                        id="revoke-card"
-                        loading={isPending}
-                        onClick={() => mutate()}
-                        variant="outlined"
-                    >
-                        Revoke card
-                    </Button>
-                    <StatusDisplay {...statusContext} />
-                </Stack>
-            </CardContent>
-        </Card>
+        <div className="page-centered">
+            <div className="card" style={{ padding: "1.5rem", maxWidth: 450, display: "flex", flexDirection: "column", alignItems: "center", gap: "1rem", width: "100%" }}>
+                <p style={{ textAlign: "center", margin: 0 }}>
+                    You already have an active credit card. Only one credit card can be active at a time.
+                </p>
+                <button
+                    id="revoke-card"
+                    type="button"
+                    className="btn btn-danger"
+                    disabled={isPending}
+                    onClick={() => mutate()}
+                >
+                    {isPending ? <span className="spinner" /> : null}
+                    Revoke card
+                </button>
+            </div>
+        </div>
     )
 }

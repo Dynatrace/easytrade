@@ -30,7 +30,6 @@ export function QueryClientWrapper({
             getTransactions={vi.fn()}
             getInstruments={vi.fn()}
             getInstrumentPrices={vi.fn()}
-            getLatestPrices={vi.fn()}
             getFeatureFlags={vi.fn()}
             getConfig={vi.fn()}
             getCreditCardStatus={vi.fn()}

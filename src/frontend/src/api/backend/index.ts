@@ -7,6 +7,7 @@ import { TransactionBackend } from "./transactions"
 import { UserBackend } from "./users"
 import { ConfigBackend } from "./configFeatureFlags"
 import { VersionBackend } from "./version"
+import { PortfolioBackend } from "./portfolio"
 
 export const backends = {
     problemPatterns: new ProblemPatternBackend(
@@ -25,4 +26,5 @@ export const backends = {
         EnvProxy.getCreditCardServiceUrl()
     ),
     versions: new VersionBackend(),
+    portfolio: new PortfolioBackend(EnvProxy.getBrokerServiceUrl()),
 }

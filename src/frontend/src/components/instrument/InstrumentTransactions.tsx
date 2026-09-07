@@ -1,74 +1,56 @@
-import React from "react"
-import { TabContext, TabList, TabPanel } from "@mui/lab"
-import { Box, Card, Tab } from "@mui/material"
-import Grid2 from "@mui/material/Grid2"
-import { ReactElement, useState } from "react"
+import React, { useState } from "react"
 import QuickBuyForm from "./forms/QuickBuyForm"
 import QuickSellForm from "./forms/QuickSellForm"
 import BuyForm from "./forms/BuyForm"
 import SellForm from "./forms/SellForm"
 
-enum FormId {
-    QuickBuy = "quick-buy",
-    QuickSell = "quick-sell",
-    Buy = "buy",
-    Sell = "sell",
-}
-
-function TabForm({
-    panelId,
-    component,
-}: {
-    panelId: string
-    component: ReactElement
-}) {
-    return (
-        <TabPanel value={panelId}>
-            <Box display={"flex"} justifyContent={"center"}>
-                {component}
-            </Box>
-        </TabPanel>
-    )
-}
+type TabId = "quick-buy" | "quick-sell" | "buy" | "sell"
 
 export default function InstrumentTransactions() {
-    const [formId, setFormId] = useState<FormId>(FormId.QuickBuy)
+    const [activeTab, setActiveTab] = useState<TabId>("quick-buy")
+
     return (
-        <Grid2 container spacing={2}>
-            <TabContext value={formId}>
-                <Grid2 size={{ xs: 2 }}>
-                    <Card>
-                        <TabList
-                            onChange={(_event, value: FormId) =>
-                                setFormId(value)
-                            }
-                            orientation="vertical"
-                        >
-                            <Tab label="Quick Buy" value={FormId.QuickBuy} />
-                            <Tab label="Quick Sell" value={FormId.QuickSell} />
-                            <Tab label="Buy" value={FormId.Buy} />
-                            <Tab label="Sell" value={FormId.Sell} />
-                        </TabList>
-                    </Card>
-                </Grid2>
-                <Grid2 size={{ xs: 10 }}>
-                    <Card>
-                        <TabForm
-                            panelId={FormId.QuickBuy}
-                            component={<QuickBuyForm />}
-                        />
-                        <TabForm
-                            panelId={FormId.QuickSell}
-                            component={<QuickSellForm />}
-                        />
-                        <TabForm panelId={FormId.Buy} component={<BuyForm />} />
-                        <TabForm
-                            panelId={FormId.Sell}
-                            component={<SellForm />}
-                        />
-                    </Card>
-                </Grid2>
-            </TabContext>
-        </Grid2>
+        <div style={{ display: "flex", gap: "1rem", alignItems: "flex-start", flexWrap: "wrap" }}>
+            <div className="card instrument-tabs-card">
+                <button
+                    id="quickBuyTab"
+                    type="button"
+                    className={"tab-btn" + (activeTab === "quick-buy" ? " active" : "")}
+                    onClick={() => setActiveTab("quick-buy")}
+                >
+                    Quick Buy
+                </button>
+                <button
+                    id="quickSellTab"
+                    type="button"
+                    className={"tab-btn" + (activeTab === "quick-sell" ? " active" : "")}
+                    onClick={() => setActiveTab("quick-sell")}
+                >
+                    Quick Sell
+                </button>
+                <button
+                    id="buyTab"
+                    type="button"
+                    className={"tab-btn" + (activeTab === "buy" ? " active" : "")}
+                    onClick={() => setActiveTab("buy")}
+                >
+                    Buy
+                </button>
+                <button
+                    id="sellTab"
+                    type="button"
+                    className={"tab-btn" + (activeTab === "sell" ? " active" : "")}
+                    onClick={() => setActiveTab("sell")}
+                >
+                    Sell
+                </button>
+            </div>
+            <div className="card" style={{ flex: 1, minWidth: 280, padding: "1rem" }}>
+                {activeTab === "quick-buy" && <QuickBuyForm />}
+                {activeTab === "quick-sell" && <QuickSellForm />}
+                {activeTab === "buy" && <BuyForm />}
+                {activeTab === "sell" && <SellForm />}
+            </div>
+        </div>
     )
 }

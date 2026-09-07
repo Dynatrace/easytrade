@@ -2,14 +2,11 @@ import { QueryClient } from "@tanstack/react-query"
 import { redirect } from "react-router"
 import { PresetUser, User, Balance } from "../../../api/user/types"
 import { transform } from "../QueryContext"
+import { SESSION_KEY } from "../../AuthContext/storage"
 import { balanceQuery, presetUsersQuery, userQuery } from "./queries"
 
 export function sessionUserProvider() {
-    const userId = sessionStorage.getItem("user-id")
-    // strings coming from session storage are wrapped in ""
-    // using json to parse it removes them and feels like better solution
-    // than using string replacements
-    return userId !== null ? (JSON.parse(userId) as string) : null
+    return sessionStorage.getItem(SESSION_KEY)
 }
 
 export function loadWithUser<T = unknown>(
