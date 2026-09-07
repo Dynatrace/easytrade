@@ -19,11 +19,12 @@ public class PortfolioService(
 
         var start = DateTimeOffset.UtcNow - PeriodLength;
 
-        var holdingQuantitiesByInstrument = await GetCurrentHoldingsAsync(accountId);
-        var priceHistoryByInstrument = await priceService.GetAllPricesAscByTimestamp(start);
+        var holdingsTask = GetCurrentHoldingsAsync(accountId);
+        var pricesTask = priceService.GetAllPricesAscByTimestamp(start);
+        await Task.WhenAll(holdingsTask, pricesTask);
         var bucketTimestamps = BuildBucketTimestamps(start);
 
-        return new PortfolioValuation(holdingQuantitiesByInstrument, priceHistoryByInstrument).BuildPoints(bucketTimestamps);
+        return new PortfolioValuation(holdingsTask.Result, pricesTask.Result).BuildPoints(bucketTimestamps);
     }
     private async Task<Dictionary<Guid, decimal>> GetCurrentHoldingsAsync(Guid accountId)
     {

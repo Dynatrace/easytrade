@@ -13,6 +13,7 @@ public class PriceServiceConnector(
 ) : IPriceServiceConnector
 {
     private const string AllInstrumentPricesCacheKey = "prices_all_instruments";
+    private static readonly SemaphoreSlim AllInstrumentPricesLock = new(1, 1);
 
     private readonly IConfiguration _configuration = configuration;
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
@@ -67,19 +68,32 @@ public class PriceServiceConnector(
             return cached;
         }
 
-        _logger.LogInformation("Fetching prices for all instruments since [{since}]", since);
+        await AllInstrumentPricesLock.WaitAsync();
+        try
+        {
+            if (_memoryCache.TryGetValue(AllInstrumentPricesCacheKey, out cached) && cached is not null)
+            {
+                return cached;
+            }
 
-        var endpoint = $"v1/prices/instruments?since={Uri.EscapeDataString(since.ToString("O"))}";
-        var pricesResult = await FetchAsync<PricesResultDto>(endpoint);
-        var prices = pricesResult?.Results ?? [];
-        _logger.LogDebug("Fetched prices: {content}", prices.ToJson());
+            _logger.LogInformation("Fetching prices for all instruments since [{since}]", since);
 
-        var result = prices.GroupBy(price => price.InstrumentId).ToDictionary(group => group.Key, group => group.ToList());
+            var ttl = TimeSpan.FromSeconds(60 - DateTimeOffset.UtcNow.Second);
+            var endpoint = $"v1/prices/instruments?since={Uri.EscapeDataString(since.ToString("O"))}";
+            var pricesResult = await FetchAsync<PricesResultDto>(endpoint);
+            var prices = pricesResult?.Results ?? [];
+            _logger.LogDebug("Fetched prices: {content}", prices.ToJson());
 
-        var ttl = TimeSpan.FromSeconds(60 - DateTimeOffset.UtcNow.Second);
-        _memoryCache.Set(AllInstrumentPricesCacheKey, result, ttl);
+            var result = prices.GroupBy(price => price.InstrumentId).ToDictionary(group => group.Key, group => group.ToList());
 
-        return result;
+            _memoryCache.Set(AllInstrumentPricesCacheKey, result, ttl);
+
+            return result;
+        }
+        finally
+        {
+            AllInstrumentPricesLock.Release();
+        }
     }
 
     private async Task<TResponse?> FetchAsync<TResponse>(string endpoint)
