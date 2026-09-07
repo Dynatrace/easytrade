@@ -5,6 +5,9 @@ namespace EasyTrade.BrokerService.Entities.Trades.Repository;
 
 public static class TradeMapper
 {
+    private static Timestamp? ToNullableTimestamp(DateTimeOffset? value) =>
+        value.HasValue ? Timestamp.FromDateTimeOffset(value.Value) : null;
+
     public static Trade FromProto(TradeMessage proto)
     {
         return new Trade(
@@ -31,6 +34,9 @@ public static class TradeMapper
             Direction = trade.Direction,
             Quantity = (double)trade.Quantity,
             EntryPrice = (double)trade.EntryPrice,
+            TimestampOpen = Timestamp.FromDateTimeOffset(trade.TimestampOpen),
+            TimestampClose = ToNullableTimestamp(trade.TimestampClose),
+            TradeClosed = trade.TradeClosed,
             TransactionHappened = trade.TransactionHappened,
             Status = trade.Status
         };
@@ -42,9 +48,7 @@ public static class TradeMapper
         {
             Id = trade.Id.ToString(),
             TradeClosed = trade.TradeClosed,
-            TimestampClose = trade.TimestampClose.HasValue
-                ? Timestamp.FromDateTimeOffset(trade.TimestampClose.Value)
-                : null,
+            TimestampClose = ToNullableTimestamp(trade.TimestampClose),
             Status = trade.Status
         };
     }

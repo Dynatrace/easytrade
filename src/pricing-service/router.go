@@ -43,6 +43,7 @@ func CreateRouter(handler *price.Handler) *gin.Engine {
 			pricesRoute.GET("/latest", handler.GetCurrentPrices)
 			pricesRoute.GET("/last", handler.GetLastPrice)
 			pricesRoute.GET("/instrument/:instrumentId", handler.GetPricingDataForInstrument)
+			pricesRoute.GET("/instruments", handler.GetPricingDataForInstrumentsAscByTimestamp)
 		}
 	}
 	router.GET("/version", version.GetVersion)

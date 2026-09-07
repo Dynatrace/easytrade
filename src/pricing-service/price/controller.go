@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Handler struct {
@@ -60,6 +61,35 @@ func (h *Handler) GetPricingDataForInstrument(ctx *gin.Context) {
 		return
 	}
 	negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: pricesFromProto(resp.GetPrices())})
+}
+
+func (h *Handler) GetPricingDataForInstrumentsAscByTimestamp(ctx *gin.Context) {
+	since, ok := parseSinceQuery(ctx, "since")
+	if !ok {
+		return
+	}
+
+	resp, err := h.client.GetPricesForInstrumentsAscByTimestamp(context.Background(), &pb.GetPricesForInstrumentsAscByTimestampRequest{
+		Since: timestamppb.New(since),
+	})
+	if handleInternalError(ctx, err) {
+		return
+	}
+	negotiateResponse(ctx, http.StatusOK, &pricesResult{Results: pricesFromProto(resp.GetPrices())})
+}
+
+func parseSinceQuery(ctx *gin.Context, param string) (time.Time, bool) {
+	raw := ctx.Query(param)
+	if raw == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": param + " is required"})
+		return time.Time{}, false
+	}
+	since, err := time.Parse(time.RFC3339, raw)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid " + param})
+		return time.Time{}, false
+	}
+	return since, true
 }
 
 func parseRecordsLimit(ctx *gin.Context) int32 {

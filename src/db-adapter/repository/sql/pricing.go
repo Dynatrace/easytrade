@@ -60,6 +60,13 @@ func (repo *PricingRepository) GetForInstrument(ctx context.Context, instrumentI
 	return findAndMapAll(query, (*Price).toProto)
 }
 
+func (repo *PricingRepository) GetAllAscByTimestamp(ctx context.Context, since time.Time) ([]*pb.PriceMessage, error) {
+	query := repo.db.WithContext(ctx).
+		Where(q(repository.ColTimestamp)+" >= ?", since).
+		Order(q(repository.ColTimestamp) + " ASC")
+	return findAndMapAll(query, (*Price).toProto)
+}
+
 func (repo *PricingRepository) InsertBatch(ctx context.Context, req *pb.InsertPricesBatchRequest) (int32, error) {
 	if len(req.Rows) == 0 {
 		return 0, nil

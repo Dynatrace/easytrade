@@ -45,4 +45,16 @@ public class FakePriceServiceConnector : IPriceServiceConnector
             .Take(count);
         return Task.FromResult(prices);
     }
+
+    public Task<IReadOnlyDictionary<Guid, List<Price>>> GetAllPricesAscByTimestamp(DateTimeOffset since)
+    {
+        IReadOnlyDictionary<Guid, List<Price>> result = _prices
+            .Where(x => x.Timestamp >= since)
+            .GroupBy(x => x.InstrumentId)
+            .ToDictionary(
+                group => group.Key,
+                group => group.OrderBy(x => x.Timestamp).ToList()
+            );
+        return Task.FromResult(result);
+    }
 }
