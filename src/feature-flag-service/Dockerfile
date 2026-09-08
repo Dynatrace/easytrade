@@ -11,9 +11,9 @@ RUN go mod download \
 
 COPY [".", "."]
 
-ARG BUILD_VERSION=dev
-ARG BUILD_DATE=unknown
-ARG BUILD_COMMIT=unknown
+ARG BUILD_VERSION="{{BUILD_VERSION}}"
+ARG BUILD_DATE="{{BUILD_DATE}}"
+ARG BUILD_COMMIT="{{BUILD_COMMIT}}"
 
 RUN go test ./... \
     && go build \
