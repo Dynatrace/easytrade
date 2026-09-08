@@ -107,18 +107,13 @@ credit-card-order-service:
     JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
     FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
-  startupProbe:
-    httpGet:
-      path: /livez
-      port: http
-    failureThreshold: 15
-    periodSeconds: 5
   livenessProbe:
     httpGet:
       path: /livez
       port: http
     initialDelaySeconds: 0
     periodSeconds: 10
+    failureThreshold: 15
   readinessProbe:
     httpGet:
       path: /readyz
