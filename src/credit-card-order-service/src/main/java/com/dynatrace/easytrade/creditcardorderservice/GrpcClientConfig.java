@@ -6,6 +6,7 @@ import io.grpc.ManagedChannelBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 import jakarta.annotation.PreDestroy;
 
@@ -15,6 +16,7 @@ public class GrpcClientConfig {
     private ManagedChannel dbAdapterChannel;
 
     @Bean
+    @Lazy
     public ManagedChannel dbAdapterChannel(@Value("${DB_ADAPTER_ADDRESS}") String target) {
         this.dbAdapterChannel = ManagedChannelBuilder.forTarget(target).usePlaintext().build();
         return this.dbAdapterChannel;
