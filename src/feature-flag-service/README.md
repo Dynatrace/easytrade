@@ -28,4 +28,4 @@ docker run -d --name SERVICE_NAME IMAGE_NAME
 | `factory_crisis` | `false` | When enabled, the factory won't produce new cards, causing the Third party service not to process credit card orders. |
 | `credit_card_meltdown` | `false` | When enabled, checking the latest credit card order status results in a division by zero error. |
 | `high_cpu_usage` | `false` | Causes a slowdown of broker-service response time and increases CPU usage. If deployed on K8s, a CPU resource limit is also applied. |
-| `credit_card_validation` | `false` | When enabled, credit card numbers are validated via the mainframe before deposit/withdraw operations in broker-service are processed. Requires `MAINFRAME_SERVICE_URL` to be configured in broker-service. Controlled by the `ENABLE_CREDIT_CARD_VALIDATION` environment variable. |
+| `credit_card_validation` | `false` | When enabled, credit card numbers are validated via the mainframe before deposit/withdraw operations in broker-service are processed. Requires `MAINFRAME_SERVICE_ADDRESS` to be configured in broker-service. Controlled by the `ENABLE_CREDIT_CARD_VALIDATION` environment variable. |

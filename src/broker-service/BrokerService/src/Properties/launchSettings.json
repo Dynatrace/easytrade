@@ -17,7 +17,6 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DB_ADAPTER_ADDRESS": "localhost:50051",
-        "USER_SERVICE_ADDRESS": "http://localhost:8095",
         "PRICING_SERVICE_ADDRESS": "http://localhost:8083",
         "FEATURE_FLAG_SERVICE_ADDRESS": "http://localhost:8094"
       }

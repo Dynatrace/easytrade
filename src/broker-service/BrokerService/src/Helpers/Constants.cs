@@ -4,7 +4,6 @@
     {
         public const string PricingServiceAddress = "PRICING_SERVICE_ADDRESS";
         public const string DbAdapterAddress = "DB_ADAPTER_ADDRESS";
-        public const string UserServiceAddress = "USER_SERVICE_ADDRESS";
         public const string FeatureFlagServiceAddress = "FEATURE_FLAG_SERVICE_ADDRESS";
         public const string HighCpuUsageRequestDelayMs = "HIGH_CPU_USAGE_REQUEST_DELAY_MS";
         public const string HighCpuUsageConcurrency = "HIGH_CPU_USAGE_CONCURRENCY";
