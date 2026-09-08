@@ -24,9 +24,9 @@ ARG BUILD_COMMIT="{{BUILD_COMMIT}}"
 
 RUN go test ./... \
     && go build \
-        -ldflags "-X 'background-service/server.buildVersion=${BUILD_VERSION}' \
-                  -X 'background-service/server.buildDate=${BUILD_DATE}' \
-                  -X 'background-service/server.buildCommit=${BUILD_COMMIT}'" \
+        -ldflags "-X 'dynatrace.com/easytrade/background-service/version.buildVersion=${BUILD_VERSION}' \
+                  -X 'dynatrace.com/easytrade/background-service/version.buildDate=${BUILD_DATE}' \
+                  -X 'dynatrace.com/easytrade/background-service/version.buildCommit=${BUILD_COMMIT}'" \
         -o background-service
 
 FROM alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
