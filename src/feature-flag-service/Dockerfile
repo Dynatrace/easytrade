@@ -11,17 +11,8 @@ RUN go mod download \
 
 COPY [".", "."]
 
-ARG BUILD_VERSION="{{BUILD_VERSION}}"
-ARG BUILD_DATE="{{BUILD_DATE}}"
-ARG BUILD_COMMIT="{{BUILD_COMMIT}}"
-
 RUN go test ./... \
-    && go build \
-        -ldflags "-linkmode=external \
-                  -X dynatrace.com/easytrade/feature-flag-service/version.BuildVersion=${BUILD_VERSION} \
-                  -X dynatrace.com/easytrade/feature-flag-service/version.BuildDate=${BUILD_DATE} \
-                  -X dynatrace.com/easytrade/feature-flag-service/version.BuildCommit=${BUILD_COMMIT}" \
-        -o feature-flag-service .
+    && go build -ldflags '-linkmode=external' -o feature-flag-service .
 
 FROM alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
 
