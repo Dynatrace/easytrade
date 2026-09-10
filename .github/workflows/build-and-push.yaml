@@ -50,13 +50,28 @@ jobs:
   calc-version:
     uses: ./.github/workflows/reusable-calc-version.yaml
 
-  build-push-easytrade:
-    if: needs.calc-version.outputs.already-released == 'false'
+  list-services:
     runs-on: ubuntu-24.04
-    needs: calc-version
     outputs:
-      artifact-dir: ${{ steps.build-and-push.outputs.artifact-dir }}
-      artifact-name: ${{ steps.build-and-push.outputs.artifact-name }}
+      services: ${{ steps.list.outputs.services }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: List buildable services
+        id: list
+        uses: ./.github/actions/list-build-services
+
+  build-push-image:
+    if: needs.calc-version.outputs.already-released == 'false'
+    needs:
+      - calc-version
+      - list-services
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ${{ fromJson(needs.list-services.outputs.services) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -71,16 +86,22 @@ jobs:
         with:
           version: ${{ needs.calc-version.outputs.version }}
 
-      - name: Build and push easytrade to docker repository
-        id: build-and-push
+      - name: Build and push ${{ matrix.service }} to docker repository
         uses: ./.github/actions/build-push-images
         with:
           push: true
           push-latest: ${{ needs.calc-version.outputs.is-release }}
           tag: ${{ needs.calc-version.outputs.version }}
           registry: ${{ env.CONTAINER_REGISTRY }}
-          artifact-name: docker-compose
-          artifact-dir: ./build-artifacts/
+          service: ${{ matrix.service }}
+
+  build-push-helm:
+    if: needs.calc-version.outputs.already-released == 'false'
+    runs-on: ubuntu-24.04
+    needs: calc-version
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
       - name: Build and push Helm chart
         uses: ./.github/actions/build-push-helm
@@ -91,11 +112,45 @@ jobs:
           version: ${{ needs.calc-version.outputs.version }}
           credentials: ${{ secrets.GAR_CREDENTIALS }}
 
+  build-artifact:
+    if: needs.calc-version.outputs.already-released == 'false'
+    runs-on: ubuntu-24.04
+    needs:
+      - calc-version
+      - build-push-image
+    outputs:
+      artifact-dir: ${{ steps.artifacts.outputs.artifact-dir }}
+      artifact-name: ${{ steps.artifacts.outputs.artifact-name }}
+    env:
+      REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
+      TAG: ${{ needs.calc-version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Prepare build artifacts
+        id: artifacts
+        run: |
+          ARTIFACT_DIR=./build-artifacts/
+          mkdir -p $ARTIFACT_DIR
+          envsubst < compose.yaml > $ARTIFACT_DIR/compose.yaml
+          echo "artifact-dir=$ARTIFACT_DIR" >> $GITHUB_OUTPUT
+          echo "artifact-name=docker-compose" >> $GITHUB_OUTPUT
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v6
+        with:
+          name: docker-compose
+          path: ${{ steps.artifacts.outputs.artifact-dir }}
+          if-no-files-found: error
+
   promote:
     if: needs.calc-version.outputs.is-release == 'true'
     needs:
       - calc-version
-      - build-push-easytrade
+      - build-push-image
+      - build-push-helm
+      - build-artifact
     permissions:
       contents: write
       actions: write
@@ -103,5 +158,5 @@ jobs:
     with:
       version: ${{ needs.calc-version.outputs.version }}
       trigger-deploy: false
-      artifact-name: ${{ needs.build-push-easytrade.outputs.artifact-name }}
-      artifact-dir: ${{ needs.build-push-easytrade.outputs.artifact-dir }}
+      artifact-name: ${{ needs.build-artifact.outputs.artifact-name }}
+      artifact-dir: ${{ needs.build-artifact.outputs.artifact-dir }}
