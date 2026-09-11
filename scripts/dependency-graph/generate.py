@@ -45,7 +45,7 @@ def discover_off_compose_services(compose_services: dict) -> list:
 
 def infer_env_edges(compose_services: dict, node_names: set) -> set:
     """Edges inferred from a service's environment values referencing another
-    node's name, e.g. `user-service:8080` or `http://frontendreverseproxy`."""
+    node's name, e.g. `user-service:8080` """
     patterns = {
         node: re.compile(rf"(?<![A-Za-z0-9_-]){re.escape(node)}(?![A-Za-z0-9_-])")
         for node in node_names
