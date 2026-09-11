@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"dynatrace.com/easytrade/feature-flag-service/flag"
 )
@@ -22,7 +23,8 @@ func getEnvBool(key string, defaultVal bool) bool {
 
 func initFlags() map[string]*flag.Flag {
 	enableModify := getEnvBool("ENABLE_MODIFY", true)
-	return map[string]*flag.Flag{
+	startedAt := time.Now().UTC()
+	flags := map[string]*flag.Flag{
 		"frontend_feature_flag_management": {
 			ID:           "frontend_feature_flag_management",
 			Enabled:      getEnvBool("ENABLE_FRONTEND_MODIFY", true),
@@ -80,6 +82,13 @@ func initFlags() map[string]*flag.Flag {
 			Tag:          "problem_pattern",
 		},
 	}
+
+	for _, f := range flags {
+		if f.Enabled {
+			f.EnabledAt = &startedAt
+		}
+	}
+	return flags
 }
 
 func main() {

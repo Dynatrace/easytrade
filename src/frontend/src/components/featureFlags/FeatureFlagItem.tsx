@@ -5,6 +5,7 @@ import { handleFlagToggle } from "../../api/featureFlags/problemPatterns"
 import { useConfigFlagsQuery } from "../../contexts/QueryContext/featureFlag/hooks"
 import { ContentCopyIcon, InfoIcon, LockIcon } from "../icons"
 import { useToast } from "../../contexts/ToastContext/context"
+import { useElapsed } from "./elapsed"
 
 function getFeatureFlagCurl(flagId: string, enable: boolean): string {
     return `curl -X PUT "${window.location.origin}/feature-flag-service/v1/flags/${flagId}" -H "Content-Type: application/json" -d '{"enabled": ${enable}}'`
@@ -16,13 +17,16 @@ export default function FeatureFlagItem({
     description,
     enabled,
     isModifiable,
+    enabledAt,
 }: {
     flagId: string
     name: string
     description?: string
     enabled: boolean
     isModifiable: boolean
+    enabledAt?: string
 }) {
+    const elapsed = useElapsed(enabled ? enabledAt : undefined)
     const [modalOpen, setModalOpen] = useState(false)
     const dialogRef = useRef<HTMLDialogElement>(null)
     const { showToast } = useToast()
@@ -73,7 +77,14 @@ export default function FeatureFlagItem({
         <>
             {/* List row */}
             <div className="flag-list-row">
-                <span className="flag-list-name">{displayName}</span>
+                <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-1)", minWidth: 0, flex: 1 }}>
+                    <span className="flag-list-name">{displayName}</span>
+                    {elapsed !== null && (
+                        <span style={{ color: "var(--text-secondary)", fontSize: "var(--text-xs)" }}>
+                            {`enabled ${elapsed} ago`}
+                        </span>
+                    )}
+                </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "var(--space-3)", flexShrink: 0 }}>
                     {/* Toggle slider */}
                     <label
