@@ -31,7 +31,6 @@ on:
         required: true
 
 env:
-  GAR_ADDRESS: europe-docker.pkg.dev
   NAMESPACE: easytrade
   CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   HELM_REGISTRY: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
@@ -76,18 +75,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Login to Google Artifact Registry
-        run: |
-          echo "${{ secrets.GAR_CREDENTIALS }}" | \
-            docker login -u _json_key_base64 --password-stdin "${{ env.GAR_ADDRESS }}"
-
       - name: Set application version
         uses: ./.github/actions/set-version
         with:
           version: ${{ needs.calc-version.outputs.version }}
 
-      - name: Build and push ${{ matrix.service }} to docker repository
+      - name: Build and push ${{ matrix.service }}
         uses: ./.github/actions/build-push-images
+        env:
+          GAR_CREDENTIALS: ${{ secrets.GAR_CREDENTIALS }}
         with:
           push: true
           push-latest: ${{ needs.calc-version.outputs.is-release }}
@@ -108,7 +104,7 @@ jobs:
         with:
           chart-path: ${{ env.HELM_CHART_PATH }}
           push: true
-          registry-url: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
+          registry-url: ${{ env.HELM_REGISTRY }}
           version: ${{ needs.calc-version.outputs.version }}
           credentials: ${{ secrets.GAR_CREDENTIALS }}
 
@@ -119,30 +115,18 @@ jobs:
       - calc-version
       - build-push-image
     outputs:
-      artifact-dir: ${{ steps.artifacts.outputs.artifact-dir }}
-      artifact-name: ${{ steps.artifacts.outputs.artifact-name }}
-    env:
-      REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
-      TAG: ${{ needs.calc-version.outputs.version }}
+      artifact-dir: ${{ steps.artifact.outputs.artifact-dir }}
+      artifact-name: ${{ steps.artifact.outputs.artifact-name }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Prepare build artifacts
-        id: artifacts
-        run: |
-          ARTIFACT_DIR=./build-artifacts/
-          mkdir -p $ARTIFACT_DIR
-          envsubst < compose.yaml > $ARTIFACT_DIR/compose.yaml
-          echo "artifact-dir=$ARTIFACT_DIR" >> $GITHUB_OUTPUT
-          echo "artifact-name=docker-compose" >> $GITHUB_OUTPUT
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v6
+      - name: Build release artifact
+        id: artifact
+        uses: ./.github/actions/build-artifact
         with:
-          name: docker-compose
-          path: ${{ steps.artifacts.outputs.artifact-dir }}
-          if-no-files-found: error
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          tag: ${{ needs.calc-version.outputs.version }}
 
   promote:
     if: needs.calc-version.outputs.is-release == 'true'

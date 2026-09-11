@@ -35,6 +35,12 @@ runs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
+    - name: Retrieve GAR credentials
+      if: inputs.push == 'true'
+      shell: bash
+      run: |
+        echo "$GAR_CREDENTIALS" | docker login -u _json_key_base64 --password-stdin europe-docker.pkg.dev
+
     - name: Build Docker images
       id: build
       shell: bash

@@ -1,0 +1,46 @@
+name: Build Release Artifact
+description: Render compose.yaml with resolved image references and upload it as a build artifact
+inputs:
+  compose-file:
+    description: Path to the compose file to render
+    required: false
+    default: compose.yaml
+  registry:
+    description: Container registry to substitute into the compose file
+    required: true
+  tag:
+    description: Image tag to substitute into the compose file
+    required: true
+  artifact-name:
+    description: Name of the uploaded artifact
+    required: false
+    default: docker-compose
+outputs:
+  artifact-dir:
+    description: Directory containing the rendered artifact
+    value: ${{ steps.render.outputs.artifact-dir }}
+  artifact-name:
+    description: Name of the uploaded artifact
+    value: ${{ inputs.artifact-name }}
+
+runs:
+  using: composite
+  steps:
+    - name: Render compose file
+      id: render
+      shell: bash
+      env:
+        REGISTRY: ${{ inputs.registry }}
+        TAG: ${{ inputs.tag }}
+      run: |
+        ARTIFACT_DIR=./build-artifacts/
+        mkdir -p "$ARTIFACT_DIR"
+        envsubst < "${{ inputs.compose-file }}" > "$ARTIFACT_DIR/compose.yaml"
+        echo "artifact-dir=$ARTIFACT_DIR" >> $GITHUB_OUTPUT
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v6
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: ${{ steps.render.outputs.artifact-dir }}
+        if-no-files-found: error
