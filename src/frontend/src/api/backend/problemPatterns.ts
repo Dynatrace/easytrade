@@ -5,6 +5,7 @@ export type FeatureFlag = {
     description: string
     isModifiable: boolean
     tag: string
+    enabledAt?: string
 }
 
 export type FlagResponseContainer = {

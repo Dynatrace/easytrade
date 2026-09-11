@@ -1,6 +1,9 @@
 package flag
 
-import "sync"
+import (
+	"sync"
+	"time"
+)
 
 type Service struct {
 	mu    sync.RWMutex
@@ -49,6 +52,12 @@ func (s *Service) Update(id string, enabled bool) (*Flag, error) {
 	}
 	if !f.IsModifiable {
 		return nil, &NonModifiableError{Name: f.Name}
+	}
+	if enabled && !f.Enabled {
+		now := time.Now().UTC()
+		f.EnabledAt = &now
+	} else if !enabled {
+		f.EnabledAt = nil
 	}
 	f.Enabled = enabled
 	return f, nil

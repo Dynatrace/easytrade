@@ -3,15 +3,17 @@ package flag
 import (
 	"errors"
 	"fmt"
+	"time"
 )
 
 type Flag struct {
-	ID           string `json:"id"`
-	Enabled      bool   `json:"enabled"`
-	Name         string `json:"name"`
-	Description  string `json:"description"`
-	IsModifiable bool   `json:"isModifiable"`
-	Tag          string `json:"tag"`
+	ID           string     `json:"id"`
+	Enabled      bool       `json:"enabled"`
+	Name         string     `json:"name"`
+	Description  string     `json:"description"`
+	IsModifiable bool       `json:"isModifiable"`
+	Tag          string     `json:"tag"`
+	EnabledAt    *time.Time `json:"enabledAt,omitempty"`
 }
 
 type FlagContainer struct {
