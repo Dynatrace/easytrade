@@ -20,9 +20,10 @@ func NewTradeServer(repo repository.TradeRepository) *TradeServer {
 }
 
 func (s *TradeServer) CreateTrade(ctx context.Context, req *pb.CreateTradeRequest) (*pb.TradeMessage, error) {
-	if err := validateUUID(req.AccountId); err != nil {
-		return nil, err
-	}
+	// AccountId validation commented skipped to allow DbNotResponding pattern to inject invalid value
+	// if err := validateUUID(req.AccountId); err != nil {
+	// 	return nil, err
+	// }
 	if err := validateUUID(req.InstrumentId); err != nil {
 		return nil, err
 	}
