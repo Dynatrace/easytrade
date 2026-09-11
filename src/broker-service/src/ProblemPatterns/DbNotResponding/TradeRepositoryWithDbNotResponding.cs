@@ -15,7 +15,7 @@ public class TradeRepositoryWithDbNotResponding(
     {
         if (await _pluginManager.GetPluginState(Constants.DbNotResponding, false))
         {
-            trade.Id = Constants.InvalidTradeId;
+            trade.AccountId = Guid.Empty;
         }
         return await base.CreateTradeAsync(trade);
     }

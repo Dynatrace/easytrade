@@ -1,3 +1,4 @@
+using EasyTrade.BrokerService.Helpers;
 using EasyTrade.DbAdapter.Trade.Grpc;
 using Google.Protobuf.WellKnownTypes;
 
@@ -29,7 +30,7 @@ public static class TradeMapper
     {
         return new CreateTradeRequest
         {
-            AccountId = trade.AccountId.ToString(),
+            AccountId = ParseAccountId(trade),
             InstrumentId = trade.InstrumentId.ToString(),
             Direction = trade.Direction,
             Quantity = (double)trade.Quantity,
@@ -54,4 +55,9 @@ public static class TradeMapper
     }
 
     public static List<Trade> FromProto(IEnumerable<TradeMessage> protos) => [.. protos.Select(FromProto)];
+
+    private static string ParseAccountId(Trade trade)
+    {
+        return trade.AccountId == Guid.Empty ? Constants.InvalidAccountId : trade.AccountId.ToString();
+    }
 }
