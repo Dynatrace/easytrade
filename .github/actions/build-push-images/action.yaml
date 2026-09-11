@@ -24,11 +24,6 @@ inputs:
     description: "Single service to build/push. Leave empty to build/push all services in the compose file"
     required: false
     default: ""
-outputs:
-  images:
-    description: "List of built images"
-    value: ${{ steps.build.outputs.images }}
-
 runs:
   using: composite
   steps:
@@ -42,7 +37,6 @@ runs:
         echo "$GAR_CREDENTIALS" | docker login -u _json_key_base64 --password-stdin europe-docker.pkg.dev
 
     - name: Build Docker images
-      id: build
       shell: bash
       env:
         REGISTRY: ${{ inputs.registry }}
@@ -50,16 +44,6 @@ runs:
       run: |
         echo "Building images with tag: $TAG"
         docker compose -f ${{ inputs.compose-file }} build --build-arg GIT_COMMIT="$GITHUB_SHA" --build-arg GIT_ORIGIN="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" ${{ inputs.service }}
-
-        # List built images. Note: `config --services` ignores a service-name filter (docker compose
-        # quirk), so fall back to the requested service name directly when one was given.
-        if [ -n "${{ inputs.service }}" ]; then
-          IMAGES="${{ inputs.service }}"
-        else
-          IMAGES=$(docker compose -f ${{ inputs.compose-file }} config --services | tr '\n' ',' | sed 's/,$//')
-        fi
-        echo "images=$IMAGES" >> $GITHUB_OUTPUT
-        echo "Built images: $IMAGES"
 
     - name: Push Docker images
       if: inputs.push == 'true'
