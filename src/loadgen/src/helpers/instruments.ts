@@ -2,6 +2,7 @@ import { IPageActions, IHandleWrapper } from "@demoability/loadgen-core"
 import { selectors } from "../selectors"
 import { gotoPageWithNavBar } from "./common"
 import { arrayRandom } from "../utils"
+import { reliableClick, reliableNavigateHandle } from "./reliableActions"
 
 export async function gotoInstrumentsPage(
     pageActions: IPageActions
@@ -13,7 +14,7 @@ export async function gotoInstrumentPage(
     pageActions: IPageActions,
     instrumentHandle: IHandleWrapper
 ): Promise<void> {
-    await pageActions.navigateHandle(instrumentHandle)
+    await reliableNavigateHandle(pageActions, instrumentHandle)
 }
 
 export async function getRandomInstrument(
@@ -59,18 +60,18 @@ export async function gotoRandomOwnedInstrument(
 }
 
 export async function selectQuickBuy(pageActions: IPageActions): Promise<void> {
-    await pageActions.click(selectors.instrumentPage_quickBuyForm)
+    await reliableClick(pageActions, selectors.instrumentPage_quickBuyForm)
 }
 export async function selectQuickSell(
     pageActions: IPageActions
 ): Promise<void> {
-    await pageActions.click(selectors.instrumentPage_quickSellForm)
+    await reliableClick(pageActions, selectors.instrumentPage_quickSellForm)
 }
 export async function selectBuy(pageActions: IPageActions): Promise<void> {
-    await pageActions.click(selectors.instrumentPage_buyForm)
+    await reliableClick(pageActions, selectors.instrumentPage_buyForm)
 }
 export async function selectSell(pageActions: IPageActions): Promise<void> {
-    await pageActions.click(selectors.instrumentPage_sellForm)
+    await reliableClick(pageActions, selectors.instrumentPage_sellForm)
 }
 
 export async function getInstrumentName(
@@ -96,7 +97,10 @@ export async function getCurrentBalance(
         selectors.common_currentBalance,
         "value"
     )
-    return parseFloat(balanceString)
+    // QuickBuyForm renders this input's value through formatCurrency(), e.g. "$1,234.56" -- strip
+    // everything but digits/sign/decimal point before parsing, or parseFloat chokes on the "$"
+    // and returns NaN.
+    return parseFloat(balanceString.replace(/[^0-9.-]+/g, ""))
 }
 export async function getInstrumentPossessedAmount(
     pageActions: IPageActions
@@ -129,7 +133,7 @@ export async function scheduleTransaction(
         duration.toString()
     )
     await pageActions.standardDelay()
-    await pageActions.click(selectors.instrumentPage_submitButton)
+    await reliableClick(pageActions, selectors.instrumentPage_submitButton)
 }
 
 export async function trade(
@@ -141,7 +145,7 @@ export async function trade(
         amount.toString()
     )
     await pageActions.standardDelay()
-    await pageActions.click(selectors.instrumentPage_submitButton)
+    await reliableClick(pageActions, selectors.instrumentPage_submitButton)
 }
 
 async function waitForInstruments(pageActions: IPageActions): Promise<void> {

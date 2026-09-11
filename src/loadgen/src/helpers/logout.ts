@@ -1,5 +1,6 @@
 import { IPageActions } from "@demoability/loadgen-core"
 import { selectors } from "../selectors"
+import { reliableClick, reliableNavigate } from "./reliableActions"
 
 /**
  * Assumes user is logged in.
@@ -8,7 +9,7 @@ import { selectors } from "../selectors"
  * @param pageActions
  */
 export async function logout(pageActions: IPageActions): Promise<void> {
-    await pageActions.click(selectors.navigation_dropdownToggler)
+    await reliableClick(pageActions, selectors.navigation_dropdownToggler)
     await pageActions.shortDelay()
-    await pageActions.navigate(selectors.navigation_logout)
+    await reliableNavigate(pageActions, selectors.navigation_logout)
 }

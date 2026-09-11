@@ -2,6 +2,7 @@ import { IPageActions } from "@demoability/loadgen-core"
 import { User } from "../user"
 import { selectors } from "../selectors"
 import { gotoPageWithNavBar, selectCardProvider } from "./common"
+import { reliableClick } from "./reliableActions"
 
 /**
  * Assumes starting point Deposit page.
@@ -19,9 +20,9 @@ export async function deposit(
     await pageActions.input(selectors.depositPage_amount, `${value}`)
     await pageActions.standardDelay()
     await fillUserDepositData(pageActions, user)
-    await pageActions.click(selectors.depositPage_acceptTerms)
+    await reliableClick(pageActions, selectors.depositPage_acceptTerms)
     await pageActions.shortDelay()
-    await pageActions.click(selectors.depositPage_submit)
+    await reliableClick(pageActions, selectors.depositPage_submit)
 }
 
 export async function gotoDepositPage(

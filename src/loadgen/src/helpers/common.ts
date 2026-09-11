@@ -1,6 +1,7 @@
 import { IPageActions, ISelector } from "@demoability/loadgen-core"
 import { User } from "../user"
 import { Page } from "puppeteer"
+import { reliableNavigate } from "./reliableActions"
 
 export const currencyFormatter = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -21,7 +22,7 @@ export async function gotoPageWithNavBar(
     navBarSelector: ISelector
 ): Promise<void> {
     // Sidebar always visible — navigate directly without toggling
-    await pageActions.navigate(navBarSelector)
+    await reliableNavigate(pageActions, navBarSelector)
     await pageActions.standardDelay()
 }
 

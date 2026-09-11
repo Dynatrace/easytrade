@@ -2,6 +2,7 @@ import { IPageActions } from "@demoability/loadgen-core"
 import { User } from "../user"
 import { selectors } from "../selectors"
 import { gotoPageWithNavBar } from "./common"
+import { reliableClick, reliableNavigate } from "./reliableActions"
 
 export async function gotoCreditCardPage(
     pageActions: IPageActions
@@ -26,13 +27,13 @@ export async function orderCard(
     // Native <select id="type">: select by value attribute ("silver"/"gold"/"platinum").
     await pageActions.selectOption(selectors.creditCardPage_cardTypeInput, cardType.toLowerCase())
     await pageActions.standardDelay()
-    await pageActions.click(selectors.creditCardPage_acceptTerms)
+    await reliableClick(pageActions, selectors.creditCardPage_acceptTerms)
     await pageActions.standardDelay()
-    await pageActions.click(selectors.creditCardPage_orderCardButton)
+    await reliableClick(pageActions, selectors.creditCardPage_orderCardButton)
 }
 
 export async function revokeCard(pageActions: IPageActions): Promise<void> {
-    await pageActions.navigate(selectors.creditCardPage_revokeCard)
+    await reliableNavigate(pageActions, selectors.creditCardPage_revokeCard)
 }
 
 export async function checkIfCardActive(
