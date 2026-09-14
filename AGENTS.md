@@ -8,16 +8,16 @@
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
 | Java 21 / Spring Boot / Gradle | `credit-card-order-service`, `feature-flag-service`          |
 | Go / Go Modules                | `background-service`, `db-adapter`, `pricing-service`, `user-service`                          |
-| TypeScript / Node.js / npm     | `frontend`, `loadgen`, `offerservice`                                                                                    |
+| TypeScript / Node.js / npm     | `frontend`, `load-gen`, `offer-service`                                                                                    |
 | C# / .NET 8 / NuGet            | `broker-service`                                                                                            |
 | Python / Poetry                | `db/user-generator` (local utility script, not a service)                                                                |
-| Config only (no packages)      | `frontendreverseproxy` (nginx), `db` (MSSQL)                                                              |
+| Config only (no packages)      | `frontend-reverse-proxy` (nginx), `db` (MSSQL)                                                              |
 
 ## Vulnerability remediation process
 
 ### Scanning
 
-Run `snyk test --json --all-projects` from within each service directory that has a package manifest. Services without manifests (`frontendreverseproxy`) cannot be scanned this way.
+Run `snyk test --json --all-projects` from within each service directory that has a package manifest. Services without manifests (`frontend-reverse-proxy`) cannot be scanned this way.
 
 Run scans in parallel across all services to save time.
 
@@ -38,7 +38,7 @@ Vulnerable dependencies that are not direct dependencies of the service are pinn
 
 Bump versions in this block across **all** affected `build.gradle` files in one pass.
 
-#### Node.js / npm (services: `frontend`, `offerservice`)
+#### Node.js / npm (services: `frontend`, `offer-service`)
 
 - Bump the vulnerable package version constraint in `dependencies` in `package.json`.
 - Pin transitive dependencies using the `overrides` field in `package.json`.

@@ -7,21 +7,21 @@ x-service: &default-service
       max-size: "10m"
 
 x-addresses:
-  offer-service: &offerServiceAddress "http://offerservice:8080"
+  offer-service: &offerServiceAddress "http://offer-service:8080"
   feature-flag-service: &featureFlagServiceAddress "http://feature-flag-service:8080"
   credit-card-order-service: &creditCardOrderServiceAddress "http://credit-card-order-service:8080"
   db-adapter: &dbAdapterAddress "db-adapter:50051"
   user-service: &userServiceAddress "http://user-service:8080"
   pricing-service: &pricingServiceAddress "http://pricing-service:8080"
   background-service: &backgroundServiceAddress "http://background-service:8080"
-  easytrade-url: &easytradeUrl "http://frontendreverseproxy"
+  easytrade-url: &easytradeUrl "http://frontend-reverse-proxy"
 
 services:
   background-service:
     <<: *default-service
     image: ${REGISTRY}/background-service:${TAG}
     depends_on:
-      - offerservice
+      - offer-service
     environment:
       OFFER_SERVICE_ADDRESS: *offerServiceAddress
       FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
@@ -93,32 +93,32 @@ services:
       - pricing-service
       - credit-card-order-service
 
-  frontendreverseproxy:
+  frontend-reverse-proxy:
     <<: *default-service
-    image: ${REGISTRY}/frontendreverseproxy:${TAG}
+    image: ${REGISTRY}/frontend-reverse-proxy:${TAG}
     depends_on:
       - broker-service
       - frontend
       - user-service
       - pricing-service
       - feature-flag-service
-      - offerservice
+      - offer-service
       - credit-card-order-service
       - background-service
     ports:
       - 80:80
 
-  loadgen:
+  load-gen:
     <<: *default-service
-    image: ${REGISTRY}/loadgen:${TAG}
+    image: ${REGISTRY}/load-gen:${TAG}
     depends_on:
-      - frontendreverseproxy
+      - frontend-reverse-proxy
     environment:
       EASYTRADE_URL: *easytradeUrl
 
-  offerservice:
+  offer-service:
     <<: *default-service
-    image: ${REGISTRY}/offerservice:${TAG}
+    image: ${REGISTRY}/offer-service:${TAG}
     depends_on:
       - user-service
       - db-adapter
