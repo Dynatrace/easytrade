@@ -9,37 +9,37 @@ function pad(n: number): string {
     return n.toString().padStart(2, "0")
 }
 
-/**
- * Formats a duration as a compact, human readable string.
- * Seconds are only shown below one hour — that is the range where they
- * matter while waiting for a problem pattern to show up in Dynatrace.
- */
-export function formatElapsed(ms: number): string {
-    const total = Math.max(0, ms)
+function formatSeconds(ms: number): string {
+    return `${Math.floor(ms / MS_IN_SECOND)}s`
+}
 
-    if (total < MS_IN_MINUTE) {
-        return `${Math.floor(total / MS_IN_SECOND)}s`
-    }
-    if (total < MS_IN_HOUR) {
-        const minutes = Math.floor(total / MS_IN_MINUTE)
-        const seconds = Math.floor((total % MS_IN_MINUTE) / MS_IN_SECOND)
-        return `${minutes}m ${pad(seconds)}s`
-    }
-    if (total < MS_IN_DAY) {
-        const hours = Math.floor(total / MS_IN_HOUR)
-        const minutes = Math.floor((total % MS_IN_HOUR) / MS_IN_MINUTE)
-        return `${hours}h ${pad(minutes)}m`
-    }
-    const days = Math.floor(total / MS_IN_DAY)
-    const hours = Math.floor((total % MS_IN_DAY) / MS_IN_HOUR)
+function formatMinutesSeconds(ms: number): string {
+    const minutes = Math.floor(ms / MS_IN_MINUTE)
+    const seconds = Math.floor((ms % MS_IN_MINUTE) / MS_IN_SECOND)
+    return `${minutes}m ${pad(seconds)}s`
+}
+
+function formatHoursMinutes(ms: number): string {
+    const hours = Math.floor(ms / MS_IN_HOUR)
+    const minutes = Math.floor((ms % MS_IN_HOUR) / MS_IN_MINUTE)
+    return `${hours}h ${pad(minutes)}m`
+}
+
+function formatDaysHours(ms: number): string {
+    const days = Math.floor(ms / MS_IN_DAY)
+    const hours = Math.floor((ms % MS_IN_DAY) / MS_IN_HOUR)
     return `${days}d ${hours}h`
 }
 
-/**
- * Live counter of how long ago `enabledAt` was, re-rendering once a second.
- * Returns null — and registers no interval — when there is no timestamp,
- * so disabled flags cost nothing.
- */
+export function formatElapsed(ms: number): string {
+    const total = Math.max(0, ms)
+
+    if (total < MS_IN_MINUTE) return formatSeconds(total)
+    if (total < MS_IN_HOUR) return formatMinutesSeconds(total)
+    if (total < MS_IN_DAY) return formatHoursMinutes(total)
+    return formatDaysHours(total)
+}
+
 export function useElapsed(enabledAt?: string): string | null {
     const timestamp = enabledAt === undefined ? NaN : Date.parse(enabledAt)
     const hasTimestamp = !Number.isNaN(timestamp)
@@ -51,7 +51,7 @@ export function useElapsed(enabledAt?: string): string | null {
         setNow(Date.now())
         const id = setInterval(() => setNow(Date.now()), MS_IN_SECOND)
         return () => clearInterval(id)
-    }, [hasTimestamp, timestamp])
+    }, [hasTimestamp])
 
     if (!hasTimestamp) return null
     return formatElapsed(now - timestamp)
