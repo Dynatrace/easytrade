@@ -1,8 +1,6 @@
 package version
 
-import "fmt"
-
-const VersionTemplate = "EasyTrade Pricing Service Version: %s\n\nBuild date: %s, git commit: %s"
+const VersionTemplate = "EasyTrade DB Adapter Version: %s\n\nBuild date: %s, git commit: %s"
 
 var (
 	BuildVersion = "{{BUILD_VERSION}}"
@@ -10,12 +8,8 @@ var (
 	BuildCommit  = "{{BUILD_COMMIT}}"
 )
 
-type version struct {
+type versionResponse struct {
 	BuildVersion string `json:"buildVersion"`
 	BuildDate    string `json:"buildDate"`
 	BuildCommit  string `json:"buildCommit"`
-}
-
-func (v *version) toString() string {
-	return fmt.Sprintf(VersionTemplate, BuildVersion, BuildDate, BuildCommit)
 }
