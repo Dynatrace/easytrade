@@ -96,7 +96,10 @@ export async function getCurrentBalance(
         selectors.common_currentBalance,
         "value"
     )
-    return parseFloat(balanceString)
+    // QuickBuyForm renders this input's value through formatCurrency(), e.g. "$1,234.56" -- strip
+    // everything but digits/sign/decimal point before parsing, or parseFloat chokes on the "$"
+    // and returns NaN.
+    return parseFloat(balanceString.replace(/[^0-9.-]+/g, ""))
 }
 export async function getInstrumentPossessedAmount(
     pageActions: IPageActions
