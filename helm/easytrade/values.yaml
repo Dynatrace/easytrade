@@ -234,11 +234,11 @@ db-adapter:
     periodSeconds: 5
   resources:
     requests:
-      cpu: 10m
-      memory: 50Mi
+      cpu: 256m
+      memory: 32Mi
     limits:
-      cpu: 200m
-      memory: 50Mi
+      cpu: "2"
+      memory: 128Mi
   service:
     enabled: true
     port: 50051
