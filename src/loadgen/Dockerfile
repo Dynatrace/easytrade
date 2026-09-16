@@ -20,7 +20,7 @@ RUN apt update \
     && apt install -y curl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY ["package.json", "package-lock.json", "./"]
+COPY ["package.json", "package-lock.json", "demoability-loadgen-core-1.3.0.tgz", "./"]
 
 RUN npm ci --omit=dev \
     && npm cache clean --force
