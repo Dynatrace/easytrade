@@ -1,4 +1,3 @@
-import React from "react"
 import { Link } from "react-router"
 import { FlagIcon } from "../icons"
 import { useProblemFlagsQuery } from "../../contexts/QueryContext/featureFlag/hooks"

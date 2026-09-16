@@ -1,5 +1,6 @@
 import { QueryClient } from "@tanstack/react-query"
 import { instrumentPricesQuery } from "./queries"
+import { Price } from "../../../api/price/types"
 import { transform } from "../QueryContext"
 
 export function instrumentPricesLoader(

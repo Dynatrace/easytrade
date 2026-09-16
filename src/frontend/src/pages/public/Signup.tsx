@@ -1,4 +1,3 @@
-import React from "react"
 import { Link } from "react-router"
 import { signup } from "../../api/signup/signup"
 import SignupForm from "../../components/forms/SignupForm"

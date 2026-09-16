@@ -1,4 +1,3 @@
-import React from "react"
 import { PropsWithChildren } from "react"
 import { QueryClientProvider } from "../contexts/QueryContext/QueryContext"
 import { UserContextProvider } from "../contexts/UserContext/context"

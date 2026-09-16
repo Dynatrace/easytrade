@@ -1,4 +1,3 @@
-import React from "react"
 import InstrumentsGrid from "../../components/instrument/InstrumentsGrid"
 import { useAuthUser } from "../../contexts/UserContext/context"
 import { useRouteLoaderData } from "react-router"

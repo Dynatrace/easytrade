@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import { useState } from "react"
 import { BuildIcon } from "../icons"
 import { VersionDialog } from "./VersionDialog"
 import { getFrontendVersion } from "../../api/version/versions"

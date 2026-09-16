@@ -1,4 +1,3 @@
-import React from "react"
 import { FeatureFlag } from "../../api/featureFlags/types"
 import FeatureFlagItem from "./FeatureFlagItem"
 
