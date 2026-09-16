@@ -1,14 +1,10 @@
-import { useRouteLoaderData } from "react-router"
-import { LoaderIds } from "../../../utils/routeIds"
-import { OrderStatusHistoryResponse } from "../../../api/creditCard"
 import { useCreditCardOrderStatusHistory } from "../../../hooks/useCreditCard"
 import { useAuthUser } from "../../../contexts/UserContext/context"
 import CreditCardsStatusTimeline from "../../../components/creditCard/CreditCardStatusTimeline"
 
 export default function CreditCardStatus() {
-    const loaderData = useRouteLoaderData(LoaderIds.creditCardStatusHistory) as OrderStatusHistoryResponse
     const { userId } = useAuthUser()
-    const { data } = useCreditCardOrderStatusHistory(userId, loaderData)
+    const { data } = useCreditCardOrderStatusHistory(userId)
 
     if (data === undefined) {
         return (

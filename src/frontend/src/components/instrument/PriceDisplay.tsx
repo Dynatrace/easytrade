@@ -1,36 +1,27 @@
 import { Price } from "../../api/price"
 import { InstrumentPrice } from "../../api/instrument"
 import { useFormatter } from "../../contexts/FormatterContext/context"
+import { priceTrend } from "../../utils/priceTrend"
 
-export default function PriceDisplay({ price }: { price: Price | InstrumentPrice }) {
+export default function PriceDisplay({
+    price,
+}: {
+    price: Price | InstrumentPrice
+}) {
     const { formatCurrency, formatPercent } = useFormatter()
-    const trendingUp = price.close > price.open
-    const percentDifference = (price.close - price.open) / price.open
+    const { trendClass, pctChange } = priceTrend(price)
 
     return (
         <div
-            style={{ display: "flex", alignItems: "baseline", gap: "var(--space-2)" }}
+            className="instrument-card-price-row"
             data-dt-name="Instrument price"
             data-dt-children-name="Instrument variation"
         >
-            <h5
-                id="instrumentPrice"
-                style={{
-                    fontWeight: 600,
-                    fontFamily: "var(--font-mono)",
-                    color: trendingUp ? "var(--success)" : "var(--danger)",
-                }}
-            >
+            <h5 id="instrumentPrice" className={`instrument-price ${trendClass}`}>
                 {formatCurrency(price.close)}
             </h5>
-            <span
-                style={{
-                    fontSize: "var(--text-xs)",
-                    fontWeight: 600,
-                    color: trendingUp ? "var(--success)" : "var(--danger)",
-                }}
-            >
-                {formatPercent(percentDifference)}
+            <span className={`instrument-pct ${trendClass}`}>
+                {formatPercent(pctChange)}
             </span>
         </div>
     )

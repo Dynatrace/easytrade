@@ -4,18 +4,12 @@ import TransactionsTable from "../../components/TransactionsTable"
 import InstrumentsChart from "../../components/charts/InstrumentsChart"
 import { useTransactionQuery } from "../../hooks/useTransactions"
 import { useInstrumentsQuery } from "../../hooks/useInstruments"
-import { useLoaderData, useRouteLoaderData } from "react-router"
-import { Instrument } from "../../api/instrument"
 import { useAuthUser } from "../../contexts/UserContext/context"
-import { Transaction } from "../../api/transaction"
-import { LoaderIds } from "../../utils/routeIds"
 
 export default function Home() {
     const { userId } = useAuthUser()
-    const transactionData: Transaction[] = useLoaderData()
-    const transactionsData = useTransactionQuery(userId, transactionData)
-    const instrumentData = useRouteLoaderData(LoaderIds.instruments) as Instrument[]
-    const instruments = useInstrumentsQuery(userId, instrumentData).data as Instrument[]
+    const { data: transactions } = useTransactionQuery(userId)
+    const { data: instruments } = useInstrumentsQuery(userId)
 
     return (
         <div className="form" style={{ gap: "var(--space-8)" }}>
@@ -23,7 +17,7 @@ export default function Home() {
             <InstrumentsChart accountId={userId} />
             <InstrumentsTable instruments={instruments ?? []} />
             <TransactionsTable
-                transactions={transactionsData.data ?? []}
+                transactions={transactions ?? []}
                 instruments={instruments ?? []}
             />
         </div>

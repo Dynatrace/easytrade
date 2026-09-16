@@ -66,7 +66,7 @@ export default function FeatureFlagItem({
         .split("_")
         .map(([head, ...tail]) => `${head.toUpperCase()}${tail.join("")}`)
         .join(" ")
-    const modifyDisabled = !isModifiable || !config?.featureFlagManagement
+    const modifyDisabled = !isModifiable || !config.featureFlagManagement
     const curlCommand = getFeatureFlagCurl(flagId, !enabled)
 
     function closeModal() {

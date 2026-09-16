@@ -69,7 +69,8 @@ export default function TransactionsTable({
     })
 
     const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
-    const slice = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE)
+    const safePage = Math.min(page, Math.max(totalPages - 1, 0))
+    const slice = filtered.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE)
 
     function resetPage() {
         setPage(0)
@@ -152,7 +153,7 @@ export default function TransactionsTable({
                                             {formatCurrency(tx.amount * tx.price)}
                                         </td>
                                         <td className="text-muted text-sm">
-                                            {formatDate(new Date(tx.endTime).getTime())}
+                                            {tx.endTime === "" ? "—" : formatDate(new Date(tx.endTime).getTime())}
                                         </td>
                                     </tr>
                                 ))}
@@ -163,20 +164,20 @@ export default function TransactionsTable({
                         <div className="pagination">
                             <button
                                 className="btn btn-secondary btn-sm"
-                                onClick={() => setPage((p) => Math.max(0, p - 1))}
-                                disabled={page === 0}
+                                onClick={() => setPage(Math.max(0, safePage - 1))}
+                                disabled={safePage === 0}
                             >
                                 ← Prev
                             </button>
                             <span>
-                                {page + 1} / {totalPages}
+                                {safePage + 1} / {totalPages}
                             </span>
                             <button
                                 className="btn btn-secondary btn-sm"
                                 onClick={() =>
-                                    setPage((p) => Math.min(totalPages - 1, p + 1))
+                                    setPage(Math.min(totalPages - 1, safePage + 1))
                                 }
-                                disabled={page >= totalPages - 1}
+                                disabled={safePage >= totalPages - 1}
                             >
                                 Next →
                             </button>
