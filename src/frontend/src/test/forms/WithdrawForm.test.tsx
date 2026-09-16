@@ -6,7 +6,7 @@ import { createMemoryRouter, RouterProvider } from "react-router"
 import { Mock } from "vitest"
 import WithdrawForm from "../../components/forms/WithdrawForm"
 import { QueryClientWrapper, UserContextWrapper } from "../providers"
-import { LoaderIds } from "../../router"
+import { LoaderIds } from "../../routeIds"
 import { User, Balance } from "../../api/user/types"
 import { FormatterProvider } from "../../contexts/FormatterContext/context"
 

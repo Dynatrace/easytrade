@@ -13,6 +13,7 @@ import BaseNavigation from "./pages/BaseNavigation"
 import { queryClient } from "./contexts/QueryContext/QueryContext"
 import { getUser, getPresetUsers, getBalance } from "./api/user/user"
 import ErrorPage from "./pages/ErrorPage"
+import { LoaderIds } from "./routeIds"
 import {
     loadWithUser,
     presetUsersLoader,
@@ -47,15 +48,6 @@ const CreditCardActive = lazy(() => import("./pages/protected/creditCard/CreditC
 
 function Loading() {
     return <PageSpinner />
-}
-
-export enum LoaderIds {
-    user = "user-loader",
-    instruments = "instruments-loader",
-    transactions = "transactions-loader",
-    creditCard = "creditCard-loader",
-    creditCardStatusHistory = "creditCardStatusHistory-loader",
-    prices = "prices-loader",
 }
 
 const elementRoutes = createRoutesFromElements(

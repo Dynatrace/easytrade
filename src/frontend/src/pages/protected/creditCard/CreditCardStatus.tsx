@@ -1,5 +1,5 @@
 import { useRouteLoaderData } from "react-router"
-import { LoaderIds } from "../../../router"
+import { LoaderIds } from "../../../routeIds"
 import { OrderStatusHistoryResponse } from "../../../api/creditCard/order"
 import { useCreditCardOrderStatusHistory } from "../../../contexts/QueryContext/creditCard/hooks"
 import { useAuthUser } from "../../../contexts/UserContext/context"
