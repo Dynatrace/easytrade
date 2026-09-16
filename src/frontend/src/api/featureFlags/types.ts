@@ -4,6 +4,7 @@ export type FeatureFlag = {
     description: string
     enabled: boolean
     isModifiable: boolean
+    enabledAt?: string
 }
 
 export type HandlerResponse = {

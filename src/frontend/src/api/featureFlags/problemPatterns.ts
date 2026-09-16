@@ -8,8 +8,9 @@ function featureFlagMapper({
     name,
     description,
     isModifiable,
+    enabledAt,
 }: RawFeatureFlag): FeatureFlag {
-    return { id, enabled, name, description, isModifiable }
+    return { id, enabled, name, description, isModifiable, enabledAt }
 }
 
 export async function getFeatureFlags(): Promise<FeatureFlag[]> {

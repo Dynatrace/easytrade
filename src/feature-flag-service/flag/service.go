@@ -1,6 +1,8 @@
 package flag
 
-import "sync"
+import (
+	"sync"
+)
 
 type Service struct {
 	mu    sync.RWMutex
@@ -50,6 +52,6 @@ func (s *Service) Update(id string, enabled bool) (*Flag, error) {
 	if !f.IsModifiable {
 		return nil, &NonModifiableError{Name: f.Name}
 	}
-	f.Enabled = enabled
+	f.SetEnabled(enabled)
 	return f, nil
 }
