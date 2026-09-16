@@ -1,4 +1,3 @@
-import React from "react"
 import "@testing-library/jest-dom"
 import { screen, render, fireEvent, waitFor, act } from "@testing-library/react"
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup"

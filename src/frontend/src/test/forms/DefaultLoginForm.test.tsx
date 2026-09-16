@@ -1,4 +1,3 @@
-import React from "react"
 import "@testing-library/jest-dom"
 import { screen, render, waitFor } from "@testing-library/react"
 import DefaultLoginForm from "../../components/forms/DefaultLoginForm"

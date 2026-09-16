@@ -1,4 +1,3 @@
-import React from "react"
 import { PropsWithChildren, createContext, useContext } from "react"
 import { FormatterProviderProps, IFormatterContext } from "./types"
 

@@ -1,4 +1,3 @@
-import React from "react"
 import { Navigate, useParams, useRouteLoaderData } from "react-router"
 import FullInstrumentCard from "../../components/instrument/FullInstrumentCard"
 import InstrumentTransactions from "../../components/instrument/InstrumentTransactions"

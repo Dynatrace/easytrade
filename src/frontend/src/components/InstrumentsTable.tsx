@@ -1,4 +1,3 @@
-import React from "react"
 import { Instrument } from "../api/instrument/types"
 import { useFormatter } from "../contexts/FormatterContext/context"
 
