@@ -13,9 +13,7 @@ Credit-card orders never progress. An order placed on the Credit Card tab stays 
 `CARD_ERROR` with a *factory failure* reason instead of moving on to created, shipped,
 and delivered. Trading is unaffected.
 
-This is the pattern to reach for when the story is about a **business process stalling**
-rather than a technical error — nothing returns HTTP 500, the pipeline simply stops
-advancing.
+Nothing returns HTTP 500 — the pipeline simply stops advancing.
 
 ## Flow
 
@@ -46,8 +44,6 @@ them on every tick. `processManufacture` checks the flag first:
 ```go
 crisis, error := r.flags.GetBool(ctx, "factory_crisis", false)
 if crisis {
-    // Dedup guard, load-bearing: only act the FIRST tick an order enters
-    // CARD_ERROR while the crisis flag stays true.
     if o.Status != OrderCardError {
         r.svc.UpdateStatus(ctx, OrderCardError, o.Request.CreditCardOrderID, FactoryFailure)
         o.Status = OrderCardError
@@ -56,22 +52,20 @@ if crisis {
 }
 ```
 
-The `o.Status != OrderCardError` guard matters. Without it, a sustained crisis would
-re-POST `CARD_ERROR` for every stuck order on every tick, and the resulting request
-storm would dominate the traces — which is the opposite of the "quiet stall" this
-pattern is meant to show.
+The `o.Status != OrderCardError` guard means each order is reported once, on the first
+tick it enters `CARD_ERROR`, rather than on every tick the crisis lasts.
 
 Orders are never dropped. They stay in the runner's slice until they reach
 `CARD_DELIVERED`, so when the flag is turned off the backlog manufactures on the next
 tick and drains normally.
 
-## Not to be confused with the normal delay simulation
+## The normal delay simulation
 
-Even with the flag off, `processManufacture` fails a configurable share of orders on
-purpose: `DELAY_CHANCE_PERCENT` (20 % in compose) of manufacture attempts report
-`CARD_ERROR` with either a *delay on chips* or a *factory failure* reason, and retry on
-the next tick. A handful of orders in `CARD_ERROR` is normal background noise;
-*every* order stuck there is FactoryCrisis.
+Even with the flag off, `processManufacture` fails a share of orders:
+`DELAY_CHANCE_PERCENT` (20 % in compose) of manufacture attempts report `CARD_ERROR`
+with either a *delay on chips* or a *factory failure* reason, and retry on the next
+tick. A handful of orders in `CARD_ERROR` is normal; *every* order stuck there is
+FactoryCrisis.
 
 ## Relevant configuration
 

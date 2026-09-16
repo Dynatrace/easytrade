@@ -1,12 +1,11 @@
 # Problem patterns — how they work
 
-> **Audience:** Anyone preparing an EasyTrade demo, or debugging why EasyTrade is
-> misbehaving on purpose.
+> **Audience:** Anyone enabling or investigating an injected fault in EasyTrade.
 
 A *problem pattern* is a deliberate, reversible fault that EasyTrade can inject into
-itself. Each one is designed to surface in Dynatrace as a recognisable problem —
-a failure rate spike, a slowdown, a blocked business process, CPU throttling — without
-anyone having to touch the deployment.
+itself. Each one surfaces as a recognisable problem — a failure-rate spike, a slowdown,
+a blocked business process, CPU throttling — without anyone having to touch the
+deployment.
 
 ## The mechanism
 
@@ -30,9 +29,9 @@ flowchart LR
    background tick, or in a Kubernetes reconcile loop.
 
 Because the flag is read per request or per tick, turning a pattern off takes effect
-almost immediately. The *symptom*, however, may take much longer to clear: see
-[ErgoAggregatorSlowdown](ergo-aggregator-slowdown.md), where one flip costs 15 minutes
-of reduced traffic.
+almost immediately. The *symptom* may take longer to clear: see
+[ErgoAggregatorSlowdown](ergo-aggregator-slowdown.md), where one flip costs up to 15
+minutes of reduced traffic.
 
 ## Where each pattern lives
 
@@ -62,10 +61,8 @@ curl -X PUT "http://localhost/feature-flag-service/v1/flags/high_cpu_usage/" \
 Through the UI: the EasyTrade frontend exposes the same switches, provided
 `frontend_feature_flag_management` is enabled.
 
-Swagger: `http://localhost/feature-flag-service/swagger-ui/index.html`
-
-On Kubernetes you can schedule patterns with the CronJobs shipped in the repository, so
-a demo environment breaks itself once a day without anyone watching.
+On Kubernetes, the CronJobs shipped in the repository can enable patterns on a
+schedule.
 
 ## Flag defaults and lockdown
 
@@ -81,15 +78,15 @@ Two environment variables control who may change them:
 | `ENABLE_FRONTEND_MODIFY` | `true` | Initial value of `frontend_feature_flag_management`; hides the flag UI when `false` |
 
 Use `ENABLE_MODIFY=false` to hand out an environment that cannot be broken by its
-audience.
+users.
 
-## Choosing a pattern for a demo
+## Effect by pattern
 
-| You want to show | Use |
+| Effect | Pattern |
 |---|---|
-| Failure-rate problem and root cause in the database tier | [DbNotResponding](db-not-responding.md) |
-| Service slowdown propagating into reduced upstream traffic | [ErgoAggregatorSlowdown](ergo-aggregator-slowdown.md) |
-| A stalled business process, best seen through business events | [FactoryCrisis](factory-crisis.md) |
-| Resource saturation and Kubernetes CPU throttling | [HighCpuUsage](high-cpu-usage.md) |
-| An unhandled exception reaching the end user | [CreditCardMeltdown](credit-card-meltdown.md) |
-| A dependency on an external legacy system rejecting traffic | [CreditCardValidation](credit-card-validation.md) |
+| Failure rate on trade creation, originating in the database tier | [DbNotResponding](db-not-responding.md) |
+| Service slowdown followed by reduced upstream traffic | [ErgoAggregatorSlowdown](ergo-aggregator-slowdown.md) |
+| Stalled business process, no technical errors | [FactoryCrisis](factory-crisis.md) |
+| Resource saturation and, on Kubernetes, CPU throttling | [HighCpuUsage](high-cpu-usage.md) |
+| Unhandled exception reaching the end user | [CreditCardMeltdown](credit-card-meltdown.md) |
+| Deposits and withdrawals rejected by an external dependency | [CreditCardValidation](credit-card-validation.md) |

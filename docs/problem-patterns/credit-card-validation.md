@@ -13,9 +13,8 @@ Depositing or withdrawing money fails with HTTP 400 and
 `"Credit card validation failed"`. Trading against an existing balance still works;
 only money movement is blocked.
 
-The scenario this models is a **dependency on an external legacy system**: every
-deposit now has to be cleared by a mainframe before it is accepted, and that extra hop
-is both a new failure mode and a new latency contributor.
+Every deposit and withdrawal is cleared by a mainframe before it is accepted, adding an
+outbound dependency to the request path.
 
 ## Flow
 
@@ -62,10 +61,8 @@ following hold:
    `/deposit` or `/withdraw`;
 3. a `cardNumber` can be read from the JSON body.
 
-Condition 3 **fails open** — a matching request with no card number is logged as a
-warning and passed through rather than rejected. This keeps the pattern from breaking
-every caller that does not send card details, and it is worth knowing when the pattern
-appears to be doing nothing.
+Condition 3 **fails open**: a matching request with no card number is logged as a
+warning and passed through rather than rejected.
 
 The body is read with `request.EnableBuffering()` and then rewound with
 `Seek(0, SeekOrigin.Begin)`, so the downstream controller still receives an intact
@@ -80,7 +77,7 @@ request body.
 
 `MAINFRAME_SERVICE_ADDRESS` is **not** set in `compose.dev.yaml` or `compose.yaml`.
 Enabling this flag on a plain compose stack will therefore exercise the unconfigured
-path rather than a real validation round trip; set the variable before demoing it.
+path rather than a real validation round trip; set the variable first.
 
 ## Source
 

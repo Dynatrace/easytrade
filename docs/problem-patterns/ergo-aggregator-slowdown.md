@@ -10,8 +10,8 @@
 ## What the user sees
 
 Nothing, in the browser. This pattern lives entirely in the synthetic background
-traffic, and that is the point: it demonstrates a **slowdown in one service causing a
-caller to back off**, which shows up as a traffic drop rather than as errors.
+traffic: a slowdown in `offerservice` causes the calling platforms to back off, which
+shows up as a traffic drop rather than as errors.
 
 ## Flow
 

@@ -13,9 +13,8 @@ Opening the Credit Card tab in the frontend produces an error page. The request 
 latest credit-card order status throws before it ever reaches the database, and the
 exception propagates out of the controller unhandled.
 
-Unlike the other patterns, this one is an **unhandled application exception** rather
-than a slowdown or a stalled process — useful for demonstrating how an uncaught error
-surfaces in traces and in real-user monitoring at the same time.
+This pattern produces an **unhandled application exception** rather than a slowdown or
+a stalled process.
 
 ## Flow
 
@@ -51,15 +50,13 @@ re-throws rather than converting it to a tidy error response, so the stack trace
 the client.
 
 The service also runs with `JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"` in
-compose. That disables the JVM optimisation that strips stack traces from repeatedly
-thrown exceptions — without it, the trace disappears after the first few hits and the
-demo loses its root cause.
+compose, which disables the JVM optimisation that strips stack traces from repeatedly
+thrown exceptions, so the full trace is kept on every hit.
 
-## Note on the other endpoints
+## Scope
 
 Only `/{accountId}/status/latest` is affected. Fetching the full status *history*
-(`/{accountId}/status`), placing orders, and deleting orders all keep working, so the
-failure is narrow enough to make root-cause analysis interesting.
+(`/{accountId}/status`), placing orders, and deleting orders all keep working.
 
 ## Source
 

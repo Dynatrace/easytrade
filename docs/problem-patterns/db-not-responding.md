@@ -5,7 +5,7 @@
 | Flag ID | `db_not_responding` |
 | Default | off (`ENABLE_DB_NOT_RESPONDING`) |
 | Blast radius | Trade creation only |
-| Time to a Dynatrace problem | ~20 minutes |
+| Time to a detected problem | ~20 minutes |
 
 ## What the user sees
 
@@ -29,7 +29,7 @@ sequenceDiagram
     Note over B: TradeRepositoryWithDbNotResponding<br/>sets AccountId = Guid.Empty
     Note over B: TradeMapper maps the empty GUID<br/>to the invalid string "-1"
     B->>A: gRPC CreateTrade(accountId = "-1")
-    Note over A: AccountId is deliberately not validated
+    Note over A: AccountId is not validated
     A->>D: INSERT
     D-->>A: driver error — "-1" is not a UUID
     A-->>B: gRPC error
@@ -54,21 +54,13 @@ public override async Task<Trade> CreateTradeAsync(Trade trade)
 
 `Guid.Empty` is a marker, not the value that reaches the database. `TradeMapper`
 translates it into the literal string `"-1"` (`Constants.InvalidAccountId`) when
-building the gRPC request, and `db-adapter`'s `CreateTrade` handler deliberately
-**does not** validate `AccountId` — it validates `InstrumentId` only — so the bad value
-reaches the driver and the database rejects it.
+building the gRPC request, and `db-adapter`'s `CreateTrade` handler does **not** validate
+`AccountId` — it validates `InstrumentId` only — so the bad value reaches the driver and
+the database rejects it.
 
-## Why it is built this way
-
-An earlier version faked the failure inside `db-adapter` with a dedicated code path.
-That produced an error that looked synthetic in traces. The current design
-([#224](https://github.com/Dynatrace/easytrade/pull/224)) removes the special path
-entirely: the insert follows the single normal code path and fails for a real reason.
-What Dynatrace captures is an authentic driver-level error on a real SQL statement,
-which is what makes the resulting root-cause analysis worth demoing.
-
-The cost of that choice is a deliberate gap in validation. If you ever add
-`AccountId` validation to `db-adapter`'s `CreateTrade`, this pattern stops working.
+The insert follows the normal code path; there is no separate failure path in
+`db-adapter`. Adding `AccountId` validation to `CreateTrade` would stop this pattern
+working.
 
 ## Source
 

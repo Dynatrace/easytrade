@@ -13,10 +13,9 @@ The whole trading UI becomes sluggish. Every `broker-service` request — balanc
 trades, instruments — gains roughly 700 ms, and the service's CPU usage climbs sharply
 for the duration of each request.
 
-On Kubernetes there is a second act: `background-service`'s operator subsystem applies
-a CPU **limit** to the `broker-service` deployment, so the same workload now also shows
-CPU throttling on the pod. That combination — a real CPU burn plus a real limit — is the
-most complete resource-saturation story EasyTrade can tell.
+On Kubernetes, `background-service`'s operator subsystem additionally applies a CPU
+**limit** to the `broker-service` deployment, so the same workload also shows CPU
+throttling on the pod.
 
 ## Flow
 
@@ -41,9 +40,8 @@ flowchart TD
 over random integers until `HIGH_CPU_USAGE_REQUEST_DELAY_MS` (default 700) milliseconds
 have elapsed, then lets the request through.
 
-The two hot methods carry `[MethodImpl(MethodImplOptions.NoInlining)]` deliberately —
-without it the JIT inlines them and they vanish from the call hierarchy Dynatrace
-captures, which defeats the purpose of the demo.
+Both hot methods carry `[MethodImpl(MethodImplOptions.NoInlining)]`, which keeps them
+visible in the captured call hierarchy instead of being inlined by the JIT.
 
 | Variable | Default | Effect |
 |---|---|---|
@@ -52,11 +50,9 @@ captures, which defeats the purpose of the demo.
 
 ## How it is implemented — the Kubernetes operator
 
-The operator subsystem lives inside `background-service` (it was a standalone
-`problem-operator` service before it was folded in). It is **gated on `POD_NAMESPACE`**:
-that variable is injected by the Kubernetes Downward API and is never set by either
-compose file, so outside a cluster the subsystem simply never starts. No second
-purpose-built toggle exists.
+The operator subsystem lives inside `background-service` and is **gated on
+`POD_NAMESPACE`**: that variable is injected by the Kubernetes Downward API and is never
+set by either compose file, so outside a cluster the subsystem never starts.
 
 Every `SYNC_INTERVAL` (default `5s`) the operator:
 
@@ -69,10 +65,9 @@ Every `SYNC_INTERVAL` (default `5s`) the operator:
    ReplicaSet.
 
 Each transition also emits a Kubernetes Event (`FlagApply` / `FlagRollback`) against the
-deployment, so `kubectl describe deployment broker-service` shows exactly when the
-pattern was applied. Conflicting updates are retried with
-`retry.RetryOnConflict`, and repeated context timeouts progressively widen the
-reconcile interval by 10 % rather than hammering the API server.
+deployment, so `kubectl describe deployment broker-service` shows when the pattern was
+applied. Conflicting updates are retried with `retry.RetryOnConflict`, and repeated
+context timeouts widen the reconcile interval by 10 %.
 
 ## Source
 
