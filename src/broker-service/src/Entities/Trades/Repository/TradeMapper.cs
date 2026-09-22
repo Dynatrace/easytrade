@@ -1,3 +1,4 @@
+using EasyTrade.BrokerService.Helpers;
 using EasyTrade.DbAdapter.Trade.Grpc;
 using Google.Protobuf.WellKnownTypes;
 
@@ -5,6 +6,9 @@ namespace EasyTrade.BrokerService.Entities.Trades.Repository;
 
 public static class TradeMapper
 {
+    private static Timestamp? ToNullableTimestamp(DateTimeOffset? value) =>
+        value.HasValue ? Timestamp.FromDateTimeOffset(value.Value) : null;
+
     public static Trade FromProto(TradeMessage proto)
     {
         return new Trade(
@@ -26,11 +30,14 @@ public static class TradeMapper
     {
         return new CreateTradeRequest
         {
-            AccountId = trade.AccountId.ToString(),
+            AccountId = ParseAccountId(trade),
             InstrumentId = trade.InstrumentId.ToString(),
             Direction = trade.Direction,
             Quantity = (double)trade.Quantity,
             EntryPrice = (double)trade.EntryPrice,
+            TimestampOpen = Timestamp.FromDateTimeOffset(trade.TimestampOpen),
+            TimestampClose = ToNullableTimestamp(trade.TimestampClose),
+            TradeClosed = trade.TradeClosed,
             TransactionHappened = trade.TransactionHappened,
             Status = trade.Status
         };
@@ -42,12 +49,15 @@ public static class TradeMapper
         {
             Id = trade.Id.ToString(),
             TradeClosed = trade.TradeClosed,
-            TimestampClose = trade.TimestampClose.HasValue
-                ? Timestamp.FromDateTimeOffset(trade.TimestampClose.Value)
-                : null,
+            TimestampClose = ToNullableTimestamp(trade.TimestampClose),
             Status = trade.Status
         };
     }
 
     public static List<Trade> FromProto(IEnumerable<TradeMessage> protos) => [.. protos.Select(FromProto)];
+
+    private static string ParseAccountId(Trade trade)
+    {
+        return trade.AccountId == Guid.Empty ? Constants.InvalidAccountId : trade.AccountId.ToString();
+    }
 }

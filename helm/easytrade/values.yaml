@@ -53,7 +53,7 @@ background-service:
     POD_NAMESPACE: "{{ .Release.Namespace }}"
     HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT: "300m"
     HIGH_CPU_USAGE_BROKER_SERVICE_NAME: "{{ .Release.Name }}-broker-service"
-    DB_ADAPTER_SERVICE_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
     DELAY_CHANCE_PERCENT: "20"
   resources:
     requests:
@@ -111,14 +111,16 @@ credit-card-order-service:
     httpGet:
       path: /livez
       port: http
-    initialDelaySeconds: 15
+    initialDelaySeconds: 0
     periodSeconds: 10
+    failureThreshold: 10
   readinessProbe:
     httpGet:
       path: /readyz
       port: http
     initialDelaySeconds: 5
     periodSeconds: 5
+    failureThreshold: 10
   resources:
     requests:
       cpu: 20m
@@ -232,11 +234,11 @@ db-adapter:
     periodSeconds: 5
   resources:
     requests:
-      cpu: 10m
-      memory: 30Mi
+      cpu: 256m
+      memory: 32Mi
     limits:
-      cpu: 100m
-      memory: 30Mi
+      cpu: "2"
+      memory: 128Mi
   service:
     enabled: true
     port: 50051
@@ -414,10 +416,10 @@ pricing-service:
   resources:
     requests:
       cpu: 20m
-      memory: 80Mi
+      memory: 96Mi
     limits:
       cpu: 200m
-      memory: 80Mi
+      memory: 192Mi
   service:
     enabled: true
     port: 8080

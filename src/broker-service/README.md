@@ -13,7 +13,6 @@ This service manages account balances and processes trades. It leverages gRPC to
 ### Standard .NET Development
 
 ```bash
-cd BrokerService
 dotnet build
 dotnet test test/BrokerService.test.csproj
 dotnet run --project src/BrokerService.csproj

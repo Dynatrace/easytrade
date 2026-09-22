@@ -34,6 +34,10 @@ message GetPricesForInstrumentRequest {
   optional int32 limit = 2;  // omitted means unlimited
 }
 
+message GetPricesForInstrumentsAscByTimestampRequest {
+  google.protobuf.Timestamp since = 1;
+}
+
 message PricingRow {
   google.protobuf.Timestamp timestamp = 1;
   string instrument_id = 2;
@@ -54,6 +58,8 @@ service PricingService {
 
   // Supports optional limit (unset = no limit).
   rpc GetPricesForInstrument(GetPricesForInstrumentRequest) returns (PricesResponse) {}
+
+  rpc GetPricesForInstrumentsAscByTimestamp(GetPricesForInstrumentsAscByTimestampRequest) returns (PricesResponse) {}
 
   rpc InsertPricesBatch(InsertPricesBatchRequest) returns (easytrade.dbadapter.common.BatchResponse) {}
 
