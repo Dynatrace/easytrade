@@ -9,7 +9,7 @@ x-addresses:
   user-service: &userServiceAddress "http://user-service:8080"
   pricing-service: &pricingServiceAddress "http://pricing-service:8080"
   background-service: &backgroundServiceAddress "http://background-service:8080"
-  easytrade-url: &easytradeUrl "http://frontend-reverse-proxy"
+  easytrade-url: &easytradeUrl "http://reverse-proxy"
 
 services:
   background-service:
@@ -120,9 +120,9 @@ services:
     volumes:
       - ./src/frontend/src:/app/src:ro
 
-  frontend-reverse-proxy:
+  reverse-proxy:
     <<: *default-service
-    build: src/frontend-reverse-proxy
+    build: src/reverse-proxy
     depends_on:
       - broker-service
       - frontend
@@ -134,11 +134,11 @@ services:
     ports:
       - 80:80
 
-  load-gen:
+  loadgen:
     <<: *default-service
-    build: src/load-gen
+    build: src/loadgen
     depends_on:
-      - frontend-reverse-proxy
+      - reverse-proxy
     ports:
       - 8097:8080
     environment:

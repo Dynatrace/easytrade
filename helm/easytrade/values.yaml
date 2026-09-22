@@ -298,7 +298,7 @@ frontend:
     enabled: true
     port: 3000
 
-frontend-reverse-proxy:
+reverse-proxy:
   enabled: true
   env:
     FRONTEND_REVERSE_PROXY_PORT: "8080"
@@ -342,10 +342,10 @@ frontend-reverse-proxy:
         protocol: TCP
         name: http
 
-load-gen:
+loadgen:
   enabled: true
   env:
-    EASYTRADE_URL: "http://{{ .Release.Name }}-frontend-reverse-proxy:8080"
+    EASYTRADE_URL: "http://{{ .Release.Name }}-reverse-proxy:8080"
     RARE_VISITS_INTERVAL_MINUTES: "60"
   livenessProbe:
     httpGet:

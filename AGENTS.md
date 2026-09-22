@@ -8,16 +8,16 @@
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
 | Java 21 / Spring Boot / Gradle | `credit-card-order-service`, `feature-flag-service`          |
 | Go / Go Modules                | `background-service`, `db-adapter`, `pricing-service`, `user-service`                          |
-| TypeScript / Node.js / npm     | `frontend`, `load-gen`, `offer-service`                                                                                    |
+| TypeScript / Node.js / npm     | `frontend`, `loadgen`, `offer-service`                                                                                    |
 | C# / .NET 8 / NuGet            | `broker-service`                                                                                            |
 | Python / Poetry                | `db/user-generator` (local utility script, not a service)                                                                |
-| Config only (no packages)      | `frontend-reverse-proxy` (nginx), `db` (MSSQL)                                                              |
+| Config only (no packages)      | `reverse-proxy` (nginx), `db` (MSSQL)                                                              |
 
 ## Vulnerability remediation process
 
 ### Scanning
 
-Run `snyk test --json --all-projects` from within each service directory that has a package manifest. Services without manifests (`frontend-reverse-proxy`) cannot be scanned this way.
+Run `snyk test --json --all-projects` from within each service directory that has a package manifest. Services without manifests (`reverse-proxy`) cannot be scanned this way.
 
 Run scans in parallel across all services to save time.
 

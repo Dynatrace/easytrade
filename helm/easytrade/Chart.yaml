@@ -47,15 +47,15 @@ dependencies:
     version: "0.1.0"
     condition: frontend.enabled
   - name: app
-    alias: frontend-reverse-proxy
+    alias: reverse-proxy
     repository: "file://./charts/app"
     version: "0.1.0"
-    condition: frontend-reverse-proxy.enabled
+    condition: reverse-proxy.enabled
   - name: app
-    alias: load-gen
+    alias: loadgen
     repository: "file://./charts/app"
     version: "0.1.0"
-    condition: load-gen.enabled
+    condition: loadgen.enabled
   - name: app
     alias: offer-service
     repository: "file://./charts/app"

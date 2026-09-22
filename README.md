@@ -20,14 +20,14 @@ flowchart TD
     broker-service --> user-service
     credit-card-order-service --> db
     db-adapter --> db
-    frontend-reverse-proxy --> broker-service
-    frontend-reverse-proxy --> credit-card-order-service
-    frontend-reverse-proxy --> feature-flag-service
-    frontend-reverse-proxy --> frontend
-    frontend-reverse-proxy --> offer-service
-    frontend-reverse-proxy --> pricing-service
-    frontend-reverse-proxy --> user-service
-    load-gen --> frontend-reverse-proxy
+    reverse-proxy --> broker-service
+    reverse-proxy --> credit-card-order-service
+    reverse-proxy --> feature-flag-service
+    reverse-proxy --> frontend
+    reverse-proxy --> offer-service
+    reverse-proxy --> pricing-service
+    reverse-proxy --> user-service
+    loadgen --> reverse-proxy
     manager --> db
     offer-service --> feature-flag-service
     offer-service --> manager
@@ -40,8 +40,8 @@ flowchart TD
     class aggregator-service,db-adapter,feature-flag-service,pricing-service,user-service go
     class problem-operator goOffCompose
     class credit-card-order-service java
-    class frontend,load-gen,offer-service node
-    class db,frontend-reverse-proxy other
+    class frontend,loadgen,offer-service node
+    class db,reverse-proxy other
 
     classDef dotnet fill:#d2b4de,stroke:#6c3483,color:#1a1a1a,stroke-width:1px
     classDef go fill:#a9cce3,stroke:#1f618d,color:#1a1a1a,stroke-width:1px
@@ -79,8 +79,8 @@ EasyTrade consists of the following services/components:
 | [Db adapter](src/db-adapter/README.md)                               | --         | `---`                        |
 | [Feature flag service](src/feature-flag-service/README.md)           | 80         | `/feature-flag-service`      |
 | [Frontend](src/frontend/README.md)                                   | 80         | `/`                          |
-| [Frontend reverse-proxy](src/frontend-reverse-proxy/README.md)       | 80         | `---`                        |
-| [Loadgen](src/load-gen/README.md)                                    | --         | `---`                        |
+| [Reverse proxy](src/reverse-proxy/README.md)                         | 80         | `---`                        |
+| [Loadgen](src/loadgen/README.md)                                     | --         | `---`                        |
 | [Offer service](src/offer-service/README.md)                         | 80         | `/offer-service`             |
 | [Pricing service](src/pricing-service/README.md)                     | 80         | `/pricing-service`           |
 | [Problem operator](src/problem-operator/README.md)                   | 80         | `---`                        |
@@ -139,7 +139,7 @@ name, or a quoted space-separated list. Omit it to act on the whole stack:
 
 ```bash
 make build services=pricing-service
-make start services="db frontend-reverse-proxy background-service"
+make start services="db reverse-proxy background-service"
 ```
 
 Two targets act on exactly one service and therefore require `services=`:

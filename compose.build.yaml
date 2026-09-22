@@ -43,15 +43,15 @@ services:
     build:
       context: src/frontend
 
-  frontend-reverse-proxy:
-    image: ${REGISTRY}/frontend-reverse-proxy:${TAG}
+  reverse-proxy:
+    image: ${REGISTRY}/reverse-proxy:${TAG}
     build:
-      context: src/frontend-reverse-proxy
+      context: src/reverse-proxy
 
-  load-gen:
-    image: ${REGISTRY}/load-gen:${TAG}
+  loadgen:
+    image: ${REGISTRY}/loadgen:${TAG}
     build:
-      context: src/load-gen
+      context: src/loadgen
 
   offer-service:
     image: ${REGISTRY}/offer-service:${TAG}
