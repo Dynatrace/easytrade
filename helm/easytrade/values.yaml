@@ -416,10 +416,10 @@ pricing-service:
   resources:
     requests:
       cpu: 20m
-      memory: 80Mi
+      memory: 96Mi
     limits:
       cpu: 200m
-      memory: 80Mi
+      memory: 192Mi
   service:
     enabled: true
     port: 8080
