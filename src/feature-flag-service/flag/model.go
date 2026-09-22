@@ -24,7 +24,10 @@ type FlagUpdateRequest struct {
 	Enabled *bool `json:"enabled"`
 }
 
-func (f *Flag) SetEnabled(enabled bool) {
+func (f *Flag) SetEnabled(enabled bool) error {
+	if !f.IsModifiable {
+		return &NonModifiableError{Name: f.Name}
+	}
 	if enabled && !f.Enabled {
 		now := time.Now().UTC()
 		f.EnabledAt = &now
@@ -32,6 +35,7 @@ func (f *Flag) SetEnabled(enabled bool) {
 		f.EnabledAt = nil
 	}
 	f.Enabled = enabled
+	return nil
 }
 
 var ErrFlagNotFound = errors.New("flag not found")
