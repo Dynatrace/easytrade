@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/dynatrace/easytrade/dbadapter/repository"
+	"github.com/dynatrace/easytrade/dbadapter/version"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -25,6 +26,7 @@ func NewServer(port string, backend repository.DBBackend) *http.Server {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/livez", livez)
 	mux.HandleFunc("/readyz", readyz(backend))
+	mux.HandleFunc("/version", version.GetVersion)
 	return &http.Server{
 		Addr:              fmt.Sprintf(":%s", port),
 		Handler:           mux,

@@ -3,9 +3,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0.412-noble@sha256:c9a9fd6312801f4f57eb8cbb6
 
 WORKDIR /src
 COPY ["proto/", "proto/"]
-COPY ["broker-service/BrokerService/", "broker-service/BrokerService/"]
+COPY ["broker-service/", "broker-service/"]
 
-WORKDIR /src/broker-service/BrokerService
+WORKDIR /src/broker-service
 RUN dotnet test test/BrokerService.test.csproj \
     && dotnet publish src/BrokerService.csproj -o /publish
 

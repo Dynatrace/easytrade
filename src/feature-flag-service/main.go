@@ -1,8 +1,9 @@
 package main
 
 import (
-	"dynatrace.com/easytrade/feature-flag-service/flag"
 	"log"
+
+	"dynatrace.com/easytrade/feature-flag-service/flag"
 )
 
 func main() {
