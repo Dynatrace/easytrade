@@ -15,8 +15,8 @@ A Node.js/Express service that acts as the public-facing API for product and pac
 ### Build and run in Docker
 
 ```bash
-docker build -t offerservice .
-docker run -p 8087:8080 offerservice
+docker build -t offer-service .
+docker run -p 8087:8080 offer-service
 ```
 
 ### Build TypeScript locally
@@ -46,4 +46,4 @@ This generates TypeScript client classes in `src/proto/` (which are gitignored a
 | `USER_SERVICE_ADDRESS`         | `http://localhost:8080`    | Full URL of user-service                     |
 | `FEATURE_FLAG_SERVICE_ADDRESS` | `http://localhost:8080`    | Full URL of feature-flag-service             |
 
-See [`offerservice.http`](./offerservice.http) for ready-to-run example requests covering all endpoints.
+See [`offer-service.http`](./offer-service.http) for ready-to-run example requests covering all endpoints.

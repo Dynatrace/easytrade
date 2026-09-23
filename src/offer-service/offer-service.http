@@ -41,7 +41,7 @@ Content-Type: application/json
     "email": "john.doe@example.com",
     "password": "password123",
     "address": "Fantasy Lane 34 Chicago USA",
-    "origin": "offerservice"
+    "origin": "offer-service"
 }
 
 ### -----------------------------------------------------------------------
