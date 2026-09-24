@@ -33,6 +33,16 @@ The following table lists the configurable global parameters and their default v
 | `global.labels` | Additional labels to add to all resources | `{}` |
 | `global.env` | Environment variables to add to all pods | `{}` |
 | `global.dynatrace.version` | Dynatrace version identifier | `1.1.1` |
+| `global.database.type` | Database backend: `mssql` or `postgres` | `mssql` |
+| `global.database.name` | Database name | `TradeManagement` |
+| `global.database.password` | Password used when no existing secret is given | `"yourStrong(!)Password"` |
+| `global.database.existingSecret.name` | Read the DB password from this secret instead | `""` |
+| `global.database.existingSecret.key` | Key within that secret | `password` |
+
+> **NOTE:** `global.database.type` selects which connection string is rendered into the
+> `<release>-connection-strings` secret. It does **not** enable the matching database
+> workload - keep it in sync with `db-mssql.enabled` / `db-postgres.enabled` yourself.
+> Any value other than `mssql` or `postgres` fails the render.
 
 ### Service Configuration
 
@@ -66,14 +76,15 @@ The easytrade chart includes the following microservices:
 - `background-service` - Consolidated data aggregation, content/pricing generation, credit-card manufacture/courier simulation, and (Kubernetes-only) problem-pattern operator
 - `broker-service` - Trading broker service
 - `credit-card-order-service` - Credit card order processing
-- `db` - Microsoft SQL Server database (StatefulSet)
+- `db-mssql` - Microsoft SQL Server database (StatefulSet, enabled by default)
+- `db-postgres` - PostgreSQL database (StatefulSet, disabled by default)
 - `db-adapter` - gRPC service exposing the database behind a stable interface (pluggable backend: MSSQL/Postgres)
 - `feature-flag-service` - Feature flag management
 - `frontend` - React frontend application
-- `reverse-proxy` - Nginx reverse proxy
 - `loadgen` - Load generator
 - `offer-service` - Offer management
 - `pricing-service` - Pricing calculation
+- `reverse-proxy` - Nginx reverse proxy
 - `user-service` - Account and authentication service
 
 ### Example Configurations
@@ -90,7 +101,7 @@ user-service:
   enabled: true
 broker-service:
   enabled: true
-db:
+db-mssql:
   enabled: true
 frontend:
   enabled: true
@@ -126,7 +137,7 @@ broker-service:
 #### Database with persistence
 
 ```yaml
-db:
+db-mssql:
   enabled: true
   workloadType: statefulset
   persistence:
@@ -190,21 +201,23 @@ helm uninstall easytrade -n easytrade
 
 ## Development
 
-The root `Makefile` wraps the commands below. Each `helm-*` target resolves the
-subchart dependencies first, so you can't forget that step:
+The root `Makefile` wraps install and uninstall:
 
 ```bash
-make helm-template   # deps + render manifests to stdout
-make helm-install    # deps + upgrade --install from this local chart
-make helm-uninstall
+make k8s-install          # upgrade --install from this local chart
+make k8s-install-remote   # upgrade --install from the published OCI chart
+make k8s-uninstall
 ```
 
 Release name, namespace and chart path are overridable:
-`make helm-lint HELM_CHART=helm/easytrade`.
+`make k8s-install HELM_RELEASE=easytrade-test HELM_NAMESPACE=easytrade-test`.
+
+> **NOTE:** These targets do **not** resolve subchart dependencies for you. Run
+> `helm dependency update helm/easytrade` yourself after changing `Chart.yaml`.
 
 ### Update dependencies
 
-Required before linting, templating or installing — the umbrella chart declares 16
+Required before linting, templating or installing — the umbrella chart declares 13
 `file://./charts/app` dependencies that must be packaged into `charts/` first.
 
 ```bash

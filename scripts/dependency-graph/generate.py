@@ -175,7 +175,7 @@ def inject_into_readme(mermaid_body: str) -> None:
     if not pattern.search(text):
         sys.exit(
             f"Could not find {START_MARKER} / {END_MARKER} markers in README.md.\n"
-            "Add them once manually under the 'Dependency graph' heading before "
+            "Add them once manually under the 'Architecture diagram' heading before "
             "running this script."
         )
     replacement = f"{START_MARKER}\n```mermaid\n{mermaid_body}\n```\n{END_MARKER}"

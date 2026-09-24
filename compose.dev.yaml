@@ -47,7 +47,6 @@ services:
       USER_SERVICE_ADDRESS: *userServiceAddress
       PRICING_SERVICE_ADDRESS: *pricingServiceAddress
       FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
-      PROXY_PREFIX: broker-service
       DB_ADAPTER_ADDRESS: *dbAdapterAddress
 
   credit-card-order-service:
@@ -61,7 +60,6 @@ services:
     ports:
       - 8091:8080
     environment:
-      PROXY_PREFIX: credit-card-order-service
       DB_ADAPTER_ADDRESS: *dbAdapterAddress
       THIRD_PARTY_SERVICE_ADDRESS: *backgroundServiceAddress
       FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
@@ -71,6 +69,9 @@ services:
 
   db:
     <<: *default-service
+    # Tag by dialect: both backends build from the same service name, so a shared
+    # image name would silently reuse the other dialect's image after DB_TYPE changes.
+    image: easytrade-db-${DB_TYPE}
     build: src/db/${DB_TYPE}
     ports:
       - 1433:1433
@@ -99,10 +100,9 @@ services:
     build: src/feature-flag-service
     ports:
       - 8094:8080
-    environment:
-      PROXY_PREFIX: feature-flag-service
-      # ENABLE_MODIFY: "false"
-      # ENABLE_FRONTEND_MODIFY: "false"
+    # environment:
+    #   ENABLE_MODIFY: "false"
+    #   ENABLE_FRONTEND_MODIFY: "false"
 
   frontend:
     <<: *default-service
@@ -171,7 +171,6 @@ services:
       - 8083:8080
     environment:
       DB_ADAPTER_ADDRESS: *dbAdapterAddress
-      PROXY_PREFIX: pricing-service
 
   user-service:
     <<: *default-service

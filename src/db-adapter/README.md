@@ -106,6 +106,8 @@ go mod tidy
 
 `generate-proto.sh` compiles all `../proto/*.proto` files and writes the generated Go stubs into `proto/`; requires `protoc`, `protoc-gen-go`, and `protoc-gen-go-grpc` on `PATH`. Re-run it whenever the shared proto files change.
 
+[`../proto/ADAPTER_SERVICES.md`](../proto/ADAPTER_SERVICES.md) lists every adapter operation and which services consume it.
+
 ## Config
 
 | Env var | Default | Purpose |

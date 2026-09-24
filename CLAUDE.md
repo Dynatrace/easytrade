@@ -1,7 +1,6 @@
 <!-- SYNC NOTICE. This file is the primary context source for Claude Code.
      Rules files live in .claude/rules/ — load automatically when editing matching files.
-     If Copilot is also used, mirror this file in .github/copilot-instructions.md
-     and mirror .claude/rules/*.md in .github/instructions/*.instructions.md. -->
+     .github/copilot-instructions.md holds the Dynatrace/DQL guidance for Copilot. -->
 
 # CLAUDE.md
 
@@ -10,9 +9,9 @@ Detailed per-language conventions live in `.claude/rules/`.
 
 ## What is EasyTrade
 
-Fake stock-broking demo application for Dynatrace showcases. 15 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`reverse-proxy`) on port 80.
+Fake stock-broking demo application for Dynatrace showcases. 12 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`reverse-proxy`) on port 80.
 
-All services share one MSSQL database (`db`, port 1433). Connection string format differs by tech stack — see `compose.yaml` for the three variants (Java/JDBC, .NET, Go/sqlserver).
+State lives in one `db` service. `db-adapter` is the only component that holds a database connection — every other service reaches it over gRPC on port `50051` using the shared contracts in `src/proto/` (see `src/proto/ADAPTER_SERVICES.md`). The backend is chosen with `DB_TYPE`/`DB_URL` in `.env`: **MSSQL by default**, Postgres supported as an alternate.
 
 ## Tech stacks
 
@@ -22,14 +21,12 @@ All services share one MSSQL database (`db`, port 1433). Connection string forma
 | Go + Go Modules | `background-service`, `db-adapter`, `pricing-service`, `user-service`, `feature-flag-service` |
 | TypeScript / Node.js / npm | `frontend` (React + Vite), `loadgen`, `offer-service` (Express) |
 | C# / .NET 8 | `broker-service` |
-| Config only | `reverse-proxy` (nginx), `db` (MSSQL) |
+| Config only | `reverse-proxy` (nginx), `db` (MSSQL and Postgres) |
 
 Key roles:
-- `pricing-service`: REST API (Gin + GORM); Swagger at `/pricing-service/swagger-ui/index.html`
+- `pricing-service`: read-only REST price API (Gin); reads prices from `db-adapter` over gRPC
 - `background-service`: consolidates four former services into one Go binary — see `src/background-service/README.md`. Sub-components: synthetic traffic generation, pricing candle generation + DB cleanup, credit-card manufacture/courier simulation + its `/v1/manufacturer` and `/version` HTTP endpoints, and a Kubernetes-only chaos-pattern controller (ex-`problem-operator`, `k8s.io/client-go`, gated on `POD_NAMESPACE` so it no-ops outside Kubernetes — not present in `compose.yaml`)
-- `pricing-service`: REST API (Gin + GORM) + RabbitMQ publisher; Swagger at `/pricing-service/swagger-ui/index.html`
-- `broker-service`: core trading engine (engine service was merged into it on branch `DREL-7889`); uses EF Core + feature-flag-driven middleware (`HighCpuUsageMiddleware`, `CreditCardValidationMiddleware`)
-- `problem-operator`: Kubernetes-only controller (`k8s.io/client-go`); watches feature flags and applies chaos patterns to the cluster — not present in `compose.yaml`
+- `broker-service`: core trading engine; feature-flag-driven middleware (`HighCpuUsageMiddleware`, `CreditCardValidationMiddleware`)
 
 ## Build & test per stack
 
@@ -63,7 +60,6 @@ dotnet test                        # runs xunit tests in test/ project
 dotnet test --filter "FullyQualifiedName~SomeTest"
 ```
 Solution paths: `src/broker-service/`.
-Only `broker-service` has a test project;
 
 ## Running locally
 
@@ -108,14 +104,14 @@ For Node, use `overrides` in `package.json` to pin transitive deps; run `npm ins
 
 Feature flags control four problem patterns (`DbNotResponding`, `ErgoAggregatorSlowdown`, `FactoryCrisis`, `HighCpuUsage`). Toggle via:
 ```bash
-curl -X PUT "http://localhost/feature-flag-service/v1/flags/{flagId}/" \
+curl -X PUT "http://localhost/feature-flag-service/v1/flags/{flagId}" \
   -H "accept: application/json" -d '{"enabled": true}'
 ```
-Swagger: `http://localhost/feature-flag-service/swagger-ui/index.html`
+`{flagId}` is the snake_case id (`db_not_responding`, `ergo_aggregator_slowdown`, `factory_crisis`, `high_cpu_usage`), not the PascalCase name. `GET /v1/flags` lists all 7 flags. Omit the trailing slash — the router redirects it and the redirect drops the request body.
 
 ## Dynatrace / Observability
 
-Services are deployed on Kubernetes (namespace `easytrade`) and monitored by Dynatrace. See `AGENTS.md` for DQL query patterns, metric keys, and problem investigation workflow. Monaco configurations live in `./monaco/`.
+Services are deployed on Kubernetes (namespace `easytrade`) and monitored by Dynatrace. See `.github/copilot-instructions.md` for DQL query patterns, metric keys, and problem investigation workflow; `AGENTS.md` covers the vulnerability remediation process. Monaco configurations live in `./monaco/`.
 
 Key DQL rule: always use `timeseries` for metrics — never `fetch <metric-key>`.
 
@@ -157,4 +153,3 @@ If you encounter a pattern in the codebase that contradicts these instructions, 
 | Claude Code source | Mirror (if Copilot used) |
 |---|---|
 | `CLAUDE.md` | `.github/copilot-instructions.md` |
-| `.claude/rules/*.md` | `.github/instructions/*.instructions.md` |

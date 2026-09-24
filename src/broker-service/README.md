@@ -18,12 +18,21 @@ dotnet test test/BrokerService.test.csproj
 dotnet run --project src/BrokerService.csproj
 ```
 ### Docker Build
-To build via Docker, ensure that you run the `docker build` command from the parent `src/` directory so Docker has context to the shared `proto/` folder:
+
+From the repository root:
 
 ```bash
-cd .. 
-docker build -t easytrade-broker-service -f broker-service/Dockerfile .
+make build services=broker-service      # build the image from local source
+make redeploy services=broker-service   # rebuild and recreate it in the running stack
 ```
+
+`make` handles the build context and the shared `src/proto/` definitions for you. Run
+`make help` for every target.
+
+## Endpoints
+
+See [`broker-service.http`](broker-service.http) for the full request collection - run it
+straight from your editor. Plus `/version`, `/livez` and `/readyz`.
 
 ## Problem patterns
 

@@ -72,7 +72,6 @@ broker-service:
     USER_SERVICE_ADDRESS: "http://{{ .Release.Name }}-user-service:8080"
     PRICING_SERVICE_ADDRESS: "http://{{ .Release.Name }}-pricing-service:8080"
     FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
-    PROXY_PREFIX: "broker-service"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   livenessProbe:
     httpGet:
@@ -100,7 +99,6 @@ broker-service:
 credit-card-order-service:
   enabled: true
   env:
-    PROXY_PREFIX: "credit-card-order-service"
     THIRD_PARTY_SERVICE_ADDRESS: "http://{{ .Release.Name }}-background-service:8080"
     WORK_DELAY: "300"
     WORK_RATE: "900"
@@ -399,7 +397,6 @@ offer-service:
 pricing-service:
   enabled: true
   env:
-    PROXY_PREFIX: "pricing-service"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   livenessProbe:
     httpGet:
@@ -427,7 +424,6 @@ pricing-service:
 user-service:
   enabled: true
   env:
-    PROXY_PREFIX: "user-service"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   livenessProbe:
     httpGet:
