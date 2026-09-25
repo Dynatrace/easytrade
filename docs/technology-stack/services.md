@@ -85,8 +85,7 @@ an OpenFeature client.
 
 ### `background-service` — Go
 
-One binary with four subsystems. This is what keeps traffic flowing when no user is
-present.
+A collection of supporting components that simulate external systems interacting with EasyTrade and perform background maintenance tasks. These components are grouped together to minimize infrastructure and resource overhead, since they are not part of the core application landscape that users interact with or typically monitor.
 
 | Subsystem        | What it does                                                                                                          |
 | ---------------- | --------------------------------------------------------------------------------------------------------------------- |

@@ -1,15 +1,15 @@
 # EasyTrade
 
 EasyTrade is a fake stock-broking application. Users sign up, deposit money, and buy
-and sell instruments whose prices move on a synthetic 24-hour cycle. None of the data is
+and sell instruments whose prices and market activity are generated synthetically. None of the data is
 real. The application produces continuous microservice traffic, and can **break that
 traffic on demand** through a set of reversible problem patterns.
 
 ## Start here
 
-| If you want to… | Read |
-|---|---|
-| Understand the failure scenarios EasyTrade can simulate | [Problem patterns](problem-patterns/index.md) |
+| If you want to…                                               | Read                                          |
+| ------------------------------------------------------------- | --------------------------------------------- |
+| Understand the failure scenarios EasyTrade can simulate       | [Problem patterns](problem-patterns/index.md) |
 | Know what each service is written in and how it fits together | [Technology stack](technology-stack/index.md) |
 
 ## The application in one paragraph
