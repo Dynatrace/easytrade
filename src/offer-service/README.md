@@ -15,9 +15,12 @@ A Node.js/Express service that acts as the public-facing API for product and pac
 ### Build and run in Docker
 
 ```bash
-docker build -t offer-service .
-docker run -p 8087:8080 offer-service
+make build services=offer-service      # build the image from local source
+make redeploy services=offer-service   # rebuild and recreate it in the running stack
 ```
+
+`make` handles the build context and the shared `src/proto/` definitions for you. Run
+`make help` for every target.
 
 ### Build TypeScript locally
 

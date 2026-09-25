@@ -43,7 +43,6 @@ services:
       USER_SERVICE_ADDRESS: *userServiceAddress
       PRICING_SERVICE_ADDRESS: *pricingServiceAddress
       FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
-      PROXY_PREFIX: broker-service
       DB_ADAPTER_ADDRESS: *dbAdapterAddress
 
   credit-card-order-service:
@@ -53,7 +52,6 @@ services:
       - db-adapter
       - background-service
     environment:
-      PROXY_PREFIX: credit-card-order-service
       DB_ADAPTER_ADDRESS: *dbAdapterAddress
       THIRD_PARTY_SERVICE_ADDRESS: *backgroundServiceAddress
       FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
@@ -81,8 +79,6 @@ services:
   feature-flag-service:
     <<: *default-service
     image: ${REGISTRY}/feature-flag-service:${TAG}
-    environment:
-      PROXY_PREFIX: feature-flag-service
 
   frontend:
     <<: *default-service
@@ -134,7 +130,6 @@ services:
       - db-adapter
     environment:
       DB_ADAPTER_ADDRESS: *dbAdapterAddress
-      PROXY_PREFIX: pricing-service
 
   user-service:
     <<: *default-service
@@ -143,4 +138,3 @@ services:
       - db-adapter
     environment:
       DB_ADAPTER_ADDRESS: *dbAdapterAddress
-      PROXY_PREFIX: user-service

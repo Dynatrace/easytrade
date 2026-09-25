@@ -13,18 +13,23 @@ Single Go binary that consolidates four former EasyTrade services.
 
 | Variable | Required | Default | Used by |
 |---|---|---|---|
-| `OFFER_SERVICE_ADDRESS` | no | `http://offer-service:8080` | aggregator |
-| `CREDIT_CARD_ORDER_SERVICE_ADDRESS` | yes | `http://credit-card-order-service:8080` | thirdparty |
-| `THIRD_PARTY_DELAY` | yes | — | thirdparty (seconds before first run) |
-| `THIRD_PARTY_RATE` | yes | — | thirdparty (seconds between runs) |
-| `DELAY_CHANCE_PERCENT` | yes | `20` | thirdparty (% chance of extra delay per manufacture run) |
-| `DB_ADAPTER_ADDRESS` | yes | `db-adapter:50051` | contentcreator (gRPC `host:port`) |
-| `FEATURE_FLAG_SERVICE_ADDRESS` | yes | `http://feature-flag-service:8080` | thirdparty + operator |
+| `OFFER_SERVICE_ADDRESS` | yes | — | aggregator |
+| `CREDIT_CARD_ORDER_SERVICE_ADDRESS` | yes | — | thirdparty |
+| `THIRD_PARTY_DELAY` | no | `10` | thirdparty (seconds before first run) |
+| `THIRD_PARTY_RATE` | no | `10` | thirdparty (seconds between runs) |
+| `DELAY_CHANCE_PERCENT` | no | `20` | thirdparty (% chance of extra delay per manufacture run) |
+| `DB_ADAPTER_ADDRESS` | yes | — | contentcreator (gRPC `host:port`) |
+| `FEATURE_FLAG_SERVICE_ADDRESS` | yes | — | thirdparty + operator |
 | `POD_NAMESPACE` | — | — | operator gate — must be **absent** outside Kubernetes; set by the Downward API in-cluster |
 | `SYNC_INTERVAL` | no | `5s` | operator (reconciliation loop interval; only read when `POD_NAMESPACE` is set) |
-| `HIGH_CPU_USAGE_BROKER_SERVICE_NAME` | no | `broker-service` | operator |
-| `HIGH_CPU_USAGE_FLAG_NAME` | no | `high_cpu_usage` | operator |
 | `HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT` | no | `300m` | operator |
+
+Required variables have no fallback — the process exits if they are unset. The values
+listed in `compose.yaml` are the conventional in-cluster addresses, not code defaults.
+
+The target deployment name (`broker-service`) and the flag it watches (`high_cpu_usage`)
+are compile-time constants in [`operator/config.go`](operator/config.go), not environment
+variables.
 
 See [`.env.example`](.env.example) for a ready-to-copy local dev file.
 
