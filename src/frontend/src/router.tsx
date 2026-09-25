@@ -22,8 +22,6 @@ import {
 } from "./contexts/QueryContext/user/loaders"
 import { instrumentsLoader } from "./contexts/QueryContext/instrument/loaders"
 import { getInstruments } from "./api/instrument/instruments"
-import { instrumentPricesLoader } from "./contexts/QueryContext/price/loaders"
-import { getPricesForInstrument } from "./api/price/price"
 import { transactionsLoader } from "./contexts/QueryContext/transaction/loaders"
 import { getTransactions } from "./api/transaction/transactions"
 import {
@@ -55,7 +53,6 @@ export enum LoaderIds {
     transactions = "transactions-loader",
     creditCard = "creditCard-loader",
     creditCardStatusHistory = "creditCardStatusHistory-loader",
-    prices = "prices-loader",
 }
 
 const elementRoutes = createRoutesFromElements(
@@ -129,13 +126,6 @@ const elementRoutes = createRoutesFromElements(
                     <Route
                         path=":id"
                         element={<Suspense fallback={<Loading />}><Instrument /></Suspense>}
-                        loader={async ({ params }) => {
-                            return await instrumentPricesLoader(
-                                queryClient,
-                                getPricesForInstrument
-                            )(params.id as string)
-                        }}
-                        id={LoaderIds.prices}
                     />
                 </Route>
             </Route>
