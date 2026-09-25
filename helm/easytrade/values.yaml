@@ -69,7 +69,6 @@ background-service:
 broker-service:
   enabled: true
   env:
-    USER_SERVICE_ADDRESS: "http://{{ .Release.Name }}-user-service:8080"
     PRICING_SERVICE_ADDRESS: "http://{{ .Release.Name }}-pricing-service:8080"
     FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
     PROXY_PREFIX: "broker-service"
