@@ -25,8 +25,6 @@ export default defineConfig([
         },
     },
     pluginReact.configs.flat.recommended,
-    // Project uses the automatic JSX runtime (tsconfig `jsx: "react-jsx"`),
-    // so React need not be in scope for JSX.
     pluginReact.configs.flat["jsx-runtime"],
     {
         rules: {
