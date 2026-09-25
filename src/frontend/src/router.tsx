@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from "react"
+import { lazy, Suspense } from "react"
 import { PageSpinner } from "./components/PageSpinner"
 import {
     createBrowserRouter,
