@@ -8,7 +8,7 @@ import { useLoaderData, useRouteLoaderData } from "react-router"
 import { Instrument } from "../../api/instrument/types"
 import { useAuthUser } from "../../contexts/UserContext/context"
 import { Transaction } from "../../api/transaction/types"
-import { LoaderIds } from "../../router"
+import { LoaderIds } from "../../routeIds"
 
 export default function Home() {
     const { userId } = useAuthUser()
