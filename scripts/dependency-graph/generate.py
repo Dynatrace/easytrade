@@ -79,15 +79,23 @@ def build_graph(compose_services: dict):
 def resolve_service_dir(name: str, spec: dict) -> Path:
     build = (spec or {}).get("build")
     context = None
+    dockerfile = None
     if isinstance(build, str):
         context = build
     elif isinstance(build, dict):
         context = build.get("context")
+        dockerfile = build.get("dockerfile")
     if not context:
         context = f"src/{name}"
     if "${" in context:
         context = context.split("${", 1)[0].rstrip("/")
     path = REPO_ROOT / context
+    # A shared context (e.g. "src/") with a per-service dockerfile path
+    # (e.g. "broker-service/Dockerfile") means the real service dir is the
+    # dockerfile's parent, not the whole shared context.
+    dockerfile_dir = Path(dockerfile).parent if dockerfile else None
+    if dockerfile_dir and str(dockerfile_dir) != ".":
+        path = path / dockerfile_dir
     return path if path.exists() else SRC_DIR / name
 
 

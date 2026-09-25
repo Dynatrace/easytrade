@@ -37,11 +37,13 @@ flowchart TD
     background-service -.-> feature-flag-service
     credit-card-order-service -.-> feature-flag-service
 
-    class feature-flag-service go
-    class background-service,broker-service,credit-card-order-service,db-adapter,offer-service,pricing-service,user-service java
-    class frontend,loadgen node
+    class broker-service dotnet
+    class background-service,db-adapter,feature-flag-service,pricing-service,user-service go
+    class credit-card-order-service java
+    class frontend,loadgen,offer-service node
     class db,reverse-proxy other
 
+    classDef dotnet fill:#d2b4de,stroke:#6c3483,color:#1a1a1a,stroke-width:1px
     classDef go fill:#a9cce3,stroke:#1f618d,color:#1a1a1a,stroke-width:1px
     classDef java fill:#f8b4b4,stroke:#c0392b,color:#1a1a1a,stroke-width:1px
     classDef node fill:#a9dfbf,stroke:#1e8449,color:#1a1a1a,stroke-width:1px
@@ -49,6 +51,7 @@ flowchart TD
 
     subgraph Legend[Legend: implementation language]
         direction LR
+        legend_dotnet["C# / .NET"]:::dotnet
         legend_go["Go"]:::go
         legend_java["Java"]:::java
         legend_node["TypeScript / Node.js"]:::node
