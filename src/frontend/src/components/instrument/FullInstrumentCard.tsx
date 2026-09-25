@@ -1,4 +1,3 @@
-import React from "react"
 import InstrumentHeader from "./InstrumentHeader"
 import { useInstrument } from "../../contexts/InstrumentContext/context"
 import InstrumentPriceChart from "../charts/InstrumentPriceChart"

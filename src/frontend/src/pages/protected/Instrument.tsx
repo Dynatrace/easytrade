@@ -1,4 +1,3 @@
-import React from "react"
 import { Navigate, useParams, useRouteLoaderData } from "react-router"
 import FullInstrumentCard from "../../components/instrument/FullInstrumentCard"
 import InstrumentTransactions from "../../components/instrument/InstrumentTransactions"
@@ -6,7 +5,7 @@ import { InstrumentProvider } from "../../contexts/InstrumentContext/context"
 import { useAuthUser } from "../../contexts/UserContext/context"
 import { buy, quickBuy, sell, quickSell } from "../../api/transaction/trades"
 import { Instrument as InstrumentType } from "../../api/instrument/types"
-import { LoaderIds } from "../../router"
+import { LoaderIds } from "../../routeIds"
 import { useInstrumentsQuery } from "../../contexts/QueryContext/instrument/hooks"
 
 export default function Instrument() {

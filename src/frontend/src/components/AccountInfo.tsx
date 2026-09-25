@@ -1,4 +1,3 @@
-import React from "react"
 import { useAuthUserData } from "../contexts/UserContext/hooks"
 import { useFormatter } from "../contexts/FormatterContext/context"
 

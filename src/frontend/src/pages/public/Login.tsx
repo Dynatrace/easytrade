@@ -1,4 +1,3 @@
-import React from "react"
 import { Link, useLoaderData } from "react-router"
 import { PresetUser } from "../../api/user/types"
 import DefaultLoginForm from "../../components/forms/DefaultLoginForm"

@@ -1,4 +1,3 @@
-import React from "react"
 import VersionsTableItem from "./VersionsTableItem"
 import { ServiceVersion } from "../../api/version/types"
 
