@@ -1,6 +1,6 @@
 import VersionsTable from "../components/version/VersionsTable"
-import { useVersionsQuery } from "../contexts/QueryContext/version/hooks"
-import { getFrontendVersion } from "../api/version/versions"
+import { useVersionsQuery } from "../hooks/useVersions"
+import { getFrontendVersion } from "../api/version"
 import { PageSpinner } from "../components/PageSpinner"
 
 export default function Version() {

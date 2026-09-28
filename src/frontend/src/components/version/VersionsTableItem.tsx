@@ -1,5 +1,5 @@
-import { ServiceVersion } from "../../api/version/types"
-import { getFrontendVersion } from "../../api/version/versions"
+import { ServiceVersion } from "../../api/version"
+import { getFrontendVersion } from "../../api/version"
 
 interface VersionListItemProps {
     service: ServiceVersion
