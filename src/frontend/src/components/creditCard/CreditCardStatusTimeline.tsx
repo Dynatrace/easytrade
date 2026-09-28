@@ -1,7 +1,7 @@
 import {
     OrderStatusEntry,
     SuccessOrderStatusHistoryResponse,
-} from "../../api/creditCard/order"
+} from "../../api/creditCard"
 import { useFormatter } from "../../contexts/FormatterContext/context"
 
 function formatStatus(status: string): string {
