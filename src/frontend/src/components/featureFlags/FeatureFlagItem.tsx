@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { featureFlagKeys } from "../../queryKeys"
+import { featureFlagKeys } from "../../utils/queryKeys"
 import { handleFlagToggle } from "../../api/featureFlags"
 import { useConfigFlagsQuery } from "../../hooks/useFeatureFlags"
 import { ContentCopyIcon, InfoIcon, LockIcon } from "../icons"

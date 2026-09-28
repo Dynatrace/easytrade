@@ -1,16 +1,14 @@
 import type { RouteObject } from "react-router"
 import PublicLayout from "../layouts/PublicLayout"
-import { queryClient } from "../contexts/QueryContext/QueryContext"
-import { presetUsersLoader } from "../contexts/QueryContext/user/loaders"
-import { getPresetUsers } from "../api/user/user"
 import { lazyPage } from "./helpers"
+import { presetUsersLoader } from "../hooks/useUser"
 
 export const publicRoutes: RouteObject = {
     element: <PublicLayout />,
     children: [
         {
             path: "login",
-            loader: presetUsersLoader(queryClient, getPresetUsers),
+            loader: presetUsersLoader,
             lazy: lazyPage(() => import("../pages/public/Login")),
         },
         {

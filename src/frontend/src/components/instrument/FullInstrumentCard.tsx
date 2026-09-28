@@ -2,7 +2,7 @@ import InstrumentHeader from "./InstrumentHeader"
 import { useInstrument } from "../../contexts/InstrumentContext/context"
 import { useRouteLoaderData } from "react-router"
 import InstrumentPriceChart from "../charts/InstrumentPriceChart"
-import { LoaderIds } from "../../routeIds"
+import { LoaderIds } from "../../utils/routeIds"
 import { Price } from "../../api/price"
 import { useInstrumentPricesQuery } from "../../hooks/usePrices"
 
