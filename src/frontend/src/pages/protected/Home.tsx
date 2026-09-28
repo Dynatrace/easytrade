@@ -2,13 +2,13 @@ import AccountInfo from "../../components/AccountInfo"
 import InstrumentsTable from "../../components/InstrumentsTable"
 import TransactionsTable from "../../components/TransactionsTable"
 import InstrumentsChart from "../../components/charts/InstrumentsChart"
-import { useTransactionQuery } from "../../contexts/QueryContext/transaction/hooks"
-import { useInstrumentsQuery } from "../../contexts/QueryContext/instrument/hooks"
+import { useTransactionQuery } from "../../hooks/useTransactions"
+import { useInstrumentsQuery } from "../../hooks/useInstruments"
 import { useLoaderData, useRouteLoaderData } from "react-router"
-import { Instrument } from "../../api/instrument/types"
+import { Instrument } from "../../api/instrument"
 import { useAuthUser } from "../../contexts/UserContext/context"
-import { Transaction } from "../../api/transaction/types"
-import { LoaderIds } from "../../routeIds"
+import { Transaction } from "../../api/transaction"
+import { LoaderIds } from "../../utils/routeIds"
 
 export default function Home() {
     const { userId } = useAuthUser()
