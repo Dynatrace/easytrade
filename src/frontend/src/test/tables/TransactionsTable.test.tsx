@@ -1,12 +1,12 @@
 import "@testing-library/jest-dom"
 import { screen, render } from "@testing-library/react"
 import { FormatterWrapper } from "../providers"
-import { Transaction } from "../../api/transaction/types"
-import { Instrument } from "../../api/instrument/types"
+import { Transaction } from "../../api/transaction"
+import { Instrument } from "../../api/instrument"
 import TransactionsTable from "../../components/TransactionsTable"
 const mockTransactions: Transaction[] = [
     {
-        id: 1,
+        id: "1",
         actionType: "SELL",
         instrumentId: "550e8400-e29b-41d4-a716-446655440001",
         amount: 8460,
@@ -15,7 +15,7 @@ const mockTransactions: Transaction[] = [
         endTime: "2023-03-20T12:15:00",
     },
     {
-        id: 2,
+        id: "2",
         actionType: "BUY",
         instrumentId: "550e8400-e29b-41d4-a716-446655440002",
         amount: 7,
@@ -24,7 +24,7 @@ const mockTransactions: Transaction[] = [
         endTime: "2023-03-22T15:03:00",
     },
     {
-        id: 3,
+        id: "3",
         actionType: "BUY",
         instrumentId: "550e8400-e29b-41d4-a716-446655440003",
         amount: 234,
@@ -33,7 +33,7 @@ const mockTransactions: Transaction[] = [
         endTime: "2023-03-21T08:04:00",
     },
     {
-        id: 4,
+        id: "4",
         actionType: "SELL",
         instrumentId: "550e8400-e29b-41d4-a716-446655440004",
         amount: 56,
@@ -42,7 +42,7 @@ const mockTransactions: Transaction[] = [
         endTime: "2023-03-22T03:03:00",
     },
     {
-        id: 5,
+        id: "5",
         actionType: "BUY",
         instrumentId: "550e8400-e29b-41d4-a716-446655440002",
         amount: 10,

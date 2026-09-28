@@ -1,6 +1,6 @@
 import { useState } from "react"
-import { Transaction } from "../api/transaction/types"
-import { Instrument } from "../api/instrument/types"
+import { Transaction } from "../api/transaction"
+import { Instrument } from "../api/instrument"
 import { useFormatter } from "../contexts/FormatterContext/context"
 import { CheckIcon, CloseIcon, SyncIcon } from "./icons"
 

@@ -1,5 +1,5 @@
-import { Price } from "../../api/price/types"
-import { InstrumentPrice } from "../../api/instrument/types"
+import { Price } from "../../api/price"
+import { InstrumentPrice } from "../../api/instrument"
 import { useFormatter } from "../../contexts/FormatterContext/context"
 
 export default function PriceDisplay({ price }: { price: Price | InstrumentPrice }) {
