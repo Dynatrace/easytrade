@@ -5,8 +5,8 @@ import { useAuthUserData } from "../../contexts/UserContext/hooks"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuthUser } from "../../contexts/UserContext/context"
-import { WithdrawHandler } from "../../api/creditCard/withdraw/types"
-import { balanceInvalidateQuery } from "../../contexts/QueryContext/user/queries"
+import { WithdrawHandler } from "../../api/creditCard"
+import { invalidateBalance } from "../../queryKeys"
 import { useFormatter } from "../../contexts/FormatterContext/context"
 import { EditIcon } from "../icons"
 import { isCreditCardValid } from "../../utils/cardValidation"
@@ -74,7 +74,7 @@ export default function WithdrawForm({ submitHandler }: WithdrawFormProps) {
         },
         onSuccess: async () => {
             showToast("Withdraw successful", "success")
-            await balanceInvalidateQuery(queryClient)
+            await invalidateBalance(queryClient)
             setAmount(0); setCardholderName(""); setAddress(""); setEmail("")
             setCardNumber(""); setCardType(""); setAgreementCheck(false)
         },

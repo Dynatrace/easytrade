@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from "react"
-import { LoginHandler } from "../../api/login/types"
+import { LoginHandler } from "../../api/user"
 
 type DefaultLoginHandler = (userId: string) => void
 

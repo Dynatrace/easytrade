@@ -1,6 +1,6 @@
 import WithdrawForm from "../../components/forms/WithdrawForm"
 import DemoAppWarning from "../../components/DemoAppWarning"
-import { withdraw } from "../../api/creditCard/withdraw/withdraw"
+import { withdraw } from "../../api/creditCard"
 
 export default function Withdraw() {
     return (

@@ -1,6 +1,6 @@
 import { useToast } from "../../contexts/ToastContext/context"
 import React, { useState } from "react"
-import { LoginHandler } from "../../api/login/types"
+import { LoginHandler } from "../../api/user"
 
 import { useMutation } from "@tanstack/react-query"
 
