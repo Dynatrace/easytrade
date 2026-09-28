@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { createChart, ColorType, CandlestickData, CandlestickSeries, Time } from "lightweight-charts"
-import { Price } from "../../api/price/types"
+import { Price } from "../../api/price"
 import { CHART_COLORS } from "../../styles/chartColors"
 
 type CandlestickChartProps = {

@@ -1,6 +1,6 @@
 import { Link } from "react-router"
-import { Price } from "../../api/backend/prices"
-import { InstrumentPrice } from "../../api/instrument/types"
+import { Price } from "../../api/price"
+import { InstrumentPrice } from "../../api/instrument"
 import { useFormatter } from "../../contexts/FormatterContext/context"
 
 type Props = {

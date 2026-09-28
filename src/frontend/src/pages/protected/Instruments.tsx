@@ -1,9 +1,9 @@
 import InstrumentsGrid from "../../components/instrument/InstrumentsGrid"
 import { useAuthUser } from "../../contexts/UserContext/context"
 import { useRouteLoaderData } from "react-router"
-import { Instrument } from "../../api/instrument/types"
-import { LoaderIds } from "../../routeIds"
-import { useInstrumentsQuery } from "../../contexts/QueryContext/instrument/hooks"
+import { Instrument } from "../../api/instrument"
+import { LoaderIds } from "../../utils/routeIds"
+import { useInstrumentsQuery } from "../../hooks/useInstruments"
 
 export default function InstrumentsPage() {
     const { userId } = useAuthUser()

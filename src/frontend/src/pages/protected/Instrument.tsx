@@ -3,10 +3,10 @@ import FullInstrumentCard from "../../components/instrument/FullInstrumentCard"
 import InstrumentTransactions from "../../components/instrument/InstrumentTransactions"
 import { InstrumentProvider } from "../../contexts/InstrumentContext/context"
 import { useAuthUser } from "../../contexts/UserContext/context"
-import { buy, quickBuy, sell, quickSell } from "../../api/transaction/trades"
-import { Instrument as InstrumentType } from "../../api/instrument/types"
-import { LoaderIds } from "../../routeIds"
-import { useInstrumentsQuery } from "../../contexts/QueryContext/instrument/hooks"
+import { buy, quickBuy, sell, quickSell } from "../../api/transaction"
+import { Instrument as InstrumentType } from "../../api/instrument"
+import { LoaderIds } from "../../utils/routeIds"
+import { useInstrumentsQuery } from "../../hooks/useInstruments"
 
 export default function Instrument() {
     const { id } = useParams()

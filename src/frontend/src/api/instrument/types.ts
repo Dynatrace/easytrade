@@ -1,3 +1,11 @@
+export type InstrumentPrice = {
+    timestamp: string
+    open: number
+    close: number
+    low: number
+    high: number
+}
+
 export type Instrument = {
     id: string
     code: string
@@ -7,12 +15,4 @@ export type Instrument = {
     productName: string
     price: InstrumentPrice
     amount: number
-}
-
-export type InstrumentPrice = {
-    timestamp: string
-    open: number
-    close: number
-    low: number
-    high: number
 }

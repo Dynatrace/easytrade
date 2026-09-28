@@ -1,4 +1,4 @@
-import { Instrument } from "../api/instrument/types"
+import { Instrument } from "../api/instrument"
 import { useFormatter } from "../contexts/FormatterContext/context"
 
 type InstrumentsTableProps = {
