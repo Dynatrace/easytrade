@@ -2,11 +2,14 @@ import FeatureFlagList from "../components/featureFlags/FeatureFlagList"
 import {
     useConfigFlagsQuery,
     useProblemFlagsQuery,
-} from "../contexts/QueryContext/featureFlag/hooks"
+} from "../hooks/useFeatureFlags"
 import { ReplayIcon } from "../components/icons"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { featureFlagKeys } from "../contexts/QueryContext/featureFlag/queries"
-import { delay } from "../api/util"
+import { featureFlagKeys } from "../utils/queryKeys"
+
+const MIN_SPINNER_MS = 500
+
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export default function FeatureFlags() {
     const { data: flags } = useProblemFlagsQuery()
@@ -15,7 +18,7 @@ export default function FeatureFlags() {
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {
             await Promise.all([
-                delay(500),
+                delay(MIN_SPINNER_MS),
                 queryClient.refetchQueries({ queryKey: featureFlagKeys.all }),
             ])
         },
