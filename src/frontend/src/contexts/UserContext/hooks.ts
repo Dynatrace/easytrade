@@ -1,17 +1,11 @@
-import { useRouteLoaderData } from "react-router"
-import { Balance, User } from "../../api/user/types"
-import { useBalanceQuery, useUserQuery } from "../QueryContext/user/hooks"
+import { Balance, User } from "../../api/user"
+import { useBalanceQuery, useUserQuery } from "../../hooks/useUser"
 import { useAuthUser } from "./context"
-import { LoaderIds } from "../../routeIds"
 
 export function useAuthUserData(): { user?: User; balance?: Balance } {
     const { userId } = useAuthUser()
-    const [userData, balanceData] = useRouteLoaderData(LoaderIds.user) as [
-        User?,
-        Balance?,
-    ]
     return {
-        user: useUserQuery(userId, userData).data,
-        balance: useBalanceQuery(userId, balanceData).data,
+        user: useUserQuery(userId).data,
+        balance: useBalanceQuery(userId).data,
     }
 }

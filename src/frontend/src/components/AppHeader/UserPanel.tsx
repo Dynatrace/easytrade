@@ -1,11 +1,11 @@
 import { useState } from "react"
 import { useAuth } from "../../contexts/AuthContext/context"
-import { useUserQuery } from "../../contexts/QueryContext/user/hooks"
+import { useUserQuery } from "../../hooks/useUser"
 import { useRouteLoaderData } from "react-router"
-import { LoaderIds } from "../../routeIds"
-import { logoutInvalidateQuery } from "../../contexts/QueryContext/user/queries"
+import { LoaderIds } from "../../utils/routeIds"
+import { invalidateOnLogout } from "../../utils/queryKeys"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { User, Balance } from "../../api/user/types"
+import { User, Balance } from "../../api/user"
 import { LogoutIcon } from "../icons"
 
 export default function UserPanel() {
@@ -25,7 +25,7 @@ export default function UserPanel() {
         },
         onMutate: () => setOpen(false),
         onSuccess: () => {
-            logoutInvalidateQuery(queryClient)
+            invalidateOnLogout(queryClient)
         },
     })
 
