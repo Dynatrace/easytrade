@@ -5,9 +5,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 
 import { useAuthUserData } from "../../contexts/UserContext/hooks"
-import { orderCreditCard } from "../../api/creditCard/order"
-import { CreditCardLevel } from "../../api/backend/creditCard"
-import { newCardOrderInvalidateQuery } from "../../contexts/QueryContext/creditCard/queries"
+import { orderCreditCard } from "../../api/creditCard"
+import { CreditCardLevel } from "../../api/creditCard"
+import { invalidateCreditCardStatus } from "../../queryKeys"
 
 export default function CreditCardForm() {
     const { userId } = useAuthUser()
@@ -60,7 +60,7 @@ export default function CreditCardForm() {
         onSuccess: async ({ orderId }) => {
             showToast(`Card ordered successfully. Order ID: ${orderId}`, "success")
             setName(""); setAddress(""); setEmail(""); setType(""); setAgreementCheck(false)
-            await newCardOrderInvalidateQuery(queryClient)
+            await invalidateCreditCardStatus(queryClient)
         },
         onError: (e: unknown) => {
             showToast(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)), "error")

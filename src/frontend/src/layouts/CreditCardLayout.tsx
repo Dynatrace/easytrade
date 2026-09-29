@@ -1,7 +1,7 @@
 import { Navigate, Outlet, useLoaderData } from "react-router"
 import { useAuthUser } from "../contexts/UserContext/context"
-import { OrderStatusResponse } from "../api/creditCard/order"
-import { useCreditCardOrderStatus } from "../contexts/QueryContext/creditCard/hooks"
+import { OrderStatusResponse } from "../api/creditCard"
+import { useCreditCardOrderStatus } from "../hooks/useCreditCard"
 import { useLocation } from "react-router"
 
 export default function CreditCardLayout() {
