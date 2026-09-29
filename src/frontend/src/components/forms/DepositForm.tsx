@@ -5,8 +5,8 @@ import { useAuthUserData } from "../../contexts/UserContext/hooks"
 
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuthUser } from "../../contexts/UserContext/context"
-import { DepositHandler } from "../../api/creditCard/deposit/types"
-import { balanceInvalidateQuery } from "../../contexts/QueryContext/user/queries"
+import { DepositHandler } from "../../api/creditCard"
+import { invalidateBalance } from "../../queryKeys"
 import { useFormatter } from "../../contexts/FormatterContext/context"
 import { EditIcon } from "../icons"
 import { isCreditCardValid } from "../../utils/cardValidation"
@@ -78,7 +78,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
         },
         onSuccess: async () => {
             showToast("Deposit successful", "success")
-            await balanceInvalidateQuery(queryClient)
+            await invalidateBalance(queryClient)
             setAmount(0); setCardholderName(""); setAddress(""); setEmail("")
             setCardNumber(""); setCardType(""); setCvv(""); setAgreementCheck(false)
         },
