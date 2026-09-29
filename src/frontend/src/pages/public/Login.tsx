@@ -1,9 +1,9 @@
 import { Link, useLoaderData } from "react-router"
-import { PresetUser } from "../../api/user/types"
+import { PresetUser } from "../../api/user"
 import DefaultLoginForm from "../../components/forms/DefaultLoginForm"
 import LoginForm from "../../components/forms/LoginForm"
 import { useAuth } from "../../contexts/AuthContext/context"
-import { usePresetUsersQuery } from "../../contexts/QueryContext/user/hooks"
+import { usePresetUsersQuery } from "../../hooks/useUser"
 
 export default function Login() {
     const { loginHandler, defaultLoginHandler } = useAuth()

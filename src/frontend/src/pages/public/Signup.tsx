@@ -1,5 +1,5 @@
 import { Link } from "react-router"
-import { signup } from "../../api/signup/signup"
+import { signup } from "../../api/user"
 import SignupForm from "../../components/forms/SignupForm"
 import DemoAppWarning from "../../components/DemoAppWarning"
 

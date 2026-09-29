@@ -2,7 +2,7 @@ import "@testing-library/jest-dom"
 import { screen, render, waitFor } from "@testing-library/react"
 import DefaultLoginForm from "../../components/forms/DefaultLoginForm"
 import userEvent from "@testing-library/user-event"
-import { PresetUser } from "../../api/user/types"
+import { PresetUser } from "../../api/user"
 
 const mockUsers: PresetUser[] = [
     { id: "1", firstName: "first", lastName: "user" },
