@@ -1,15 +1,11 @@
 import InstrumentHeader from "./InstrumentHeader"
 import { useInstrument } from "../../contexts/InstrumentContext/context"
-import { useRouteLoaderData } from "react-router"
 import InstrumentPriceChart from "../charts/InstrumentPriceChart"
-import { LoaderIds } from "../../routeIds"
-import { Price } from "../../api/price/types"
 import { useInstrumentPricesQuery } from "../../contexts/QueryContext/price/hooks"
 
 export default function FullInstrumentCard() {
     const { instrument } = useInstrument()
-    const pricesData = useRouteLoaderData(LoaderIds.prices) as Price[]
-    const { data } = useInstrumentPricesQuery(instrument.id, pricesData)
+    const { data, isPending, isError } = useInstrumentPricesQuery(instrument.id)
 
     return (
         <div className="card" style={{ padding: "1rem" }}>
@@ -17,7 +13,19 @@ export default function FullInstrumentCard() {
                 <InstrumentHeader instrument={instrument} />
                 <p style={{ color: "var(--text-muted)", fontStyle: "italic", margin: 0 }}>{instrument.code}</p>
             </div>
-            <InstrumentPriceChart prices={data ?? []} />
+            {isPending ? (
+                <div className="chart-container" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <span className="spinner" />
+                </div>
+            ) : isError ? (
+                <div className="chart-container" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <span className="status-message status-error">
+                        Could not load prices for {instrument.code}.
+                    </span>
+                </div>
+            ) : (
+                <InstrumentPriceChart prices={data ?? []} />
+            )}
         </div>
     )
 }
