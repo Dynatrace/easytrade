@@ -1,4 +1,3 @@
-import React from "react"
 import { ServiceVersion } from "../../api/version/types"
 import { getFrontendVersion } from "../../api/version/versions"
 

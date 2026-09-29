@@ -1,4 +1,3 @@
-import React from "react"
 import { Price } from "../../api/price/types"
 import { InstrumentPrice } from "../../api/instrument/types"
 import { useFormatter } from "../../contexts/FormatterContext/context"

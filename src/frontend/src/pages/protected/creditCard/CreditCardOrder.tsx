@@ -1,4 +1,3 @@
-import React from "react"
 import CreditCardForm from "../../../components/creditCard/CreditCardForm"
 import DemoAppWarning from "../../../components/DemoAppWarning"
 

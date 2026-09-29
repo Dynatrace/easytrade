@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react"
+import { useEffect, useRef } from "react"
 import { createChart, ColorType, CandlestickData, CandlestickSeries, Time } from "lightweight-charts"
 import { Price } from "../../api/price/types"
 import { CHART_COLORS } from "../../styles/chartColors"
