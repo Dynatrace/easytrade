@@ -1,16 +1,24 @@
-import { backends } from "../backend"
-import {
-    ServiceVersion,
-    ServiceVersionSuccess,
-    ServiceVersionUrl,
-} from "./types"
+import { getJsonWithTimeout } from "../http"
 import {
     version as frontendBuildVersion,
     buildDate as frontendBuildDate,
     buildCommit as frontendBuildCommit,
 } from "../../../package.json"
+import {
+    ServiceVersion,
+    ServiceVersionData,
+    ServiceVersionSuccess,
+} from "./types"
+export * from "./types"
 
-const services: ServiceVersionUrl[] = [
+type ServiceVersionUrl = {
+    serviceName: string
+    versionUrl: string
+}
+
+const TIMEOUT_MS = 1000
+
+const SERVICES: ServiceVersionUrl[] = [
     { serviceName: "Broker Service", versionUrl: "/broker-service/version" },
     {
         serviceName: "Credit Card Order Service",
@@ -29,9 +37,28 @@ const services: ServiceVersionUrl[] = [
     },
 ]
 
+async function getServiceVersion({
+    serviceName,
+    versionUrl,
+}: ServiceVersionUrl): Promise<ServiceVersion> {
+    try {
+        const data = await getJsonWithTimeout<ServiceVersionData>(
+            versionUrl,
+            TIMEOUT_MS
+        )
+        return { success: true, serviceName, data }
+    } catch (error) {
+        console.error(`[getServiceVersion] ${serviceName} failed`, error)
+        return {
+            success: false,
+            serviceName,
+            message: `${serviceName} didn't respond`,
+        }
+    }
+}
+
 export async function getAllVersions(): Promise<ServiceVersion[]> {
-    console.log("[getAllVersions] Getting all services versions")
-    return await Promise.all(services.map(getServiceVersion))
+    return await Promise.all(SERVICES.map(getServiceVersion))
 }
 
 export function getFrontendVersion(): ServiceVersionSuccess {
@@ -43,27 +70,5 @@ export function getFrontendVersion(): ServiceVersionSuccess {
             buildDate: frontendBuildDate,
             buildCommit: frontendBuildCommit,
         },
-    }
-}
-
-async function getServiceVersion(
-    serviceVersionUrl: ServiceVersionUrl
-): Promise<ServiceVersion> {
-    try {
-        const data = await backends.versions.getVersion(
-            serviceVersionUrl.versionUrl
-        )
-        return {
-            success: true,
-            serviceName: serviceVersionUrl.serviceName,
-            data: data,
-        }
-    } catch (error) {
-        console.log("error: ", error)
-        return {
-            success: false,
-            serviceName: serviceVersionUrl.serviceName,
-            message: `${serviceVersionUrl.serviceName} didn't respond`,
-        }
     }
 }
