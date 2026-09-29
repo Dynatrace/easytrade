@@ -1,4 +1,4 @@
-import { Instrument } from "../../api/instrument/types"
+import { Instrument } from "../../api/instrument"
 import InstrumentCard from "./InstrumentCard"
 
 export default function InstrumentsGrid({ instruments }: { instruments: Instrument[] }) {

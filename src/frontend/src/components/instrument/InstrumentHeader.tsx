@@ -1,4 +1,4 @@
-import { Instrument } from "../../api/instrument/types"
+import { Instrument } from "../../api/instrument"
 import PriceDisplay from "./PriceDisplay"
 
 export default function InstrumentHeader({ instrument }: { instrument: Instrument }) {

@@ -2,7 +2,7 @@ import "@testing-library/jest-dom"
 import { screen, render } from "@testing-library/react"
 import { FormatterWrapper } from "../providers"
 import InstrumentsTable from "../../components/InstrumentsTable"
-import { Instrument } from "../../api/instrument/types"
+import { Instrument } from "../../api/instrument"
 
 const mockInstruments: Instrument[] = [
     {

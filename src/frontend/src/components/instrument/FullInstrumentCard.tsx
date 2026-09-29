@@ -3,8 +3,8 @@ import { useInstrument } from "../../contexts/InstrumentContext/context"
 import { useRouteLoaderData } from "react-router"
 import InstrumentPriceChart from "../charts/InstrumentPriceChart"
 import { LoaderIds } from "../../routeIds"
-import { Price } from "../../api/price/types"
-import { useInstrumentPricesQuery } from "../../contexts/QueryContext/price/hooks"
+import { Price } from "../../api/price"
+import { useInstrumentPricesQuery } from "../../hooks/usePrices"
 
 export default function FullInstrumentCard() {
     const { instrument } = useInstrument()
