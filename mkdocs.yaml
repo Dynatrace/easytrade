@@ -1,0 +1,28 @@
+site_name: EasyTrade
+site_description: Fake stock-broking application with deliberate, reversible fault injection.
+repo_url: https://github.com/Dynatrace/easytrade
+docs_dir: docs
+
+nav:
+  - Overview: index.md
+  - Problem patterns:
+      - How they work: problem-patterns/index.md
+      - DbNotResponding: problem-patterns/db-not-responding.md
+      - ErgoAggregatorSlowdown: problem-patterns/ergo-aggregator-slowdown.md
+      - FactoryCrisis: problem-patterns/factory-crisis.md
+      - HighCpuUsage: problem-patterns/high-cpu-usage.md
+      - CreditCardMeltdown: problem-patterns/credit-card-meltdown.md
+      - CreditCardValidation: problem-patterns/credit-card-validation.md
+  - Technology stack:
+      - Service reference: technology-stack/services.md
+      - Data layer: technology-stack/data-layer.md
+
+plugins:
+  - techdocs-core
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
