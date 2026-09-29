@@ -1,6 +1,6 @@
 import { Link } from "react-router"
 import { FlagIcon } from "../icons"
-import { useProblemFlagsQuery } from "../../contexts/QueryContext/featureFlag/hooks"
+import { useProblemFlagsQuery } from "../../hooks/useFeatureFlags"
 
 export default function FeatureFlagIcon() {
     const { data: flags } = useProblemFlagsQuery()
