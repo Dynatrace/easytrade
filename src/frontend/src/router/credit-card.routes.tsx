@@ -1,8 +1,7 @@
 import type { RouteObject } from "react-router"
 import CreditCardLayout from "../layouts/CreditCardLayout"
 import { queryClient } from "../contexts/QueryContext/QueryContext"
-import { sessionUserProvider } from "../contexts/QueryContext/user/loaders"
-import { loadWithUser } from "../contexts/QueryContext/user/loaders"
+import { loadWithUser,sessionUserProvider } from "../contexts/QueryContext/user/loaders"
 import {
     creditCardStatusHistoryLoader,
     creditCardStatusLoader,
