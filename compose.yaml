@@ -40,7 +40,6 @@ services:
       - pricing-service
       - feature-flag-service
     environment:
-      USER_SERVICE_ADDRESS: *userServiceAddress
       PRICING_SERVICE_ADDRESS: *pricingServiceAddress
       FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
       PROXY_PREFIX: broker-service

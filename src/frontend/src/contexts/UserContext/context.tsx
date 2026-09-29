@@ -1,4 +1,3 @@
-import React from "react"
 import { createContext, PropsWithChildren, useContext } from "react"
 import { IUserContext, ProviderProps } from "./types"
 

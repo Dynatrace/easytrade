@@ -1,4 +1,3 @@
-import React from "react"
 import "@testing-library/jest-dom"
 import { screen, render, fireEvent, waitFor, act } from "@testing-library/react"
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup"
@@ -8,7 +7,7 @@ import DepositForm from "../../components/forms/DepositForm"
 import { createMemoryRouter, RouterProvider } from "react-router"
 import { DepositHandler } from "../../api/creditCard/deposit/types"
 import { QueryClientWrapper, UserContextWrapper } from "../providers"
-import { LoaderIds } from "../../router"
+import { LoaderIds } from "../../routeIds"
 import { User, Balance } from "../../api/user/types"
 import { FormatterProvider } from "../../contexts/FormatterContext/context"
 

@@ -1,4 +1,3 @@
-import React from "react"
 import { login } from "../api/login/login"
 import { getTransactions } from "../api/transaction/transactions"
 import { getBalance, getPresetUsers, getUser } from "../api/user/user"

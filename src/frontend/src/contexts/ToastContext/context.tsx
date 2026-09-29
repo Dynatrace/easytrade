@@ -1,4 +1,4 @@
-import React, { createContext, PropsWithChildren, useCallback, useContext, useState } from "react"
+import { createContext, PropsWithChildren, useCallback, useContext, useState } from "react"
 import { IToastContext, ToastEntry, ToastVariant } from "./types"
 
 const ToastContext = createContext<IToastContext>({ showToast: () => {} })

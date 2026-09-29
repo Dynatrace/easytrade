@@ -1,9 +1,8 @@
-import React from "react"
 import InstrumentsGrid from "../../components/instrument/InstrumentsGrid"
 import { useAuthUser } from "../../contexts/UserContext/context"
 import { useRouteLoaderData } from "react-router"
 import { Instrument } from "../../api/instrument/types"
-import { LoaderIds } from "../../router"
+import { LoaderIds } from "../../routeIds"
 import { useInstrumentsQuery } from "../../contexts/QueryContext/instrument/hooks"
 
 export default function InstrumentsPage() {

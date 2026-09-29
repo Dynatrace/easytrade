@@ -1,4 +1,3 @@
-import React from "react"
 import DepositForm from "../../components/forms/DepositForm"
 import DemoAppWarning from "../../components/DemoAppWarning"
 import { deposit } from "../../api/creditCard/deposit/deposit"

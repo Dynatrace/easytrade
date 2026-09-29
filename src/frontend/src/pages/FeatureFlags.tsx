@@ -1,4 +1,3 @@
-import React from "react"
 import FeatureFlagList from "../components/featureFlags/FeatureFlagList"
 import {
     useConfigFlagsQuery,

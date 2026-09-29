@@ -1,4 +1,3 @@
-import React from "react"
 import WithdrawForm from "../../components/forms/WithdrawForm"
 import DemoAppWarning from "../../components/DemoAppWarning"
 import { withdraw } from "../../api/creditCard/withdraw/withdraw"

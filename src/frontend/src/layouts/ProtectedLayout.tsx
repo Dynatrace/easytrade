@@ -1,4 +1,3 @@
-import React from "react"
 import { Navigate, Outlet } from "react-router"
 import Navigation from "../components/Navigation"
 import { useAuth } from "../contexts/AuthContext/context"

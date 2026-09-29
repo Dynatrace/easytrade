@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { createChart, ColorType, LineData, LineSeries, Time } from "lightweight-charts"
 import { getPortfolioHistory, PortfolioPoint } from "../../api/portfolio/portfolio"
 import { CHART_COLORS } from "../../styles/chartColors"
