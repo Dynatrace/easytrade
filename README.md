@@ -6,39 +6,39 @@ Of course it is all fake data and the price has a 24 hour cycle...
 
 ## Architecture diagram
 
-## Dependency graph
-
 Generated from `compose.dev.yaml` via `make update-graph` — do not edit the block below by hand.
 
 <!-- dependency-graph:start -->
 ```mermaid
 flowchart TD
-    aggregator-service --> offer-service
-    broker-service --> db
+    background-service --> db-adapter
+    background-service --> offer-service
+    broker-service --> db-adapter
     broker-service --> feature-flag-service
     broker-service --> pricing-service
     broker-service --> user-service
-    credit-card-order-service --> db
+    credit-card-order-service --> background-service
+    credit-card-order-service --> db-adapter
     db-adapter --> db
+    loadgen --> reverse-proxy
+    offer-service --> db-adapter
+    offer-service --> feature-flag-service
+    offer-service --> user-service
+    pricing-service --> db-adapter
+    reverse-proxy --> background-service
     reverse-proxy --> broker-service
     reverse-proxy --> credit-card-order-service
     reverse-proxy --> feature-flag-service
     reverse-proxy --> frontend
     reverse-proxy --> offer-service
     reverse-proxy --> pricing-service
-    reverse-proxy --> user-service
-    loadgen --> reverse-proxy
-    manager --> db
-    offer-service --> feature-flag-service
-    offer-service --> manager
-    offer-service --> user-service
-    pricing-service --> db
+    user-service --> db-adapter
+    background-service -.-> credit-card-order-service
+    background-service -.-> feature-flag-service
     credit-card-order-service -.-> feature-flag-service
-    user-service -.-> db-adapter
 
-    class broker-service,manager dotnet
-    class aggregator-service,db-adapter,feature-flag-service,pricing-service,user-service go
-    class problem-operator goOffCompose
+    class broker-service dotnet
+    class background-service,db-adapter,feature-flag-service,pricing-service,user-service go
     class credit-card-order-service java
     class frontend,loadgen,offer-service node
     class db,reverse-proxy other
@@ -48,7 +48,6 @@ flowchart TD
     classDef java fill:#f8b4b4,stroke:#c0392b,color:#1a1a1a,stroke-width:1px
     classDef node fill:#a9dfbf,stroke:#1e8449,color:#1a1a1a,stroke-width:1px
     classDef other fill:#d5d8dc,stroke:#5d6d7e,color:#1a1a1a,stroke-width:1px
-    classDef goOffCompose fill:#a9cce3,stroke:#1f618d,color:#1a1a1a,stroke-width:1px,stroke-dasharray:5 5
 
     subgraph Legend[Legend: implementation language]
         direction LR
@@ -75,18 +74,30 @@ EasyTrade consists of the following services/components:
 | [Background service](src/background-service/README.md)               | 80         | `/background-service`        |
 | [Broker service](src/broker-service/README.md)                       | 80         | `/broker-service`            |
 | [Credit card order service](src/credit-card-order-service/README.md) | 80         | `/credit-card-order-service` |
-| [Db](src/db/README.md)                                               | 80         | `---`                        |
+| Db                                                                   | --         | `---`                        |
 | [Db adapter](src/db-adapter/README.md)                               | --         | `---`                        |
 | [Feature flag service](src/feature-flag-service/README.md)           | 80         | `/feature-flag-service`      |
 | [Frontend](src/frontend/README.md)                                   | 80         | `/`                          |
-| [Reverse proxy](src/reverse-proxy/README.md)                         | 80         | `---`                        |
 | [Loadgen](src/loadgen/README.md)                                     | --         | `---`                        |
 | [Offer service](src/offer-service/README.md)                         | 80         | `/offer-service`             |
 | [Pricing service](src/pricing-service/README.md)                     | 80         | `/pricing-service`           |
-| [Problem operator](src/problem-operator/README.md)                   | 80         | `---`                        |
-| [User service](src/user-service/README.md)                           | 80         | `/user-service`               |
+| [Reverse proxy](src/reverse-proxy/README.md)                         | 80         | `---`                        |
+| [User service](src/user-service/README.md)                           | 80         | `/user-service`              |
 
-> To learn more about endpoints / swagger for the services go to their respective readmes
+> To learn more about a service's endpoints go to its respective readme. Every service
+> also exposes `/livez`, `/readyz` and `/version`, and several ship a `.http` request
+> collection next to their readme.
+
+## Database
+
+All persistent state lives in a single `db` service. `db-adapter` is the only component
+that holds a database connection - every other service reaches it over gRPC on port
+`50051` using the shared contracts in [`src/proto`](src/proto/ADAPTER_SERVICES.md).
+
+The backend is selected by `DB_TYPE` / `DB_URL` in [`.env`](.env). **MSSQL is the
+default**; Postgres is supported as an alternate backend by swapping which of the two
+pairs is commented out. Schema and seed scripts for each dialect live in
+`src/db/mssql/` and `src/db/postgres/`.
 
 ## Docker compose
 
@@ -149,11 +160,23 @@ make restart  services=frontend   # recreate the container, no rebuild
 make redeploy services=frontend   # rebuild the image, then recreate — use after a code change
 ```
 
-The dev stack publishes each service on its own host port (`manager` 8081,
-`pricing-service` 8083, `broker-service` 8084, `offer-service` 8087,
-`user-service` 8089, `credit-card-order-service` 8091, `frontend` 8092,
-`feature-flag-service` 8094, `db-adapter` 50051,
-`db` 1433/5432), so you can hit a service directly instead of going through nginx.
+The dev stack publishes each service on its own host port, so you can hit a service
+directly instead of going through nginx:
+
+| Service                     | Host port                     | Container port |
+| --------------------------- | ----------------------------- | -------------- |
+| `reverse-proxy`             | 80                            | 80             |
+| `pricing-service`           | 8083                          | 8080           |
+| `broker-service`            | 8084                          | 8080           |
+| `offer-service`             | 8087                          | 8080           |
+| `user-service`              | 8089                          | 8080           |
+| `credit-card-order-service` | 8091                          | 8080           |
+| `frontend`                  | 8092                          | 3000           |
+| `feature-flag-service`      | 8094                          | 8080           |
+| `background-service`        | 8095                          | 8080           |
+| `db-adapter`                | 50051 (gRPC), 8096 (health)   | 50051, 8080    |
+| `loadgen`                   | 8097                          | 8080           |
+| `db`                        | 1433 (MSSQL), 5432 (Postgres) | 1433 / 5432    |
 
 To run the pre-built registry images through the Makefile instead, use
 `make start-remote`.
@@ -207,7 +230,7 @@ kubectl delete namespace easytrade
 After starting easyTrade application you can:
 
 - go to the frontend and try it out. Just go to the machines IP address, or "localhost" and you should see the login page. You can either create a new user, or use the existing "james_norton/pass_james_123" user (see below). Remember that in order to buy stocks you need money, so visit the deposit page first.
-- go to some services swagger endpoint - you will find proper instructions in the dedicated service readmes.
+- browse a service's API - each service readme documents its endpoints, and several ship a `.http` request collection you can run straight from your editor.
 - after some time go to dynatrace to configure your application and see what is going on in easyTrade - to have it work you will need an agent on the machine where you started easyTrade :P
 
 ## EasyTrade users
@@ -225,7 +248,9 @@ If you want to use easyTrade, then you will need a user. You can either:
 
 ## Problem patterns
 
-Currently there are 4 problem patterns supported in easyTrade:
+Currently there are 4 problem patterns supported in easyTrade (the feature flag service
+exposes 7 flags in total - the remaining ones gate frontend flag management, credit card
+meltdown and credit card validation):
 
 1. DbNotResponding - after turning it on no new trades can be created as the database will throw an error. This problem pattern is kind of proof on concept that problem patterns work. Running it for around 20 minutes should generate a problem in dynatrace.
 
@@ -238,10 +263,21 @@ Currently there are 4 problem patterns supported in easyTrade:
 
 4. HighCpuUsage - this problem pattern causes a slowdown of broker-service response time and highly increases CPU usage during that time. If the app is deployed on K8s, a CPU resource limit is also applied by background-service's operator subsystem. This should generate CPU throttling on the pod.
 
-To turn a plugin on/off send a request similar to the following:
+The API identifies each pattern by a snake_case flag id, not by the name used above.
+Note there is no trailing slash - the router redirects `/v1/flags/{id}/` and the redirect
+drops the request body, so the toggle silently does nothing.
+
+| Problem pattern         | Flag id                    |
+| ----------------------- | -------------------------- |
+| DbNotResponding         | `db_not_responding`        |
+| ErgoAggregatorSlowdown  | `ergo_aggregator_slowdown` |
+| FactoryCrisis           | `factory_crisis`           |
+| HighCpuUsage            | `high_cpu_usage`           |
+
+To turn a pattern on/off send a request similar to the following:
 
 ```sh
-curl -X PUT "http://{IP_ADDRESS}/feature-flag-service/v1/flags/{FEATURE_ID}/" \
+curl -X PUT "http://{IP_ADDRESS}/feature-flag-service/v1/flags/{FLAG_ID}" \
 -H  "accept: application/json" \
 -d '{"enabled": {VALUE}}'
 ```
@@ -249,8 +285,6 @@ curl -X PUT "http://{IP_ADDRESS}/feature-flag-service/v1/flags/{FEATURE_ID}/" \
 You can also manage enabled problem patterns via the easyTrade frontend.
 
 > **NOTE:** More information on the feature flag service's parameters available in [feature flag service's doc](src/feature-flag-service/README.md).
-
-If you are deploying easyTrade on K8s, you can also apply [these cronjobs](./kubernetes-manifests/problem-patterns/), which will enable the problem patterns once a day.
 
 ## EasyTrade on Dynatrace - how to configure
 
