@@ -4,7 +4,7 @@ import FeatureFlagItem from "./FeatureFlagItem"
 export default function FeatureFlagList({ featureFlags }: { featureFlags: FeatureFlag[] }) {
     return (
         <div style={{ display: "flex", flexDirection: "column", gap: "var(--space-2)" }}>
-            {featureFlags.map(({ id, name, description, enabled, isModifiable }, idx) => (
+            {featureFlags.map(({ id, name, description, enabled, isModifiable, enabledAt }, idx) => (
                 <FeatureFlagItem
                     key={idx}
                     flagId={id}
@@ -12,6 +12,7 @@ export default function FeatureFlagList({ featureFlags }: { featureFlags: Featur
                     description={description}
                     name={name}
                     isModifiable={isModifiable}
+                    enabledAt={enabledAt}
                 />
             ))}
         </div>
