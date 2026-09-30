@@ -6,11 +6,9 @@ export class BizEvents {
         const dynatrace = window.dynatrace
         const dtrum = window.dtrum
         if (dynatrace === undefined) {
-            if (import.meta.env.DEV) {
-                console.debug(
-                    `Dynatrace OneAgent not injected, bizevent [${type}] will not be sent.`
-                )
-            }
+            console.log(
+                `Dynatrace OneAgent not injected, bizevent [${type}] will not be sent.`
+            )
             return
         }
         try {
