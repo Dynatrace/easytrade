@@ -100,7 +100,7 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
         <form className="form" onSubmit={handleSubmit} style={{ width: "100%", maxWidth: 420 }}>
             <div className="form-group">
                 <label className="form-label">Current balance</label>
-                <input type="text" value={currentBalance} readOnly data-dt-content />
+                <input type="text" value={currentBalance} readOnly/>
             </div>
             <div className="form-group">
                 <label className="form-label" htmlFor="amount">Amount *</label>
@@ -111,7 +111,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     step="any"
                     value={amount || ""}
                     autoFocus
-                    data-dt-content
                     onFocus={(e) => e.target.select()}
                     onChange={(e) => setAmount(Number(e.target.value))}
                 />
@@ -122,7 +121,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     id="cardholderName"
                     type="text"
                     value={cardholderName}
-                    data-dt-content
                     onChange={(e) => setCardholderName(e.target.value)}
                 />
             </div>
@@ -132,7 +130,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     id="address"
                     type="text"
                     value={address}
-                    data-dt-content
                     onChange={(e) => setAddress(e.target.value)}
                 />
             </div>
@@ -142,7 +139,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     id="email"
                     type="email"
                     value={email}
-                    data-dt-content
                     onChange={(e) => setEmail(e.target.value)}
                 />
             </div>
@@ -154,7 +150,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                         type="text"
                         value={cardNumber}
                         style={{ flex: 1 }}
-                        data-dt-content
                         onChange={(e) => setCardNumber(e.target.value)}
                     />
                     <button type="button" className="btn btn-ghost" onClick={autofillCardNumber} title="Autofill card number">
@@ -167,7 +162,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                 <select
                     id="cardType"
                     value={cardType}
-                    data-dt-content
                     onChange={(e) => setCardType(e.target.value)}
                 >
                     <option value="">Select card type</option>
@@ -183,7 +177,6 @@ export default function DepositForm({ submitHandler }: DepositFormProps) {
                     id="cvv"
                     type="text"
                     value={cvv}
-                    data-dt-content
                     onChange={(e) => setCvv(e.target.value)}
                 />
             </div>

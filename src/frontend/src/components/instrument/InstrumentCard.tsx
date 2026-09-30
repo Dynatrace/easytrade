@@ -36,10 +36,7 @@ export default function InstrumentCard({ id, code, name, price, amount }: Props)
                     data-dt-name="Instrument price"
                     data-dt-children-name="Instrument variation"
                 >
-                    <h5
-                        data-dt-instrument-price
-                        className={`instrument-price ${trendClass}`}
-                    >
+                    <h5 className={`instrument-price ${trendClass}`}>
                         {formatCurrency(price.close)}
                     </h5>
                     <span className={`instrument-pct ${trendClass}`}>

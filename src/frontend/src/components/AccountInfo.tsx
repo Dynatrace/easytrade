@@ -12,7 +12,6 @@ export default function AccountInfo() {
                 <span
                     id="currentBalance"
                     className="balance-display"
-                    data-dt-content
                 >
                     {balance?.value === undefined
                         ? "Loading..."
@@ -21,7 +20,7 @@ export default function AccountInfo() {
             </div>
             <div className="form-group">
                 <span className="form-label">Package type</span>
-                <span className="balance-display" data-dt-content>
+                <span className="balance-display">
                     {user?.packageType ?? "Loading..."}
                 </span>
             </div>
