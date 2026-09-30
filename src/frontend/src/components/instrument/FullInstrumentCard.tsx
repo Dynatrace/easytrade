@@ -1,15 +1,11 @@
 import InstrumentHeader from "./InstrumentHeader"
 import { useInstrument } from "../../contexts/InstrumentContext/context"
-import { useRouteLoaderData } from "react-router"
 import InstrumentPriceChart from "../charts/InstrumentPriceChart"
-import { LoaderIds } from "../../routeIds"
-import { Price } from "../../api/price"
 import { useInstrumentPricesQuery } from "../../hooks/usePrices"
 
 export default function FullInstrumentCard() {
     const { instrument } = useInstrument()
-    const pricesData = useRouteLoaderData(LoaderIds.prices) as Price[]
-    const { data } = useInstrumentPricesQuery(instrument.id, pricesData)
+    const { data } = useInstrumentPricesQuery(instrument.id)
 
     return (
         <div className="card" style={{ padding: "1rem" }}>

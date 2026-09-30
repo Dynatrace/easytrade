@@ -49,7 +49,7 @@ export default function FeatureFlags() {
                     Feature flags control problem pattern simulations in EasyTrade.
                     Each flag targets a specific part of the application when enabled.
                 </p>
-                {!config?.featureFlagManagement && (
+                {!config.featureFlagManagement && (
                     <div className="status-message status-info" style={{ marginTop: "var(--space-3)", display: "inline-flex" }}>
                         Flag modification via UI is disabled in this environment.
                     </div>

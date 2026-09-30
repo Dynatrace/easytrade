@@ -1,21 +1,22 @@
-import { Navigate, useParams, useRouteLoaderData } from "react-router"
+import { Navigate, useParams } from "react-router"
 import FullInstrumentCard from "../../components/instrument/FullInstrumentCard"
 import InstrumentTransactions from "../../components/instrument/InstrumentTransactions"
 import { InstrumentProvider } from "../../contexts/InstrumentContext/context"
 import { useAuthUser } from "../../contexts/UserContext/context"
 import { buy, quickBuy, sell, quickSell } from "../../api/transaction"
-import { Instrument as InstrumentType } from "../../api/instrument"
-import { LoaderIds } from "../../utils/routeIds"
 import { useInstrumentsQuery } from "../../hooks/useInstruments"
+import { PageSpinner } from "../../components/PageSpinner"
 
 export default function Instrument() {
     const { id } = useParams()
     const { userId } = useAuthUser()
-    const instrumentData = useRouteLoaderData(LoaderIds.instruments) as InstrumentType[]
+    const { data: instruments } = useInstrumentsQuery(userId)
 
-    const instruments = useInstrumentsQuery(userId, instrumentData).data as InstrumentType[]
+    if (instruments === undefined) {
+        return <PageSpinner />
+    }
 
-    const instrument = instruments.find((x) => x.id == id)
+    const instrument = instruments.find((x) => x.id === id)
 
     if (instrument === undefined) {
         return <Navigate to="/instruments" />

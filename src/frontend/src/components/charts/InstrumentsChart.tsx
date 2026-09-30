@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef } from "react"
 import { createChart, ColorType, LineData, LineSeries, Time } from "lightweight-charts"
-import { getPortfolioHistory, PortfolioPoint } from "../../api/portfolio"
+import { usePortfolioHistoryQuery } from "../../hooks/usePortfolio"
 import { CHART_COLORS } from "../../styles/chartColors"
 
 type InstrumentsChartProps = {
@@ -9,23 +9,11 @@ type InstrumentsChartProps = {
 
 export default function InstrumentsChart({ accountId }: InstrumentsChartProps) {
     const containerRef = useRef<HTMLDivElement>(null)
-    const [data, setData] = useState<PortfolioPoint[]>([])
-    const [loading, setLoading] = useState(true)
-    useEffect(() => {
-        let cancelled = false
-        setLoading(true)
-        void getPortfolioHistory(accountId).then((points) => {
-            if (!cancelled) {
-                setData(points)
-                setLoading(false)
-            }
-        })
-        return () => { cancelled = true }
-    }, [accountId])
+    const { data, isPending, isError } = usePortfolioHistoryQuery(accountId)
 
     useEffect(() => {
         const el = containerRef.current
-        if (!el || loading) return
+        if (!el || isPending || isError || data === undefined) return
 
         const chart = createChart(el, {
             layout: {
@@ -62,7 +50,7 @@ export default function InstrumentsChart({ accountId }: InstrumentsChartProps) {
             observer.disconnect()
             chart.remove()
         }
-    }, [data, loading])
+    }, [data, isPending, isError])
 
     return (
         <div>
@@ -71,14 +59,20 @@ export default function InstrumentsChart({ accountId }: InstrumentsChartProps) {
                     Portfolio value (24h)
                 </span>
             </div>
-            {loading ? (
+            {isPending || isError ? (
                 <div
                     className="chart-container"
                     data-dt-features="main-chart"
                     data-dt-mouse-over="300"
                     style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
                 >
-                    <span className="spinner" />
+                    {isError ? (
+                        <span className="empty-state">
+                            Portfolio history is unavailable
+                        </span>
+                    ) : (
+                        <span className="spinner" />
+                    )}
                 </div>
             ) : (
                 <div

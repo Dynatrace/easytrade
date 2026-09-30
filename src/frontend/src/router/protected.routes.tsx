@@ -1,32 +1,15 @@
 import type { RouteObject } from "react-router"
 import ProtectedLayout from "../layouts/ProtectedLayout"
-import { queryClient } from "../contexts/QueryContext/QueryContext"
-import {
-    balanceLoader,
-    loadWithUser,
-    sessionUserProvider,
-    userLoader,
-} from "../contexts/QueryContext/user/loaders"
-import { getBalance, getUser } from "../api/user/user"
-import { LoaderIds } from "../routeIds"
+import { LoaderIds } from "../utils/routeIds"
 import { lazyPage } from "./helpers"
 import { creditCardRoutes } from "./credit-card.routes"
 import { instrumentsRoutes } from "./instruments.routes"
+import { userAndBalanceLoader } from "../hooks/useUser"
 
 export const protectedRoutes: RouteObject = {
     element: <ProtectedLayout />,
     id: LoaderIds.user,
-    loader: () =>
-        Promise.all([
-            loadWithUser(
-                sessionUserProvider,
-                userLoader(queryClient, getUser)
-            )(),
-            loadWithUser(
-                sessionUserProvider,
-                balanceLoader(queryClient, getBalance)
-            )(),
-        ]),
+    loader: userAndBalanceLoader,
     children: [
         {
             path: "withdraw",
