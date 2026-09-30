@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { BuildIcon } from "../icons"
 import { VersionDialog } from "./VersionDialog"
-import { getFrontendVersion } from "../../api/version/versions"
+import { getFrontendVersion } from "../../api/version"
 
 export default function VersionInfo() {
     const [modalOpen, setModalOpen] = useState(false)

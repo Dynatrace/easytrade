@@ -5,10 +5,10 @@ import { Mock } from "vitest"
 import userEvent from "@testing-library/user-event"
 import DepositForm from "../../components/forms/DepositForm"
 import { createMemoryRouter, RouterProvider } from "react-router"
-import { DepositHandler } from "../../api/creditCard/deposit/types"
+import { DepositHandler } from "../../api/creditCard"
 import { QueryClientWrapper, UserContextWrapper } from "../providers"
-import { LoaderIds } from "../../routeIds"
-import { User, Balance } from "../../api/user/types"
+import { LoaderIds } from "../../utils/routeIds"
+import { User, Balance } from "../../api/user"
 import { FormatterProvider } from "../../contexts/FormatterContext/context"
 
 function getAmountInput() {
@@ -67,10 +67,7 @@ describe("Deposit Form", () => {
                     path: "/deposit",
                     element: (
                         <FormatterProvider currency="USD" locale="en-US">
-                            <QueryClientWrapper
-                                getUser={() => Promise.resolve(userData)}
-                                getBalance={() => Promise.resolve(balanceData)}
-                            >
+                            <QueryClientWrapper>
                                 <UserContextWrapper>
                                     <DepositForm submitHandler={mockHandler} />
                                 </UserContextWrapper>

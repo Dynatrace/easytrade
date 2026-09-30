@@ -3,7 +3,7 @@ import React, { useState } from "react"
 
 
 import { useMutation } from "@tanstack/react-query"
-import { SignupHandler } from "../../api/signup/types"
+import { SignupHandler } from "../../api/user"
 
 type SignupFormProps = {
     submitHandler: SignupHandler

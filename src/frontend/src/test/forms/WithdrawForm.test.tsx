@@ -6,8 +6,8 @@ import { createMemoryRouter, RouterProvider } from "react-router"
 import { Mock } from "vitest"
 import WithdrawForm from "../../components/forms/WithdrawForm"
 import { QueryClientWrapper, UserContextWrapper } from "../providers"
-import { LoaderIds } from "../../routeIds"
-import { User, Balance } from "../../api/user/types"
+import { LoaderIds } from "../../utils/routeIds"
+import { User, Balance } from "../../api/user"
 import { FormatterProvider } from "../../contexts/FormatterContext/context"
 
 function getAmountInput() {
@@ -63,10 +63,7 @@ describe("Withdraw Form", () => {
                     path: "/withdraw",
                     element: (
                         <FormatterProvider currency="USD" locale="en-US">
-                            <QueryClientWrapper
-                                getUser={() => Promise.resolve(userData)}
-                                getBalance={() => Promise.resolve(balanceData)}
-                            >
+                            <QueryClientWrapper>
                                 <UserContextWrapper>
                                     <WithdrawForm submitHandler={mockHandler} />
                                     ,

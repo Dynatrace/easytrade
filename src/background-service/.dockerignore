@@ -9,5 +9,5 @@ vendor/
 .vscode
 
 # Binaries
-aggregator-service
+background-service
 *.exe

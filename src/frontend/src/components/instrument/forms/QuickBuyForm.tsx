@@ -2,7 +2,7 @@ import { useToast } from "../../../contexts/ToastContext/context"
 import React, { useState } from "react"
 import { useInstrument } from "../../../contexts/InstrumentContext/context"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { quickTransactionInvalidateQuery } from "../../../contexts/QueryContext/user/queries"
+import { invalidateQuickTransaction } from "../../../utils/queryKeys"
 
 
 import { useAuthUserData } from "../../../contexts/UserContext/hooks"
@@ -30,7 +30,7 @@ export default function QuickBuyForm() {
         onSuccess: async () => {
             showToast("Transaction successful", "success")
             setAmount(0)
-            await quickTransactionInvalidateQuery(queryClient)
+            await invalidateQuickTransaction(queryClient)
         },
         onError: (e: unknown) => showToast(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)), "error"),
     })

@@ -2,7 +2,7 @@ import { useToast } from "../../../contexts/ToastContext/context"
 import React, { useState } from "react"
 import { useInstrument } from "../../../contexts/InstrumentContext/context"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { transactionInvalidateQuery } from "../../../contexts/QueryContext/user/queries"
+import { invalidateTransactions } from "../../../utils/queryKeys"
 
 
 import { useAuthUserData } from "../../../contexts/UserContext/hooks"
@@ -32,7 +32,7 @@ export default function BuyForm() {
             setAmount(0)
             setPrice(instrument.price.close)
             setTime(1)
-            await transactionInvalidateQuery(queryClient)
+            await invalidateTransactions(queryClient)
         },
         onError: (e: unknown) => showToast(typeof e === "string" ? e : ((e instanceof Error) ? e.message : String(e)), "error"),
     })

@@ -1,4 +1,4 @@
-import { FeatureFlag } from "../../api/featureFlags/types"
+import { FeatureFlag } from "../../api/featureFlags"
 import FeatureFlagItem from "./FeatureFlagItem"
 
 export default function FeatureFlagList({ featureFlags }: { featureFlags: FeatureFlag[] }) {

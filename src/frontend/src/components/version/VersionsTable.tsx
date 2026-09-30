@@ -1,5 +1,5 @@
 import VersionsTableItem from "./VersionsTableItem"
-import { ServiceVersion } from "../../api/version/types"
+import { ServiceVersion } from "../../api/version"
 
 export type { ServiceVersion }
 

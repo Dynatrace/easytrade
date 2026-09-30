@@ -1,8 +1,8 @@
 import { useToast } from "../../../contexts/ToastContext/context"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuthUser } from "../../../contexts/UserContext/context"
-import { revokeCreditCard } from "../../../api/creditCard/order"
-import { deleteCardInvalidateQuery } from "../../../contexts/QueryContext/creditCard/queries"
+import { revokeCreditCard } from "../../../api/creditCard"
+import { invalidateCreditCardStatus } from "../../../utils/queryKeys"
 
 export default function CreditCardActive() {
     const { userId } = useAuthUser()
@@ -14,7 +14,7 @@ export default function CreditCardActive() {
             if (response.type === "error") throw response.error
         },
         onSuccess: async () => {
-            await deleteCardInvalidateQuery(queryClient)
+            await invalidateCreditCardStatus(queryClient)
             showToast("Card has been successfully revoked.", "success")
         },
         onError: (error: string) => { showToast(error, "error") },

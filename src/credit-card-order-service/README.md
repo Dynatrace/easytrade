@@ -21,7 +21,12 @@ A java service that lets the user order/remove a credit card for their account. 
 ## Local build instructions
 
 ```bash
-docker build -t IMAGE_NAME .
-docker run -d --name SERVICE_NAME IMAGE_NAME
+make build services=credit-card-order-service      # build the image from local source
+make redeploy services=credit-card-order-service   # rebuild and recreate it in the running stack
 ```
+
+`make` handles the build context and the shared `src/proto/` definitions for you. Run
+`make help` for every target.
+
+To build and test without Docker, run `./gradlew build` in this directory.
 

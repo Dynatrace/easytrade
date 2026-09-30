@@ -1,6 +1,6 @@
 import DepositForm from "../../components/forms/DepositForm"
 import DemoAppWarning from "../../components/DemoAppWarning"
-import { deposit } from "../../api/creditCard/deposit/deposit"
+import { deposit } from "../../api/creditCard"
 
 export default function Deposit() {
     return (

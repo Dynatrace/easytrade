@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 import { Link } from "react-router"
-import { ServiceVersionData } from "../../api/version/types"
+import { ServiceVersionData } from "../../api/version"
 
 interface VersionDialogProps {
     open: boolean

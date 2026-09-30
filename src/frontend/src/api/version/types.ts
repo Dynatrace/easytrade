@@ -1,8 +1,3 @@
-export type ServiceVersionUrl = {
-    serviceName: string
-    versionUrl: string
-}
-
 export type ServiceVersionData = {
     buildVersion: string
     buildDate: string

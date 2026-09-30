@@ -1,5 +1,5 @@
 import React, { useState } from "react"
-import { PresetUser } from "../../api/user/types"
+import { PresetUser } from "../../api/user"
 
 interface DefaultLoginFormProps {
     submitHandler: (data: { userId: string }) => void
