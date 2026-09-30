@@ -9,6 +9,7 @@ type FlagDto = {
     description: string
     isModifiable: boolean
     tag: string
+    enabledAt?: string
 }
 
 type FlagsDto = {
@@ -25,12 +26,13 @@ export async function getFeatureFlags(): Promise<FeatureFlag[]> {
     const { results } = await getJson<FlagsDto>(
         `${services.featureFlag()}/flags?tag=problem_pattern`
     )
-    return results.map(({ id, enabled, name, description, isModifiable }) => ({
+    return results.map(({ id, enabled, name, description, isModifiable, enabledAt }) => ({
         id,
         enabled,
         name,
         description,
         isModifiable,
+        enabledAt,
     }))
 }
 
