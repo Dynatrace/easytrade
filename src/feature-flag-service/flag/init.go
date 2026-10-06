@@ -74,7 +74,7 @@ func InitFlags() map[string]*Flag {
 			ID:           "credit_card_validation",
 			Enabled:      getEnvBool("ENABLE_CREDIT_CARD_VALIDATION", false),
 			Name:         "Credit card validation",
-			Description:  "When enabled, credit card numbers are validated via the mainframe before deposit/withdraw operations are processed. Requires MAINFRAME_SERVICE_URL to be configured in broker-service.",
+			Description:  "When enabled, credit card numbers are validated via the mainframe before deposit/withdraw operations are processed. Requires MAINFRAME_SERVICE_ADDRESS to be configured in broker-service.",
 			IsModifiable: enableModify,
 			Tag:          "problem_pattern",
 		},
