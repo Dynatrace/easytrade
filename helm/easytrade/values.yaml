@@ -77,13 +77,17 @@ broker-service:
       path: /livez
       port: http
     initialDelaySeconds: 15
+    timeoutSeconds: 5
     periodSeconds: 10
+    failureThreshold: 10
   readinessProbe:
     httpGet:
       path: /readyz
       port: http
     initialDelaySeconds: 5
+    timeoutSeconds: 5
     periodSeconds: 5
+    failureThreshold: 10
   resources:
     requests:
       cpu: 150m
