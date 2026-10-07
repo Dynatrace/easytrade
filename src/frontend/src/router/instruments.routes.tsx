@@ -3,7 +3,6 @@ import { LoaderIds } from "../utils/routeIds"
 import { lazyPage } from "./helpers"
 import { instrumentsLoader } from "../hooks/useInstruments"
 import { transactionsLoader } from "../hooks/useTransactions"
-import { instrumentPricesLoader } from "../hooks/usePrices"
 
 export const instrumentsRoutes: RouteObject = {
     id: LoaderIds.instruments,
@@ -26,8 +25,6 @@ export const instrumentsRoutes: RouteObject = {
                 },
                 {
                     path: ":id",
-                    id: LoaderIds.prices,
-                    loader: instrumentPricesLoader,
                     lazy: lazyPage(
                         () => import("../pages/protected/Instrument")
                     ),

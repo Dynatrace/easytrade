@@ -2,6 +2,7 @@ import { PropsWithChildren, useState } from "react"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { UserContextProvider } from "../contexts/UserContext/context"
 import { FormatterProvider } from "../contexts/FormatterContext/context"
+import { ToastProvider } from "../contexts/ToastContext/context"
 import { balanceKeys, userKeys } from "../utils/queryKeys"
 
 
@@ -44,5 +45,21 @@ export function FormatterWrapper({ children }: PropsWithChildren) {
         <FormatterProvider locale={"en-US"} currency={"USD"}>
             {children}
         </FormatterProvider>
+    )
+}
+
+export function ToastWrapper({ children }: PropsWithChildren) {
+    return <ToastProvider>{children}</ToastProvider>
+}
+
+export function FormProviders({ children }: PropsWithChildren) {
+    return (
+        <QueryClientWrapper>
+            <UserContextWrapper>
+                <FormatterWrapper>
+                    <ToastWrapper>{children}</ToastWrapper>
+                </FormatterWrapper>
+            </UserContextWrapper>
+        </QueryClientWrapper>
     )
 }

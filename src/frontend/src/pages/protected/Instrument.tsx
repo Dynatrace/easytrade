@@ -10,7 +10,17 @@ import { PageSpinner } from "../../components/PageSpinner"
 export default function Instrument() {
     const { id } = useParams()
     const { userId } = useAuthUser()
-    const { data: instruments } = useInstrumentsQuery(userId)
+    const { data: instruments, isError } = useInstrumentsQuery(userId)
+
+    if (isError) {
+        return (
+            <div className="page-centered">
+                <span className="status-message status-error">
+                    Could not load instruments.
+                </span>
+            </div>
+        )
+    }
 
     if (instruments === undefined) {
         return <PageSpinner />

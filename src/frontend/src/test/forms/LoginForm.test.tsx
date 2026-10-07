@@ -1,10 +1,19 @@
 import "@testing-library/jest-dom"
+import { PropsWithChildren } from "react"
 import { screen, render, waitFor } from "@testing-library/react"
 import LoginForm from "../../components/forms/LoginForm"
 import userEvent from "@testing-library/user-event"
 import { UserEvent } from "@testing-library/user-event/dist/types/setup/setup"
 import { Mock } from "vitest"
-import { QueryClientWrapper } from "../providers"
+import { QueryClientWrapper, ToastWrapper } from "../providers"
+
+function LoginFormProviders({ children }: PropsWithChildren) {
+    return (
+        <QueryClientWrapper>
+            <ToastWrapper>{children}</ToastWrapper>
+        </QueryClientWrapper>
+    )
+}
 
 const successMockImpl = () => ({})
 const failMockImpl = () => ({ error: "fail" })
@@ -26,7 +35,7 @@ describe("Login Form", () => {
         mockHandler = vi.fn(successMockImpl)
         user = userEvent.setup()
         render(<LoginForm submitHandler={mockHandler} />, {
-            wrapper: QueryClientWrapper,
+            wrapper: LoginFormProviders,
         })
     })
     describe("when input is empty", () => {
@@ -59,18 +68,7 @@ describe("Login Form", () => {
             await user.type(getPasswordInput(), "testPassword")
             await user.click(getSubmitButton())
 
-            expect(await screen.findByText(/fail/i)).toBeInTheDocument()
-        })
-        it("when error is displayed and user types the error is removed", async () => {
-            await user.type(getLoginInput(), "testUser")
-            await user.type(getPasswordInput(), "testPassword")
-            await user.click(getSubmitButton())
-
-            await waitFor(async () => await screen.findByText(/fail/i))
-
-            await user.type(getLoginInput(), "anything")
-
-            expect(screen.queryByText(/fail/i)).not.toBeInTheDocument()
+            expect(await screen.findByRole("alert")).toHaveTextContent(/fail/i)
         })
     })
 })
