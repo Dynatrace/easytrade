@@ -1,32 +1,17 @@
 import type { RouteObject } from "react-router"
-import { queryClient } from "../contexts/QueryContext/QueryContext"
-import {
-    loadWithUser,
-    sessionUserProvider,
-} from "../contexts/QueryContext/user/loaders"
-import { instrumentsLoader } from "../contexts/QueryContext/instrument/loaders"
-import { instrumentPricesLoader } from "../contexts/QueryContext/price/loaders"
-import { transactionsLoader } from "../contexts/QueryContext/transaction/loaders"
-import { getInstruments } from "../api/instrument/instruments"
-import { getPricesForInstrument } from "../api/price/price"
-import { getTransactions } from "../api/transaction/transactions"
-import { LoaderIds } from "../routeIds"
+import { LoaderIds } from "../utils/routeIds"
 import { lazyPage } from "./helpers"
+import { instrumentsLoader } from "../hooks/useInstruments"
+import { transactionsLoader } from "../hooks/useTransactions"
 
 export const instrumentsRoutes: RouteObject = {
     id: LoaderIds.instruments,
-    loader: loadWithUser(
-        sessionUserProvider,
-        instrumentsLoader(queryClient, getInstruments)
-    ),
+    loader: instrumentsLoader,
     children: [
         {
             path: "home",
             id: LoaderIds.transactions,
-            loader: loadWithUser(
-                sessionUserProvider,
-                transactionsLoader(queryClient, getTransactions)
-            ),
+            loader: transactionsLoader,
             lazy: lazyPage(() => import("../pages/protected/Home")),
         },
         {
@@ -40,12 +25,6 @@ export const instrumentsRoutes: RouteObject = {
                 },
                 {
                     path: ":id",
-                    id: LoaderIds.prices,
-                    loader: ({ params }) =>
-                        instrumentPricesLoader(
-                            queryClient,
-                            getPricesForInstrument
-                        )(params.id as string),
                     lazy: lazyPage(
                         () => import("../pages/protected/Instrument")
                     ),

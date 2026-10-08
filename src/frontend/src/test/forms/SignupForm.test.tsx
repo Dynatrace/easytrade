@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom"
+import "@testing-library/jest-dom/vitest"
 import { screen, render, waitFor } from "@testing-library/react"
 import SignupForm from "../../components/forms/SignupForm"
 import userEvent from "@testing-library/user-event"
@@ -53,7 +53,7 @@ describe("Signup Form", () => {
             await user.click(getSubmitButton())
 
             await waitFor(() =>
-                expect(mockHandler).toBeCalledWith({
+                expect(mockHandler).toHaveBeenCalledWith({
                     firstName: "firstName",
                     lastName: "lastName",
                     login: "login",
@@ -71,7 +71,7 @@ describe("Signup Form", () => {
         })
         it("doesn't submit values", async () => {
             await userEvent.click(getSubmitButton())
-            await waitFor(() => expect(mockHandler).not.toBeCalled())
+            await waitFor(() => expect(mockHandler).not.toHaveBeenCalled())
         })
     })
     it("when email is invalid it displays error", async () => {

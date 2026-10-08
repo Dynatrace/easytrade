@@ -1,8 +1,8 @@
-import { Navigate, Outlet, useLoaderData } from "react-router"
+import { Navigate, Outlet, useLoaderData, useLocation } from "react-router"
 import { useAuthUser } from "../contexts/UserContext/context"
 import { OrderStatusResponse } from "../api/creditCard"
 import { useCreditCardOrderStatus } from "../hooks/useCreditCard"
-import { useLocation } from "react-router"
+import { PageSpinner } from "../components/PageSpinner"
 
 export default function CreditCardLayout() {
     const { userId } = useAuthUser()
@@ -11,7 +11,7 @@ export default function CreditCardLayout() {
     const { pathname } = useLocation()
 
     if (data === undefined) {
-        return null
+        return <PageSpinner />
     }
 
     if (data.type === "error") {

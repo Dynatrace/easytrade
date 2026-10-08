@@ -1,5 +1,5 @@
-import { DepositRequest, WithdrawRequest } from "../api/backend/creditCard"
-import { QuickTransactionRequest } from "../api/backend/transactions"
+import type { DepositRequest, WithdrawRequest } from "../creditCard"
+import type { QuickTransactionRequest } from "../transaction"
 
 export class BizEvents {
     private static sendBizEvent(type: string, body: unknown): void {
@@ -7,12 +7,11 @@ export class BizEvents {
         const dtrum = window.dtrum
         if (dynatrace === undefined) {
             console.log(
-                `Dynatrace OneAgent not injected, bizevent [${type}] will not be send.`
+                `Dynatrace OneAgent not injected, bizevent [${type}] will not be sent.`
             )
             return
         }
         try {
-            console.log(`Sending bizevent [${type}]`)
             dynatrace.sendBizEvent(type, body)
         } catch (err) {
             console.error(`Error when sending bizevent [${type}]`, err)

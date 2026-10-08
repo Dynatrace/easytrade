@@ -1,11 +1,11 @@
-import { Instrument } from "../../api/instrument/types"
+import { Instrument } from "../../api/instrument"
 import {
     BuyHandler,
     HandlerResponse,
     QuickBuyHandler,
     QuickSellHandler,
     SellHandler,
-} from "../../api/transaction/types"
+} from "../../api/transaction"
 
 export type IInstrumentContext = {
     instrument: Instrument

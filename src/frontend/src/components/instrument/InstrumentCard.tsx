@@ -2,6 +2,7 @@ import { Link } from "react-router"
 import { Price } from "../../api/price"
 import { InstrumentPrice } from "../../api/instrument"
 import { useFormatter } from "../../contexts/FormatterContext/context"
+import { priceTrend } from "../../utils/priceTrend"
 
 type Props = {
     id: string
@@ -14,9 +15,7 @@ type Props = {
 export default function InstrumentCard({ id, code, name, price, amount }: Props) {
     const { formatCurrency, formatPercent } = useFormatter()
 
-    const trendingUp = price.close >= price.open
-    const pctChange = price.open !== 0 ? (price.close - price.open) / price.open : 0
-    const trendClass = trendingUp ? "up" : "down"
+    const { pctChange, trendClass } = priceTrend(price)
 
     return (
         <div className={`instrument-card${amount > 0 ? " owned-instrument" : ""}`}>
@@ -37,10 +36,7 @@ export default function InstrumentCard({ id, code, name, price, amount }: Props)
                     data-dt-name="Instrument price"
                     data-dt-children-name="Instrument variation"
                 >
-                    <h5
-                        id="instrumentPrice"
-                        className={`instrument-price ${trendClass}`}
-                    >
+                    <h5 className={`instrument-price ${trendClass}`}>
                         {formatCurrency(price.close)}
                     </h5>
                     <span className={`instrument-pct ${trendClass}`}>

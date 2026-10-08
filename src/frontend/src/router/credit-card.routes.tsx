@@ -1,23 +1,14 @@
 import type { RouteObject } from "react-router"
 import CreditCardLayout from "../layouts/CreditCardLayout"
-import { queryClient } from "../contexts/QueryContext/QueryContext"
-import { loadWithUser,sessionUserProvider } from "../contexts/QueryContext/user/loaders"
-import {
-    creditCardStatusHistoryLoader,
-    creditCardStatusLoader,
-} from "../contexts/QueryContext/creditCard/loaders"
-import { getOrderStatus, getOrderStatusHistory } from "../api/creditCard/order"
-import { LoaderIds } from "../routeIds"
+import {creditCardStatusHistoryLoader, creditCardStatusLoader} from "../hooks/useCreditCard"
+import { LoaderIds } from "../utils/routeIds"
 import { lazyPage } from "./helpers"
 
 export const creditCardRoutes: RouteObject = {
     path: "credit-card",
     element: <CreditCardLayout />,
     id: LoaderIds.creditCard,
-    loader: loadWithUser(
-        sessionUserProvider,
-        creditCardStatusLoader(queryClient, getOrderStatus)
-    ),
+    loader: creditCardStatusLoader,
     children: [
         {
             path: "order",
@@ -28,13 +19,7 @@ export const creditCardRoutes: RouteObject = {
         {
             path: "status",
             id: LoaderIds.creditCardStatusHistory,
-            loader: loadWithUser(
-                sessionUserProvider,
-                creditCardStatusHistoryLoader(
-                    queryClient,
-                    getOrderStatusHistory
-                )
-            ),
+            loader: creditCardStatusHistoryLoader,
             lazy: lazyPage(
                 () => import("../pages/protected/creditCard/CreditCardStatus")
             ),

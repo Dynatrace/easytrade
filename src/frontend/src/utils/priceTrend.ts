@@ -8,7 +8,7 @@ export type PriceTrend = {
 }
 
 export function priceTrend(price: Price | InstrumentPrice): PriceTrend {
-    const trendingUp = price.close >= price.open
+    const trendingUp = price.close > price.open
     return {
         trendingUp,
         pctChange:

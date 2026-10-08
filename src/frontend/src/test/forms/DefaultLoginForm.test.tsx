@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom"
+import "@testing-library/jest-dom/vitest"
 import { screen, render, waitFor } from "@testing-library/react"
 import DefaultLoginForm from "../../components/forms/DefaultLoginForm"
 import userEvent from "@testing-library/user-event"
@@ -10,51 +10,34 @@ const mockUsers: PresetUser[] = [
     { id: "3", firstName: "third", lastName: "user" },
 ]
 
-test("is disabled when passed empty list of users", () => {
-    render(<DefaultLoginForm users={[]} submitHandler={vi.fn()} />)
-    expect(screen.getByRole("combobox", { name: /^user/i })).toHaveAttribute(
-        "aria-disabled",
-        "true"
-    )
-    expect(screen.getByRole("button", { name: /log in as/i })).toHaveAttribute(
-        "disabled"
-    )
-})
+const getUserSelect = () => screen.getByRole("combobox", { name: /^user/i })
+const getSubmitButton = () => screen.getByRole("button", { name: /log in as/i })
 
-test("returns id of chosen user", async () => {
-    const user = userEvent.setup()
-    const mockHandler = vi.fn()
-    render(<DefaultLoginForm users={mockUsers} submitHandler={mockHandler} />)
+describe("DefaultLoginForm", () => {
+    it("render_emptyUserList_disablesSelectAndSubmit", () => {
+        render(<DefaultLoginForm users={[]} submitHandler={vi.fn()} />)
+        expect(getUserSelect()).toBeDisabled()
+        expect(getSubmitButton()).toBeDisabled()
+    })
 
-    await user.click(screen.getByRole("combobox", { name: /^user/i }))
-    await user.click(screen.getByText(/second user/i))
-    await user.click(
-        screen.getByRole("button", {
-            name: /log in as/i,
-        })
-    )
+    it("submit_userChosen_passesChosenUserId", async () => {
+        const user = userEvent.setup()
+        const handler = vi.fn()
+        render(<DefaultLoginForm users={mockUsers} submitHandler={handler} />)
 
-    await waitFor(() =>
-        expect(mockHandler).toBeCalledWith({
-            userId: "2",
-        })
-    )
-})
+        await user.selectOptions(getUserSelect(), "2")
+        await user.click(getSubmitButton())
 
-test("selects first passed user by default", async () => {
-    const user = userEvent.setup()
-    const mockHandler = vi.fn()
-    render(<DefaultLoginForm users={mockUsers} submitHandler={mockHandler} />)
+        await waitFor(() => expect(handler).toHaveBeenCalledWith({ userId: "2" }))
+    })
 
-    await user.click(
-        screen.getByRole("button", {
-            name: /log in as/i,
-        })
-    )
+    it("submit_noUserChosen_passesFirstUserId", async () => {
+        const user = userEvent.setup()
+        const handler = vi.fn()
+        render(<DefaultLoginForm users={mockUsers} submitHandler={handler} />)
 
-    await waitFor(() =>
-        expect(mockHandler).toBeCalledWith({
-            userId: "1",
-        })
-    )
+        await user.click(getSubmitButton())
+
+        await waitFor(() => expect(handler).toHaveBeenCalledWith({ userId: "1" }))
+    })
 })

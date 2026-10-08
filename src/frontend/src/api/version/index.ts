@@ -1,3 +1,4 @@
+export * from "./types"
 import { getJsonWithTimeout } from "../http"
 import {
     version as frontendBuildVersion,
@@ -8,13 +9,8 @@ import {
     ServiceVersion,
     ServiceVersionData,
     ServiceVersionSuccess,
+    ServiceVersionUrl,
 } from "./types"
-export * from "./types"
-
-type ServiceVersionUrl = {
-    serviceName: string
-    versionUrl: string
-}
 
 const TIMEOUT_MS = 1000
 

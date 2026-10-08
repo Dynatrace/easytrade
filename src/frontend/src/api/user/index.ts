@@ -26,7 +26,7 @@ const PACKAGES: Record<string, string> = {
     "a0000000-0000-4000-8000-000000000002": "Light",
     "a0000000-0000-4000-8000-000000000003": "Pro",
 }
-
+const SIGNUP_PACKAGE = "a0000000-0000-4000-8000-000000000001"
 export async function getUser(userId: string): Promise<User> {
     const data = await getJson<UserDto>(`${services.user()}/accounts/${userId}`)
     return {
@@ -74,7 +74,7 @@ export async function signup(request: SignupRequest): Promise<SignupResponse> {
         return await postJson<SignupResponse>(
             `${services.user()}/auth/signup`,
             {
-                packageId: PACKAGES[0],
+                packageId: SIGNUP_PACKAGE,
                 origin: "easyTrade",
                 firstName: request.firstName,
                 lastName: request.lastName,

@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useAuthUserData } from "../../contexts/UserContext/hooks"
 import { orderCreditCard } from "../../api/creditCard"
 import { CreditCardLevel } from "../../api/creditCard"
-import { invalidateCreditCardStatus } from "../../queryKeys"
+import { invalidateCreditCardStatus } from "../../utils/queryKeys"
 
 export default function CreditCardForm() {
     const { userId } = useAuthUser()

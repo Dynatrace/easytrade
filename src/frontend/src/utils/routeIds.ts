@@ -4,5 +4,4 @@ export enum LoaderIds {
     transactions = "transactions-loader",
     creditCard = "creditCard-loader",
     creditCardStatusHistory = "creditCardStatusHistory-loader",
-    prices = "prices-loader",
 }
