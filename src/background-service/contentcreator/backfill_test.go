@@ -4,6 +4,10 @@ import (
 	"context"
 	"testing"
 	"time"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	proto "dynatrace.com/easytrade/background-service/proto"
 )
 
 // TestRunBackfill_InsertsOneBatchPerMinute mirrors runBackfill's contract:
@@ -75,5 +79,81 @@ func TestRunBackfill_DeterministicGivenSameAnchor(t *testing.T) {
 				t.Fatalf("batch %d row %d: expected deterministic candle, got open %v/%v close %v/%v", i, j, a.Open, b.Open, a.Close, b.Close)
 			}
 		}
+	}
+}
+
+func priceRows(n int, newest time.Time) []*proto.PriceMessage {
+	rows := make([]*proto.PriceMessage, n)
+	for i := range rows {
+		rows[i] = &proto.PriceMessage{Timestamp: timestamppb.New(newest.Add(-time.Duration(i) * time.Minute))}
+	}
+	return rows
+}
+
+func TestBackfillMissingHistory_EmptyTable_BackfillsFullWindow(t *testing.T) {
+	h, pricing, _, _, _ := newTestHandler()
+
+	h.backfillMissingHistory(context.Background())
+
+	if pricing.insertCalls != historyWindowMinutes {
+		t.Fatalf("expected %d batches, got %d", historyWindowMinutes, pricing.insertCalls)
+	}
+}
+
+func TestBackfillMissingHistory_PartialHistory_BackfillsOnlyGapBeforeOldestRow(t *testing.T) {
+	h, pricing, _, _, _ := newTestHandler()
+	pricing.existing = priceRows(historyWindowMinutes-10, time.Now().UTC())
+	oldest := pricing.existing[len(pricing.existing)-1].Timestamp.AsTime()
+
+	h.backfillMissingHistory(context.Background())
+
+	if pricing.insertCalls != 10 {
+		t.Fatalf("expected 10 batches, got %d", pricing.insertCalls)
+	}
+	if got, want := pricing.insertedBatches[0][0].Timestamp.AsTime(), oldest.Add(-time.Minute); !got.Equal(want) {
+		t.Fatalf("expected first batch at %v, got %v", want, got)
+	}
+}
+
+func TestBackfillMissingHistory_CompleteHistory_InsertsNothing(t *testing.T) {
+	h, pricing, _, _, _ := newTestHandler()
+	pricing.existing = priceRows(historyWindowMinutes, time.Now().UTC())
+
+	h.backfillMissingHistory(context.Background())
+
+	if pricing.insertCalls != 0 {
+		t.Fatalf("expected no inserts, got %d", pricing.insertCalls)
+	}
+}
+
+func TestMinutesMissingFromWindow_VariousHistorySizes_ReturnsGapToWindow(t *testing.T) {
+	cases := map[string]struct{ existing, want int }{
+		"empty":    {0, historyWindowMinutes},
+		"partial":  {historyWindowMinutes - 10, 10},
+		"complete": {historyWindowMinutes, 0},
+	}
+	for name, c := range cases {
+		t.Run(name, func(t *testing.T) {
+			if got := minutesMissingFromWindow(c.existing); got != c.want {
+				t.Fatalf("expected %d, got %d", c.want, got)
+			}
+		})
+	}
+}
+
+func TestOldestPriceTimeOr_NoHistory_ReturnsFallback(t *testing.T) {
+	fallback := time.Date(2026, 1, 1, 12, 0, 0, 0, time.UTC)
+
+	if got := oldestPriceTimeOr(nil, fallback); !got.Equal(fallback) {
+		t.Fatalf("expected %v, got %v", fallback, got)
+	}
+}
+
+func TestOldestPriceTimeOr_WithHistory_ReturnsOldestTimestamp(t *testing.T) {
+	newest := time.Date(2026, 1, 1, 12, 0, 0, 0, time.UTC)
+	rows := priceRows(5, newest)
+
+	if got, want := oldestPriceTimeOr(rows, time.Time{}), newest.Add(-4*time.Minute); !got.Equal(want) {
+		t.Fatalf("expected %v, got %v", want, got)
 	}
 }

@@ -75,11 +75,14 @@ func (h *Handler) initializePricingData(ctx context.Context, now time.Time) {
 		l.Errorw("Failed to delete pre-startup seed rows", "err", err)
 	}
 
-	go h.runBackfill(ctx, now, dailyPeriod/2)
+	go h.backfillMissingHistory(ctx)
 }
 
 func (h *Handler) generatePricingData(ctx context.Context, now time.Time) {
-	hourly := newTicker(cleanupInterval, func() { h.doEachHour(ctx, staleAfter) })
+	hourly := newTicker(cleanupInterval, func() {
+		h.doEachHour(ctx, staleAfter)
+		go h.backfillMissingHistory(ctx)
+	})
 	daily := newTicker(dailyPeriod, func() { h.doEachDay(ctx) })
 
 	for {

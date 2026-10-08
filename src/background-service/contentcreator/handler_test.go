@@ -21,6 +21,11 @@ type fakePricingClient struct {
 	pricingDeleteCalls []time.Time
 	insertCalls        int
 	insertedBatches    [][]*proto.PricingRow
+	existing           []*proto.PriceMessage
+}
+
+func (f *fakePricingClient) GetPricesForInstrument(_ context.Context, _ *proto.GetPricesForInstrumentRequest, _ ...grpc.CallOption) (*proto.PricesResponse, error) {
+	return &proto.PricesResponse{Prices: f.existing}, nil
 }
 
 func (f *fakePricingClient) InsertPricesBatch(_ context.Context, req *proto.InsertPricesBatchRequest, _ ...grpc.CallOption) (*proto.BatchResponse, error) {
