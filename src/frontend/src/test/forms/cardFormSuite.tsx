@@ -54,7 +54,7 @@ export function describeCardForm({
             await submit()
 
             await waitFor(() =>
-                expect(handler).toBeCalledWith({
+                expect(handler).toHaveBeenCalledWith({
                     accountId: "1",
                     amount: 1000,
                     name: "testName",
@@ -82,7 +82,7 @@ export function describeCardForm({
         it("submit_emptyInputs_doesNotCallHandler", async () => {
             await submit()
             await screen.findByRole("alert")
-            expect(handler).not.toBeCalled()
+            expect(handler).not.toHaveBeenCalled()
         })
 
         it("submit_invalidCardNumber_showsCardNumberError", async () => {

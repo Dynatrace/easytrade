@@ -45,7 +45,7 @@ describe("Login Form", () => {
         })
         it("doesn't submit values", async () => {
             await user.click(getSubmitButton())
-            await waitFor(() => expect(mockHandler).not.toBeCalled())
+            await waitFor(() => expect(mockHandler).not.toHaveBeenCalled())
         })
     })
     describe("when input is valid", () => {
@@ -55,7 +55,7 @@ describe("Login Form", () => {
             await user.click(getSubmitButton())
 
             await waitFor(() =>
-                expect(mockHandler).toBeCalledWith("testUser", "testPassword")
+                expect(mockHandler).toHaveBeenCalledWith("testUser", "testPassword")
             )
         })
     })

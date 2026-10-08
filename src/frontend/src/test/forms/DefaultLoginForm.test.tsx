@@ -28,7 +28,7 @@ describe("DefaultLoginForm", () => {
         await user.selectOptions(getUserSelect(), "2")
         await user.click(getSubmitButton())
 
-        await waitFor(() => expect(handler).toBeCalledWith({ userId: "2" }))
+        await waitFor(() => expect(handler).toHaveBeenCalledWith({ userId: "2" }))
     })
 
     it("submit_noUserChosen_passesFirstUserId", async () => {
@@ -38,6 +38,6 @@ describe("DefaultLoginForm", () => {
 
         await user.click(getSubmitButton())
 
-        await waitFor(() => expect(handler).toBeCalledWith({ userId: "1" }))
+        await waitFor(() => expect(handler).toHaveBeenCalledWith({ userId: "1" }))
     })
 })
