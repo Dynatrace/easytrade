@@ -35,11 +35,15 @@ func NewHandler(conn *grpc.ClientConn) *Handler {
 	}
 }
 
-func Start(ctx context.Context, values config.Values) *grpc.ClientConn {
-	conn, err := grpc.NewClient(
-		values.Get(dbAdapterAddress),
+func dialOptions() []grpc.DialOption {
+	return []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
+		grpc.WithDefaultCallOptions(grpc.WaitForReady(true)),
+	}
+}
+
+func Start(ctx context.Context, values config.Values) *grpc.ClientConn {
+	conn, err := grpc.NewClient(values.Get(dbAdapterAddress), dialOptions()...)
 	if err != nil {
 		l.Errorw("Failed to connect to DB adapter service", "err", err)
 		return nil
