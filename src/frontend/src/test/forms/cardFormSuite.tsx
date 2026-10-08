@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom"
+import "@testing-library/jest-dom/vitest"
 import { ReactElement } from "react"
 import { screen, render, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"

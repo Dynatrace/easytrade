@@ -1,4 +1,4 @@
-import "@testing-library/jest-dom"
+import "@testing-library/jest-dom/vitest"
 import { PropsWithChildren } from "react"
 import { screen, render, waitFor } from "@testing-library/react"
 import LoginForm from "../../components/forms/LoginForm"
