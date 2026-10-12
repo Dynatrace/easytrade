@@ -10,12 +10,11 @@ import (
 const historyWindowMinutes = dailyPeriod / 2
 
 func (h *Handler) backfillMissingHistory(ctx context.Context) {
-	release, acquired := h.tryAcquireBackfill()
-	if !acquired {
+	if !h.backfilling.CompareAndSwap(false, true) {
 		l.Debug("Backfill already in progress, skipping check")
 		return
 	}
-	defer release()
+	defer h.backfilling.Store(false)
 
 	pricesNewestFirst, err := h.fetchNewestPricesOfReferenceInstrument(ctx)
 	if err != nil {
@@ -23,19 +22,17 @@ func (h *Handler) backfillMissingHistory(ctx context.Context) {
 		return
 	}
 
-	missingMinutes := minutesMissingFromWindow(len(pricesNewestFirst))
+	missingMinutes := historyWindowMinutes - len(pricesNewestFirst)
 	if missingMinutes <= 0 {
 		return
 	}
 
-	h.runBackfill(ctx, backfillAnchor(pricesNewestFirst), missingMinutes)
-}
-
-func (h *Handler) tryAcquireBackfill() (release func(), acquired bool) {
-	if !h.backfilling.CompareAndSwap(false, true) {
-		return nil, false
+	backfillAnchor := time.Now().UTC()
+	if len(pricesNewestFirst) > 0 {
+		backfillAnchor = pricesNewestFirst[len(pricesNewestFirst)-1].GetTimestamp().AsTime()
 	}
-	return func() { h.backfilling.Store(false) }, true
+
+	h.runBackfill(ctx, backfillAnchor, missingMinutes)
 }
 
 func (h *Handler) fetchNewestPricesOfReferenceInstrument(ctx context.Context) ([]*proto.PriceMessage, error) {
@@ -46,17 +43,6 @@ func (h *Handler) fetchNewestPricesOfReferenceInstrument(ctx context.Context) ([
 		Limit:        &limit,
 	})
 	return resp.GetPrices(), err
-}
-
-func minutesMissingFromWindow(existingCount int) int {
-	return historyWindowMinutes - existingCount
-}
-
-func backfillAnchor(pricesNewestFirst []*proto.PriceMessage) time.Time {
-	if len(pricesNewestFirst) == 0 {
-		return time.Now().UTC()
-	}
-	return pricesNewestFirst[len(pricesNewestFirst)-1].GetTimestamp().AsTime()
 }
 
 func (h *Handler) runBackfill(ctx context.Context, anchor time.Time, minutes int) {
