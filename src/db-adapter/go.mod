@@ -5,7 +5,7 @@ go 1.26.8
 require (
 	github.com/google/uuid v1.6.0
 	github.com/sirupsen/logrus v1.10.2
-	google.golang.org/grpc v1.84.0
+	google.golang.org/grpc v1.83.2
 	google.golang.org/protobuf v1.36.12
 	gorm.io/driver/postgres v1.6.3
 	gorm.io/driver/sqlserver v1.6.4
