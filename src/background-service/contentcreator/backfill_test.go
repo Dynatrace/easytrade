@@ -110,6 +110,11 @@ func TestBackfillMissingHistory_PartialHistory_BackfillsOnlyGapBeforeOldestRow(t
 	if pricing.insertCalls != 10 {
 		t.Fatalf("expected 10 batches, got %d", pricing.insertCalls)
 	}
+	for i, batch := range pricing.insertedBatches {
+		if len(batch) != len(Instruments) {
+			t.Fatalf("batch %d: expected %d rows, got %d", i, len(Instruments), len(batch))
+		}
+	}
 	if got, want := pricing.insertedBatches[0][0].Timestamp.AsTime(), oldest.Add(-time.Minute); !got.Equal(want) {
 		t.Fatalf("expected first batch at %v, got %v", want, got)
 	}
@@ -126,34 +131,25 @@ func TestBackfillMissingHistory_CompleteHistory_InsertsNothing(t *testing.T) {
 	}
 }
 
-func TestMinutesMissingFromWindow_VariousHistorySizes_ReturnsGapToWindow(t *testing.T) {
-	cases := map[string]struct{ existing, want int }{
-		"empty":    {0, historyWindowMinutes},
-		"partial":  {historyWindowMinutes - 10, 10},
-		"complete": {historyWindowMinutes, 0},
-	}
-	for name, c := range cases {
-		t.Run(name, func(t *testing.T) {
-			if got := minutesMissingFromWindow(c.existing); got != c.want {
-				t.Fatalf("expected %d, got %d", c.want, got)
-			}
-		})
+func TestBackfillMissingHistory_BackfillInProgress_SkipsCheck(t *testing.T) {
+	h, pricing, _, _, _ := newTestHandler()
+	h.backfilling.Store(true)
+
+	h.backfillMissingHistory(context.Background())
+
+	if pricing.insertCalls != 0 {
+		t.Fatalf("expected no inserts while another backfill runs, got %d", pricing.insertCalls)
 	}
 }
 
-func TestOldestPriceTimeOr_NoHistory_ReturnsFallback(t *testing.T) {
-	fallback := time.Date(2026, 1, 1, 12, 0, 0, 0, time.UTC)
+func TestBackfillMissingHistory_AfterRun_AllowsNextCheck(t *testing.T) {
+	h, pricing, _, _, _ := newTestHandler()
 
-	if got := oldestPriceTimeOr(nil, fallback); !got.Equal(fallback) {
-		t.Fatalf("expected %v, got %v", fallback, got)
-	}
-}
+	h.backfillMissingHistory(context.Background())
+	pricing.insertCalls = 0
+	h.backfillMissingHistory(context.Background())
 
-func TestOldestPriceTimeOr_WithHistory_ReturnsOldestTimestamp(t *testing.T) {
-	newest := time.Date(2026, 1, 1, 12, 0, 0, 0, time.UTC)
-	rows := priceRows(5, newest)
-
-	if got, want := oldestPriceTimeOr(rows, time.Time{}), newest.Add(-4*time.Minute); !got.Equal(want) {
-		t.Fatalf("expected %v, got %v", want, got)
+	if pricing.insertCalls != historyWindowMinutes {
+		t.Fatalf("expected second check to run and insert %d batches, got %d", historyWindowMinutes, pricing.insertCalls)
 	}
 }
