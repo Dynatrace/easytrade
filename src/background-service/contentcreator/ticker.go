@@ -7,9 +7,10 @@ import (
 )
 
 const (
-	cleanupInterval = 60
-	staleAfter      = 24 * time.Hour
-	dailyPeriod     = 1440
+	cleanupInterval  = 60
+	backfillInterval = 5
+	staleAfter       = 24 * time.Hour
+	dailyPeriod      = 1440
 )
 
 var l = logger.GetSugar().Named("contentcreator")

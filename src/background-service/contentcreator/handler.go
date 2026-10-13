@@ -3,6 +3,7 @@ package contentcreator
 import (
 	"context"
 	"math/rand"
+	"sync/atomic"
 	"time"
 
 	"dynatrace.com/easytrade/background-service/config"
@@ -18,11 +19,12 @@ const (
 )
 
 type Handler struct {
-	pricing proto.PricingServiceClient
-	trade   proto.TradeServiceClient
-	balance proto.BalanceServiceClient
-	account proto.AccountServiceClient
-	rng     *rand.Rand
+	pricing     proto.PricingServiceClient
+	trade       proto.TradeServiceClient
+	balance     proto.BalanceServiceClient
+	account     proto.AccountServiceClient
+	rng         *rand.Rand
+	backfilling atomic.Bool
 }
 
 func NewHandler(conn *grpc.ClientConn) *Handler {
@@ -75,17 +77,21 @@ func (h *Handler) initializePricingData(ctx context.Context, now time.Time) {
 		l.Errorw("Failed to delete pre-startup seed rows", "err", err)
 	}
 
-	go h.runBackfill(ctx, now, dailyPeriod/2)
+	go h.backfillMissingHistory(ctx)
 }
 
 func (h *Handler) generatePricingData(ctx context.Context, now time.Time) {
-	hourly := newTicker(cleanupInterval, func() { h.doEachHour(ctx, staleAfter) })
+	hourly := newTicker(cleanupInterval, func() {
+		h.doEachHour(ctx, staleAfter)
+	})
+	backfillCheck := newTicker(backfillInterval, func() { go h.backfillMissingHistory(ctx) })
 	daily := newTicker(dailyPeriod, func() { h.doEachDay(ctx) })
 
 	for {
 		now = now.Add(time.Minute)
 		h.insertPricingBatch(ctx, newCandlesForTime(Instruments[:], now, h.rng))
 		hourly.tick()
+		backfillCheck.tick()
 		daily.tick()
 		sleepProperly(now, time.Minute)
 	}

@@ -4,6 +4,10 @@ import (
 	"context"
 	"testing"
 	"time"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	proto "dynatrace.com/easytrade/background-service/proto"
 )
 
 // TestRunBackfill_InsertsOneBatchPerMinute mirrors runBackfill's contract:
@@ -75,5 +79,77 @@ func TestRunBackfill_DeterministicGivenSameAnchor(t *testing.T) {
 				t.Fatalf("batch %d row %d: expected deterministic candle, got open %v/%v close %v/%v", i, j, a.Open, b.Open, a.Close, b.Close)
 			}
 		}
+	}
+}
+
+func priceRows(n int, newest time.Time) []*proto.PriceMessage {
+	rows := make([]*proto.PriceMessage, n)
+	for i := range rows {
+		rows[i] = &proto.PriceMessage{Timestamp: timestamppb.New(newest.Add(-time.Duration(i) * time.Minute))}
+	}
+	return rows
+}
+
+func TestBackfillMissingHistory_EmptyTable_BackfillsFullWindow(t *testing.T) {
+	h, pricing, _, _, _ := newTestHandler()
+
+	h.backfillMissingHistory(context.Background())
+
+	if pricing.insertCalls != historyWindowMinutes {
+		t.Fatalf("expected %d batches, got %d", historyWindowMinutes, pricing.insertCalls)
+	}
+}
+
+func TestBackfillMissingHistory_PartialHistory_BackfillsOnlyGapBeforeOldestRow(t *testing.T) {
+	h, pricing, _, _, _ := newTestHandler()
+	pricing.existing = priceRows(historyWindowMinutes-10, time.Now().UTC())
+	oldest := pricing.existing[len(pricing.existing)-1].Timestamp.AsTime()
+
+	h.backfillMissingHistory(context.Background())
+
+	if pricing.insertCalls != 10 {
+		t.Fatalf("expected 10 batches, got %d", pricing.insertCalls)
+	}
+	for i, batch := range pricing.insertedBatches {
+		if len(batch) != len(Instruments) {
+			t.Fatalf("batch %d: expected %d rows, got %d", i, len(Instruments), len(batch))
+		}
+	}
+	if got, want := pricing.insertedBatches[0][0].Timestamp.AsTime(), oldest.Add(-time.Minute); !got.Equal(want) {
+		t.Fatalf("expected first batch at %v, got %v", want, got)
+	}
+}
+
+func TestBackfillMissingHistory_CompleteHistory_InsertsNothing(t *testing.T) {
+	h, pricing, _, _, _ := newTestHandler()
+	pricing.existing = priceRows(historyWindowMinutes, time.Now().UTC())
+
+	h.backfillMissingHistory(context.Background())
+
+	if pricing.insertCalls != 0 {
+		t.Fatalf("expected no inserts, got %d", pricing.insertCalls)
+	}
+}
+
+func TestBackfillMissingHistory_BackfillInProgress_SkipsCheck(t *testing.T) {
+	h, pricing, _, _, _ := newTestHandler()
+	h.backfilling.Store(true)
+
+	h.backfillMissingHistory(context.Background())
+
+	if pricing.insertCalls != 0 {
+		t.Fatalf("expected no inserts while another backfill runs, got %d", pricing.insertCalls)
+	}
+}
+
+func TestBackfillMissingHistory_AfterRun_AllowsNextCheck(t *testing.T) {
+	h, pricing, _, _, _ := newTestHandler()
+
+	h.backfillMissingHistory(context.Background())
+	pricing.insertCalls = 0
+	h.backfillMissingHistory(context.Background())
+
+	if pricing.insertCalls != historyWindowMinutes {
+		t.Fatalf("expected second check to run and insert %d batches, got %d", historyWindowMinutes, pricing.insertCalls)
 	}
 }
