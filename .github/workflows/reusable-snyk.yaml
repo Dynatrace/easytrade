@@ -55,7 +55,6 @@ jobs:
         run: >
           snyk monitor
           --all-projects
-          --org=capability_supportability_services
           --target-reference=main
           --project-environment=external
           --project-lifecycle=sandbox
