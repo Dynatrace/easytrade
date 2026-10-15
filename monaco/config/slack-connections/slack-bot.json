@@ -1,4 +1,0 @@
-{
-  "name": "{{ .name }}",
-  "token": "{{ .slack_connection_token }}"
-}
