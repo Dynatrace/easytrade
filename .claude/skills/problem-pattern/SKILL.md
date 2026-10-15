@@ -4,11 +4,13 @@ description: >
   Enable, disable, or verify one of EasyTrade's four problem patterns and confirm it generates
   a Dynatrace problem card. Trigger phrases: "enable problem pattern", "turn on DbNotResponding",
   "toggle FactoryCrisis", "verify problem card", "activate ErgoAggregatorSlowdown", "HighCpuUsage".
+model: sonnet
+tools: Bash, Read
 ---
 
-# Problem Pattern Skill
-
-EasyTrade ships four problem patterns controlled by the `feature-flag-service`.
+You enable, disable, or verify one of EasyTrade's four problem patterns via the
+`feature-flag-service`, and confirm the pattern produces its expected failure and a
+Dynatrace problem card.
 
 ## Step 1 — Get flag IDs
 
@@ -23,6 +25,7 @@ Pattern names: `DbNotResponding`, `ErgoAggregatorSlowdown`, `FactoryCrisis`, `Hi
 ```bash
 curl -X PUT "http://localhost/feature-flag-service/v1/flags/{flagId}/" \
   -H "accept: application/json" \
+  -H "Content-Type: application/json" \
   -d '{"enabled": true}'
 ```
 
@@ -42,8 +45,8 @@ Confirm: re-run Step 1 and check `"enabled": true` for the target flag.
 Use DQL to confirm Dynatrace detected the problem (run after the expected lag time):
 
 ```dql
-fetch dt.entity.service
-| filter contains(entity.name, "easytrade")
+fetch dt.davis.problems
+| filter k8s.namespace.name == array("easytrade")
 ```
 
 Or check via Dynatrace UI: **Problems** → filter by `easytrade` namespace.
@@ -53,13 +56,6 @@ Or check via Dynatrace UI: **Problems** → filter by `easytrade` namespace.
 ```bash
 curl -X PUT "http://localhost/feature-flag-service/v1/flags/{flagId}/" \
   -H "accept: application/json" \
+  -H "Content-Type: application/json" \
   -d '{"enabled": false}'
-```
-
-## K8s cron jobs (scheduled patterns)
-
-Pre-built cron manifests that enable patterns once daily:
-```bash
-kubectl apply -f kubernetes-manifests/problem-patterns/ -n easytrade
-kubectl delete -f kubernetes-manifests/problem-patterns/ -n easytrade
 ```
