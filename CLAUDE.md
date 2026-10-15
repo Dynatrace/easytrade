@@ -113,8 +113,6 @@ curl -X PUT "http://localhost/feature-flag-service/v1/flags/{flagId}" \
 
 Services are deployed on Kubernetes (namespace `easytrade`) and monitored by Dynatrace. See `.github/copilot-instructions.md` for DQL query patterns, metric keys, and problem investigation workflow; `AGENTS.md` covers the vulnerability remediation process. Monaco configurations live in `./monaco/`.
 
-Key DQL rule: always use `timeseries` for metrics — never `fetch <metric-key>`.
-
 ## Helm / Kubernetes
 
 Via the Makefile (release and namespace both default to `easytrade`):
@@ -134,7 +132,7 @@ helm uninstall easytrade -n easytrade
 ## Conventions
 
 - NEVER commit secrets, tokens, or credentials — use environment variables
-- NEVER use `fetch <metric-key>` in DQL queries — always use `timeseries`
+- NEVER use `fetch <metric-key>` for metric queries — use `timeseries` instead (`fetch` is valid for `dt.davis.problems`, `dt.entity.*` and other non-metric record types)
 - Do NOT apply a dep bump to one `build.gradle` without applying it to all affected Java services
 - Do NOT modify `compose.yaml` (pre-built registry images) when you mean `compose.dev.yaml` (local dev)
 - Apply vulnerability fixes across all services in a single pass — partial updates leave the repo inconsistent
