@@ -1,17 +1,8 @@
 manifestVersion: 1.0
 projects:
-  - name: application
   - name: bizevents
-  - name: bizevents-processing-rules
   - name: bizflow
-  - name: custom-service
-  - name: management-zone
-  - name: easytrade-validation
-    path: easytrade-validation
-    type: grouping
-  - name: config
-    path: config
-    type: grouping
+  - name: oneagent-features
 environmentGroups:
   - name: development
     environments:
