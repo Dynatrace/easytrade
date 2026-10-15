@@ -1,34 +1,4 @@
-# references to one agent features
-# are made to auto deploy the relevant
-# configs
-
 configs:
-  # === [GO] USER SERVICE ===
-  - id: easytrade_user-service_get-account
-    config:
-      name: EasyTrade [user-service | Go] - GET /api/accounts/{accountId}
-      template: easytrade_user-service_get-account.json
-      skip: false
-      parameters: &goCapture
-        refCaptureRule:
-          project: config.bizevent-capturing
-          type: reference
-          configType: builtin:oneagent.features
-          configId: http-go
-          property: name
-    type: &bizevent_type
-      settings:
-        schema: builtin:bizevents.http.incoming
-        scope: environment
-
-  - id: easytrade_user-service_get-preset-accounts
-    config:
-      name: EasyTrade [user-service | Go] - GET /api/accounts/presets
-      template: easytrade_user-service_get-preset-accounts.json
-      skip: false
-      parameters: *goCapture
-    type: *bizevent_type
-
   # === [DOTNET] BROKER SERVICE ===
   - id: easytrade_broker-service_deposit
     config:
@@ -42,55 +12,10 @@ configs:
           configType: builtin:oneagent.features
           configId: http-dotnet
           property: name
-    type: *bizevent_type
-
-  - id: easytrade_broker-service_get-balance
-    config:
-      name: EasyTrade [broker-service | .NET] - GET /v1/balance/{accountId}
-      template: easytrade_broker-service_get-balance.json
-      skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
-
-  - id: easytrade_broker-service_get-instruments
-    config:
-      name: EasyTrade [broker-service | .NET] - GET /v1/instrument
-      template: easytrade_broker-service_get-instruments.json
-      skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
-
-  - id: easytrade_broker-service_get-trades
-    config:
-      name: EasyTrade [broker-service | .NET] - GET /v1/trade/{accountId}
-      template: easytrade_broker-service_get-trades.json
-      skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
-
-  - id: easytrade_broker-service_long-buy
-    config:
-      name: EasyTrade [broker-service | .NET] - POST /v1/trade/long/buy
-      template: easytrade_broker-service_long-buy.json
-      skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
-
-  - id: easytrade_broker-service_long-sell
-    config:
-      name: EasyTrade [broker-service | .NET] - POST /v1/trade/long/sell
-      template: easytrade_broker-service_long-sell.json
-      skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
-
-  - id: easytrade_broker-service_process-long-trades
-    config:
-      name: EasyTrade [broker-service | .NET] - POST /v1/trade/long/process
-      template: easytrade_broker-service_process-long-trades.json
-      skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
+    type: &bizevent_type
+      settings:
+        schema: builtin:bizevents.http.incoming
+        scope: environment
 
   - id: easytrade_broker-service_quick-buy
     config:
@@ -117,10 +42,10 @@ configs:
     type: *bizevent_type
 
   # === [JAVA] CREDIT CARD ORDER SERVICE ===
-  - id: easytrade_credit-card-order-service_delete-card
+  - id: easytrade_credit-card-order-service_order
     config:
-      name: EasyTrade [credit-card-order-service | Java] DELETE /v1/order/{accountId}
-      template: easytrade_credit-card-order-service_delete-card.json
+      name: EasyTrade [credit-card-order-service | Java] - POST /v1/orders
+      template: easytrade_credit-card-order-service_order.json
       skip: false
       parameters: &javaCapture
         refCaptureRule:
@@ -129,38 +54,6 @@ configs:
           configType: builtin:oneagent.features
           configId: http-java
           property: name
-    type: *bizevent_type
-
-  - id: easytrade_credit-card-order-service_get-latest-status
-    config:
-      name: EasyTrade [credit-card-order-service | Java] - GET /v1/orders/{accountId}/status/latest
-      template: easytrade_credit-card-order-service_get-latest-status.json
-      skip: false
-      parameters: *javaCapture
-    type: *bizevent_type
-
-  - id: easytrade_credit-card-order-service_get-shipping-address
-    config:
-      name: EasyTrade [credit-card-order-service | Java] - GET /v1/orders/{id}/shipping-address
-      template: easytrade_credit-card-order-service_get-shipping-address.json
-      skip: false
-      parameters: *javaCapture
-    type: *bizevent_type
-
-  - id: easytrade_credit-card-order-service_get-status
-    config:
-      name: EasyTrade [credit-card-order-service | Java] - GET /v1/orders/{accountId}/status
-      template: easytrade_credit-card-order-service_get-status.json
-      skip: false
-      parameters: *javaCapture
-    type: *bizevent_type
-
-  - id: easytrade_credit-card-order-service_order
-    config:
-      name: EasyTrade [credit-card-order-service | Java] - POST /v1/orders
-      template: easytrade_credit-card-order-service_order.json
-      skip: false
-      parameters: *javaCapture
     type: *bizevent_type
 
   - id: easytrade_credit-card-order-service_update-order-status_created
@@ -195,112 +88,13 @@ configs:
       parameters: *javaCapture
     type: *bizevent_type
 
-  # === [JAVA] FEATURE FLAG SERVICE ===
-  - id: easytrade_feature-flag-service_get-flag
-    config:
-      name: EasyTrade [feature-flag-service | Java] - GET /v1/flags/{flagId}
-      template: easytrade_feature-flag-service_get-flag.json
-      skip: false
-      parameters: *javaCapture
-    type: *bizevent_type
-
-  - id: easytrade_feature-flag-service_get-flags
-    config:
-      name: EasyTrade [feature-flag-service | Java] - GET /v1/flags
-      template: easytrade_feature-flag-service_get-flags.json
-      skip: false
-      parameters: *javaCapture
-    type: *bizevent_type
-
-  - id: easytrade_feature-flag-service_toggle-flag
-    config:
-      name: EasyTrade [feature-flag-service | Java] - PUT /v1/flags/{flagId}
-      template: easytrade_feature-flag-service_toggle-flag.json
-      skip: false
-      parameters: *javaCapture
-    type: *bizevent_type
-
-  # === [GO] USER SERVICE — auth ===
-  - id: easytrade_user-service_login
-    config:
-      name: EasyTrade [user-service | Go] - POST /api/auth/login
-      template: easytrade_user-service_login.json
-      skip: false
-      parameters: *goCapture
-    type: *bizevent_type
-
-  - id: easytrade_user-service_signup
-    config:
-      name: EasyTrade [user-service | Go] - POST /api/auth/signup
-      template: easytrade_user-service_signup.json
-      skip: false
-      parameters: *goCapture
-    type: *bizevent_type
-
-  # === [DOTNET] MANAGER ===
-  - id: easytrade_manager_get-account
-    config:
-      name: EasyTrade [manager | .NET] - GET /api/Accounts/GetAccountById/{id}
-      template: easytrade_manager_get-account.json
-      skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
-
-  - id: easytrade_manager_get-accounts
-    config:
-      name: EasyTrade [manager | .NET] - GET /api/Accounts
-      template: easytrade_manager_get-accounts.json
-      skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
-
-  - id: easytrade_manager_get-package
-    config:
-      name: EasyTrade [manager | .NET] - GET /api/Packages/GetPackageById/{id}
-      template: easytrade_manager_get-package.json
-      skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
-
-  - id: easytrade_manager_get-packages
-    config:
-      name: EasyTrade [manager | .NET] - GET /api/Packages/GetPackages
-      template: easytrade_manager_get-packages.json
-      skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
-
-  - id: easytrade_manager_get-product
-    config:
-      name: EasyTrade [manager | .NET] - GET /api/Products/GetProductById/{id}
-      template: easytrade_manager_get-product.json
-      skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
-
-  - id: easytrade_manager_get-products
-    config:
-      name: EasyTrade [manager | .NET] - GET /api/Products/GetProducts
-      template: easytrade_manager_get-products.json
-      skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
-
-  - id: easytrade_manager_modify-account
-    config:
-      name: EasyTrade [manager | .NET] - PUT /api/Accounts/ModifyAccount
-      template: easytrade_manager_modify-account.json
-      skip: false
-      parameters: *dotnetCapture
-    type: *bizevent_type
-
   # === [WEBSERVER] NGINX ===
-  - id: easytrade_nginx_credit-card-latest-status
+  - id: easytrade_nginx_signup
     config:
-      name: EasyTrade [nginx] - GET /credit-card-order-service/v1/orders/{accountId}/status/latest
-      template: easytrade_nginx_credit-card-latest-status.json
+      name: EasyTrade [nginx] - POST /loginservice/api/Signup
+      template: easytrade_nginx_signup.json
       skip: false
-      parameters: &webserverCapture
+      parameters:
         refCaptureRule:
           project: config.bizevent-capturing
           type: reference
@@ -309,171 +103,11 @@ configs:
           property: name
     type: *bizevent_type
 
-  - id: easytrade_nginx_credit-card-status
-    config:
-      name: EasyTrade [nginx] - GET /credit-card-order-service/v1/orders/{accountId}/status
-      template: easytrade_nginx_credit-card-status.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_delete-card-order
-    config:
-      name: EasyTrade [nginx] DELETE /credit-card-order-service/v1/order/{accountId}
-      template: easytrade_nginx_delete-card-order.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_deposit
-    config:
-      name: EasyTrade [nginx] - POST /broker-service/v1/balance/{accountId}/deposit
-      template: easytrade_nginx_deposit.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_get-account
-    config:
-      name: EasyTrade [nginx] - GET /accountservice/api/accounts/{accountId}
-      template: easytrade_nginx_get-account.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_get-balance
-    config:
-      name: EasyTrade [nginx] - GET /broker-service/v1/balance/{accountId}
-      template: easytrade_nginx_get-balance.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_get-flags
-    config:
-      name: EasyTrade [nginx] - GET /feature-flag-service/v1/flags
-      template: easytrade_nginx_get-flags.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_get-instrument-price
-    config:
-      name: EasyTrade [nginx] - GET /pricing-service/v1/prices/instrument/{instrumentId}
-      template: easytrade_nginx_get-instrument-price.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_get-instruments
-    config:
-      name: EasyTrade [nginx] - GET /broker-service/v1/instrument
-      template: easytrade_nginx_get-instruments.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_get-preset-accounts
-    config:
-      name: EasyTrade [nginx] - GET /accountservice/api/accounts/presets
-      template: easytrade_nginx_get-preset-accounts.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_get-trades
-    config:
-      name: EasyTrade [nginx] - GET /broker-service/v1/trade/{accountId}
-      template: easytrade_nginx_get-trades.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_login
-    config:
-      name: EasyTrade [nginx] - POST /loginservice/api/Login
-      template: easytrade_nginx_login.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_logout
-    config:
-      name: EasyTrade [nginx] - POST /loginservice/api/Logout
-      template: easytrade_nginx_logout.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_long-buy
-    config:
-      name: EasyTrade [nginx] - POST /broker-service/v1/trade/long/buy
-      template: easytrade_nginx_long-buy.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_long-sell
-    config:
-      name: EasyTrade [nginx] - POST /broker-service/v1/trade/long/sell
-      template: easytrade_nginx_long-sell.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_order-credit-card
-    config:
-      name: EasyTrade [nginx] - POST /credit-card-order-service/v1/orders
-      template: easytrade_nginx_order-credit-card.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_quick-buy
-    config:
-      name: EasyTrade [nginx] - POST /broker-service/v1/trade/buy
-      template: easytrade_nginx_quick-buy.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_quick-sell
-    config:
-      name: EasyTrade [nginx] - POST /broker-service/v1/trade/sell
-      template: easytrade_nginx_quick-sell.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_signup
-    config:
-      name: EasyTrade [nginx] - POST /loginservice/api/Signup
-      template: easytrade_nginx_signup.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_toggle-flag
-    config:
-      name: EasyTrade [nginx] - PUT /feature-flag-service/v1/flags/{flagId}
-      template: easytrade_nginx_toggle-flag.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
-  - id: easytrade_nginx_withdraw
-    config:
-      name: EasyTrade [nginx] - POST /broker-service/v1/balance/{accountId}/withdraw
-      template: easytrade_nginx_withdraw.json
-      skip: false
-      parameters: *webserverCapture
-    type: *bizevent_type
-
   # === [NODE] OFFER SERVICE ===
-  - id: easytrade_offerservice_get-offer
+  - id: easytrade_offer-service_get-offer
     config:
-      name: EasyTrade [offerservice | Node.js] - GET /api/offers/{platform}
-      template: easytrade_offerservice_get-offer.json
+      name: EasyTrade [offer-service | Node.js] - GET /api/offers/{platform}
+      template: easytrade_offer-service_get-offer.json
       skip: false
       parameters: &nodeCapture
         refCaptureRule:
@@ -484,35 +118,17 @@ configs:
           property: name
     type: *bizevent_type
 
-  - id: easytrade_offerservice_signup
-    config:
-      name: EasyTrade [offerservice | Node.js] - PUT /api/signup
-      template: easytrade_offerservice_signup.json
-      skip: false
-      parameters: *nodeCapture
-    type: *bizevent_type
-
   # === [GO] PRICING SERVICE
-  - id: easytrade_pricing-service_get-instrument-price
-    config:
-      name: EasyTrade [pricing-service | Go] - GET /v1/prices/instrument/{instrumentId}
-      template: easytrade_pricing-service_get-instrument-price.json
-      skip: false
-      parameters: *goCapture
-    type: *bizevent_type
-
-  - id: easytrade_pricing-service_last
-    config:
-      name: EasyTrade [pricing-service | Go] - GET /v1/prices/last
-      template: easytrade_pricing-service_last.json
-      skip: false
-      parameters: *goCapture
-    type: *bizevent_type
-
   - id: easytrade_pricing-service_latest
     config:
       name: EasyTrade [pricing-service | Go] - GET /v1/prices/latest
       template: easytrade_pricing-service_latest.json
       skip: false
-      parameters: *goCapture
+      parameters:
+        refCaptureRule:
+          project: config.bizevent-capturing
+          type: reference
+          configType: builtin:oneagent.features
+          configId: http-go
+          property: name
     type: *bizevent_type
