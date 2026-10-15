@@ -7,7 +7,7 @@ configs:
       skip: false
       parameters: &dotnetCapture
         refCaptureRule:
-          project: config.bizevent-capturing
+          project: oneagent-features
           type: reference
           configType: builtin:oneagent.features
           configId: http-dotnet
@@ -49,7 +49,7 @@ configs:
       skip: false
       parameters: &javaCapture
         refCaptureRule:
-          project: config.bizevent-capturing
+          project: oneagent-features
           type: reference
           configType: builtin:oneagent.features
           configId: http-java
@@ -91,12 +91,12 @@ configs:
   # === [WEBSERVER] NGINX ===
   - id: easytrade_nginx_signup
     config:
-      name: EasyTrade [nginx] - POST /loginservice/api/Signup
+      name: EasyTrade [nginx] - POST /user-service/api/auth/signup
       template: easytrade_nginx_signup.json
       skip: false
       parameters:
         refCaptureRule:
-          project: config.bizevent-capturing
+          project: oneagent-features
           type: reference
           configType: builtin:oneagent.features
           configId: http-webserver
@@ -111,7 +111,7 @@ configs:
       skip: false
       parameters: &nodeCapture
         refCaptureRule:
-          project: config.bizevent-capturing
+          project: oneagent-features
           type: reference
           configType: builtin:oneagent.features
           configId: http-nodejs
@@ -126,7 +126,7 @@ configs:
       skip: false
       parameters:
         refCaptureRule:
-          project: config.bizevent-capturing
+          project: oneagent-features
           type: reference
           configType: builtin:oneagent.features
           configId: http-go
