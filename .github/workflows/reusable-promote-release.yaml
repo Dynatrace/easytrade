@@ -44,7 +44,7 @@ jobs:
 
       - name: Create release
         id: create-release
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const version = 'v${{ inputs.version }}';
@@ -72,7 +72,7 @@ jobs:
 
       - name: Upload release assets
         if: ${{ inputs.artifact-dir }}
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         env:
           ARTIFACT_DIR: ${{ inputs.artifact-dir }}
         with:
@@ -117,7 +117,7 @@ jobs:
             }
 
       - name: Trigger deploy workflow
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         if: ${{ inputs.trigger-deploy }}
         with:
           script: |
