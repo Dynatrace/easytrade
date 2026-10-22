@@ -1,5 +1,0 @@
-{
-  "matcher": "DOMAIN_MATCHES",
-  "pattern": "reverse-proxy",
-  "applicationId": "{{.easytrade_web_app}}"
-}

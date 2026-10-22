@@ -1,3 +1,0 @@
-fetch bizevents
-| filter event.type == "com.easytrade.long-buy" or event.type == "com.easytrade.long-sell"
-| summarize s = toDouble(count()) / $longBuySellReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes
