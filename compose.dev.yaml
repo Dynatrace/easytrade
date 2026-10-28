@@ -64,7 +64,11 @@ services:
       FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
       WORK_DELAY: 30
       WORK_RATE: 30
-      JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
+      # Same heap ceiling and memory limit as Helm, so credit_card_memory_leak
+      # ends in an OOM kill locally too.
+      JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow -Xmx1g"
+      MEMORY_LEAK_MB_PER_MINUTE: 8
+    mem_limit: 650m
 
   db:
     <<: *default-service
