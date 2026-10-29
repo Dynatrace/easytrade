@@ -3,7 +3,7 @@ on:
   # TEMPORARY (DREL-8503): run on push to the bump branch to get a scan link for the PR - revert before merge
   push:
     branches:
-      - fix/bump-versions
+      - DREL-8503/bump-versions
   workflow_call:
     secrets:
       SNYK_API_TOKEN:
