@@ -10,7 +10,7 @@ not a service):
 | Java 21 / Spring Boot / Gradle | `credit-card-order-service`                                                                 |
 | Go / Go Modules                | `background-service`, `db-adapter`, `feature-flag-service`, `pricing-service`, `user-service` |
 | TypeScript / Node.js / npm     | `frontend`, `loadgen`, `offer-service`                                                      |
-| C# / .NET 8 / NuGet            | `broker-service`                                                                            |
+| C# / .NET 10 / NuGet           | `broker-service`                                                                            |
 | Config only (no packages)      | `reverse-proxy` (nginx), `db` (MSSQL and Postgres)                                          |
 
 ## Vulnerability remediation process
@@ -60,9 +60,11 @@ docker pull golang:<new-version>-alpine3.24
 docker inspect --format='{{index .RepoDigests 0}}' golang:<new-version>-alpine3.24
 ```
 
-The Go services do not all share one base image - `db-adapter` pins `golang:1.26.5` while
-the other four pin `golang:1.26.4` - so check each Dockerfile rather than reusing a single
-digest across all five.
+All five Go services currently pin the same `golang:1.26.10-alpine3.24` builder, but check
+each Dockerfile before reusing a single digest - they have drifted apart before.
+
+Do not move to a Go minor (e.g. 1.27) until the OneAgent version on our tenants supports it -
+see Dynatrace's "Supported Go versions" page (Go 1.27 requires OneAgent 1.349+).
 
 ### Verifying fixes
 

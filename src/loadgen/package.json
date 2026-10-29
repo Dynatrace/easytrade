@@ -11,22 +11,22 @@
     "lint": "eslint ./src"
   },
   "dependencies": {
-    "@demoability/loadgen-core": "^1.3.34",
-    "winston": "^3.17.0"
+    "@demoability/loadgen-core": "^1.3.36",
+    "winston": "^3.19.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
     "@types/eslint__js": "^8.42.3",
-    "eslint": "^9.18.0",
-    "prettier": "^3.4.2",
+    "eslint": "^9.39.5",
+    "prettier": "^3.9.10",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3",
-    "typescript-eslint": "^8.20.0"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.1"
   },
   "overrides": {
     "brace-expansion": "5.0.9",
-    "ip-address": "10.5.0",
-    "js-yaml": "5.3.0",
-    "uuid": "14.0.0"
+    "ip-address": "10.7.5",
+    "js-yaml": "5.5.0",
+    "uuid": "14.0.3"
   }
 }

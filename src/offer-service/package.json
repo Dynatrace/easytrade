@@ -15,26 +15,27 @@
   "author": "tomasz.wieremjewicz@dynatrace.com",
   "license": "ISC",
   "dependencies": {
-    "@bufbuild/protobuf": "^2.13.0",
-    "@grpc/grpc-js": "^1.13.4",
-    "@openfeature/server-sdk": "^1.21.0",
-    "express": "^5.2.1",
-    "path-to-regexp": "^8.4.1",
+    "@bufbuild/protobuf": "^2.16.0",
+    "@grpc/grpc-js": "^1.14.6",
+    "@openfeature/server-sdk": "^1.23.0",
+    "express": "^5.3.0",
+    "path-to-regexp": "^8.4.2",
     "winston": "^3.19.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
-    "@types/express": "^5.0.5",
-    "eslint": "^9.39.1",
-    "prettier": "^3.4.2",
+    "@types/express": "^5.0.6",
+    "eslint": "^9.39.5",
+    "prettier": "^3.9.10",
     "ts-node": "^10.9.2",
-    "ts-proto": "^2.7.0",
+    "ts-proto": "^2.18.3",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.3"
+    "typescript-eslint": "^8.72.1"
   },
   "overrides": {
-    "body-parser": "2.3.0",
+    "body-parser": "2.4.0",
+    "qs": "6.17.1",
     "brace-expansion": "5.0.9",
-    "js-yaml": "5.3.0"
+    "js-yaml": "5.5.0"
   }
 }

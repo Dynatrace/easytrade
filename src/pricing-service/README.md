@@ -4,7 +4,7 @@ A go service that provides information about instrument prices. Pricing data is 
 
 ## Technologies used
 
-- Go 1.26.4
+- Go 1.26.10
 - Docker
 - gRPC (db-adapter)
 

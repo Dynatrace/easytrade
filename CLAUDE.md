@@ -20,7 +20,7 @@ State lives in one `db` service. `db-adapter` is the only component that holds a
 | Java 21 / Spring Boot / Gradle | `credit-card-order-service` |
 | Go + Go Modules | `background-service`, `db-adapter`, `pricing-service`, `user-service`, `feature-flag-service` |
 | TypeScript / Node.js / npm | `frontend` (React + Vite), `loadgen`, `offer-service` (Express) |
-| C# / .NET 8 | `broker-service` |
+| C# / .NET 10 | `broker-service` |
 | Config only | `reverse-proxy` (nginx), `db` (MSSQL and Postgres) |
 
 Key roles:
