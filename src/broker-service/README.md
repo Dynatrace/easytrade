@@ -4,7 +4,7 @@ This service manages account balances and processes trades. It leverages gRPC to
 
 ## Technologies used
 
-- .NET 8 (ASP.NET Core)
+- .NET 10 (ASP.NET Core)
 - Docker
 - gRPC
 
