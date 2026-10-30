@@ -27,6 +27,7 @@ type Operator struct {
 	namespace   string
 	interval    time.Duration
 	cpuLimit    string
+	brokerName  string
 }
 
 func New(
@@ -36,6 +37,7 @@ func New(
 	namespace string,
 	interval time.Duration,
 	cpuLimit string,
+	brokerName string,
 ) *Operator {
 	eventBroadcaster := record.NewBroadcaster()
 	eventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: client.CoreV1().Events("")})
@@ -50,6 +52,7 @@ func New(
 		namespace:   namespace,
 		interval:    interval,
 		cpuLimit:    cpuLimit,
+		brokerName:  brokerName,
 	}
 }
 
