@@ -16,7 +16,8 @@ const (
 	syncIntervalEnv = "SYNC_INTERVAL"
 	defaultInterval = 5 * time.Second
 
-	brokerService = "broker-service"
+	brokerService        = "easytrade-broker-service"
+	brokerServiceNameEnv = "HIGH_CPU_USAGE_BROKER_SERVICE_NAME"
 
 	flagName = "high_cpu_usage"
 
@@ -33,6 +34,9 @@ type Config struct {
 	Namespace   string
 	Interval    time.Duration
 	CPULimit    string
+	// BrokerServiceName is the name of the broker-service Deployment, which
+	// carries the Helm release prefix in Kubernetes (e.g. "easytrade-broker-service").
+	BrokerServiceName string
 }
 
 func (c Config) Build() *Operator {
@@ -42,8 +46,11 @@ func (c Config) Build() *Operator {
 	if c.CPULimit == "" {
 		c.CPULimit = cpuLimitDefault
 	}
+	if c.BrokerServiceName == "" {
+		c.BrokerServiceName = brokerService
+	}
 
-	return New(c.Logger, c.Client, c.FlagService, c.Namespace, c.Interval, c.CPULimit)
+	return New(c.Logger, c.Client, c.FlagService, c.Namespace, c.Interval, c.CPULimit, c.BrokerServiceName)
 }
 
 func (c *Config) loadInClusterConfig() error {
@@ -94,6 +101,10 @@ func (c *Config) loadCPULimitFromEnv() {
 	c.CPULimit = os.Getenv(cpuLimitEnv)
 }
 
+func (c *Config) loadBrokerServiceNameFromEnv() {
+	c.BrokerServiceName = os.Getenv(brokerServiceNameEnv)
+}
+
 func NewDefaultConfig(logger *zap.SugaredLogger, flagService featureflag.FlagService) (*Config, error) {
 	config := &Config{Logger: logger, FlagService: flagService}
 
@@ -108,6 +119,7 @@ func NewDefaultConfig(logger *zap.SugaredLogger, flagService featureflag.FlagSer
 	}
 
 	config.loadCPULimitFromEnv()
+	config.loadBrokerServiceNameFromEnv()
 
 	return config, nil
 }
