@@ -42,6 +42,7 @@ minutes of reduced traffic.
 | `factory_crisis` | `background-service` | `thirdparty` runner tick | Credit-card orders stuck in `CARD_ERROR` |
 | `high_cpu_usage` | `broker-service` (+ `background-service` operator on K8s) | `HighCpuUsageMiddleware` | Response-time spike, high CPU, CPU throttling on K8s |
 | `credit_card_meltdown` | `credit-card-order-service` | `OrderController.getLatestStatus` | `ArithmeticException` on the Credit Card tab |
+| `credit_card_memory_leak` | `credit-card-order-service` | `OrderSnapshotCache` background tick | Steady memory growth, then OOM kills and pod restarts |
 | `credit_card_validation` | `broker-service` | `CreditCardValidationMiddleware` | Deposits/withdrawals rejected with HTTP 400 |
 
 `frontend_feature_flag_management` also exists but is **not** a problem pattern — it
@@ -89,4 +90,5 @@ users.
 | Stalled business process, no technical errors | [FactoryCrisis](factory-crisis.md) |
 | Resource saturation and, on Kubernetes, CPU throttling | [HighCpuUsage](high-cpu-usage.md) |
 | Unhandled exception reaching the end user | [CreditCardMeltdown](credit-card-meltdown.md) |
+| Memory leak ending in out-of-memory kills and restarts | [CreditCardMemoryLeak](credit-card-memory-leak.md) |
 | Deposits and withdrawals rejected by an external dependency | [CreditCardValidation](credit-card-validation.md) |

@@ -33,5 +33,6 @@ Every flag can also be given a startup default via an environment variable. `ENA
 | `ergo_aggregator_slowdown` | `ENABLE_ERGO_AGGREGATOR_SLOWDOWN` | `false` | When enabled, the Offer Service will respond with a delay to 2 out of the 5 aggregator platforms simulated by `background-service`, causing them to pause queries for 1 hour. |
 | `factory_crisis` | `ENABLE_FACTORY_CRISIS` | `false` | When enabled, the factory won't produce new cards, so `background-service` stops processing credit card orders. |
 | `credit_card_meltdown` | `ENABLE_CREDIT_CARD_MELTDOWN` | `false` | When enabled, checking the latest credit card order status results in a division by zero error. |
+| `credit_card_memory_leak` | `ENABLE_CREDIT_CARD_MEMORY_LEAK` | `false` | When enabled, credit-card-order-service leaks heap until Kubernetes OOM-kills its container, then repeats after each restart. |
 | `high_cpu_usage` | `ENABLE_HIGH_CPU_USAGE` | `false` | Causes a slowdown of broker-service response time and increases CPU usage. If deployed on K8s, a CPU resource limit is also applied. |
 | `credit_card_validation` | `ENABLE_CREDIT_CARD_VALIDATION` | `false` | When enabled, credit card numbers are validated via the mainframe before deposit/withdraw operations in broker-service are processed. Requires `MAINFRAME_SERVICE_ADDRESS` to be configured in broker-service. |

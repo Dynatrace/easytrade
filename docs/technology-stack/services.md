@@ -75,7 +75,8 @@ Credit-card ordering and order status. Hands each new order to `background-servi
 gRPC stubs are generated at build time by the `com.google.protobuf` Gradle plugin, and
 the channel initialises lazily so startup does not wait on `db-adapter`. Accepts
 `application/xml`. Hosts
-[CreditCardMeltdown](../problem-patterns/credit-card-meltdown.md).
+[CreditCardMeltdown](../problem-patterns/credit-card-meltdown.md) and
+[CreditCardMemoryLeak](../problem-patterns/credit-card-memory-leak.md).
 
 ### `feature-flag-service` — Go + Gin
 
