@@ -34,7 +34,7 @@ func (o *Operator) reconcileOnce(ctx context.Context, enabled bool) error {
 		return fmt.Errorf("context cancelled while reconciling: %w", err)
 	}
 
-	deployment, err := o.client.AppsV1().Deployments(o.namespace).Get(ctx, brokerService, metav1.GetOptions{})
+	deployment, err := o.client.AppsV1().Deployments(o.namespace).Get(ctx, o.brokerName, metav1.GetOptions{})
 	if err != nil {
 		return fmt.Errorf("failed to get the deployment for the %q flag: %w", flagName, err)
 	}
