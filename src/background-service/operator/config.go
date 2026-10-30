@@ -16,7 +16,7 @@ const (
 	syncIntervalEnv = "SYNC_INTERVAL"
 	defaultInterval = 5 * time.Second
 
-	brokerService        = "easytrade-broker-service"
+	brokerService        = "broker-service"
 	brokerServiceNameEnv = "HIGH_CPU_USAGE_BROKER_SERVICE_NAME"
 
 	flagName = "high_cpu_usage"
