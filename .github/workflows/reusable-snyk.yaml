@@ -62,11 +62,4 @@ jobs:
 
       - name: Run Snyk monitor
         if: github.ref_name == 'main'
-        run: >
-          snyk monitor
-          --all-projects
-          --target-reference=main
-          --project-environment=external
-          --project-lifecycle=sandbox
-          --project-business-criticality=low
-          --project-tags=team=team-demoability
+        run: snyk monitor --all-projects --target-reference=main
