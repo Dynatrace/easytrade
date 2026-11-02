@@ -22,8 +22,9 @@ import jakarta.annotation.PreDestroy;
  * <p>
  * Problem pattern {@code credit_card_memory_leak}: while the flag is on, every
  * tick caches a new batch of snapshots in a static list and nothing ever
- * evicts them. The heap grows until the container exceeds its memory limit and
- * Kubernetes OOM-kills it. Turning the flag off drops the cached snapshots.
+ * evicts them. The heap fills up until the JVM throws {@code OutOfMemoryError}
+ * and exits, and Kubernetes restarts it. Turning the flag off drops the cached
+ * snapshots.
  * <p>
  * Runs on its own thread because the shared scheduler pool has a single thread
  * that {@link WorkScheduler} keeps busy between its runs.
@@ -35,7 +36,7 @@ public class OrderSnapshotCache {
     static final String FLAG_ID = "credit_card_memory_leak";
     static final int SNAPSHOT_SIZE_BYTES = 64 * 1024;
     static final int TICK_SECONDS = 15;
-    private static final int DEFAULT_LEAK_MB_PER_MINUTE = 8;
+    private static final int DEFAULT_LEAK_MB_PER_MINUTE = 5;
 
     // Static and never evicted while the flag is on: this is the leak.
     private static final List<byte[]> SNAPSHOTS = new ArrayList<>();
