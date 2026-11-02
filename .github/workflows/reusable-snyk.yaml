@@ -1,5 +1,6 @@
 name: Snyk vulnerability scan
 on:
+  workflow_dispatch:
   workflow_call:
     secrets:
       SNYK_API_TOKEN:
@@ -16,6 +17,7 @@ jobs:
       actions: read
     env:
       SNYK_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
+      SNYK_ORGANIZATION_ID: ${{ secrets.SNYK_ORGANIZATION_ID }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
@@ -37,7 +39,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
 
       - name: Setup Go
         uses: actions/setup-go@v6
@@ -46,6 +48,12 @@ jobs:
 
       - name: Restore .NET projects
         run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
+
+      - name: Install protobuf tooling
+        run: make install-proto-tools
+
+      - name: Generate protobuf code
+        run: make generate-proto
 
       - name: Run Snyk test
         run: snyk test --all-projects --severity-threshold=high

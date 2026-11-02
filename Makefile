@@ -125,6 +125,21 @@ k8s-uninstall: ## Uninstall the deployment
 # Service dirs equipped with their own generate-proto.sh (e.g. src/db-adapter/generate-proto.sh).
 PROTO_SERVICE_DIRS := $(patsubst src/%/generate-proto.sh,%,$(wildcard src/*/generate-proto.sh))
 
+.PHONY: install-proto-tools
+install-proto-tools: ## Install what generate-proto needs: protoc (via apt if missing), Go protoc plugins, npm deps
+	@if command -v protoc >/dev/null 2>&1; then \
+		echo "protoc already installed: $$(protoc --version)"; \
+	elif command -v apt-get >/dev/null 2>&1; then \
+		sudo apt-get update && sudo apt-get install -y --no-install-recommends protobuf-compiler libprotobuf-dev; \
+	else \
+		echo "protoc not found and apt-get is unavailable - install protoc manually."; exit 1; \
+	fi
+	go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+	go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	@for dir in $(PROTO_SERVICE_DIRS); do \
+		[ ! -f src/$$dir/package.json ] || (cd src/$$dir && npm ci) || exit 1; \
+	done
+
 .PHONY: generate-proto
 generate-proto: ## Generate code from protobuf definitions (runs each equipped service's generate-proto.sh)
 	@dirs="$(if $(service),$(service),$(PROTO_SERVICE_DIRS))"; \
@@ -134,7 +149,7 @@ generate-proto: ## Generate code from protobuf definitions (runs each equipped s
 	fi; \
 	for dir in $$dirs; do \
 		echo "==> src/$$dir"; \
-		(cd src/$$dir && bash generate-proto.sh) || exit 1; \
+		(cd src/$$dir && PATH="$$PATH:$$(go env GOPATH)/bin" bash generate-proto.sh) || exit 1; \
 	done
 
 ##@ Graph
