@@ -61,12 +61,8 @@ jobs:
         run: snyk test --all-projects --severity-threshold=high
 
       - name: Run Snyk monitor
-        if: github.ref_name == 'main'
-        run: >
-          snyk monitor
-          --all-projects
-          --target-reference=main
-          --project-environment=external
-          --project-lifecycle=sandbox
-          --project-business-criticality=low
-          --project-tags=team=team-demoability
+        if: >-
+          github.ref_name == 'main'
+          || github.ref_name == 'refactor/build-pr-workflow'
+          || github.head_ref == 'refactor/build-pr-workflow'
+        run: snyk monitor --all-projects --target-reference=main
