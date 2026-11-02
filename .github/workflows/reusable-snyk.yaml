@@ -39,7 +39,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
 
       - name: Setup Go
         uses: actions/setup-go@v6
@@ -49,15 +49,11 @@ jobs:
       - name: Restore .NET projects
         run: for PROJECT in $(find . -name *.csproj); do dotnet restore $PROJECT; done
 
-      - name: Install protoc and Go plugins
-        run: |
-          sudo apt-get install -y --no-install-recommends protobuf-compiler libprotobuf-dev
-          go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: Install protobuf tooling
+        run: make install-proto-tools
 
-      - name: Generate protobuf code for Go services
-        run: make generate-proto service="background-service db-adapter pricing-service user-service"
+      - name: Generate protobuf code
+        run: make generate-proto
 
       - name: Run Snyk test
         run: snyk test --all-projects --severity-threshold=high
