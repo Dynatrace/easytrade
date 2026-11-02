@@ -1,0 +1,34 @@
+configs:
+  - id: http-dotnet
+    config:
+      name: SENSOR_DOTNET_BIZEVENTS_HTTP_INCOMING
+      skip: false
+      template: &instr instrumentation.json
+    type: &type
+      settings:
+        schema: builtin:oneagent.features
+        scope: environment
+  - id: http-webserver
+    config:
+      name: SENSOR_WEBSERVER_BIZEVENTS_HTTP_INCOMING
+      skip: false
+      template: *instr
+    type: *type
+  - id: http-nodejs
+    config:
+      name: SENSOR_NODEJS_BIZEVENTS_HTTP_INCOMING
+      skip: false
+      template: *instr
+    type: *type
+  - id: http-java
+    config:
+      name: SENSOR_JAVA_BIZEVENTS_HTTP_INCOMING
+      skip: false
+      template: *instr
+    type: *type
+  - id: http-go
+    config:
+      name: SENSOR_GO_BIZEVENTS_HTTP_INCOMING
+      skip: false
+      template: *instr
+    type: *type

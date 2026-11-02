@@ -16,7 +16,7 @@ Load generator for the EasyTrade app based on the implementation using Puppeteer
 
 ## Environment variables
 
-This is an overview and my be out of date, check `src/config/getConifg.ts` for the current setup of env vars
+This is an overview and may be out of date, check [`src/config/getConfig.ts`](src/config/getConfig.ts) for the current setup of env vars
 
 - **EASYTRADE_URL**
   - > REQUIRED
@@ -84,11 +84,21 @@ This is an overview and my be out of date, check `src/config/getConifg.ts` for t
 ## Local usage
 
 ```bash
-# Build docker image
-docker build -t my-loadgen .
-# Run generator
-docker run -e EASYTRADE_URL={frontend-url} my-loadgen
+make build services=loadgen      # build the image from local source
+make redeploy services=loadgen   # rebuild and recreate it in the running stack
 ```
+
+Run `make help` for every target.
+
+## Health endpoints
+
+- `GET /livez`
+  - returns `200 OK` with body `OK`
+- `GET /readyz`
+  - returns `503 Service Unavailable` until startup is complete
+  - returns `200 OK` with body `OK` after startup
+
+The health server listens on port `8080`.
 
 ## Technology
 

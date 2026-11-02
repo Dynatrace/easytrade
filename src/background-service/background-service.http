@@ -1,0 +1,19 @@
+@baseUrl = http://localhost:8080
+
+### version (text)
+GET {{baseUrl}}/version
+Accept: text/plain
+
+### version (JSON)
+GET {{baseUrl}}/version
+Accept: application/json
+
+### manufacture a credit card
+POST {{baseUrl}}/v1/manufacturer
+Content-Type: application/json
+
+{
+  "creditCardOrderId": "order-001",
+  "name": "Jan Kowalski",
+  "cardLevel": "gold"
+}

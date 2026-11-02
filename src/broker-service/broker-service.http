@@ -1,0 +1,79 @@
+@baseUrl = http://localhost:8084
+
+### Version
+GET {{baseUrl}}/version
+
+### List instruments
+GET {{baseUrl}}/v1/instrument
+
+### List instruments for account
+GET {{baseUrl}}/v1/instrument?accountId=00000000-0000-0000-0000-000000000000
+
+### Get account balance
+GET {{baseUrl}}/v1/balance/00000000-0000-0000-0000-000000000000
+
+### Deposit money
+POST {{baseUrl}}/v1/balance/00000000-0000-0000-0000-000000000000/deposit
+Content-Type: application/json
+
+{
+  "amount": 1000
+}
+
+### Withdraw money
+POST {{baseUrl}}/v1/balance/00000000-0000-0000-0000-000000000000/withdraw
+Content-Type: application/json
+
+{
+  "amount": 100
+}
+
+### Get trades for account
+GET {{baseUrl}}/v1/trade/00000000-0000-0000-0000-000000000000
+
+### Buy instrument
+POST {{baseUrl}}/v1/trade/buy
+Content-Type: application/json
+
+{
+  "accountId": "00000000-0000-0000-0000-000000000000",
+  "instrumentId": 1,
+  "amount": 10
+}
+
+### Sell instrument
+POST {{baseUrl}}/v1/trade/sell
+Content-Type: application/json
+
+{
+  "accountId": "00000000-0000-0000-0000-000000000000",
+  "instrumentId": 1,
+  "amount": 10
+}
+
+### Long buy
+POST {{baseUrl}}/v1/trade/long/buy
+Content-Type: application/json
+
+{
+  "accountId": "00000000-0000-0000-0000-000000000000",
+  "instrumentId": 1,
+  "amount": 5,
+  "duration": 24,
+  "price": 125.5
+}
+
+### Long sell
+POST {{baseUrl}}/v1/trade/long/sell
+Content-Type: application/json
+
+{
+  "accountId": "00000000-0000-0000-0000-000000000000",
+  "instrumentId": 1,
+  "amount": 5,
+  "duration": 24,
+  "price": 125.5
+}
+
+### Process long trades
+POST {{baseUrl}}/v1/trade/long/process

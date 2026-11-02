@@ -1,50 +1,25 @@
-import React from "react"
-import { CssBaseline } from "@mui/material"
-import { login, logout } from "../api/login/login"
-import { getTransactions } from "../api/transaction/transactions"
-import { getBalance, getPresetUsers, getUser } from "../api/user/user"
-import { AuthProvider } from "../contexts/AuthContext"
-import { QueryClientProvider } from "../contexts/QueryContext/QueryContext"
-import { getPreferredTheme } from "../contexts/ThemeContext/theme"
-import { ThemeProvider } from "../contexts/ThemeContext/ThemeContext"
-import { getInstruments } from "../api/instrument/instruments"
-import { getPricesForInstrument, getLatestPrices } from "../api/price/price"
-import { FormatterProvider } from "../contexts/FormatterContext/context"
-import { getFeatureFlags } from "../api/featureFlags/problemPatterns"
+import { QueryClientProvider } from "@tanstack/react-query"
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools"
-import { NavigationProvider } from "../contexts/NavigationContext/context"
-import { getConfig } from "../api/featureFlags/config"
-import { getOrderStatus, getOrderStatusHistory } from "../api/creditCard/order"
-import { getAllVersions } from "../api/version/versions"
+import { login } from "../api/user"
+import { AuthProvider } from "../contexts/AuthContext"
+import { FormatterProvider } from "../contexts/FormatterContext/context"
+import { ToastProvider } from "../contexts/ToastContext/context"
+import { queryClient } from "../utils/queryClient"
 import AppLayout from "./AppLayout"
 
 export default function ProviderLayout() {
     return (
         <FormatterProvider currency="USD" locale="en-US">
-            <QueryClientProvider
-                getUser={getUser}
-                getBalance={getBalance}
-                getPresetUsers={getPresetUsers}
-                getTransactions={getTransactions}
-                getInstruments={getInstruments}
-                getLatestPrices={getLatestPrices}
-                getFeatureFlags={getFeatureFlags}
-                getConfig={getConfig}
-                getCreditCardStatus={getOrderStatus}
-                getCreditCardStatusHistory={getOrderStatusHistory}
-                getInstrumentPrices={getPricesForInstrument}
-                getVersions={getAllVersions}
-            >
-                <ThemeProvider initialTheme={getPreferredTheme()}>
-                    <AuthProvider loginHandler={login} logoutHandler={logout}>
-                        <NavigationProvider initialNavigationState={true}>
-                            <CssBaseline />
-                            <AppLayout />
-                        </NavigationProvider>
-                        <ReactQueryDevtools initialIsOpen={false} />
+            <ToastProvider>
+                <QueryClientProvider client={queryClient}>
+                    <AuthProvider loginHandler={login}>
+                        <AppLayout />
                     </AuthProvider>
-                </ThemeProvider>
-            </QueryClientProvider>
+                    {import.meta.env.DEV && (
+                        <ReactQueryDevtools initialIsOpen={false} />
+                    )}
+                </QueryClientProvider>
+            </ToastProvider>
         </FormatterProvider>
     )
 }

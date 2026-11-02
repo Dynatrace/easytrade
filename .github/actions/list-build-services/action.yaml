@@ -1,0 +1,22 @@
+name: "List Buildable Services"
+description: "List the services defined in the build compose file as a JSON array, for use in a matrix strategy"
+inputs:
+  compose-file:
+    description: "Path to docker compose file"
+    required: false
+    default: "compose.build.yaml"
+outputs:
+  services:
+    description: "JSON array of service names"
+    value: ${{ steps.list.outputs.services }}
+
+runs:
+  using: composite
+  steps:
+    - name: List services
+      id: list
+      shell: bash
+      run: |
+        SERVICES=$(docker compose -f ${{ inputs.compose-file }} config --services | jq -R -s -c 'split("\n")[:-1]')
+        echo "services=$SERVICES" >> $GITHUB_OUTPUT
+        echo "Services: $SERVICES"

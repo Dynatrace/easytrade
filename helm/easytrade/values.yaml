@@ -5,115 +5,130 @@ global:
     # Base repository for all images. Individual services can override the repository if needed.
     baseRepository: "europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade"
     tag: latest
+  database:
+    # Plaintext default. Ignored when existingSecret.name is set.
+    password: "yourStrong(!)Password"
+    # Set name to source the password from an existing Kubernetes Secret instead.
+    existingSecret:
+      name: ""
+      key: "password"
+    name: TradeManagement
+    # supports: ["mssql", "postgres"]
+    type: mssql
+
   # Global labels to be added to all resources
   labels: {}
   # Environment variables to be added to all pods
   env: {}
 
-accountservice:
+background-service:
   enabled: true
-  # Example of overriding the image repository for a specific service
-  # image:
-  #   repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/accountservice
-  #   tag: latest
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
+  rbac:
+    create: true
+    rules:
+      - apiGroups: [""]
+        resources: ["services", "pods", "events"]
+        verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
+      - apiGroups: ["apps"]
+        resources: ["deployments", "replicasets"]
+        verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
   env:
-    MANAGER_HOSTANDPORT: "{{ .Release.Name }}-manager:8080"
-    PROXY_PREFIX: "accountservice"
+    OFFER_SERVICE_ADDRESS: "http://{{ .Release.Name }}-offer-service:8080"
+    CREDIT_CARD_ORDER_SERVICE_ADDRESS: "http://{{ .Release.Name }}-credit-card-order-service:8080"
+    THIRD_PARTY_DELAY: "500"
+    THIRD_PARTY_RATE: "900"
+    FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
+    POD_NAMESPACE: "{{ .Release.Namespace }}"
+    HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT: "300m"
+    HIGH_CPU_USAGE_BROKER_SERVICE_NAME: "{{ .Release.Name }}-broker-service"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+    DELAY_CHANCE_PERCENT: "20"
   resources:
     requests:
       cpu: 30m
-      memory: 600Mi
+      memory: 128Mi
     limits:
-      cpu: 200m
-      memory: 600Mi
+      cpu: 300m
+      memory: 256Mi
   service:
     enabled: true
     port: 8080
 
-aggregator-service:
-  enabled: true
-  env:
-    OFFER_SERVICE_PROTOCOL: "http"
-    OFFER_SERVICE_HOST: "{{ .Release.Name }}-offerservice"
-    OFFER_SERVICE_PORT: "8080"
-  resources:
-    requests:
-      cpu: 10m
-      memory: 30Mi
-    limits:
-      cpu: 200m
-      memory: 30Mi
-
 broker-service:
   enabled: true
   env:
-    ACCOUNTSERVICE_HOSTANDPORT: "{{ .Release.Name }}-accountservice:8080"
-    PRICINGSERVICE_HOSTANDPORT: "{{ .Release.Name }}-pricing-service:8080"
-    ENGINE_HOSTANDPORT: "{{ .Release.Name }}-engine:8080"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
-    PROXY_PREFIX: "broker-service"
-  envFromSecret:
-    MSSQL_CONNECTIONSTRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "DOTNET_CONNECTION_STRING"
+    PRICING_SERVICE_ADDRESS: "http://{{ .Release.Name }}-pricing-service:8080"
+    FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    timeoutSeconds: 5
+    periodSeconds: 5
+    failureThreshold: 10
   resources:
     requests:
       cpu: 150m
       memory: 350Mi
     limits:
       cpu: 600m
-      memory: 350Mi
+      memory: 768Mi
   service:
     enabled: true
     port: 8080
 
-calculationservice:
-  enabled: true
-  env:
-    RABBITMQ_USER: userxxx
-    RABBITMQ_PASSWORD: passxxx
-    RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
-    RABBITMQ_PORT: "5672"
-    RABBITMQ_QUEUE: Trade_Data_Raw
-  resources:
-    requests:
-      cpu: 10m
-      memory: 25Mi
-    limits:
-      cpu: 100m
-      memory: 25Mi
-
-contentcreator:
-  enabled: true
-  envFromSecret:
-    MSSQL_CONNECTIONSTRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "JAVA_CONNECTION_STRING"
-  resources:
-    requests:
-      cpu: 10m
-      memory: 400Mi
-    limits:
-      cpu: 200m
-      memory: 400Mi
-
 credit-card-order-service:
   enabled: true
   env:
-    PROXY_PREFIX: "credit-card-order-service"
-    THIRD_PARTY_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-third-party-service:8080"
+    THIRD_PARTY_SERVICE_ADDRESS: "http://{{ .Release.Name }}-background-service:8080"
     WORK_DELAY: "300"
     WORK_RATE: "900"
-    JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
-  envFromSecret:
-    MSSQL_CONNECTIONSTRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "JAVA_CONNECTION_STRING"
+    # -Xmx1g is deliberately above the 650Mi memory limit: with the
+    # credit_card_memory_leak problem pattern on, the JVM never hits its own
+    # heap ceiling, so the kernel OOM-kills the container instead (OOMKilled,
+    # exit 137) and Kubernetes restarts it.
+    JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow -Xmx1g"
+    # Leak rate of credit_card_memory_leak. At 8 MB/min the container is
+    # OOM-killed about once an hour.
+    MEMORY_LEAK_MB_PER_MINUTE: "8"
+    FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    failureThreshold: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    failureThreshold: 10
   resources:
     requests:
       cpu: 20m
@@ -125,13 +140,29 @@ credit-card-order-service:
     enabled: true
     port: 8080
 
-db:
+db-mssql:
   enabled: true
   workloadType: statefulset
   envFromSecret:
     SA_PASSWORD:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "SA_PASSWORD"
+      name: '{{ include "easytrade.dbPasswordSecretName" . }}'
+      key: '{{ include "easytrade.dbPasswordSecretKey" . }}'
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
   resources:
     requests:
       cpu: 500m
@@ -148,28 +179,92 @@ db:
   #   mountPath: /var/opt/mssql
   #   size: 10Gi
 
-engine:
-  enabled: true
+db-postgres:
+  enabled: false
+  workloadType: statefulset
   env:
-    BROKER_HOSTANDPORT: "{{ .Release.Name }}-broker-service:8080"
-    PROXY_PREFIX: "engine"
+    POSTGRES_DB: "{{ .Values.global.database.name }}"
+  envFromSecret:
+    POSTGRES_PASSWORD:
+      name: '{{ include "easytrade.dbPasswordSecretName" . }}'
+      key: '{{ include "easytrade.dbPasswordSecretKey" . }}'
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
   resources:
     requests:
-      cpu: 10m
-      memory: 450Mi
+      cpu: 500m
+      memory: 1.5Gi
     limits:
-      cpu: 200m
-      memory: 450Mi
+      cpu: "2"
+      memory: 1.5Gi
   service:
     enabled: true
-    port: 8080
+    port: 5432
+  # Enabling persistence will create a PersistentVolumeClaim for the database data
+  # persistence:
+  #   enabled: true
+  #   mountPath: /var/lib/postgresql/data
+  #   size: 10Gi
+
+db-adapter:
+  enabled: true
+  env:
+    DB_TYPE: "{{ .Values.global.database.type }}"
+  envFromSecret:
+    DB_URL:
+      name: "{{ .Release.Name }}-connection-strings"
+      key: "DB_URL"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
+  resources:
+    requests:
+      cpu: 256m
+      memory: 32Mi
+    limits:
+      cpu: "2"
+      memory: 128Mi
+  service:
+    enabled: true
+    port: 50051
 
 feature-flag-service:
   enabled: true
-  env:
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 30m
@@ -183,6 +278,23 @@ feature-flag-service:
 
 frontend:
   enabled: true
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 5
+    timeoutSeconds: 3
+    periodSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
   resources:
     requests:
       cpu: 10m
@@ -194,21 +306,35 @@ frontend:
     enabled: true
     port: 3000
 
-frontendreverseproxy:
+reverse-proxy:
   enabled: true
   env:
     FRONTEND_REVERSE_PROXY_PORT: "8080"
-    ACCOUNT_SERVICE_URL: "http://{{ .Release.Name }}-accountservice:8080"
     BROKER_SERVICE_URL: "http://{{ .Release.Name }}-broker-service:8080"
     CREDIT_CARD_ORDER_SERVICE_URL: "http://{{ .Release.Name }}-credit-card-order-service:8080"
-    ENGINE_URL: "http://{{ .Release.Name }}-engine:8080"
     FEATURE_FLAG_SERVICE_URL: "http://{{ .Release.Name }}-feature-flag-service:8080"
     FRONTEND_URL: "http://{{ .Release.Name }}-frontend:3000"
-    LOGIN_SERVICE_URL: "http://{{ .Release.Name }}-loginservice:8080"
-    MANAGER_URL: "http://{{ .Release.Name }}-manager:8080"
-    OFFER_SERVICE_URL: "http://{{ .Release.Name }}-offerservice:8080"
+    OFFER_SERVICE_URL: "http://{{ .Release.Name }}-offer-service:8080"
     PRICING_SERVICE_URL: "http://{{ .Release.Name }}-pricing-service:8080"
-    THIRD_PARTY_SERVICE_URL: "http://{{ .Release.Name }}-third-party-service:8080"
+    USER_SERVICE_URL: "http://{{ .Release.Name }}-user-service:8080"
+    BACKGROUND_SERVICE_URL: "http://{{ .Release.Name }}-background-service:8080"
+  livenessProbe:
+    tcpSocket:
+      port: http
+    initialDelaySeconds: 30
+    timeoutSeconds: 5
+    periodSeconds: 10
+    failureThreshold: 6
+    successThreshold: 1
+  readinessProbe:
+    httpGet:
+      path: /
+      port: http
+    initialDelaySeconds: 5
+    timeoutSeconds: 3
+    periodSeconds: 5
+    failureThreshold: 3
+    successThreshold: 1
   resources:
     requests:
       cpu: 50m
@@ -227,8 +353,20 @@ frontendreverseproxy:
 loadgen:
   enabled: true
   env:
-    EASYTRADE_URL: "http://{{ .Release.Name }}-frontendreverseproxy:8080"
+    EASYTRADE_URL: "http://{{ .Release.Name }}-reverse-proxy:8080"
     RARE_VISITS_INTERVAL_MINUTES: "60"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: 8080
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: "1"
@@ -237,54 +375,24 @@ loadgen:
       cpu: "3"
       memory: 3Gi
 
-loginservice:
+offer-service:
   enabled: true
   env:
-    PROXY_PREFIX: "loginservice"
-  envFromSecret:
-    MSSQL_CONNECTIONSTRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "DOTNET_CONNECTION_STRING"
-  resources:
-    requests:
-      cpu: 20m
-      memory: 450Mi
-    limits:
-      cpu: 1
-      memory: 450Mi
-  service:
-    enabled: true
-    port: 8080
-
-manager:
-  enabled: true
-  env:
-    PROXY_PREFIX: "manager"
-  envFromSecret:
-    MSSQL_CONNECTIONSTRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "DOTNET_CONNECTION_STRING"
-  resources:
-    requests:
-      cpu: 50m
-      memory: 600Mi
-    limits:
-      cpu: 500m
-      memory: 600Mi
-  service:
-    enabled: true
-    port: 8080
-
-offerservice:
-  enabled: true
-  env:
-    LOGIN_SERVICE_PORT: "8080"
-    LOGIN_SERVICE_BASE_URL: "{{ .Release.Name }}-loginservice"
-    MANAGER_BASE_URL: "{{ .Release.Name }}-manager"
-    MANAGER_PORT: "8080"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+    USER_SERVICE_ADDRESS: "http://{{ .Release.Name }}-user-service:8080"
+    FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 100m
@@ -298,98 +406,50 @@ offerservice:
 
 pricing-service:
   enabled: true
-  image:
-    repository: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade/pricing-service
   env:
-    PROXY_PREFIX: "pricing-service"
-    RABBITMQ_USER: userxxx
-    RABBITMQ_PASSWORD: passxxx
-    RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
-    RABBITMQ_PORT: "5672"
-    RABBITMQ_QUEUE: Trade_Data_Raw
-  envFromSecret:
-    MSSQL_CONNECTIONSTRING:
-      name: "{{ .Release.Name }}-connection-strings"
-      key: "GO_CONNECTION_STRING"
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
       cpu: 20m
-      memory: 80Mi
+      memory: 96Mi
     limits:
       cpu: 200m
-      memory: 80Mi
+      memory: 192Mi
   service:
     enabled: true
     port: 8080
 
-problem-operator:
-  enabled: true
-  rbac:
-    create: true
-    rules:
-      - apiGroups: [""]
-        resources: ["services", "pods", "events"]
-        verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
-      - apiGroups: ["apps"]
-        resources: ["deployments", "replicasets"]
-        verbs: ["get", "list", "watch", "create", "delete", "patch", "update"]
-  env:
-    POD_NAMESPACE: "{{ .Release.Namespace }}"
-    HIGH_CPU_USAGE_BROKER_SERVICE_CPU_LIMIT: "300m"
-    HIGH_CPU_USAGE_BROKER_SERVICE_NAME: "{{ .Release.Name }}-broker-service"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
-  resources:
-    requests:
-      cpu: 10m
-      memory: 15Mi
-    limits:
-      cpu: 100m
-      memory: 15Mi
-
-rabbitmq:
+user-service:
   enabled: true
   env:
-    RABBITMQ_USER: userxxx
-    RABBITMQ_PASSWORD: passxxx
-    RABBITMQ_HOST: "{{ .Release.Name }}-rabbitmq"
-    RABBITMQ_PORT: "5672"
-    RABBITMQ_QUEUE: Trade_Data_Raw
+    DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
+  livenessProbe:
+    httpGet:
+      path: /livez
+      port: http
+    initialDelaySeconds: 15
+    periodSeconds: 10
+  readinessProbe:
+    httpGet:
+      path: /readyz
+      port: http
+    initialDelaySeconds: 5
+    periodSeconds: 5
   resources:
     requests:
-      cpu: 10m
-      memory: 175Mi
-    limits:
-      cpu: 200m
-      memory: 175Mi
-  service:
-    enabled: true
-    ports:
-      - port: 5672
-        targetPort: 5672
-        protocol: TCP
-        name: listener
-      - port: 15672
-        targetPort: 15672
-        protocol: TCP
-        name: ui
-
-third-party-service:
-  enabled: true
-  env:
-    CREDIT_CARD_ORDER_SERVICE_HOSTANDPORT: "{{ .Release.Name }}-credit-card-order-service:8080"
-    PROXY_PREFIX: "third-party-service"
-    COURIER_DELAY: "400"
-    COURIER_RATE: "900"
-    MANUFACTURE_DELAY: "500"
-    MANUFACTURE_RATE: "900"
-    FEATURE_FLAG_SERVICE_PROTOCOL: http
-    FEATURE_FLAG_SERVICE_BASE_URL: "{{ .Release.Name }}-feature-flag-service"
-    FEATURE_FLAG_SERVICE_PORT: "8080"
-  resources:
-    requests:
-      cpu: 10m
+      cpu: 20m
       memory: 450Mi
     limits:
       cpu: 200m

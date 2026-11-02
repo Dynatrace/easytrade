@@ -1,43 +1,37 @@
 services:
-  accountservice:
-    image: ${REGISTRY}/accountservice:${TAG}
+  background-service:
+    image: ${REGISTRY}/background-service:${TAG}
     build:
-      context: src/accountservice
-
-  aggregator-service:
-    image: ${REGISTRY}/aggregator-service:${TAG}
-    build:
-      context: src/aggregator-service
+      context: src/
+      dockerfile: background-service/Dockerfile
 
   broker-service:
     image: ${REGISTRY}/broker-service:${TAG}
     build:
-      context: src/broker-service
-
-  calculationservice:
-    image: ${REGISTRY}/calculationservice:${TAG}
-    build:
-      context: src/calculationservice
-
-  contentcreator:
-    image: ${REGISTRY}/contentcreator:${TAG}
-    build:
-      context: src/contentcreator
+      context: src/
+      dockerfile: broker-service/Dockerfile
 
   credit-card-order-service:
     image: ${REGISTRY}/credit-card-order-service:${TAG}
     build:
-      context: src/credit-card-order-service
+      context: src/
+      dockerfile: credit-card-order-service/Dockerfile
 
-  db:
-    image: ${REGISTRY}/db:${TAG}
+  db-mssql:
+    image: ${REGISTRY}/db-mssql:${TAG}
     build:
-      context: src/db
+      context: src/db/mssql
 
-  engine:
-    image: ${REGISTRY}/engine:${TAG}
+  db-postgres:
+    image: ${REGISTRY}/db-postgres:${TAG}
     build:
-      context: src/engine
+      context: src/db/postgres
+
+  db-adapter:
+    image: ${REGISTRY}/db-adapter:${TAG}
+    build:
+      context: src/
+      dockerfile: db-adapter/Dockerfile
 
   feature-flag-service:
     image: ${REGISTRY}/feature-flag-service:${TAG}
@@ -49,47 +43,30 @@ services:
     build:
       context: src/frontend
 
-  frontendreverseproxy:
-    image: ${REGISTRY}/frontendreverseproxy:${TAG}
+  reverse-proxy:
+    image: ${REGISTRY}/reverse-proxy:${TAG}
     build:
-      context: src/frontendreverseproxy
+      context: src/reverse-proxy
 
   loadgen:
     image: ${REGISTRY}/loadgen:${TAG}
     build:
       context: src/loadgen
 
-  loginservice:
-    image: ${REGISTRY}/loginservice:${TAG}
+  offer-service:
+    image: ${REGISTRY}/offer-service:${TAG}
     build:
-      context: src/loginservice
-
-  manager:
-    image: ${REGISTRY}/manager:${TAG}
-    build:
-      context: src/manager/easyTradeManager
-
-  offerservice:
-    image: ${REGISTRY}/offerservice:${TAG}
-    build:
-      context: src/offerservice
+      context: src/
+      dockerfile: offer-service/Dockerfile
 
   pricing-service:
     image: ${REGISTRY}/pricing-service:${TAG}
     build:
-      context: src/pricing-service
+      context: src/
+      dockerfile: pricing-service/Dockerfile
 
-  problem-operator:
-    image: ${REGISTRY}/problem-operator:${TAG}
+  user-service:
+    image: ${REGISTRY}/user-service:${TAG}
     build:
-      context: src/problem-operator
-
-  rabbitmq:
-    image: ${REGISTRY}/rabbitmq:${TAG}
-    build:
-      context: src/rabbitmq
-
-  third-party-service:
-    image: ${REGISTRY}/third-party-service:${TAG}
-    build:
-      context: src/third-party-service
+      context: src/
+      dockerfile: user-service/Dockerfile

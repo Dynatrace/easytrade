@@ -1,3 +1,0 @@
-fetch bizevents
-| filter event.type == "com.easytrade.sell.start"
-| summarize s = toDouble(count()) / $sellStartReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes

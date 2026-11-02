@@ -1,0 +1,25 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:14805",
+      "sslPort": 44347
+    }
+  },
+  "profiles": {
+    "BrokerService": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://+:7207;http://+:5221",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DB_ADAPTER_ADDRESS": "localhost:50051",
+        "PRICING_SERVICE_ADDRESS": "http://localhost:8083",
+        "FEATURE_FLAG_SERVICE_ADDRESS": "http://localhost:8094"
+      }
+    }
+  }
+}

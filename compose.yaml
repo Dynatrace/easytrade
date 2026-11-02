@@ -1,126 +1,105 @@
-x-logging: &default-logging
-  driver: json-file
-  options:
-    max-file: "5"
-    max-size: "10m"
-
 x-service: &default-service
   restart: always
-  logging: *default-logging
+  logging:
+    driver: json-file
+    options:
+      max-file: "5"
+      max-size: "10m"
 
-x-feature-flag-service: &feature-flag-service-env
-  FEATURE_FLAG_SERVICE_PROTOCOL: http
-  FEATURE_FLAG_SERVICE_BASE_URL: feature-flag-service
-  FEATURE_FLAG_SERVICE_PORT: 8080
-
-x-connection-strings:
-  JAVA_CONNECTION_STRING: &java-connection-string jdbc:sqlserver://db:1433;database=TradeManagement;user=sa;password=yourStrong(!)Password;encrypt=false;trustServerCertificate=false;loginTimeout=30;
-  DOTNET_CONNECTION_STRING: &dotnet-connection-string Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
-  GO_CONNECTION_STRING: &go-connection-string sqlserver://sa:yourStrong(!)Password@db:1433?database=TradeManagement&connection+encrypt=false&connection+TrustServerCertificate=false&connection+loginTimeout=30
-
-x-rabbit-vars: &rabbit-vars
-  RABBITMQ_USER: userxxx
-  RABBITMQ_PASSWORD: passxxx
-  RABBITMQ_PORT: "5672"
-  RABBITMQ_HOST: rabbitmq
-  RABBITMQ_QUEUE: Trade_Data_Raw
+x-addresses:
+  offer-service: &offerServiceAddress "http://offer-service:8080"
+  feature-flag-service: &featureFlagServiceAddress "http://feature-flag-service:8080"
+  credit-card-order-service: &creditCardOrderServiceAddress "http://credit-card-order-service:8080"
+  db-adapter: &dbAdapterAddress "db-adapter:50051"
+  user-service: &userServiceAddress "http://user-service:8080"
+  pricing-service: &pricingServiceAddress "http://pricing-service:8080"
+  background-service: &backgroundServiceAddress "http://background-service:8080"
+  easytrade-url: &easytradeUrl "http://reverse-proxy"
 
 services:
-  db:
+  background-service:
     <<: *default-service
-    image: ${REGISTRY}/db:${TAG}
-    environment:
-      SA_PASSWORD: yourStrong(!)Password
-
-  contentcreator:
-    <<: *default-service
-    image: ${REGISTRY}/contentcreator:${TAG}
+    image: ${REGISTRY}/background-service:${TAG}
     depends_on:
-      - db
+      - offer-service
     environment:
-      MSSQL_CONNECTIONSTRING: *java-connection-string
-
-  manager:
-    <<: *default-service
-    image: ${REGISTRY}/manager:${TAG}
-    depends_on:
-      - db
-    environment:
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
-      PROXY_PREFIX: manager
-
-  pricing-service:
-    <<: *default-service
-    image: ${REGISTRY}/pricing-service:${TAG}
-    depends_on:
-      - db
-      - rabbitmq
-    environment:
-      MSSQL_CONNECTIONSTRING: *go-connection-string
-      PROXY_PREFIX: pricing-service
-      <<: *rabbit-vars
+      OFFER_SERVICE_ADDRESS: *offerServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
+      CREDIT_CARD_ORDER_SERVICE_ADDRESS: *creditCardOrderServiceAddress
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      THIRD_PARTY_DELAY: 10
+      THIRD_PARTY_RATE: 10
+      DELAY_CHANCE_PERCENT: 20
 
   broker-service:
     <<: *default-service
     image: ${REGISTRY}/broker-service:${TAG}
     depends_on:
-      - db
-      - accountservice
+      - db-adapter
+      - user-service
       - pricing-service
       - feature-flag-service
     environment:
-      ACCOUNTSERVICE_HOSTANDPORT: accountservice:8080
-      PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
-      ENGINE_HOSTANDPORT: engine:8080
-      <<: *feature-flag-service-env
-      PROXY_PREFIX: broker-service
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
+      PRICING_SERVICE_ADDRESS: *pricingServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
 
-  rabbitmq:
+  credit-card-order-service:
     <<: *default-service
-    image: ${REGISTRY}/rabbitmq:${TAG}
-
-  calculationservice:
-    <<: *default-service
-    image: ${REGISTRY}/calculationservice:${TAG}
+    image: ${REGISTRY}/credit-card-order-service:${TAG}
     depends_on:
-      - rabbitmq
+      - db-adapter
+      - background-service
     environment:
-      <<: *rabbit-vars
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      THIRD_PARTY_SERVICE_ADDRESS: *backgroundServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
+      WORK_DELAY: 300
+      WORK_RATE: 900
+      JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
+
+  db:
+    <<: *default-service
+    image: ${REGISTRY}/db-${DB_TYPE}:${TAG}
+    environment:
+      SA_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+  db-adapter:
+    <<: *default-service
+    image: ${REGISTRY}/db-adapter:${TAG}
+    depends_on:
+      - db
+    environment:
+      DB_TYPE: ${DB_TYPE}
+      DB_URL: ${DB_URL}
+
+  feature-flag-service:
+    <<: *default-service
+    image: ${REGISTRY}/feature-flag-service:${TAG}
 
   frontend:
     <<: *default-service
     image: ${REGISTRY}/frontend:${TAG}
     depends_on:
       - broker-service
-      - loginservice
+      - user-service
       - pricing-service
-      - accountservice
       - credit-card-order-service
 
-  loginservice:
+  reverse-proxy:
     <<: *default-service
-    image: ${REGISTRY}/loginservice:${TAG}
-    depends_on:
-      - db
-    environment:
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
-      PROXY_PREFIX: loginservice
-
-  frontendreverseproxy:
-    <<: *default-service
-    image: ${REGISTRY}/frontendreverseproxy:${TAG}
+    image: ${REGISTRY}/reverse-proxy:${TAG}
     depends_on:
       - broker-service
       - frontend
-      - loginservice
+      - user-service
       - pricing-service
       - feature-flag-service
-      - offerservice
-      - accountservice
-      - engine
+      - offer-service
       - credit-card-order-service
-      - third-party-service
+      - background-service
     ports:
       - 80:80
 
@@ -128,80 +107,33 @@ services:
     <<: *default-service
     image: ${REGISTRY}/loadgen:${TAG}
     depends_on:
-      - frontendreverseproxy
+      - reverse-proxy
     environment:
-      EASYTRADE_URL: http://frontendreverseproxy
+      EASYTRADE_URL: *easytradeUrl
 
-  offerservice:
+  offer-service:
     <<: *default-service
-    image: ${REGISTRY}/offerservice:${TAG}
+    image: ${REGISTRY}/offer-service:${TAG}
     depends_on:
-      - loginservice
-      - manager
+      - user-service
+      - db-adapter
     environment:
-      <<: *feature-flag-service-env
-      LOGIN_SERVICE_PORT: 8080
-      LOGIN_SERVICE_BASE_URL: loginservice
-      MANAGER_BASE_URL: manager
-      MANAGER_PORT: 8080
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      USER_SERVICE_ADDRESS: *userServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
 
-  feature-flag-service:
+  pricing-service:
     <<: *default-service
-    image: ${REGISTRY}/feature-flag-service:${TAG}
-    environment:
-      PROXY_PREFIX: feature-flag-service
-
-  accountservice:
-    <<: *default-service
-    image: ${REGISTRY}/accountservice:${TAG}
+    image: ${REGISTRY}/pricing-service:${TAG}
     depends_on:
-      - manager
+      - db-adapter
     environment:
-      MANAGER_HOSTANDPORT: manager:8080
-      PROXY_PREFIX: accountservice
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
 
-  engine:
+  user-service:
     <<: *default-service
-    image: ${REGISTRY}/engine:${TAG}
+    image: ${REGISTRY}/user-service:${TAG}
     depends_on:
-      - broker-service
+      - db-adapter
     environment:
-      BROKER_HOSTANDPORT: broker-service:8080
-      PROXY_PREFIX: engine
-
-  credit-card-order-service:
-    <<: *default-service
-    image: ${REGISTRY}/credit-card-order-service:${TAG}
-    depends_on:
-      - db
-      - third-party-service
-    environment:
-      PROXY_PREFIX: credit-card-order-service
-      MSSQL_CONNECTIONSTRING: *java-connection-string
-      THIRD_PARTY_SERVICE_HOSTANDPORT: third-party-service:8080
-      <<: *feature-flag-service-env
-      WORK_DELAY: 300
-      WORK_RATE: 900
-      JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
-
-  third-party-service:
-    <<: *default-service
-    image: ${REGISTRY}/third-party-service:${TAG}
-    environment:
-      <<: *feature-flag-service-env
-      PROXY_PREFIX: third-party-service
-      CREDIT_CARD_ORDER_SERVICE_HOSTANDPORT: credit-card-order-service:8080
-      COURIER_DELAY: 400
-      COURIER_RATE: 900
-      MANUFACTURE_DELAY: 500
-      MANUFACTURE_RATE: 900
-
-  aggregator-service:
-    <<: *default-service
-    image: ${REGISTRY}/aggregator-service:${TAG}
-    depends_on:
-      - offerservice
-    environment:
-      OFFER_SERVICE_PROTOCOL: http
-      OFFER_SERVICE_HOST: offerservice
-      OFFER_SERVICE_PORT: 8080
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress

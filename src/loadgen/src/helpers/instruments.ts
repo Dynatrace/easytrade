@@ -96,7 +96,7 @@ export async function getCurrentBalance(
         selectors.common_currentBalance,
         "value"
     )
-    return parseFloat(balanceString)
+    return parseFloat(balanceString.replace(/[^0-9.-]+/g, ""))
 }
 export async function getInstrumentPossessedAmount(
     pageActions: IPageActions

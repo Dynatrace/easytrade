@@ -1,7 +1,6 @@
 <!-- SYNC NOTICE. This file is the primary context source for Claude Code.
      Rules files live in .claude/rules/ — load automatically when editing matching files.
-     If Copilot is also used, mirror this file in .github/copilot-instructions.md
-     and mirror .claude/rules/*.md in .github/instructions/*.instructions.md. -->
+     .github/copilot-instructions.md holds the Dynatrace/DQL guidance for Copilot. -->
 
 # CLAUDE.md
 
@@ -10,19 +9,24 @@ Detailed per-language conventions live in `.claude/rules/`.
 
 ## What is EasyTrade
 
-Fake stock-broking demo application for Dynatrace showcases. 19 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`frontendreverseproxy`) on port 80. A RabbitMQ queue (`Trade_Data_Raw`) carries trade data from `pricing-service` to `calculationservice`.
+Fake stock-broking demo application for Dynatrace showcases. 12 microservices communicate over REST (mostly JSON; some services also accept XML). All traffic routes through an nginx reverse proxy (`reverse-proxy`) on port 80.
 
-All services share one MSSQL database (`db`, port 1433). Connection string format differs by tech stack — see `compose.yaml` for the three variants (Java/JDBC, .NET, Go/sqlserver).
+State lives in one `db` service. `db-adapter` is the only component that holds a database connection — every other service reaches it over gRPC on port `50051` using the shared contracts in `src/proto/` (see `src/proto/ADAPTER_SERVICES.md`). The backend is chosen with `DB_TYPE`/`DB_URL` in `.env`: **MSSQL by default**, Postgres supported as an alternate.
 
 ## Tech stacks
 
 | Stack | Services |
 |---|---|
-| Java 21 / Spring Boot / Gradle | `accountservice`, `contentcreator`, `credit-card-order-service`, `engine`, `feature-flag-service`, `third-party-service` |
-| Go + Go Modules | `aggregator-service`, `pricing-service`, `problem-operator` |
-| TypeScript / Node.js / npm | `frontend` (React + Vite), `loadgen`, `offerservice` (Express) |
-| C# / .NET 8 | `broker-service`, `loginservice`, `manager` |
-| Config only | `calculationservice` (C++, Dockerfile-only), `frontendreverseproxy` (nginx), `rabbitmq`, `db` (MSSQL) |
+| Java 21 / Spring Boot / Gradle | `credit-card-order-service` |
+| Go + Go Modules | `background-service`, `db-adapter`, `pricing-service`, `user-service`, `feature-flag-service` |
+| TypeScript / Node.js / npm | `frontend` (React + Vite), `loadgen`, `offer-service` (Express) |
+| C# / .NET 10 | `broker-service` |
+| Config only | `reverse-proxy` (nginx), `db` (MSSQL and Postgres) |
+
+Key roles:
+- `pricing-service`: read-only REST price API (Gin); reads prices from `db-adapter` over gRPC
+- `background-service`: consolidates four former services into one Go binary — see `src/background-service/README.md`. Sub-components: synthetic traffic generation, pricing candle generation + DB cleanup, credit-card manufacture/courier simulation + its `/v1/manufacturer` and `/version` HTTP endpoints, and a Kubernetes-only chaos-pattern controller (ex-`problem-operator`, `k8s.io/client-go`, gated on `POD_NAMESPACE` so it no-ops outside Kubernetes — not present in `compose.yaml`)
+- `broker-service`: core trading engine; feature-flag-driven middleware (`HighCpuUsageMiddleware`, `CreditCardValidationMiddleware`)
 
 ## Build & test per stack
 
@@ -48,30 +52,40 @@ npm test        # vitest (frontend) or jest
 npm run lint    # eslint
 ```
 
-**C# / .NET (run from `src/<service>/<ServiceName>/`):**
+**C# / .NET:**
 ```bash
+# Run from the solution directory: src/<service>/
 dotnet build
 dotnet test                        # runs xunit tests in test/ project
 dotnet test --filter "FullyQualifiedName~SomeTest"
 ```
+Solution paths: `src/broker-service/`.
 
 ## Running locally
 
-Use `compose.dev.yaml` via the helper script:
+Use the root `Makefile` (`make help` lists every target):
 ```bash
-./runDev.sh start       # proxy + contentcreator + engine (minimal)
-./runDev.sh start-all   # all services
-./runDev.sh build [service...]  # rebuild images
-./runDev.sh stop
+make start                                          # all services, built from local source (compose.dev.yaml)
+make start services="frontend reverse-proxy background-service"   # subset
+make build [services=NAME]                          # rebuild images; omit services= to build all
+make redeploy services=NAME                         # rebuild + recreate one service after a code change
+make stop
 ```
+
+Every compose target takes an optional `services=` (a single name or a quoted,
+space-separated list). Omitting it means *all services*. `restart` and `redeploy`
+require it. `SERVICES=` works as an alias.
 
 Or directly:
 ```bash
 docker compose -f compose.dev.yaml up -d
 docker compose up          # uses pre-built images from registry (compose.yaml)
 ```
+`make start-remote` is the Makefile equivalent of the second form.
 
-App available at `http://localhost`. Dev credentials: `demouser/demopass`, `james_norton/pass_james_123`.
+App available at `http://localhost`. Dev credentials: `james_norton/pass_james_123`.
+
+Frontend dev server runs on port 3000 (`npm run dev` in `src/frontend/`). API calls go through nginx in production; in dev mode they must be routed manually or via the full compose stack.
 
 ## Dependency management & vulnerability fixes
 
@@ -90,19 +104,25 @@ For Node, use `overrides` in `package.json` to pin transitive deps; run `npm ins
 
 Feature flags control four problem patterns (`DbNotResponding`, `ErgoAggregatorSlowdown`, `FactoryCrisis`, `HighCpuUsage`). Toggle via:
 ```bash
-curl -X PUT "http://localhost/feature-flag-service/v1/flags/{flagId}/" \
-  -H "accept: application/json" \
-  -H "Content-Type: application/json" \
-  -d '{"enabled": true}'
+curl -X PUT "http://localhost/feature-flag-service/v1/flags/{flagId}" \
+  -H "accept: application/json" -d '{"enabled": true}'
 ```
-Swagger: `http://localhost/feature-flag-service/swagger-ui/index.html`
+`{flagId}` is the snake_case id (`db_not_responding`, `ergo_aggregator_slowdown`, `factory_crisis`, `high_cpu_usage`), not the PascalCase name. `GET /v1/flags` lists all 8 flags. Omit the trailing slash — the router redirects it and the redirect drops the request body.
 
 ## Dynatrace / Observability
 
-Services are deployed on Kubernetes (namespace `easytrade`) and monitored by Dynatrace. See `AGENTS.md` for DQL query patterns, metric keys, and problem investigation workflow. Monaco configurations live in `./monaco/`.
+Services are deployed on Kubernetes (namespace `easytrade`) and monitored by Dynatrace. See `.github/copilot-instructions.md` for DQL query patterns, metric keys, and problem investigation workflow; `AGENTS.md` covers the vulnerability remediation process. Monaco configurations live in `./monaco/`.
 
 ## Helm / Kubernetes
 
+Via the Makefile (release and namespace both default to `easytrade`):
+```bash
+make k8s-install          # install/upgrade from the local chart in helm/easytrade
+make k8s-install-remote   # install/upgrade from the published OCI chart
+make k8s-uninstall
+```
+
+Underlying commands:
 ```bash
 helm install easytrade oci://europe-docker.pkg.dev/dynatrace-demoability/helm/easytrade \
   --create-namespace --namespace easytrade
@@ -131,4 +151,3 @@ If you encounter a pattern in the codebase that contradicts these instructions, 
 | Claude Code source | Mirror (if Copilot used) |
 |---|---|
 | `CLAUDE.md` | `.github/copilot-instructions.md` |
-| `.claude/rules/*.md` | `.github/instructions/*.instructions.md` |

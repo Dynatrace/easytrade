@@ -75,7 +75,7 @@ jobs:
           kubectl -n ${{ env.NAMESPACE }} set env \
             deployment/easytrade-credit-card-order-service WORK_DELAY=10 WORK_RATE=10
           kubectl -n ${{ env.NAMESPACE }} set env \
-          deployment/easytrade-third-party-service COURIER_DELAY=10 COURIER_RATE=10 MANUFACTURE_DELAY=10 MANUFACTURE_RATE=10
+            deployment/easytrade-third-party-service THIRD_PARTY_DELAY=10 THIRD_PARTY_RATE=10 DELAY_CHANCE_PERCENT=20
 
       - name: Wait 3 minutes
         run: sleep 3m

@@ -1,5 +1,0 @@
-{
-  "enabled": true,
-  "instrumentation": true,
-  "key": "{{ .featureKey }}"
-}

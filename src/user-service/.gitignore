@@ -1,0 +1,9 @@
+# VS Code
+.vscode
+
+# Binaries
+user-service
+*.exe
+
+# Generated proto files
+proto/

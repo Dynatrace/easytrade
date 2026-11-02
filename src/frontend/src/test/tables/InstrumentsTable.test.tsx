@@ -1,9 +1,8 @@
-import React from "react"
-import "@testing-library/jest-dom"
+import "@testing-library/jest-dom/vitest"
 import { screen, render } from "@testing-library/react"
 import { FormatterWrapper } from "../providers"
 import InstrumentsTable from "../../components/InstrumentsTable"
-import { Instrument } from "../../api/instrument/types"
+import { Instrument } from "../../api/instrument"
 
 const mockInstruments: Instrument[] = [
     {
@@ -94,25 +93,25 @@ describe("Instruments table", () => {
             <FormatterWrapper>
                 <InstrumentsTable
                     instruments={[mockInstruments[0]]}
-                    disableVirtualization={true}
+                   
                 />
             </FormatterWrapper>
         )
 
         expect(
-            screen.getByRole("gridcell", { name: /etrave/i })
+            screen.getByRole("cell", { name: /etrave/i })
         ).toBeInTheDocument()
         expect(
-            screen.getByRole("gridcell", { name: /easytravel/i })
+            screen.getByRole("cell", { name: /easytravel/i })
         ).toBeInTheDocument()
         expect(
-            screen.getByRole("gridcell", { name: /494/ })
+            screen.getByRole("cell", { name: /494/ })
         ).toBeInTheDocument()
         expect(
-            screen.getByRole("gridcell", { name: /137.73/ })
+            screen.getByRole("cell", { name: /137.73/ })
         ).toBeInTheDocument()
         expect(
-            screen.getByRole("gridcell", { name: /68,039.24/i })
+            screen.getByRole("cell", { name: /68,039.24/i })
         ).toBeInTheDocument()
     })
     test("displays all rows", () => {
@@ -120,7 +119,7 @@ describe("Instruments table", () => {
             <FormatterWrapper>
                 <InstrumentsTable
                     instruments={mockInstruments}
-                    disableVirtualization={true}
+                   
                 />
             </FormatterWrapper>
         )

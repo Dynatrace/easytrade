@@ -31,7 +31,6 @@ on:
         required: true
 
 env:
-  GAR_ADDRESS: europe-docker.pkg.dev
   NAMESPACE: easytrade
   CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
   HELM_REGISTRY: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
@@ -50,52 +49,92 @@ jobs:
   calc-version:
     uses: ./.github/workflows/reusable-calc-version.yaml
 
-  build-push-easytrade:
-    if: needs.calc-version.outputs.already-released == 'false'
+  list-services:
     runs-on: ubuntu-24.04
-    needs: calc-version
     outputs:
-      artifact-dir: ${{ steps.build-and-push.outputs.artifact-dir }}
-      artifact-name: ${{ steps.build-and-push.outputs.artifact-name }}
+      services: ${{ steps.list.outputs.services }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Login to Google Artifact Registry
-        run: |
-          echo "${{ secrets.GAR_CREDENTIALS }}" | \
-            docker login -u _json_key_base64 --password-stdin "${{ env.GAR_ADDRESS }}"
+      - name: List buildable services
+        id: list
+        uses: ./.github/actions/list-build-services
+
+  build-push-image:
+    if: needs.calc-version.outputs.already-released == 'false'
+    needs:
+      - calc-version
+      - list-services
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ${{ fromJson(needs.list-services.outputs.services) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
       - name: Set application version
         uses: ./.github/actions/set-version
         with:
           version: ${{ needs.calc-version.outputs.version }}
 
-      - name: Build and push easytrade to docker repository
-        id: build-and-push
+      - name: Build and push ${{ matrix.service }}
         uses: ./.github/actions/build-push-images
+        env:
+          GAR_CREDENTIALS: ${{ secrets.GAR_CREDENTIALS }}
         with:
           push: true
           push-latest: ${{ needs.calc-version.outputs.is-release }}
           tag: ${{ needs.calc-version.outputs.version }}
           registry: ${{ env.CONTAINER_REGISTRY }}
-          artifact-name: docker-compose
-          artifact-dir: ./build-artifacts/
+          service: ${{ matrix.service }}
+
+  build-push-helm:
+    if: needs.calc-version.outputs.already-released == 'false'
+    runs-on: ubuntu-24.04
+    needs: calc-version
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
       - name: Build and push Helm chart
         uses: ./.github/actions/build-push-helm
         with:
           chart-path: ${{ env.HELM_CHART_PATH }}
           push: true
-          registry-url: oci://europe-docker.pkg.dev/dynatrace-demoability/helm
+          registry-url: ${{ env.HELM_REGISTRY }}
           version: ${{ needs.calc-version.outputs.version }}
           credentials: ${{ secrets.GAR_CREDENTIALS }}
+
+  build-artifact:
+    if: needs.calc-version.outputs.already-released == 'false'
+    runs-on: ubuntu-24.04
+    needs:
+      - calc-version
+      - build-push-image
+    outputs:
+      artifact-dir: ${{ steps.artifact.outputs.artifact-dir }}
+      artifact-name: ${{ steps.artifact.outputs.artifact-name }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Build release artifact
+        id: artifact
+        uses: ./.github/actions/build-artifact
+        with:
+          registry: ${{ env.CONTAINER_REGISTRY }}
+          tag: ${{ needs.calc-version.outputs.version }}
 
   promote:
     if: needs.calc-version.outputs.is-release == 'true'
     needs:
       - calc-version
-      - build-push-easytrade
+      - build-push-image
+      - build-push-helm
+      - build-artifact
     permissions:
       contents: write
       actions: write
@@ -103,5 +142,5 @@ jobs:
     with:
       version: ${{ needs.calc-version.outputs.version }}
       trigger-deploy: false
-      artifact-name: ${{ needs.build-push-easytrade.outputs.artifact-name }}
-      artifact-dir: ${{ needs.build-push-easytrade.outputs.artifact-dir }}
+      artifact-name: ${{ needs.build-artifact.outputs.artifact-name }}
+      artifact-dir: ${{ needs.build-artifact.outputs.artifact-dir }}

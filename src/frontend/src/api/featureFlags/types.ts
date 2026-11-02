@@ -4,24 +4,13 @@ export type FeatureFlag = {
     description: string
     enabled: boolean
     isModifiable: boolean
-}
-
-export type HandlerResponse = {
-    error?: string
-}
-
-export type ConfigFlag = {
-    name: string
-    id: string
-    enabled: boolean
+    enabledAt?: string
 }
 
 export type Config = {
     featureFlagManagement: boolean
 }
 
-export const ConfigFlagIds = {
-    FEATURE_FLAG_MANAGEMENT: "frontend_feature_flag_management",
+export type HandlerResponse = {
+    error?: string
 }
-
-export const ConfigDefaults: Config = { featureFlagManagement: true }

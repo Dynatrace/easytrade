@@ -2,22 +2,22 @@
 
 ## Repository structure
 
-`src/` contains 19 services grouped by technology:
+`src/` contains 12 services grouped by technology, plus `proto/` (shared gRPC contracts,
+not a service):
 
-| Technology                     | Services                                                                                                                 |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| Java 21 / Spring Boot / Gradle | `accountservice`, `contentcreator`, `credit-card-order-service`, `engine`, `feature-flag-service`, `third-party-service` |
-| Go / Go Modules                | `aggregator-service`, `pricing-service`, `problem-operator`                                                              |
-| TypeScript / Node.js / npm     | `frontend`, `loadgen`, `offerservice`                                                                                    |
-| C# / .NET 8 / NuGet            | `broker-service`, `loginservice`, `manager`                                                                              |
-| Python / Poetry                | `db/user-generator` (local utility script, not a service)                                                                |
-| Config only (no packages)      | `calculationservice` (C++, built in Dockerfile), `frontendreverseproxy` (nginx), `rabbitmq`, `db` (MSSQL)                |
+| Technology                     | Services                                                                                    |
+| ------------------------------ | ------------------------------------------------------------------------------------------- |
+| Java 21 / Spring Boot / Gradle | `credit-card-order-service`                                                                 |
+| Go / Go Modules                | `background-service`, `db-adapter`, `feature-flag-service`, `pricing-service`, `user-service` |
+| TypeScript / Node.js / npm     | `frontend`, `loadgen`, `offer-service`                                                      |
+| C# / .NET 10 / NuGet           | `broker-service`                                                                            |
+| Config only (no packages)      | `reverse-proxy` (nginx), `db` (MSSQL and Postgres)                                          |
 
 ## Vulnerability remediation process
 
 ### Scanning
 
-Run `snyk test --json --all-projects` from within each service directory that has a package manifest. Services without manifests (`calculationservice`, `frontendreverseproxy`, `rabbitmq`) cannot be scanned this way.
+Run `snyk test --json --all-projects` from within each service directory that has a package manifest. Services without manifests (`reverse-proxy`, `db`) cannot be scanned this way.
 
 Run scans in parallel across all services to save time.
 
@@ -27,8 +27,9 @@ Services that share the same technology will have identical vulnerable packages 
 
 ### Applying fixes
 
-#### Java / Gradle (6 services share `build.gradle`)
+#### Java / Gradle
 
+`src/credit-card-order-service/build.gradle` is the only Gradle manifest left in the repo.
 Vulnerable dependencies that are not direct dependencies of the service are pinned explicitly in `build.gradle` under a clearly marked comment block:
 
 ```
@@ -36,15 +37,15 @@ Vulnerable dependencies that are not direct dependencies of the service are pinn
 // -- can be removed once the parent packages upgrade
 ```
 
-Bump versions in this block across **all** affected `build.gradle` files in one pass.
+Should another Java service be added, bump versions in this block across **all** affected `build.gradle` files in one pass.
 
-#### Node.js / npm (services: `frontend`, `offerservice`)
+#### Node.js / npm (services: `frontend`, `offer-service`)
 
 - Bump the vulnerable package version constraint in `dependencies` in `package.json`.
 - Pin transitive dependencies using the `overrides` field in `package.json`.
 - Run `npm install` after editing `package.json` to regenerate `package-lock.json`.
 
-#### Go (services: `pricing-service`, `problem-operator`)
+#### Go (services: `background-service`, `db-adapter`, `feature-flag-service`, `pricing-service`, `user-service`)
 
 Go stdlib vulnerabilities are fixed by upgrading the Go toolchain version, not by changing individual module dependencies. Three files must be updated in sync for each service:
 
@@ -55,11 +56,15 @@ Go stdlib vulnerabilities are fixed by upgrading the Go toolchain version, not b
 To get the correct digest for the new image:
 
 ```
-docker pull golang:<new-version>-alpine3.23
-docker inspect --format='{{index .RepoDigests 0}}' golang:<new-version>-alpine3.23
+docker pull golang:<new-version>-alpine3.24
+docker inspect --format='{{index .RepoDigests 0}}' golang:<new-version>-alpine3.24
 ```
 
-Both Go service Dockerfiles use the same base image, so one pull is sufficient for both.
+All five Go services currently pin the same `golang:1.26.10-alpine3.24` builder, but check
+each Dockerfile before reusing a single digest - they have drifted apart before.
+
+Do not move to a Go minor (e.g. 1.27) until the OneAgent version on our tenants supports it -
+see Dynatrace's "Supported Go versions" page (Go 1.27 requires OneAgent 1.349+).
 
 ### Verifying fixes
 

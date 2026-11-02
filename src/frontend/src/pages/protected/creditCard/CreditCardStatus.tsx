@@ -1,32 +1,38 @@
-import React from "react"
-import { Card, CardContent } from "@mui/material"
-import { useRouteLoaderData } from "react-router"
-import { LoaderIds } from "../../../router"
-import { OrderStatusHistoryResponse } from "../../../api/creditCard/order"
-import { useCreditCardOrderStatusHistory } from "../../../contexts/QueryContext/creditCard/hooks"
+import { useCreditCardOrderStatusHistory } from "../../../hooks/useCreditCard"
 import { useAuthUser } from "../../../contexts/UserContext/context"
 import CreditCardsStatusTimeline from "../../../components/creditCard/CreditCardStatusTimeline"
 
 export default function CreditCardStatus() {
-    const loaderData = useRouteLoaderData(
-        LoaderIds.creditCardStatusHistory
-    ) as OrderStatusHistoryResponse
     const { userId } = useAuthUser()
-    const { data } = useCreditCardOrderStatusHistory(userId, loaderData)
+    const { data } = useCreditCardOrderStatusHistory(userId)
 
-    if (data === undefined || data.type === "error") {
-        throw new Error(
-            `There was an error getting order history [${
-                data?.error ?? "Response was empty"
-            }]`
+    if (data === undefined) {
+        return (
+            <div className="page-centered">
+                <div className="card" style={{ padding: "1rem", minWidth: 400 }}>
+                    <p className="empty-state">Loading order history…</p>
+                </div>
+            </div>
+        )
+    }
+
+    if (data.type === "error") {
+        return (
+            <div className="page-centered">
+                <div className="card" style={{ padding: "1rem", minWidth: 400 }}>
+                    <div className="status-message status-error">
+                        Could not load order history: {data.error}
+                    </div>
+                </div>
+            </div>
         )
     }
 
     return (
-        <Card sx={{ padding: 1 }}>
-            <CardContent>
+        <div className="page-centered">
+            <div className="card" style={{ padding: "1.5rem", minWidth: 400, width: "100%", maxWidth: 600 }}>
                 <CreditCardsStatusTimeline data={data} />
-            </CardContent>
-        </Card>
+            </div>
+        </div>
     )
 }

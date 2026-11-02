@@ -1,95 +1,111 @@
 x-service: &default-service
   restart: always
 
-x-feature-flag-service: &feature-flag-service-env
-  FEATURE_FLAG_SERVICE_PROTOCOL: http
-  FEATURE_FLAG_SERVICE_BASE_URL: feature-flag-service
-  FEATURE_FLAG_SERVICE_PORT: 8080
-
-x-connection-strings:
-  JAVA_CONNECTION_STRING: &java-connection-string jdbc:sqlserver://db:1433;database=TradeManagement;user=sa;password=yourStrong(!)Password;encrypt=false;trustServerCertificate=false;loginTimeout=30;
-  DOTNET_CONNECTION_STRING: &dotnet-connection-string Data Source=db;Initial Catalog=TradeManagement;Persist Security Info=True;User ID=sa;Password=yourStrong(!)Password;TrustServerCertificate=true
-  GO_CONNECTION_STRING: &go-connection-string sqlserver://sa:yourStrong(!)Password@db:1433?database=TradeManagement&connection+encrypt=false&connection+TrustServerCertificate=false&connection+loginTimeout=30
-
-x-rabbit-vars: &rabbit-vars
-  RABBITMQ_USER: userxxx
-  RABBITMQ_PASSWORD: passxxx
-  RABBITMQ_PORT: "5672"
-  RABBITMQ_HOST: rabbitmq
-  RABBITMQ_QUEUE: Trade_Data_Raw
+x-addresses:
+  offer-service: &offerServiceAddress "http://offer-service:8080"
+  feature-flag-service: &featureFlagServiceAddress "http://feature-flag-service:8080"
+  credit-card-order-service: &creditCardOrderServiceAddress "http://credit-card-order-service:8080"
+  db-adapter: &dbAdapterAddress "db-adapter:50051"
+  user-service: &userServiceAddress "http://user-service:8080"
+  pricing-service: &pricingServiceAddress "http://pricing-service:8080"
+  background-service: &backgroundServiceAddress "http://background-service:8080"
+  easytrade-url: &easytradeUrl "http://reverse-proxy"
 
 services:
-  db:
+  background-service:
     <<: *default-service
-    build: src/db
-    ports:
-      - 1433:1433
-    environment:
-      SA_PASSWORD: yourStrong(!)Password
-
-  contentcreator:
-    <<: *default-service
-    build: src/contentcreator
+    build:
+      context: src/
+      dockerfile: background-service/Dockerfile
     depends_on:
-      - db
-    environment:
-      MSSQL_CONNECTIONSTRING: *java-connection-string
-
-  manager:
-    <<: *default-service
-    build: src/manager/easyTradeManager
-    depends_on:
-      - db
+      - offer-service
+      - db-adapter
     ports:
-      - 8081:8080
+      - 8095:8080
     environment:
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
-      PROXY_PREFIX: manager
-
-  pricing-service:
-    <<: *default-service
-    build: src/pricing-service
-    depends_on:
-      - db
-      - rabbitmq
-    ports:
-      - 8083:8080
-    environment:
-      MSSQL_CONNECTIONSTRING: *go-connection-string
-      PROXY_PREFIX: pricing-service
-      <<: *rabbit-vars
+      OFFER_SERVICE_ADDRESS: *offerServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
+      CREDIT_CARD_ORDER_SERVICE_ADDRESS: *creditCardOrderServiceAddress
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      THIRD_PARTY_DELAY: 10
+      THIRD_PARTY_RATE: 10
+      DELAY_CHANCE_PERCENT: 20
 
   broker-service:
     <<: *default-service
-    build: src/broker-service
+    build:
+      context: src/
+      dockerfile: broker-service/Dockerfile
     ports:
       - 8084:8080
     depends_on:
-      - db
-      - accountservice
+      - db-adapter
+      - user-service
       - pricing-service
       - feature-flag-service
     environment:
-      ACCOUNTSERVICE_HOSTANDPORT: accountservice:8080
-      PRICINGSERVICE_HOSTANDPORT: pricing-service:8080
-      ENGINE_HOSTANDPORT: engine:8080
-      <<: *feature-flag-service-env
-      PROXY_PREFIX: broker-service
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
+      PRICING_SERVICE_ADDRESS: *pricingServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
 
-  rabbitmq:
+  credit-card-order-service:
     <<: *default-service
-    build: src/rabbitmq
-    ports:
-      - 8082:15672
-
-  calculationservice:
-    <<: *default-service
-    build: src/calculationservice
+    build:
+      context: src/
+      dockerfile: credit-card-order-service/Dockerfile
     depends_on:
-      - rabbitmq
+      - db-adapter
+      - background-service
+    ports:
+      - 8091:8080
     environment:
-      <<: *rabbit-vars
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      THIRD_PARTY_SERVICE_ADDRESS: *backgroundServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
+      WORK_DELAY: 30
+      WORK_RATE: 30
+      # Same heap ceiling and memory limit as Helm, so credit_card_memory_leak
+      # ends in an OOM kill locally too.
+      JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow -Xmx1g"
+      MEMORY_LEAK_MB_PER_MINUTE: 8
+    mem_limit: 650m
+
+  db:
+    <<: *default-service
+    # Tag by dialect: both backends build from the same service name, so a shared
+    # image name would silently reuse the other dialect's image after DB_TYPE changes.
+    image: easytrade-db-${DB_TYPE}
+    build: src/db/${DB_TYPE}
+    ports:
+      - 1433:1433
+      - 5432:5432
+    environment:
+      SA_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+  db-adapter:
+    <<: *default-service
+    build:
+      context: src/
+      dockerfile: db-adapter/Dockerfile
+    depends_on:
+      - db
+    ports:
+      - 50051:50051
+      - 8096:8080
+    environment:
+      DB_TYPE: ${DB_TYPE}
+      DB_URL: ${DB_URL}
+
+  feature-flag-service:
+    <<: *default-service
+    build: src/feature-flag-service
+    ports:
+      - 8094:8080
+    # environment:
+    #   ENABLE_MODIFY: "false"
+    #   ENABLE_FRONTEND_MODIFY: "false"
 
   frontend:
     <<: *default-service
@@ -99,40 +115,25 @@ services:
       # dockerfile: Dockerfile
     # depends_on:
     #   - broker-service
-    #   - loginservice
+    #   - user-service
     #   - pricing-service
-    #   - accountservice
     #   - credit-card-order-service
     ports:
       - 8092:3000
     volumes:
       - ./src/frontend/src:/app/src:ro
 
-  loginservice:
+  reverse-proxy:
     <<: *default-service
-    build: src/loginservice
-    environment:
-      MSSQL_CONNECTIONSTRING: *dotnet-connection-string
-      PROXY_PREFIX: loginservice
-    depends_on:
-      - db
-    ports:
-      - 8086:8080
-
-  frontendreverseproxy:
-    <<: *default-service
-    build: src/frontendreverseproxy
+    build: src/reverse-proxy
     depends_on:
       - broker-service
       - frontend
-      - loginservice
       - pricing-service
       - feature-flag-service
-      - offerservice
-      - accountservice
-      - engine
+      - offer-service
       - credit-card-order-service
-      - third-party-service
+      - background-service
     ports:
       - 80:80
 
@@ -140,95 +141,49 @@ services:
     <<: *default-service
     build: src/loadgen
     depends_on:
-      - frontendreverseproxy
+      - reverse-proxy
+    ports:
+      - 8097:8080
     environment:
-      EASYTRADE_URL: http://frontendreverseproxy
+      EASYTRADE_URL: *easytradeUrl
 
-  offerservice:
+  offer-service:
     <<: *default-service
-    build: src/offerservice
+    build:
+      context: src/
+      dockerfile: offer-service/Dockerfile
     depends_on:
-      - loginservice
-      - manager
+      - db-adapter
+      - user-service
       - feature-flag-service
     ports:
       - 8087:8080
     environment:
-      <<: *feature-flag-service-env
-      LOGIN_SERVICE_PORT: 8080
-      LOGIN_SERVICE_BASE_URL: loginservice
-      MANAGER_BASE_URL: manager
-      MANAGER_PORT: 8080
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      USER_SERVICE_ADDRESS: *userServiceAddress
+      FEATURE_FLAG_SERVICE_ADDRESS: *featureFlagServiceAddress
 
-  accountservice:
+  pricing-service:
     <<: *default-service
-    build: src/accountservice
+    build:
+      context: src/
+      dockerfile: pricing-service/Dockerfile
     depends_on:
-      - manager
+      - db-adapter
+    ports:
+      - 8083:8080
+    environment:
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+
+  user-service:
+    <<: *default-service
+    build:
+      context: src/
+      dockerfile: user-service/Dockerfile
+    depends_on:
+      - db-adapter
     ports:
       - 8089:8080
     environment:
-      MANAGER_HOSTANDPORT: manager:8080
-      PROXY_PREFIX: accountservice
-
-  engine:
-    <<: *default-service
-    build: src/engine
-    depends_on:
-      - broker-service
-    ports:
-      - 8090:8080
-    environment:
-      BROKER_HOSTANDPORT: broker-service:8080
-      PROXY_PREFIX: engine
-
-  credit-card-order-service:
-    <<: *default-service
-    build: src/credit-card-order-service
-    depends_on:
-      - db
-      - third-party-service
-    ports:
-      - 8091:8080
-    environment:
-      PROXY_PREFIX: credit-card-order-service
-      MSSQL_CONNECTIONSTRING: *java-connection-string
-      THIRD_PARTY_SERVICE_HOSTANDPORT: third-party-service:8080
-      <<: *feature-flag-service-env
-      WORK_DELAY: 30
-      WORK_RATE: 30
-      JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow"
-
-  third-party-service:
-    <<: *default-service
-    build: src/third-party-service
-    ports:
-      - 8093:8080
-    environment:
-      <<: *feature-flag-service-env
-      PROXY_PREFIX: third-party-service
-      CREDIT_CARD_ORDER_SERVICE_HOSTANDPORT: credit-card-order-service:8080
-      COURIER_DELAY: 10
-      COURIER_RATE: 10
-      MANUFACTURE_DELAY: 10
-      MANUFACTURE_RATE: 10
-
-  feature-flag-service:
-    <<: *default-service
-    build: src/feature-flag-service
-    ports:
-      - 8094:8080
-    environment:
-      PROXY_PREFIX: feature-flag-service
-      # ENABLE_MODIFY: "false"
-      # ENABLE_FRONTEND_MODIFY: "false"
-
-  aggregator-service:
-    <<: *default-service
-    build: src/aggregator-service
-    depends_on:
-      - offerservice
-    environment:
-      OFFER_SERVICE_PROTOCOL: http
-      OFFER_SERVICE_HOST: offerservice
-      OFFER_SERVICE_PORT: 8080
+      DB_ADAPTER_ADDRESS: *dbAdapterAddress
+      GIN_MODE: debug

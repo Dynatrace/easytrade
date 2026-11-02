@@ -25,6 +25,7 @@ export default defineConfig([
         },
     },
     pluginReact.configs.flat.recommended,
+    pluginReact.configs.flat["jsx-runtime"],
     {
         rules: {
             "@typescript-eslint/no-deprecated": "warn",

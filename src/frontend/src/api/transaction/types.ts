@@ -1,7 +1,7 @@
 export type Transaction = {
-    id: number
+    id: string
     actionType: string
-    instrumentName: string
+    instrumentId: string
     amount: number
     price: number
     status: string
@@ -10,16 +10,18 @@ export type Transaction = {
 
 export type HandlerResponse = { error?: string }
 
+export type QuickTransactionRequest = {
+    accountId: string
+    instrumentId: string
+    amount: number
+}
+
 export type QuickBuyHandler = (
     userId: string,
     instrumentId: string,
     amount: number
 ) => Promise<HandlerResponse>
-export type QuickSellHandler = (
-    userId: string,
-    instrumentId: string,
-    amount: number
-) => Promise<HandlerResponse>
+export type QuickSellHandler = QuickBuyHandler
 export type BuyHandler = (
     userId: string,
     instrumentId: string,
@@ -27,10 +29,4 @@ export type BuyHandler = (
     price: number,
     time: number
 ) => Promise<HandlerResponse>
-export type SellHandler = (
-    userId: string,
-    instrumentId: string,
-    amount: number,
-    price: number,
-    time: number
-) => Promise<HandlerResponse>
+export type SellHandler = BuyHandler

@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <!-- Required to enable IDE0005 (Remove Unnecessary Usings) -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- Suppress the annoying CS1591 warnings about missing XML comments that appear when GenerateDocumentationFile is enabled -->
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+  </PropertyGroup>
+</Project>

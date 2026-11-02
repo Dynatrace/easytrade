@@ -1,4 +1,3 @@
-import React from "react"
 import { createContext, PropsWithChildren, useContext } from "react"
 import { sessionStore } from "./storage"
 import { AuthProviderProps, IAuthContext } from "./types"
@@ -7,7 +6,6 @@ const AuthContext = createContext<IAuthContext | null>(null)
 
 export function AuthProvider({
     loginHandler,
-    logoutHandler,
     initialId,
     children,
     storeHandler = sessionStore,
@@ -22,12 +20,8 @@ export function AuthProvider({
         return { id, error }
     }
 
-    async function logout(userId: string) {
-        const { message, error } = await logoutHandler(userId)
-        if (message !== undefined) {
-            setUserId(null)
-        }
-        return { message, error }
+    function logout() {
+        setUserId(null)
     }
 
     function defaultLogin(userId: string) {

@@ -1,12 +1,14 @@
-FROM eclipse-temurin:21.0.8_9-jdk-alpine-3.22@sha256:89517925fa675c6c4b770bee7c44d38a7763212741b0d6fca5a5103caab21a97 AS build
+FROM eclipse-temurin:21.0.8_9-jdk-noble@sha256:03b731a231066bd04ada0a7ee9003cdbc1460083344f9277245b233e5ffcbf47 AS build
 
-WORKDIR /app
-# make gradlew download gradle files before copying source files to use caching
-COPY ["build.gradle", "settings.gradle", "gradlew", "./"]
-COPY ["gradle", "gradle"]
+WORKDIR /src
+COPY ["proto/common.proto", "proto/credit_card_order_service.proto", "credit-card-order-service/src/main/proto/"]
+COPY ["credit-card-order-service/build.gradle", "credit-card-order-service/settings.gradle", "credit-card-order-service/gradlew", "credit-card-order-service/"]
+COPY ["credit-card-order-service/gradle", "credit-card-order-service/gradle"]
+
+WORKDIR /src/credit-card-order-service
 RUN ./gradlew dependencies
 
-COPY ["src", "./src"]
+COPY ["credit-card-order-service/src", "./src"]
 
 RUN ./gradlew test bootJar
 
@@ -23,6 +25,6 @@ RUN addgroup --system --gid 3369 easytrade \
 USER easytrade:easytrade
 WORKDIR /home/easytrade
 
-COPY --from=build --chown=easytrade:easytrade ["/app/build/libs/*.jar", "app.jar"]
+COPY --from=build --chown=easytrade:easytrade ["/src/credit-card-order-service/build/libs/*.jar", "app.jar"]
 
 CMD ["java", "-jar", "app.jar"]

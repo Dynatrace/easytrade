@@ -39,9 +39,6 @@ public class Application {
     }
 
     @Bean
-    public DatabaseHelper databaseHelper() { return new DatabaseHelper(); }
-
-    @Bean
     ScheduledExecutorService scheduler() { return Executors.newScheduledThreadPool(1); }
 }
 

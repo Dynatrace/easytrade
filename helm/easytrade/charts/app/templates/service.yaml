@@ -15,7 +15,7 @@ spec:
   {{- if .Values.service.ports }}
     {{- toYaml .Values.service.ports | nindent 4 }}
   {{- else }}
-    - port: {{ .Values.service.port }}
+    - port: {{ tpl (.Values.service.port | toString) $ }}
       targetPort: http
       protocol: TCP
       name: http

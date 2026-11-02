@@ -1,3 +1,0 @@
-fetch bizevents
-| filter event.type == "com.easytrade.withdraw"
-| summarize s = toDouble(count()) / $withdrawReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes

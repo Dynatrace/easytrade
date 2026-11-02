@@ -1,3 +1,0 @@
-fetch logs
-| filter k8s.container.name == "$loadgenContainerName" AND k8s.namespace.name == "easytrade" AND contains(content, "$visitStartMsg")
-| summarize s = toDouble(count()) / $visitsReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes

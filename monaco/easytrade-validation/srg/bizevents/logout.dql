@@ -1,3 +1,0 @@
-fetch bizevents
-| filter event.type == "com.easytrade.logout"
-| summarize s = toDouble(count()) / $logoutReferenceCount / $timeframeMinutes * $referenceTimeframeMinutes

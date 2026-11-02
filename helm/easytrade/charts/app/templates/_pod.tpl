@@ -46,7 +46,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: {{ tpl ($secretKeyRef.name | toString) $ }}
-              key: {{ $secretKeyRef.key }}
+              key: {{ tpl ($secretKeyRef.key | toString) $ }}
         {{- end }}
       {{- end }}
       {{- with .Values.global.env }}

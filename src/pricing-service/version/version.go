@@ -2,11 +2,12 @@ package version
 
 import "fmt"
 
-const (
-	VersionTemplate = "EasyTrade Pricing Service Version: %s\n\nBuild date: %s, git commit: %s"
-	BuildVersion    = "{{BUILD_VERSION}}"
-	BuildDate       = "{{BUILD_DATE}}"
-	BuildCommit     = "{{BUILD_COMMIT}}"
+const VersionTemplate = "EasyTrade Pricing Service Version: %s\n\nBuild date: %s, git commit: %s"
+
+var (
+	BuildVersion = "{{BUILD_VERSION}}"
+	BuildDate    = "{{BUILD_DATE}}"
+	BuildCommit  = "{{BUILD_COMMIT}}"
 )
 
 type version struct {

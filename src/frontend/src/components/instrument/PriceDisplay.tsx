@@ -1,9 +1,7 @@
-import React from "react"
-import { Stack, Typography } from "@mui/material"
-import { Price } from "../../api/price/types"
+import { Price } from "../../api/price"
+import { InstrumentPrice } from "../../api/instrument"
 import { useFormatter } from "../../contexts/FormatterContext/context"
-import { useTheme } from "../../contexts/ThemeContext/ThemeContext"
-import { InstrumentPrice } from "../../api/instrument/types"
+import { priceTrend } from "../../utils/priceTrend"
 
 export default function PriceDisplay({
     price,
@@ -11,38 +9,20 @@ export default function PriceDisplay({
     price: Price | InstrumentPrice
 }) {
     const { formatCurrency, formatPercent } = useFormatter()
-    const {
-        theme: {
-            palette: { success, error },
-        },
-    } = useTheme()
-    const trendingUp = price.close > price.open
-    const color = trendingUp ? success : error
-    const percentDifference = (price.close - price.open) / price.open
+    const { trendClass, pctChange } = priceTrend(price)
+
     return (
-        <Stack
-            direction={"row"}
-            alignItems={"flex-start"}
-            justifyContent={"flex-start"}
-            spacing={1}
-            data-dt-name={"Instrument price"}
-            data-dt-children-name={"Instrument variation"}
+        <div
+            className="instrument-card-price-row"
+            data-dt-name="Instrument price"
+            data-dt-children-name="Instrument variation"
         >
-            <Typography
-                id="instrumentPrice"
-                color={color.main}
-                variant="h5"
-                sx={{ fontWeight: 600 }}
-            >
+            <h5 id="instrumentPrice" className={`instrument-price ${trendClass}`}>
                 {formatCurrency(price.close)}
-            </Typography>
-            <Typography
-                color={color.main}
-                variant="caption"
-                sx={{ fontWeight: 600 }}
-            >
-                {formatPercent(percentDifference)}
-            </Typography>
-        </Stack>
+            </h5>
+            <span className={`instrument-pct ${trendClass}`}>
+                {formatPercent(pctChange)}
+            </span>
+        </div>
     )
 }
