@@ -33,7 +33,7 @@ describe("Login Form", () => {
     let user: UserEvent
     beforeEach(() => {
         mockHandler = vi.fn(successMockImpl)
-        user = userEvent.setup()
+        user = userEvent.setup({ delay: null })
         render(<LoginForm submitHandler={mockHandler} />, {
             wrapper: LoginFormProviders,
         })
