@@ -17,7 +17,7 @@ jobs:
       actions: read
     env:
       SNYK_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
-      SNYK_ORGANIZATION_ID: f3a1df84-8dcb-4a46-ac8c-9e699dbda79e
+      SNYK_ORGANIZATION_ID: ${{ secrets.SNYK_ORGANIZATION_ID }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
