@@ -5,6 +5,8 @@ on:
     secrets:
       SNYK_API_TOKEN:
         required: true
+      SNYK_ORGANIZATION_ID:
+        required: true
 
 jobs:
   snyk:

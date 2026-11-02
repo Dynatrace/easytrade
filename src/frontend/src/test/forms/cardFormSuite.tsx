@@ -45,7 +45,7 @@ export function describeCardForm({
 
         beforeEach(() => {
             handler = vi.fn(() => Promise.resolve({}))
-            user = userEvent.setup()
+            user = userEvent.setup({ delay: null })
             render(renderForm(handler), { wrapper: FormProviders })
         })
 
