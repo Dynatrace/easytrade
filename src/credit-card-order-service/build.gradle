@@ -73,6 +73,8 @@ dependencies {
 
 	// Source: https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
 	implementation 'com.fasterxml.jackson.core:jackson-core:2.22.4'
+	// annotations are released as 2.22 (no patch); Spring Boot BOM would otherwise downgrade them to 2.21
+	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.22'
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.22.4'
 	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.4'
 }
