@@ -29,19 +29,38 @@ jobs:
   calc-version:
     uses: ./.github/workflows/reusable-calc-version.yaml
 
-  build-easytrade:
+  list-services:
     runs-on: ubuntu-24.04
-    needs: calc-version
+    outputs:
+      services: ${{ steps.list.outputs.services }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Build easytrade without pushing to docker repository
+      - name: List buildable services
+        id: list
+        uses: ./.github/actions/list-build-services
+
+  build-easytrade:
+    runs-on: ubuntu-24.04
+    needs:
+      - calc-version
+      - list-services
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ${{ fromJson(needs.list-services.outputs.services) }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Build ${{ matrix.service }} without pushing to docker repository
         uses: ./.github/actions/build-push-images
         with:
           push: false
           tag: ${{ needs.calc-version.outputs.version }}
           registry: ${{ env.CONTAINER_REGISTRY }}
+          service: ${{ matrix.service }}
 
   build-helm-chart:
     runs-on: ubuntu-24.04
