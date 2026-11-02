@@ -8,6 +8,8 @@ on:
     secrets:
       SNYK_API_TOKEN:
         required: true
+      SNYK_ORGANIZATION_ID:
+        required: true
 
 env:
   CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
@@ -22,6 +24,7 @@ jobs:
       actions: read
     secrets:
       SNYK_API_TOKEN: ${{ secrets.SNYK_API_TOKEN }}
+      SNYK_ORGANIZATION_ID: ${{ secrets.SNYK_ORGANIZATION_ID }}
 
   calc-version:
     uses: ./.github/workflows/reusable-calc-version.yaml
