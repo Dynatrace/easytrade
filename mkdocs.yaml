@@ -12,6 +12,7 @@ nav:
       - FactoryCrisis: problem-patterns/factory-crisis.md
       - HighCpuUsage: problem-patterns/high-cpu-usage.md
       - CreditCardMeltdown: problem-patterns/credit-card-meltdown.md
+      - CreditCardMemoryLeak: problem-patterns/credit-card-memory-leak.md
       - CreditCardValidation: problem-patterns/credit-card-validation.md
   - Technology stack:
       - Service reference: technology-stack/services.md

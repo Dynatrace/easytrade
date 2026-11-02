@@ -249,8 +249,8 @@ If you want to use easyTrade, then you will need a user. You can either:
 ## Problem patterns
 
 Currently there are 4 problem patterns supported in easyTrade (the feature flag service
-exposes 7 flags in total - the remaining ones gate frontend flag management, credit card
-meltdown and credit card validation):
+exposes 8 flags in total - the remaining ones gate frontend flag management, credit card
+meltdown, credit card memory leak and credit card validation):
 
 1. DbNotResponding - after turning it on no new trades can be created as the database will throw an error. This problem pattern is kind of proof on concept that problem patterns work. Running it for around 20 minutes should generate a problem in dynatrace.
 

@@ -62,6 +62,14 @@ func InitFlags() map[string]*Flag {
 			IsModifiable: enableModify,
 			Tag:          "problem_pattern",
 		},
+		"credit_card_memory_leak": {
+			ID:           "credit_card_memory_leak",
+			Enabled:      getEnvBool("ENABLE_CREDIT_CARD_MEMORY_LEAK", false),
+			Name:         "Credit card memory leak",
+			Description:  "When enabled, credit-card-order-service keeps caching order snapshots it never evicts. Its heap grows until the container exceeds its memory limit and is OOM-killed, so it restarts over and over until the flag is turned off.",
+			IsModifiable: enableModify,
+			Tag:          "problem_pattern",
+		},
 		"high_cpu_usage": {
 			ID:           "high_cpu_usage",
 			Enabled:      getEnvBool("ENABLE_HIGH_CPU_USAGE", false),

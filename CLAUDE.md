@@ -107,7 +107,7 @@ Feature flags control four problem patterns (`DbNotResponding`, `ErgoAggregatorS
 curl -X PUT "http://localhost/feature-flag-service/v1/flags/{flagId}" \
   -H "accept: application/json" -d '{"enabled": true}'
 ```
-`{flagId}` is the snake_case id (`db_not_responding`, `ergo_aggregator_slowdown`, `factory_crisis`, `high_cpu_usage`), not the PascalCase name. `GET /v1/flags` lists all 7 flags. Omit the trailing slash — the router redirects it and the redirect drops the request body.
+`{flagId}` is the snake_case id (`db_not_responding`, `ergo_aggregator_slowdown`, `factory_crisis`, `high_cpu_usage`), not the PascalCase name. `GET /v1/flags` lists all 8 flags. Omit the trailing slash — the router redirects it and the redirect drops the request body.
 
 ## Dynatrace / Observability
 
