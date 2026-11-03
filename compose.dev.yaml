@@ -68,6 +68,7 @@ services:
       # behaves the same locally.
       JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow -XX:MaxRAMPercentage=50 -XX:+ExitOnOutOfMemoryError"
       MEMORY_LEAK_MB_PER_MINUTE: 5
+      MEMORY_LEAK_CHURN_MB_PER_MINUTE: 600
     mem_limit: 650m
 
   db:
