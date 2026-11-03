@@ -19,6 +19,7 @@ public class OrderSnapshotCacheTest {
     // 8 MB per minute at a 15 s tick = 2 MB per tick = 32 snapshots of 64 KB.
     private static final int LEAK_MB_PER_MINUTE = 8;
     private static final int SNAPSHOTS_PER_TICK = 32;
+    private static final int CHURN_MB_PER_MINUTE = 600;
 
     @Mock
     OpenFeatureAPI openFeatureAPI;
@@ -30,7 +31,7 @@ public class OrderSnapshotCacheTest {
     @BeforeEach
     void setUp() {
         Mockito.when(openFeatureAPI.getClient()).thenReturn(client);
-        cache = new OrderSnapshotCache(openFeatureAPI, LEAK_MB_PER_MINUTE);
+        cache = new OrderSnapshotCache(openFeatureAPI, LEAK_MB_PER_MINUTE, CHURN_MB_PER_MINUTE);
     }
 
     @AfterEach
@@ -65,6 +66,26 @@ public class OrderSnapshotCacheTest {
 
         flagEnabled(false);
         cache.refresh();
+
+        assertEquals(0, OrderSnapshotCache.cachedSnapshotCount());
+    }
+
+    @Test
+    void recalculate_flagOn_cachesNothing() {
+        flagEnabled(true);
+
+        cache.recalculate();
+        cache.recalculate();
+
+        assertEquals(0, OrderSnapshotCache.cachedSnapshotCount());
+    }
+
+    @Test
+    void recalculate_flagServiceUnavailable_doesNotThrow() {
+        Mockito.when(client.getBooleanValue(eq(OrderSnapshotCache.FLAG_ID), anyBoolean()))
+                .thenThrow(new RuntimeException("feature-flag-service unreachable"));
+
+        cache.recalculate();
 
         assertEquals(0, OrderSnapshotCache.cachedSnapshotCount());
     }

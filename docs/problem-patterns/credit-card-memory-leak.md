@@ -5,21 +5,22 @@
 | Flag ID | `credit_card_memory_leak` |
 | Default | off (`ENABLE_CREDIT_CARD_MEMORY_LEAK`) |
 | Blast radius | The `credit-card-order-service` container |
-| Time to visible effect | Memory growth within a minute; first OOM kill after about an hour at the default rate |
+| Time to visible effect | Heap growth within a minute; first out-of-memory restart after about an hour at the default rate |
 
 ## What the user sees
 
-Nothing at first. Requests keep working while the memory of `credit-card-order-service`
-climbs in a straight line. When the container reaches its memory limit, the kernel
-kills it: Kubernetes reports the container as `OOMKilled` (exit code 137), raises its
-restart count, and starts it again. While it restarts, the Credit Card tab fails.
+Nothing at first. Requests keep working while the heap of `credit-card-order-service`
+climbs in a straight line. As the heap fills, garbage collection runs more and more
+often. When there is no room left, the JVM throws `OutOfMemoryError: Java heap space`
+and exits, and Kubernetes restarts the container (reason `Error`, exit code 3). While
+it restarts, the Credit Card tab fails.
 
-Because the flag stays on, the leak starts again after every restart. The memory chart
+Because the flag stays on, the leak starts again after every restart. The heap chart
 shows a sawtooth and the restart count keeps rising until the flag is turned off.
 
-This pattern produces a **memory leak and out-of-memory kills** rather than an
-exception or a slowdown. The JVM never throws `OutOfMemoryError` and no error is logged
-before the kill, so logs and traces alone don't point at the cause.
+This pattern produces a **memory leak and out-of-memory restarts** rather than an
+exception or a slowdown. The log names the error, not the code that holds the memory,
+so finding the cause takes memory profiling.
 
 ## Flow
 
@@ -28,16 +29,16 @@ sequenceDiagram
     participant T as OrderSnapshotCache tick (every 15 s)
     participant F as feature-flag-service
     participant H as JVM heap
-    participant K as Kernel / Kubernetes
+    participant K as Kubernetes
 
     loop every 15 s
         T->>F: is credit_card_memory_leak enabled?
         F-->>T: true
         T->>H: cache another batch of order snapshots (never evicted)
     end
-    Note over H: heap and container memory grow
-    H->>K: container exceeds its 650Mi limit
-    K-->>K: OOM kill (exit 137), restart the container
+    Note over H: heap grows, GC runs more and more often
+    H->>K: OutOfMemoryError, JVM exits (exit 3)
+    K-->>K: restart the container
 ```
 
 ## How it is implemented
@@ -56,20 +57,38 @@ if (openFeatureAPI.getClient().getBooleanValue(FLAG_ID, false)) {
 
 The leak runs whether or not there is traffic, so its rate is predictable.
 
-The kill comes from the kernel and not the JVM because the service runs with a heap
-ceiling above its container memory limit (`-Xmx1g` against a 650Mi limit, set in
-`JAVA_TOOL_OPTIONS`). The heap never fills up, so the JVM never throws
-`OutOfMemoryError`. The container's memory use crosses the limit first. Without that
-gap the JVM would fail on its own, and Kubernetes would never report an OOM kill.
+While the flag is on, a second task runs every second on the same thread and calls
+`recalculateOrderTotals`, which fills scratch buffers and drops them right away. This
+is the service's normal working garbage, not part of the leak: it keeps the young
+generation filling up, so the JVM collects garbage several times a minute, as it would
+in a busy service. Without it the pod is idle apart from the leak, and GC runs less
+than once a minute. Memory profilers that judge objects by how many collections they
+survive then have nothing to tell the leak from short-lived data. With the churn on,
+the cached snapshots survive every collection while the scratch buffers survive none.
+
+The service runs with a heap sized to half its container memory limit
+(`-XX:MaxRAMPercentage=50`, set in `JAVA_TOOL_OPTIONS`), which leaves room for
+non-heap memory. With `-XX:+ExitOnOutOfMemoryError` the JVM exits when the heap is full
+instead of carrying on in a broken state, so Kubernetes restarts it.
 
 | Setting | Where | Default | Effect |
 |---|---|---|---|
-| `MEMORY_LEAK_MB_PER_MINUTE` | `credit-card-order-service` env | `8` | How fast the heap grows while the flag is on. The default gives about one OOM kill an hour; 120 gets there in about 4 minutes |
-| `-Xmx1g` in `JAVA_TOOL_OPTIONS` | `credit-card-order-service` env | set | Keeps the JVM heap ceiling above the memory limit, so the container is OOM-killed |
-| `resources.limits.memory` | Helm values | `650Mi` | The memory limit the leak runs into |
+| `MEMORY_LEAK_MB_PER_MINUTE` | `credit-card-order-service` env | `5` | How fast the heap grows while the flag is on. The default runs out of heap about once an hour; 120 gets there in about 3 minutes |
+| `MEMORY_LEAK_CHURN_MB_PER_MINUTE` | `credit-card-order-service` env | `600` | Short-lived garbage allocated while the flag is on. With the default heap it gives 7 or more collections a minute through the whole cycle (more while the heap is still small) and doesn't change the restart interval; `0` turns it off |
+| `-XX:MaxRAMPercentage=50` in `JAVA_TOOL_OPTIONS` | `credit-card-order-service` env | set | Caps the heap at half the memory limit |
+| `-XX:+ExitOnOutOfMemoryError` in `JAVA_TOOL_OPTIONS` | `credit-card-order-service` env | set | Exits on `OutOfMemoryError`, so Kubernetes restarts the service |
+| `resources.limits.memory` | Helm values | `650Mi` | The memory limit the heap size is derived from |
 
-`compose.dev.yaml` sets the same heap ceiling and a `650m` memory limit, so the pattern
-also ends in an OOM kill locally (`docker inspect` shows `"OOMKilled": true`).
+`compose.dev.yaml` sets the same JVM options and a `650m` memory limit, so the pattern
+behaves the same locally.
+
+### Why the JVM runs out of memory, not the container
+
+A Java heap leak in a correctly sized container ends this way: the heap fills, GC works
+harder and harder, and the JVM fails with `OutOfMemoryError`. A Kubernetes `OOMKilled`
+(exit 137) usually means the process grew *outside* the heap (native memory, threads),
+or that the heap was sized above the container limit. Forcing an OOM kill here would
+need exactly that misconfiguration.
 
 ## Turning it off
 
