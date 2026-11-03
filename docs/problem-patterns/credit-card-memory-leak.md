@@ -57,6 +57,15 @@ if (openFeatureAPI.getClient().getBooleanValue(FLAG_ID, false)) {
 
 The leak runs whether or not there is traffic, so its rate is predictable.
 
+While the flag is on, a second task runs every second on the same thread and calls
+`recalculateOrderTotals`, which fills scratch buffers and drops them right away. This
+is the service's normal working garbage, not part of the leak: it keeps the young
+generation filling up, so the JVM collects garbage several times a minute, as it would
+in a busy service. Without it the pod is idle apart from the leak, and GC runs less
+than once a minute. Memory profilers that judge objects by how many collections they
+survive then have nothing to tell the leak from short-lived data. With the churn on,
+the cached snapshots survive every collection while the scratch buffers survive none.
+
 The service runs with a heap sized to half its container memory limit
 (`-XX:MaxRAMPercentage=50`, set in `JAVA_TOOL_OPTIONS`), which leaves room for
 non-heap memory. With `-XX:+ExitOnOutOfMemoryError` the JVM exits when the heap is full
@@ -65,6 +74,7 @@ instead of carrying on in a broken state, so Kubernetes restarts it.
 | Setting | Where | Default | Effect |
 |---|---|---|---|
 | `MEMORY_LEAK_MB_PER_MINUTE` | `credit-card-order-service` env | `5` | How fast the heap grows while the flag is on. The default runs out of heap about once an hour; 120 gets there in about 3 minutes |
+| `MEMORY_LEAK_CHURN_MB_PER_MINUTE` | `credit-card-order-service` env | `600` | Short-lived garbage allocated while the flag is on. With the default heap it gives 7 or more collections a minute through the whole cycle (more while the heap is still small) and doesn't change the restart interval; `0` turns it off |
 | `-XX:MaxRAMPercentage=50` in `JAVA_TOOL_OPTIONS` | `credit-card-order-service` env | set | Caps the heap at half the memory limit |
 | `-XX:+ExitOnOutOfMemoryError` in `JAVA_TOOL_OPTIONS` | `credit-card-order-service` env | set | Exits on `OutOfMemoryError`, so Kubernetes restarts the service |
 | `resources.limits.memory` | Helm values | `650Mi` | The memory limit the heap size is derived from |
