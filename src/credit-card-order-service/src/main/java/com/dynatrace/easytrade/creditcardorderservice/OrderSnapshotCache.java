@@ -27,11 +27,8 @@ import jakarta.annotation.PreDestroy;
  * snapshots.
  * <p>
  * While the flag is on, the cache also recomputes order totals every second in
- * scratch buffers it drops right away. That short-lived garbage keeps the
- * young generation filling up, so the JVM collects it several times a minute,
- * like a busy production service, instead of the idle pod's less than once a
- * minute. The leaked snapshots then survive many collections each minute while
- * the scratch buffers survive none.
+ * scratch buffers it drops right away, so the JVM collects garbage several
+ * times a minute, like a busy service.
  * <p>
  * Runs on its own thread because the shared scheduler pool has a single thread
  * that {@link WorkScheduler} keeps busy between its runs.

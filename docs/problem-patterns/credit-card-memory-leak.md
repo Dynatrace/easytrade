@@ -59,12 +59,8 @@ The leak runs whether or not there is traffic, so its rate is predictable.
 
 While the flag is on, a second task runs every second on the same thread and calls
 `recalculateOrderTotals`, which fills scratch buffers and drops them right away. This
-is the service's normal working garbage, not part of the leak: it keeps the young
-generation filling up, so the JVM collects garbage several times a minute, as it would
-in a busy service. Without it the pod is idle apart from the leak, and GC runs less
-than once a minute. Memory profilers that judge objects by how many collections they
-survive then have nothing to tell the leak from short-lived data. With the churn on,
-the cached snapshots survive every collection while the scratch buffers survive none.
+short-lived garbage is not part of the leak. It keeps the JVM collecting garbage several
+times a minute, as in a busy service, so the leak stands out more clearly.
 
 The service runs with a heap sized to half its container memory limit
 (`-XX:MaxRAMPercentage=50`, set in `JAVA_TOOL_OPTIONS`), which leaves room for
@@ -81,14 +77,6 @@ instead of carrying on in a broken state, so Kubernetes restarts it.
 
 `compose.dev.yaml` sets the same JVM options and a `650m` memory limit, so the pattern
 behaves the same locally.
-
-### Why the JVM runs out of memory, not the container
-
-A Java heap leak in a correctly sized container ends this way: the heap fills, GC works
-harder and harder, and the JVM fails with `OutOfMemoryError`. A Kubernetes `OOMKilled`
-(exit 137) usually means the process grew *outside* the heap (native memory, threads),
-or that the heap was sized above the container limit. Forcing an OOM kill here would
-need exactly that misconfiguration.
 
 ## Turning it off
 
