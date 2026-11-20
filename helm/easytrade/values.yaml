@@ -105,14 +105,16 @@ credit-card-order-service:
     THIRD_PARTY_SERVICE_ADDRESS: "http://{{ .Release.Name }}-background-service:8080"
     WORK_DELAY: "300"
     WORK_RATE: "900"
-    # -Xmx1g is deliberately above the 650Mi memory limit: with the
-    # credit_card_memory_leak problem pattern on, the JVM never hits its own
-    # heap ceiling, so the kernel OOM-kills the container instead (OOMKilled,
-    # exit 137) and Kubernetes restarts it.
-    JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow -Xmx1g"
-    # Leak rate of credit_card_memory_leak. At 8 MB/min the container is
-    # OOM-killed about once an hour.
-    MEMORY_LEAK_MB_PER_MINUTE: "8"
+    # Heap sized to half the container memory limit, leaving room for
+    # non-heap memory. With credit_card_memory_leak on, the heap fills up and
+    # the JVM exits on OutOfMemoryError, so Kubernetes restarts it.
+    JAVA_TOOL_OPTIONS: "-XX:-OmitStackTraceInFastThrow -XX:MaxRAMPercentage=50 -XX:+ExitOnOutOfMemoryError"
+    # Leak rate of credit_card_memory_leak. At 5 MB/min the service runs out
+    # of heap about once an hour.
+    MEMORY_LEAK_MB_PER_MINUTE: "5"
+    # Short-lived garbage allocated alongside the leak, so the JVM collects
+    # several times a minute like a busy service. Set to 0 for an idle pod.
+    MEMORY_LEAK_CHURN_MB_PER_MINUTE: "600"
     FEATURE_FLAG_SERVICE_ADDRESS: "http://{{ .Release.Name }}-feature-flag-service:8080"
     DB_ADAPTER_ADDRESS: "{{ .Release.Name }}-db-adapter:50051"
   livenessProbe:
