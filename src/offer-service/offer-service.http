@@ -34,7 +34,7 @@ POST {{baseUrl}}/api/signup
 Content-Type: application/json
 
 {
-    "packageId": 1,
+    "packageId": "a0000000-0000-4000-8000-000000000001",
     "firstName": "John",
     "lastName": "Doe",
     "username": "johndoe",
