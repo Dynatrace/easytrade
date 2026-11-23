@@ -1,16 +1,18 @@
 @baseUrl = http://localhost:8083
+# Seeded instrument (EasyTravel); other ids: GET /v1/prices/latest
+@instrumentId = c0000000-0000-4000-8000-000000000001
 
 ### Get latest price of each instrument
 GET {{baseUrl}}/v1/prices/latest
 
-### Get newest price record
-GET {{baseUrl}}/v1/prices/last
+### Get newest price record for an instrument
+GET {{baseUrl}}/v1/prices/last?instrumentId={{instrumentId}}
 
 ### Get pricing data for a specific instrument (default 100 records)
-GET {{baseUrl}}/v1/prices/instrument/1
+GET {{baseUrl}}/v1/prices/instrument/{{instrumentId}}
 
 ### Get pricing data for a specific instrument (limited records)
-GET {{baseUrl}}/v1/prices/instrument/1?records=5
+GET {{baseUrl}}/v1/prices/instrument/{{instrumentId}}?records=5
 
 ### Version
 GET {{baseUrl}}/version

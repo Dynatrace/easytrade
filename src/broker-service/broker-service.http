@@ -1,4 +1,9 @@
 @baseUrl = http://localhost:8084
+# Account ids are generated at startup. Get one by running "Login" in user-service/user-service.http
+# (james_norton / pass_james_123) and paste the returned id here.
+@accountId = 00000000-0000-0000-0000-000000000000
+# Seeded instrument (EasyTravel); other ids: GET /v1/prices/latest
+@instrumentId = c0000000-0000-4000-8000-000000000001
 
 ### Version
 GET {{baseUrl}}/version
@@ -7,37 +12,48 @@ GET {{baseUrl}}/version
 GET {{baseUrl}}/v1/instrument
 
 ### List instruments for account
-GET {{baseUrl}}/v1/instrument?accountId=00000000-0000-0000-0000-000000000000
+GET {{baseUrl}}/v1/instrument?accountId={{accountId}}
 
 ### Get account balance
-GET {{baseUrl}}/v1/balance/00000000-0000-0000-0000-000000000000
+GET {{baseUrl}}/v1/balance/{{accountId}}
 
 ### Deposit money
-POST {{baseUrl}}/v1/balance/00000000-0000-0000-0000-000000000000/deposit
+POST {{baseUrl}}/v1/balance/{{accountId}}/deposit
 Content-Type: application/json
 
 {
-  "amount": 1000
+  "amount": 1000,
+  "name": "James Norton",
+  "address": "123 Main St, Springfield",
+  "email": "james.norton@example.com",
+  "cardNumber": "4111111111111111",
+  "cardType": "visa",
+  "cvv": "123"
 }
 
 ### Withdraw money
-POST {{baseUrl}}/v1/balance/00000000-0000-0000-0000-000000000000/withdraw
+POST {{baseUrl}}/v1/balance/{{accountId}}/withdraw
 Content-Type: application/json
 
 {
-  "amount": 100
+  "amount": 100,
+  "name": "James Norton",
+  "address": "123 Main St, Springfield",
+  "email": "james.norton@example.com",
+  "cardNumber": "4111111111111111",
+  "cardType": "visa"
 }
 
 ### Get trades for account
-GET {{baseUrl}}/v1/trade/00000000-0000-0000-0000-000000000000
+GET {{baseUrl}}/v1/trade/{{accountId}}
 
 ### Buy instrument
 POST {{baseUrl}}/v1/trade/buy
 Content-Type: application/json
 
 {
-  "accountId": "00000000-0000-0000-0000-000000000000",
-  "instrumentId": 1,
+  "accountId": "{{accountId}}",
+  "instrumentId": "{{instrumentId}}",
   "amount": 10
 }
 
@@ -46,8 +62,8 @@ POST {{baseUrl}}/v1/trade/sell
 Content-Type: application/json
 
 {
-  "accountId": "00000000-0000-0000-0000-000000000000",
-  "instrumentId": 1,
+  "accountId": "{{accountId}}",
+  "instrumentId": "{{instrumentId}}",
   "amount": 10
 }
 
@@ -56,8 +72,8 @@ POST {{baseUrl}}/v1/trade/long/buy
 Content-Type: application/json
 
 {
-  "accountId": "00000000-0000-0000-0000-000000000000",
-  "instrumentId": 1,
+  "accountId": "{{accountId}}",
+  "instrumentId": "{{instrumentId}}",
   "amount": 5,
   "duration": 24,
   "price": 125.5
@@ -68,8 +84,8 @@ POST {{baseUrl}}/v1/trade/long/sell
 Content-Type: application/json
 
 {
-  "accountId": "00000000-0000-0000-0000-000000000000",
-  "instrumentId": 1,
+  "accountId": "{{accountId}}",
+  "instrumentId": "{{instrumentId}}",
   "amount": 5,
   "duration": 24,
   "price": 125.5

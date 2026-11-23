@@ -1,4 +1,6 @@
 @baseUrl = http://localhost:8089
+# Account ids are generated at startup: paste the id returned by "Login" (or from presets) here.
+@accountId = 00000000-0000-0000-0000-000000000000
 
 ### Login
 POST {{baseUrl}}/api/auth/login
@@ -9,7 +11,7 @@ Content-Type: application/json
   "password": "pass_james_123"
 }
 
-### Signup
+### Signup (usernames are unique: change "username" and "email" when re-running, otherwise 409)
 POST {{baseUrl}}/api/auth/signup
 Content-Type: application/json
 
@@ -25,7 +27,7 @@ Content-Type: application/json
 }
 
 ### Get account by ID
-GET {{baseUrl}}/api/accounts/c2a70e99-436a-4e4a-9b98-2d4e73135c66
+GET {{baseUrl}}/api/accounts/{{accountId}}
 
 ### Get preset accounts
 GET {{baseUrl}}/api/accounts/presets

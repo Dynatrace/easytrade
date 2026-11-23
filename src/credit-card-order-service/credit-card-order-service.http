@@ -1,4 +1,8 @@
 @baseUrl = http://localhost:8091
+# Account ids are UUIDs generated at startup. Get one by running "Login" in user-service/user-service.http.
+@accountId = 00000000-0000-0000-0000-000000000000
+# Order ids are generated: run "Create a new credit card order" and paste results.creditCardOrderId here.
+@orderId = 00000000-0000-0000-0000-000000000000
 
 ### Create a new credit card order
 POST {{baseUrl}}/v1/orders
@@ -6,7 +10,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "accountId": 15,
+  "accountId": "{{accountId}}",
   "email": "whatever@pear.com",
   "name": "John Bear",
   "shippingAddress": "Milky Way 13",
@@ -14,32 +18,33 @@ Accept: application/json
 }
 
 ### Get status history for an account
-GET {{baseUrl}}/v1/orders/15/status
+GET {{baseUrl}}/v1/orders/{{accountId}}/status
 Accept: application/json
 
 ### Get latest status for an account
-GET {{baseUrl}}/v1/orders/15/status/latest
+GET {{baseUrl}}/v1/orders/{{accountId}}/status/latest
 Accept: application/json
 
 ### Get shipping address for an order
-GET {{baseUrl}}/v1/orders/b0404285-41ca-4748-a8d9-8a104a0a9d08/shipping-address
+GET {{baseUrl}}/v1/orders/{{orderId}}/shipping-address
 Accept: application/json
 
 ### Update credit card order status
-POST {{baseUrl}}/v1/orders/b0404285-41ca-4748-a8d9-8a104a0a9d08/status
+POST {{baseUrl}}/v1/orders/{{orderId}}/status
 Content-Type: application/json
 Accept: application/json
 
 {
-  "orderId": "b0404285-41ca-4748-a8d9-8a104a0a9d08",
+  "orderId": "{{orderId}}",
   "type": "card_delivered",
   "timestamp": "2023-07-28T14:51:59.847Z",
   "details": {}
 }
 
 ### Delete credit card order for an account
-DELETE {{baseUrl}}/v1/orders/15
+DELETE {{baseUrl}}/v1/orders/{{accountId}}
 Accept: application/json
 
-### Version
+### Version (the endpoint requires an Accept header)
 GET {{baseUrl}}/version
+Accept: application/json
