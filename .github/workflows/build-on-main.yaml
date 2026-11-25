@@ -10,6 +10,11 @@ on:
       - src/**
       - helm/**
   workflow_dispatch:
+    inputs:
+      release:
+        description: "Create a tag + GitHub release from this branch (patch an older version, e.g. patch/0.8). Leave unchecked for a dev build."
+        type: boolean
+        default: false
 
   workflow_call:
     secrets:
@@ -32,6 +37,10 @@ on:
       SSO_URL:
         required: true
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 env:
   NAMESPACE: easytrade
   CONTAINER_REGISTRY: europe-docker.pkg.dev/dynatrace-demoability/docker/easytrade
@@ -51,6 +60,11 @@ jobs:
 
   calc-version:
     uses: ./.github/workflows/reusable-calc-version.yaml
+    with:
+      # Manual run with release=true releases from the branch it was started on (patching an older release,
+      # e.g. patch/0.8); without it a manual run on another branch is a dev build: pushes images, no tag or release.
+      # Pushes always release from main.
+      release-branch: ${{ github.event_name == 'workflow_dispatch' && inputs.release && github.ref_name || 'main' }}
 
   list-services:
     runs-on: ubuntu-24.04
@@ -89,7 +103,8 @@ jobs:
           GAR_CREDENTIALS: ${{ secrets.GAR_CREDENTIALS }}
         with:
           push: true
-          push-latest: ${{ needs.calc-version.outputs.is-release }}
+          # a patch release of an older line must not move `latest`
+          push-latest: ${{ needs.calc-version.outputs.is-release == 'true' && github.ref_name == 'main' }}
           tag: ${{ needs.calc-version.outputs.version }}
           registry: ${{ env.CONTAINER_REGISTRY }}
           service: ${{ matrix.service }}
