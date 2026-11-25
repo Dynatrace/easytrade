@@ -15,8 +15,11 @@ on:
         description: "Whether this is a release build"
         value: ${{ jobs.calc-version.outputs.is-release }}
       already-released:
-        description: "Whether this version has already been released. If true, further build/publish steps can be skipped."
+        description: "DEPRECATED, use skip-build. Whether this version has already been released."
         value: ${{ jobs.calc-version.outputs.already-released }}
+      skip-build:
+        description: "true when build/publish/release must be skipped (version already released, or push commit message has '+semver: skip|none')"
+        value: ${{ jobs.calc-version.outputs.skip-build }}
 
 jobs:
   calc-version:
@@ -25,6 +28,7 @@ jobs:
       version: ${{ steps.version.outputs.version }}
       is-release: ${{ steps.version.outputs.is-release }}
       already-released: ${{ steps.version.outputs.already-released }}
+      skip-build: ${{ steps.version.outputs.skip-build }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v6
@@ -33,6 +37,6 @@ jobs:
 
       - name: Calculate version
         id: version
-        uses: ./.github/actions/calc-version
+        uses: Dynatrace/opentelemetry-demo/.github/actions/calc-version@main
         with:
           release-branch: ${{ inputs.release-branch }}
