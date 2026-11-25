@@ -225,6 +225,60 @@ helm uninstall easytrade -n easytrade
 kubectl delete namespace easytrade
 ```
 
+## Versioning and releases
+
+Versions are calculated from git history by the shared composite action
+[`Dynatrace/opentelemetry-demo/.github/actions/calc-version`](https://github.com/Dynatrace/opentelemetry-demo/blob/main/dynatrace/docs/versioning.md)
+(GitVersion 6), called from `.github/workflows/reusable-calc-version.yaml`. Tags are `v<major>.<minor>.<patch>`.
+
+| Where the build runs | Version | Release? |
+|---|---|---|
+| push to `main` | latest tag on `main` + **minor** bump (or the bump from a `+semver:` marker) | yes: tag `v<version>` and GitHub release |
+| pull request into `main` | what `main` would get after the merge, `<version>-pr<N>-<sha>` | no |
+| any other branch | latest tag reachable from that branch + patch bump, `<version>-<branch>-<sha>` | no |
+| manual run of `build-on-main` on a non-`main` branch, `release` unchecked | as above | no: images and chart are pushed with that version, no tag or release |
+| manual run of `build-on-main` on a non-`main` branch, `release` checked | latest reachable tag + patch bump, plain `<version>` | yes: tag and release on that branch |
+
+- `main` bumps **minor** on every merge. Patch releases are for maintenance branches.
+- A non-`main` branch only sees tags reachable from its own history, so a branch cut from `v0.8.0` never sees `v1.1.0`.
+- The tag and release are created only after build and publish succeed, so a failed run leaves no tag and can be re-run.
+- The `latest` image tag moves only on releases from `main`.
+
+### Commit message markers
+
+For squash merges put the marker in the PR title / squash message that lands on `main`.
+
+| Marker | Effect |
+|---|---|
+| `+semver: major` / `+semver: breaking` | major bump |
+| `+semver: minor` / `+semver: feature` | minor bump |
+| `+semver: fix` / `+semver: patch` | patch bump |
+| `+semver: skip` / `+semver: none` | push does not build or release (docs, CI-only changes) |
+| none | **minor** on `main`, **patch** on other branches |
+
+The highest bump among commits since the last tag wins. The skip marker is ignored for manual runs and PR builds.
+
+### Branch names
+
+Maintenance branches: `patch/<major>.<minor>` (e.g. `patch/0.8`). Feature branches: any name. Do **not** use `hotfix/*`,
+`release/*`, `support/*` or `develop` - GitVersion treats them as built-in types and fails with
+`No base versions determined on the current branch`.
+
+### Patching an older release
+
+```bash
+git fetch --tags
+git checkout -b patch/0.8 v0.8.0     # branch from the release tag
+# commit the fix (or cherry-pick from main), then:
+git push -u origin patch/0.8
+gh workflow run build-on-main.yaml --ref patch/0.8 -f release=true   # -> v0.8.1
+```
+
+Repeat commit + run for `v0.8.2`, etc. `main` is unaffected. The branch must contain the `release` input and
+`release-branch` wiring in `build-on-main.yaml` (cut it from a tag that has it, or cherry-pick). Run without
+`release` for a dev build. If the computed version already exists the build is skipped (`skip-build=true`); add a
+commit with a marker to move on.
+
 ## Where to start
 
 After starting easyTrade application you can:
