@@ -19,9 +19,23 @@ async function main() {
     const provider = getProvider(config)
     const headless = config.headlessMode === "headless"
 
+    const baseBrowserOptions = createBrowserOptions({
+        headless,
+        product: "chrome",
+    })
     const browserPool = createBrowserContextPool({
         name: "main",
-        browserOptions: createBrowserOptions({ headless, product: "chrome" }),
+        browserOptions: {
+            ...baseBrowserOptions,
+            args: [
+                ...(baseBrowserOptions.args ?? []),
+                // EasyTrade is served over plain HTTP on a public IP. Chrome's
+                // HTTPS-First (Balanced) auto-enable upgrades the navigation to
+                // https://, port 443 is closed, and puppeteer reports
+                // net::ERR_BLOCKED_BY_CLIENT.
+                "--disable-features=HttpsFirstBalancedModeAutoEnable,HttpsFirstModeV2ForTypicallySecureUsers",
+            ],
+        },
         loggerOptions: createLoggerOptions("browser", {
             logLevel: config.logLevel,
         }),
