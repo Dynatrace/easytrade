@@ -65,7 +65,7 @@ jobs:
         uses: ./.github/actions/list-build-services
 
   build-push-image:
-    if: needs.calc-version.outputs.already-released == 'false'
+    if: needs.calc-version.outputs.skip-build == 'false'
     needs:
       - calc-version
       - list-services
@@ -95,7 +95,7 @@ jobs:
           service: ${{ matrix.service }}
 
   build-push-helm:
-    if: needs.calc-version.outputs.already-released == 'false'
+    if: needs.calc-version.outputs.skip-build == 'false'
     runs-on: ubuntu-24.04
     needs: calc-version
     steps:
@@ -112,7 +112,7 @@ jobs:
           credentials: ${{ secrets.GAR_CREDENTIALS }}
 
   build-artifact:
-    if: needs.calc-version.outputs.already-released == 'false'
+    if: needs.calc-version.outputs.skip-build == 'false'
     runs-on: ubuntu-24.04
     needs:
       - calc-version
